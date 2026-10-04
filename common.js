@@ -16,8 +16,12 @@
   function lsDel(k) { try { localStorage.removeItem(k); } catch (e) {} }
   function jget(k, d) { try { var v = JSON.parse(lsGet(k)); return v == null ? d : v; } catch (e) { return d; } }
 
+  function ssGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+  function ssSet(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+  function ssDel(k) { try { sessionStorage.removeItem(k); } catch (e) {} }
+  /* ログイン情報：「この端末に記憶」なら localStorage、そうでなければ sessionStorage（ブラウザを閉じると消える） */
   try {
-    var c = JSON.parse(lsGet(LOGIN_KEY));
+    var c = JSON.parse(lsGet(LOGIN_KEY) || ssGet(LOGIN_KEY));
     if (c && RE_ID.test(c.id)) user = { id: c.id, name: c.name || c.id };
   } catch (e) {}
 
@@ -80,7 +84,9 @@
       .then(function (j) { clearTimeout(tm); return j; }, function (e) { clearTimeout(tm); throw e; });
   }
 
-  /* 未送信を順に送る。戻り値: "ok" | "auth" | "error" | "skip" */
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  /* 未送信を順に送る。戻り値: "ok" | "auth" | "rate" | "error" | "skip"
+     サーバー側で「5秒に1回」の送信制限があるので、2件以上たまっていたら間をあけて送る */
   async function flush() {
     if (!SYNC_ON || !user || flushing) return "skip";
     flushing = true; var status = "ok";
@@ -88,8 +94,9 @@
       var q = getPending();
       while (q.length) {
         var res = await call(user.id, "submit", { result: q[0] });
-        if (res.ok) { q.shift(); setPending(q); if (!q.length) setCached(res.stats); }
+        if (res.ok) { q.shift(); setPending(q); if (!q.length) setCached(res.stats); else await sleep(5500); }
         else if (res.error === "auth" || res.error === "locked") { status = "auth"; break; }
+        else if (res.error === "rate") { status = "rate"; break; }
         else if (res.error === "bad_request") { q.shift(); setPending(q); }
         else { status = "error"; break; }
       }
@@ -117,21 +124,28 @@
   }
 
   /* ---- ログイン／ログアウト ---- */
-  async function login(raw) {
+  /* 本人の学習記録（サーバーにある分）。戻り値: {ok, history:[{t,app,sec,score,total,dur}]} */
+  async function history() {
+    if (!SYNC_ON || !user) return { ok: false, error: "noauth" };
+    try { return await call(user.id, "history"); } catch (e) { return { ok: false, error: "network" }; }
+  }
+
+  async function login(raw, remember) {
     var id = normId(raw);
     if (!RE_ID.test(id)) return { ok: false, error: "format", id: id };
     var res;
     try { res = await call(id, "sync"); } catch (e) { return { ok: false, error: "network", id: id, detail: String(e && e.message || e) }; }
     if (!res.ok) return { ok: false, id: id, version: res.version || "旧版",
-      error: res.error === "locked" ? "locked" : (res.error === "auth" ? "auth" : "server"),
+      error: (res.error === "locked" || res.error === "rate") ? "locked" : (res.error === "auth" ? "auth" : "server"),
       detail: (res.error || "") + (res.message ? ": " + res.message : "") };
     user = { id: id, name: (res.user && res.user.name) || id };
-    lsSet(LOGIN_KEY, JSON.stringify(user));
+    if (remember === false) { ssSet(LOGIN_KEY, JSON.stringify(user)); lsDel(LOGIN_KEY); }
+    else { lsSet(LOGIN_KEY, JSON.stringify(user)); ssDel(LOGIN_KEY); }
     setCached(res.stats);
     if (getPending().length) await flush();
     return { ok: true, user: user };
   }
-  function logout() { user = null; lsDel(LOGIN_KEY); }
+  function logout() { user = null; lsDel(LOGIN_KEY); ssDel(LOGIN_KEY); }
 
   /* 教材ページの入口：ログインが必要な設定で未ログインなら、メニューへ戻す */
   function requireLogin() {
@@ -145,7 +159,7 @@
     todayJST: todayJST, days: days, markToday: markToday, streak: streak,
     cached: cached, onStats: onStats,
     pendingCount: function () { return getPending().length; },
-    submit: submit, flush: flush, refresh: refresh,
+    submit: submit, flush: flush, refresh: refresh, history: history,
     login: login, logout: logout, requireLogin: requireLogin
   };
 })();

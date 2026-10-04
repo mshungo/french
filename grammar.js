@@ -179,16 +179,26 @@ function renderHome(){
 }
 
 /* ---------- 出題 ---------- */
+/* 出題の順番
+   1) 苦手（1ラウンド3問まで。「苦手を復習」では全部）
+   2) まだ一度も解いていない問題 ← まずは一通り解くことを優先
+   3) 1回だけ解いた問題（習得していないもの）
+   4) 2回以上解いた問題・習得した問題（5秒以内に正解など）は「しばらくお休み」。他がなくなったら古い順に出す
+   直近15分以内に出た問題は、ほかに出すものがある限り出さない。 */
+const REST_MS=15*60*1000;
+function attempts(it){const s=st(it);return (s.c||0)+(s.w||0);}
 function buildRound(sec){
-  const pool=itemsOf(sec).map(it=>{
-    const s=st(it);let pr=Math.random()*1.6;
-    if(s.last===null)pr+=0.4;
-    if(s.wk)pr-=1.5;
-    if(mastered(it))pr+=2.2;
-    pr+=Math.min(s.c,4)*0.25;
-    return {it,pr};
-  }).sort((a,b)=>a.pr-b.pr);
-  return shuffle(pool.slice(0,Math.min(ROUND,pool.length)).map(x=>makeQ(x.it)));
+  const now=Date.now(),pool=itemsOf(sec),used=new Set(),out=[];
+  const recent=it=>{const t=st(it).t;return t&&now-t<REST_MS;};
+  const older=(a,b)=>(st(a).t||0)-(st(b).t||0);
+  function take(list,max){for(const it of list){if(out.length>=ROUND||max<=0)break;if(used.has(it.id))continue;used.add(it.id);out.push(it);max--;}}
+  const wk=shuffle(pool.filter(it=>weak(it)&&!recent(it)));
+  take(wk,sec==="weak"?ROUND:3);
+  take(shuffle(pool.filter(it=>attempts(it)===0)),ROUND);
+  take(pool.filter(it=>attempts(it)===1&&!mastered(it)&&!weak(it)&&!recent(it)).sort(older),ROUND);
+  take(pool.filter(it=>!recent(it)).sort(older),ROUND);           // お休み中の問題（古い順）
+  take(pool.slice().sort(older),ROUND);                            // それでも足りなければ直近の問題も
+  return shuffle(out.map(makeQ));
 }
 function makeQ(it){
   const q={it,ok:null};
@@ -304,7 +314,7 @@ function grade(r,chosen){
   locked=true;q.rt=performance.now()-q.t0;
   q.ok=r>0;q.accent=(r===1);q.chosen=chosen;
   const s=st(q.it);
-  q.fast=false;
+  q.fast=false;s.t=Date.now();
   if(q.ok){
     s.c++;s.last=1;s.run=(s.run||0)+1;roundCorrect++;
     if(s.wk&&s.run>=2)s.wk=false;                       // 苦手は2回連続正解で解除
@@ -372,13 +382,14 @@ function finishRound(){
   $("review").innerHTML=h;
   show(resultScreen);
   if(roundCorrect===N&&typeof playFanfare==="function")setTimeout(playFanfare,280);
-  if(window.Quiz)Quiz.submit("grammar",{section:"L"+L.no+"-"+curSec,mode:curMode,score:roundCorrect,total:N,timeAttack:false,timeMs:null,
+  if(window.Quiz)Quiz.submit("grammar",{section:"L"+L.no+"-"+curSec,mode:curMode,durMs:Math.round(time),score:roundCorrect,total:N,timeAttack:false,timeMs:null,
     misses:miss.map(q=>({full:q.it.t==="b"?q.it.ja:(q.it.q||q.it.src||""),verb:"L"+L.no,chosen:q.chosen||"",answer:q.it.a[0]}))});
 }
 function goHome(){clearInterval(timerHandle);clearTimeout(autoNext);setAccent(null);renderHome();show(homeScreen);}
 
 /* ---------- 起動 ---------- */
 function init(){
+  if(window.Quiz){if(!Quiz.requireLogin())return;Quiz.refresh();}
   L=window.LESSON;
   WHO=(window.Quiz&&Quiz.user())?Quiz.user().id:"guest";
   KEY="gramQuiz_L"+L.no+"_v1_"+WHO;

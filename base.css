@@ -73,3 +73,8 @@ body{
 .crest.big{margin-bottom:4px;}
 .crown h1.brand{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:52px;letter-spacing:1px;color:#5a4e57;}
 .card .ico svg{display:block;}
+
+.remember{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12px;color:var(--ink-soft);cursor:pointer;}
+.remember input{width:16px;height:16px;accent-color:var(--accent-ink);}
+.mylink{display:inline-block;margin-top:10px;font-size:13px;color:var(--accent-ink);text-decoration:none;border-bottom:1px solid var(--accent);}
+.mylink:hover{color:var(--ink);}

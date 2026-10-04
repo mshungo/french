@@ -6,7 +6,7 @@
 <title>会話練習 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=4"></script>
+<script src="common.js?v=5"></script>
 <script src="audio/talk/index.js?v=1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -386,6 +386,10 @@
 
   .crest{display:flex;justify-content:center;color:var(--gold);margin-bottom:6px;opacity:.9;}
   .crest svg{display:block;}
+
+  .recog{margin:12px auto 4px;max-width:440px;background:#fff;border:1.5px solid var(--accent);border-radius:14px;padding:10px 14px;text-align:center;}
+  .recog-l{display:block;font-size:11px;letter-spacing:1px;color:var(--accent-ink);margin-bottom:2px;}
+  .recog-t{display:block;font-family:"Cormorant Garamond",serif;font-size:24px;font-weight:600;color:var(--ink);line-height:1.35;word-break:break-word;}
 </style>
 </head>
 <body>
@@ -701,7 +705,7 @@ function tone(f,start,dur,type,vol){
 }
 function playCorrect(){ // 上昇する短い和音
   if(!actx)return;const t=actx.currentTime;
-  [659.25,783.99,987.77,1318.51].forEach((f,i)=>tone(f,t+i*0.07,0.26,"triangle",0.2));
+  [659.25,783.99,987.77,1318.51].forEach((f,i)=>tone(f,t+i*0.07,0.26,"triangle",0.11));
 }
 function playWrong(){
   if(!actx)return;const t=actx.currentTime;
@@ -778,22 +782,45 @@ const voiceOK=!!AUDIO;
 let player=null,speakToken=0;
 function audioFile(text){return AUDIO&&AUDIO[text]?"audio/talk/"+(store.voice==="m"?"m":"f")+"/"+AUDIO[text]:null;}
 /* 再生。終わったら cb。録音がない文は鳴らさない */
-function speak(text,slow,cb){
+/* 再生。delay ミリ秒後に鳴らす（効果音と重なると音割れする端末があるため、効果音のあとに鳴らす）。
+   ふつうの速さは効果音と同じ Web Audio の経路で、ゆっくり再生は音程を保てる <audio> で鳴らす。 */
+const bufCache={};
+let srcNode=null;
+function loadBuf(f){
+  if(!bufCache[f])bufCache[f]=fetch(f).then(r=>r.arrayBuffer()).then(ab=>new Promise((res,rej)=>actx.decodeAudioData(ab,res,rej)));
+  return bufCache[f];
+}
+function speak(text,slow,cb,delay){
   const my=++speakToken;let done=false;
   const fin=()=>{if(done||my!==speakToken)return;done=true;cb&&cb();};
   const f=audioFile(text);
   if(!f){setTimeout(fin,300);return;}
-  try{
-    if(player){player.pause();}
-    player=new Audio(f);
-    const rate=(slow===true)?(store.slow?0.65:0.75):(store.slow?0.8:1);
-    player.playbackRate=rate;try{player.preservesPitch=true;}catch(e){}
-    player.onended=fin;player.onerror=fin;
-    const p=player.play();if(p&&p.catch)p.catch(()=>fin());
-    setTimeout(fin,15000);
-  }catch(e){setTimeout(fin,300);}
+  try{if(player)player.pause();}catch(e){}
+  try{if(srcNode)srcNode.stop();}catch(e){}
+  const rate=(slow===true)?(store.slow?0.65:0.75):(store.slow?0.8:1);
+  const go=()=>{
+    if(my!==speakToken)return;
+    if(rate===1&&actx&&window.fetch){
+      loadBuf(f).then(buf=>{
+        if(my!==speakToken)return;
+        if(actx.state==="suspended")actx.resume();
+        const src=actx.createBufferSource(),g=actx.createGain();
+        g.gain.value=0.9;src.buffer=buf;src.connect(g);g.connect(actx.destination);
+        src.onended=fin;srcNode=src;src.start(actx.currentTime+0.03);
+      }).catch(()=>htmlPlay());
+    }else htmlPlay();
+  };
+  const htmlPlay=()=>{
+    try{
+      player=new Audio(f);player.playbackRate=rate;try{player.preservesPitch=true;}catch(e){}
+      player.onended=fin;player.onerror=fin;
+      const p=player.play();if(p&&p.catch)p.catch(()=>fin());
+    }catch(e){fin();}
+  };
+  setTimeout(go,delay||0);
+  setTimeout(fin,15000+(delay||0));
 }
-function stopSpeak(){speakToken++;try{player&&player.pause();}catch(e){}}
+function stopSpeak(){speakToken++;try{player&&player.pause();}catch(e){}try{srcNode&&srcNode.stop();}catch(e){}srcNode=null;}
 
 /* ===== 照合（書き取り・音声認識） ===== */
 function nrm(s){
@@ -1175,7 +1202,7 @@ function bindPractice(q){
       return '<span class="'+(ok?"w-ok":"w-ng")+'">'+esc(w)+'</span>';
     }).join(" ");
     const good=sc>=0.8;
-    $("pout").innerHTML='<div class="p-words">'+words+'</div><div class="p-heard">認識：«'+esc(best)+'»</div>'+
+    $("pout").innerHTML='<div class="p-words">'+words+'</div><div class="recog"><span class="recog-l">聞き取られた文</span><span class="recog-t">«&nbsp;'+esc(best)+'&nbsp;»</span></div>'+
       '<div class="p-res '+(good?"ok":"ng")+'">'+(good?"よく言えています！":"色の薄い語を意識して、もう一度")+'</div>';
     if(good&&typeof playCorrect==="function")playCorrect();
   });
@@ -1229,7 +1256,7 @@ function showAfter(q){
   const a=$("after");a.classList.remove("hidden");
   const sctl=$("stage").querySelector(".speak-ctl");if(sctl)sctl.classList.add("hidden");
   let extra="";
-  if(q.type==="speak"&&q.byMic)extra+='<div class="heard">認識された文：«'+esc(q.heard||"")+'»</div>';
+  if(q.type==="speak"&&q.byMic)extra+='<div class="recog"><span class="recog-l">あなたの発音はこう聞き取られました</span><span class="recog-t">«&nbsp;'+esc(q.heard||"")+'&nbsp;»</span></div>';
   if(q.altOk)extra+='<div class="heard altok">言い方は違うけれど正解。教材の形は上の文。</div>';
   if(q.type==="fill"&&q.accentNote)extra+='<div class="heard">正解。ただしつづりは <b>'+esc(q.answer)+'</b>（アクセント記号に注意）</div>';
   if(!q.ok&&(q.type==="choose"||q.type==="build")&&q.chosen&&q.chosen!==q.v.fr)extra+='<div class="heard">あなたの答え：<s>'+esc(q.chosen)+'</s></div>';
@@ -1249,14 +1276,10 @@ function showAfter(q){
     if(q.ok)$("prOpen").onclick=()=>{clearTimeout(autoNext);$("prOpen").parentNode.remove();$("prBox").innerHTML=practiceHTML(q);bindPractice(q);};
     else bindPractice(q);
   }
-  $("hintLine").textContent="Enter で次へ";
+  $("hintLine").textContent="「次へ」を押す（Enter でも可）";
   const isSelf=q.type==="speak"&&!q.byMic;  // 自己判定は読み上げ済み
-  if(q.ok){
-    if(q.type==="listen"||isSelf){autoNext=setTimeout(next,isSelf?900:1300);}
-    else speak(q.v.fr,false,()=>{autoNext=setTimeout(next,700);});
-  }else{
-    if(!isSelf)speak(q.v.fr);
-  }
+  // 次へは自分で押す（自動では進まない）。答えの音声は効果音が鳴り終わってから再生する
+  if(!isSelf&&!(q.ok&&q.type==="listen"))speak(q.v.fr,false,null,700);
 }
 function overrideCorrect(q){
   if(q.ok)return;
@@ -1300,7 +1323,7 @@ function finishRound(){
   $("review").querySelectorAll(".round-btn").forEach(b=>b.onclick=()=>speak(questions[+b.dataset.i].v.fr));
   show(resultScreen);
   if(roundCorrect===N)setTimeout(playFanfare,280);
-  if(Q)Q.submit("talk",{section:curSec,mode:curMode,score:roundCorrect,total:N,timeAttack:false,timeMs:null,
+  if(Q)Q.submit("talk",{section:curSec,mode:curMode,durMs:Math.round(time),score:roundCorrect,total:N,timeAttack:false,timeMs:null,
     misses:questions.filter(q=>!q.ok).map(q=>({full:q.v.fr,verb:"No."+q.p.n,chosen:q.chosen||"",answer:q.v.fr}))});
 }
 function goHome(){clearInterval(timerHandle);clearTimeout(autoNext);stopSpeak();try{rec&&rec.abort();}catch(e){}setAccent(null);renderHome();show(homeScreen);}
@@ -1337,6 +1360,7 @@ function confirmReset(){ // 2回押しで確定（誤操作防止、ダイアロ
   setTimeout(()=>{if(resetArmed&&Date.now()-resetArmed>=4000){b.textContent="記録をリセット";resetArmed=0;}},4100);
   return false;
 }
+if(Q&&Q.requireLogin())Q.refresh();
 renderHome();show(homeScreen);
 
 </script>

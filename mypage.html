@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学習記録 — Naralingo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7%22/%3E%3C/svg%3E">
+<script src="config.js?v=4"></script>
+<script src="common.js?v=5"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css?v=4">
+<style>
+  .sec-h{font-size:10.5px;color:var(--ink-faint);letter-spacing:2px;margin:26px 0 10px;display:flex;align-items:center;gap:12px;}
+  .sec-h::after{content:"";flex:1;height:1px;background:var(--rule);}
+  table.apps{width:100%;border-collapse:collapse;font-size:13px;}
+  table.apps th{font-weight:500;font-size:11px;color:var(--ink-faint);text-align:right;padding:6px 4px;border-bottom:1px solid var(--rule);}
+  table.apps th:first-child,table.apps td:first-child{text-align:left;}
+  table.apps td{padding:9px 4px;border-bottom:1px solid var(--rule);text-align:right;font-variant-numeric:tabular-nums;}
+  .cal{display:grid;grid-template-columns:24px repeat(10,22px);gap:4px;align-items:center;justify-content:center;}
+  .sumgrid .sum .n{font-size:20px;}
+  .cal .dl{font-size:10px;color:var(--ink-faint);text-align:center;}
+  .cal .c{width:22px;height:22px;border-radius:4px;background:#f1e9e3;}
+  .cal .c.l1{background:#e9d3dd;} .cal .c.l2{background:#d6a8bd;} .cal .c.l3{background:#b5789a;} .cal .c.l4{background:#8f4f74;}
+  .cal .c.today{outline:1.5px solid var(--gold);outline-offset:1px;}
+  .cal .c.fut{background:transparent;}
+  .legend{display:flex;gap:4px;align-items:center;justify-content:flex-end;font-size:10px;color:var(--ink-faint);margin-top:8px;}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:3px;}
+  .hours{display:flex;align-items:flex-end;gap:2px;height:96px;padding-top:6px;}
+  .hours .b{flex:1;background:linear-gradient(180deg,#b48aa8,#8f667f);border-radius:3px 3px 0 0;min-height:2px;position:relative;}
+  .hours .b.z{background:#efe6df;}
+  .hlab{display:flex;justify-content:space-between;font-size:10px;color:var(--ink-faint);margin-top:4px;}
+  .peak{font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .recent{font-size:12.5px;}
+  .recent .r{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--rule);align-items:baseline;}
+  .recent .d{flex:none;width:96px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+  .recent .a{flex:1;min-width:0;}
+  .recent .s{flex:none;font-variant-numeric:tabular-nums;color:var(--ink);}
+  .msg-box{font-size:13px;color:var(--ink-soft);line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="crown">
+    <div class="crest"><svg width="30" height="30" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 9.5C9.6 7.3 9.2 5.1 10 2.8M10.2 5.9 7.4 4.6M12.6 9.2c-.6-1.8-.1-3.4 1-4.6"/><path d="M20.5 9.5c1.9-2.2 2.3-4.4 1.5-6.7M21.8 5.9l2.8-1.3M19.4 9.2c.6-1.8.1-3.4-1-4.6"/><path d="M11.4 11.6 6.6 10.4c.9 1.9 2.6 3 4.9 3.1"/><path d="M20.6 11.6l4.8-1.2c-.9 1.9-2.6 3-4.9 3.1"/><path d="M11.3 11.2c.3-1.4 2.2-2.1 4.7-2.1s4.4.7 4.7 2.1l-1.1 8.2c-.5 3.6-1.9 6.4-3.6 6.4s-3.1-2.8-3.6-6.4z"/><circle cx="13.9" cy="14.8" r=".7" fill="currentColor" stroke="none"/><circle cx="18.1" cy="14.8" r=".7" fill="currentColor" stroke="none"/><path d="M15 24.3h2"/></svg></div>
+    <div class="eyebrow">Naralingo · Mon parcours</div>
+    <h1>学習記録</h1>
+  </div>
+  <div class="panel">
+    <div class="bar"><a class="link" href="index.html">← メニュー</a><div class="streak" id="streak"></div></div>
+    <p class="hello" id="hello" style="margin-top:14px">読み込み中…</p>
+    <div id="body"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var Q=window.Quiz;
+  if(!Q.requireLogin())return;
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function dur(sec){var m=Math.round((sec||0)/60);return m<60?m+"分":Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
+  var APP={conj:"動詞活用",grammar:"文法練習",talk:"会話練習"};
+  var TALKSEC={s1:"第1–3週",s2:"第4–6週",s3:"第7–9週",s4:"第10–11週",s5:"第12–14週",mix:"総まとめ",weak:"苦手"};
+  function secName(app,s){
+    if(app==="grammar"){var m=/^L(\d+)-(.+)$/.exec(s);if(m)return "Leçon "+m[1]+(m[2]==="mix"?" 総まとめ":m[2]==="weak"?" 苦手":"");}
+    if(app==="talk")return TALKSEC[s]||s;
+    return s;
+  }
+  var r0=Q.streak();$("streak").innerHTML="連続 "+r0.n+"日";
+  var u=Q.user();
+  if(!Q.SYNC_ON||!u){$("hello").textContent="学習記録";$("body").innerHTML='<p class="msg-box">記録の送信が有効になっていないため、ここには表示できません。</p>';return;}
+  $("hello").innerHTML=esc(u.name)+'<small>ID: '+esc(u.id)+'　（この記録は本人と先生だけが見られます）</small>';
+  Q.history().then(function(res){
+    if(!res.ok){
+      $("body").innerHTML='<p class="msg-box warn">'+(res.error==="rate"?"読み込みが多すぎます。少し待ってから開き直してください。":res.error==="auth"?"このIDは無効になっています。先生に確認してください。":"記録を読み込めませんでした。通信環境を確認してください。")+'</p>';return;}
+    render(res.history||[]);
+  });
+
+  function render(H){
+    var pend=Q.pendingCount();
+    if(!H.length){$("body").innerHTML='<p class="msg-box">まだ記録がありません。練習すると、ここに回数や時間帯が表示されます。'+(pend?'<br>（未送信の結果が '+pend+' 件あります）':'')+'</p>';return;}
+    var totDur=0,totQ=0,totC=0,days={},hours=[],byApp={};
+    for(var h=0;h<24;h++)hours.push(0);
+    H.forEach(function(x){
+      totDur+=x.dur||0;totQ+=x.total;totC+=x.score;
+      var d=x.t.slice(0,10);days[d]=(days[d]||0)+1;
+      var hr=+x.t.slice(11,13);if(hr>=0&&hr<24)hours[hr]++;
+      var a=byApp[x.app]=byApp[x.app]||{n:0,q:0,c:0,dur:0};a.n++;a.q+=x.total;a.c+=x.score;a.dur+=x.dur||0;
+    });
+    var html='';
+    html+='<div class="sumgrid">'+
+      '<div class="sum"><div class="n">'+dur(totDur)+'</div><div class="l">学習時間</div></div>'+
+      '<div class="sum"><div class="n">'+Object.keys(days).length+'</div><div class="l">学習した日</div></div>'+
+      '<div class="sum"><div class="n">'+H.length+'</div><div class="l">ラウンド</div></div>'+
+      '<div class="sum"><div class="n">'+(totQ?Math.round(totC/totQ*100)+'%':'—')+'</div><div class="l">正答率</div></div></div>';
+    // 教材別
+    html+='<div class="sec-h">教材ごと</div><table class="apps"><tr><th>教材</th><th>回数</th><th>解答数</th><th>正答率</th><th>時間</th></tr>';
+    ["conj","grammar","talk"].forEach(function(k){var a=byApp[k];
+      html+='<tr><td>'+APP[k]+'</td><td>'+(a?a.n:0)+'</td><td>'+(a?a.q:0)+'</td><td>'+(a&&a.q?Math.round(a.c/a.q*100)+'%':'—')+'</td><td>'+(a?dur(a.dur):'0分')+'</td></tr>';});
+    html+='</table>';
+    // カレンダー（直近10週）
+    var today=Q.todayJST(),t0=new Date(today+"T00:00:00Z");
+    var dow=(t0.getUTCDay()+6)%7;           // 月曜=0
+    var start=new Date(t0);start.setUTCDate(start.getUTCDate()-dow-7*9);
+    var labels=["月","火","水","木","金","土","日"];
+    html+='<div class="sec-h">最近10週間の学習日（色が濃いほど多く練習）</div><div class="cal">';
+    for(var r=0;r<7;r++){
+      html+='<div class="dl">'+labels[r]+'</div>';
+      for(var w=0;w<10;w++){
+        var d=new Date(start);d.setUTCDate(start.getUTCDate()+w*7+r);var ds=d.toISOString().slice(0,10);
+        var n=days[ds]||0,lv=n===0?"":n<2?"l1":n<4?"l2":n<7?"l3":"l4";
+        var fut=ds>today;
+        html+='<div class="c '+lv+(ds===today?" today":"")+(fut?" fut":"")+'" title="'+ds+'：'+n+'回"></div>';
+      }
+    }
+    html+='</div><div class="legend">少<i style="background:#f1e9e3"></i><i style="background:#e9d3dd"></i><i style="background:#d6a8bd"></i><i style="background:#b5789a"></i><i style="background:#8f4f74"></i>多</div>';
+    // 時間帯
+    var mx=Math.max.apply(null,hours)||1,peak=hours.indexOf(Math.max.apply(null,hours));
+    html+='<div class="sec-h">よく練習する時間帯</div><div class="hours">';
+    hours.forEach(function(v,i){html+='<div class="b'+(v?'':' z')+'" style="height:'+(v?Math.max(6,Math.round(v/mx*100)):3)+'%" title="'+i+'時台：'+v+'回"></div>';});
+    html+='</div><div class="hlab"><span>0時</span><span>6時</span><span>12時</span><span>18時</span><span>24時</span></div>';
+    html+='<div class="peak">いちばん多いのは '+peak+'時台（'+hours[peak]+'回）</div>';
+    // 最近の記録
+    html+='<div class="sec-h">最近の記録</div><div class="recent">';
+    H.slice(-15).reverse().forEach(function(x){
+      html+='<div class="r"><span class="d">'+esc(x.t.slice(5,10).replace("-","/"))+' '+esc(x.t.slice(11,16))+'</span>'+
+        '<span class="a">'+(APP[x.app]||"")+' <span style="color:var(--ink-faint)">'+esc(secName(x.app,x.sec))+'</span></span>'+
+        '<span class="s">'+x.score+' / '+x.total+'</span></div>';
+    });
+    html+='</div>';
+    if(pend)html+='<p class="note">未送信の結果が '+pend+' 件あります（次に練習ページを開いたときに送られます）。</p>';
+    $("body").innerHTML=html;
+  }
+})();
+</script>
+</body>
+</html>

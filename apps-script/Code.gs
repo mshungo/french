@@ -7,8 +7,9 @@
  *  3.「デプロイ > 新しいデプロイ > ウェブアプリ」
  *       実行ユーザー: 自分 / アクセスできるユーザー: 全員
  *     → 表示された「ウェブアプリのURL」（…/exec）をクイズHTMLの CONFIG.SCRIPT_URL に貼る
- *  4. 学生を追加するとき: シート「名簿」のB列に氏名を書き、
- *     メニュー「活用クイズ > 名簿の空欄にIDを発行」を実行する → A列に6文字のIDが入る。
+ *  4. 学生を追加するとき: シート「名簿」のB列に氏名、C列に名字のローマ字（例：MORITA）を書き、
+ *     メニュー「活用クイズ > 名簿の空欄にIDを発行」を実行する → A列に「名字＋英数字4文字」のID（例：MORITA7K3Q）が入る。
+ *     IDが漏れたときは、A列のIDを消して再発行すれば、古いIDは使えなくなる（記録は古いIDのまま残る）。
  *     そのIDを学生に伝える。いつでも追加できる。
  *     利用をやめさせたい学生は、名簿のその行を削除する（結果の記録は残る）。
  *
@@ -16,22 +17,29 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-04c';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-04d';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計' };
 const ID_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';   // 0/O/1/I/L など紛らわしい文字を除く
-const ID_LEN = 6;             // 自動発行するIDの長さ
+const ID_LEN = 4;             // 名字のあとにつける英数字の数
 const ID_RE = /^[A-Z0-9_-]{3,20}$/;   // 受け付けるIDの形（手入力のIDも使えるよう、3〜20文字の英数字と - _）
 const MAX_FAILS = 100;        // 10分間にID照合の失敗がこの回数を超えたら一時停止（総当たり対策）
+// 送信回数の制限（1つのIDごと）
+const LIMIT = {
+  submitMinGapSec: 5,    // 結果の送信は5秒に1回まで
+  submitPerHour: 60,     // 1時間に60回まで（10問×60回＝600問）
+  submitPerDay: 300,     // 1日に300回まで
+  readPerMin: 20         // 記録の読み込み（ログイン・学習記録の表示）は1分に20回まで
+};
 const SECTION_LABEL = { 'être': 'être', aller: 'aller', avoir: 'avoir', faire: 'faire', mix: '総まとめ' };
 const MODE_LABEL = { choice: '選択式', write: '記述式' };
 const APP_LABEL = { conj: '動詞活用', grammar: '文法練習', talk: '会話練習' };
 const RESULT_HEADERS = ['日時', '日付', '学生ID', '氏名', '教材', 'セクション', '形式', '正解数', '問題数',
-  '所要秒', 'タイムアタック', 'ランク', '誤答', 'rid'];
+  '所要秒', 'タイムアタック', 'ランク', '誤答', 'rid', '学習秒'];
 const COL = { time: 1, date: 2, id: 3, name: 4, app: 5, section: 6, mode: 7, score: 8, total: 9,
-  sec: 10, ta: 11, rank: 12, misses: 13, rid: 14 };
-const N_COLS = 14;
-const ROW_FORMATS = ['yyyy-mm-dd hh:mm:ss', '@', '@', '@', '@', '@', '@', '0', '0', '0.0', '@', '@', '@', '@'];
+  sec: 10, ta: 11, rank: 12, misses: 13, rid: 14, dur: 15 };
+const N_COLS = 15;
+const ROW_FORMATS = ['yyyy-mm-dd hh:mm:ss', '@', '@', '@', '@', '@', '@', '0', '0', '0.0', '@', '@', '@', '@', '0'];
 const SUMMARY_ROWS = 60;   // 集計の対象人数（名簿の2〜61行目）
 
 // ===== Webアプリの入口 =====
@@ -74,16 +82,37 @@ function handle_(req) {
   }
   const user = { id: id, name: name || id };
 
-  if (req.action === 'sync') {
+  if (req.action === 'sync' || req.action === 'history') {
+    if (!rateOk_(cache, 'r:' + id, LIMIT.readPerMin, 60)) return { ok: false, error: 'rate' };
+    if (req.action === 'history') return { ok: true, user: user, history: historyFor_(ss, id) };
     return { ok: true, user: user, stats: statsFor_(ss, id) };
   }
   if (req.action === 'submit') {
+    if (!submitAllowed_(cache, id)) return { ok: false, error: 'rate' };
     const v = validateResult_(req.result);
     if (!v) return { ok: false, error: 'bad_request' };
     appendResult_(ss, user, v);
     return { ok: true, user: user, stats: statsFor_(ss, id) };
   }
   return { ok: false, error: 'bad_request' };
+}
+
+// ===== 送信回数の制限 =====
+function rateOk_(cache, key, max, sec) {
+  const n = Number(cache.get(key) || 0);
+  if (n >= max) return false;
+  cache.put(key, String(n + 1), sec);   // 最初の記録から sec 秒で数え直し（目安の制限）
+  return true;
+}
+function submitAllowed_(cache, id) {
+  const now = Date.now();
+  const last = Number(cache.get('s:last:' + id) || 0);
+  if (now - last < LIMIT.submitMinGapSec * 1000) return false;
+  if (!rateOk_(cache, 's:h:' + id, LIMIT.submitPerHour, 3600)) return false;
+  const dayKey = 's:d:' + id + ':' + Utilities.formatDate(new Date(), TZ, 'yyyyMMdd');
+  if (!rateOk_(cache, dayKey, LIMIT.submitPerDay, 21600)) return false;
+  cache.put('s:last:' + id, String(now), 600);
+  return true;
 }
 
 // ===== スプレッドシート =====
@@ -104,7 +133,9 @@ function ensureSheet_(ss, name, headers) {
 }
 
 function resultsSheet_(ss) {
-  return ensureSheet_(ss, SHEET.results, RESULT_HEADERS);
+  const sh = ensureSheet_(ss, SHEET.results, RESULT_HEADERS);
+  if (sh.getLastColumn() < N_COLS) sh.getRange(1, 1, 1, N_COLS).setValues([RESULT_HEADERS]).setFontWeight('bold');   // 旧版のシートに列を追加
+  return sh;
 }
 
 function lookupRoster_(ss, id) {
@@ -171,8 +202,11 @@ function validateResult_(r) {
     return safe_(m.full, 80) + ' [' + safe_(m.verb, 10) + '] ' + safe_(m.chosen, 30) + '→' + safe_(m.answer, 30);
   }).join(' / ');
 
+  let dur = Math.round(Number(r.durMs) / 1000);
+  if (!isFinite(dur) || dur < 0) dur = '';
+  else dur = Math.min(dur, total * 90);   // 放置した時間は1問90秒まで
   return { rid: rid, app: r.app, section: section, mode: mode, total: total, score: score,
-    timeAttack: timeAttack, timeSec: timeSec, rank: rank, misses: safe_(misses, 4000) };
+    timeAttack: timeAttack, timeSec: timeSec, rank: rank, misses: safe_(misses, 4000), dur: dur };
 }
 
 function appendResult_(ss, user, v) {
@@ -187,7 +221,7 @@ function appendResult_(ss, user, v) {
     }
     const now = new Date();
     const row = [now, Utilities.formatDate(now, TZ, 'yyyy-MM-dd'), user.id, safe_(user.name, 60),
-      APP_LABEL[v.app], v.section, v.mode, v.score, v.total, v.timeSec, v.timeAttack ? '○' : '', v.rank, v.misses, v.rid];
+      APP_LABEL[v.app], v.section, v.mode, v.score, v.total, v.timeSec, v.timeAttack ? '○' : '', v.rank, v.misses, v.rid, v.dur];
     const rng = sh.getRange(last + 1, 1, 1, N_COLS);
     rng.setNumberFormats([ROW_FORMATS]);
     rng.setValues([row]);
@@ -242,6 +276,29 @@ function statsFor_(ss, id) {
   return out;
 }
 
+// ===== 学習記録（本人の分だけ）=====
+function historyFor_(ss, id) {
+  const sh = ss.getSheetByName(SHEET.results);
+  const out = [];
+  if (!sh || sh.getLastRow() < 2) return out;
+  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, N_COLS).getValues();
+  const appToKey = {};
+  Object.keys(APP_LABEL).forEach(function (k) { appToKey[APP_LABEL[k]] = k; });
+  for (const r of vals) {
+    if (normId_(r[COL.id - 1]) !== id) continue;
+    const t = r[COL.time - 1];
+    out.push({
+      t: t instanceof Date ? Utilities.formatDate(t, TZ, "yyyy-MM-dd'T'HH:mm") : String(t),
+      app: appToKey[r[COL.app - 1]] || '',
+      sec: String(r[COL.section - 1] || ''),
+      score: Number(r[COL.score - 1]) || 0,
+      total: Number(r[COL.total - 1]) || 0,
+      dur: Number(r[COL.dur - 1]) || 0
+    });
+  }
+  return out.slice(-1000);   // 最新の1000件まで（古い順）
+}
+
 // ===== 初期設定・ID発行 =====
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('活用クイズ')
@@ -258,11 +315,13 @@ function setup() {
   PropertiesService.getScriptProperties().setProperty('SHEET_ID', ss.getId());
   ss.setSpreadsheetTimeZone(TZ);
 
-  const roster = ensureSheet_(ss, SHEET.roster, ['学生ID', '氏名', 'メモ(任意)']);
+  const roster = ensureSheet_(ss, SHEET.roster, null);
+  roster.getRange(1, 1, 1, 4).setValues([['学生ID', '氏名', '名字（ローマ字）', 'メモ(任意)']]).setFontWeight('bold');
+  roster.setFrozenRows(1);
   roster.getRange(2, 1, 500, 1).setNumberFormat('@');
   resultsSheet_(ss);
   buildSummary_(ss);
-  ss.toast('シートを用意しました。名簿のB列に氏名を入れて、メニューからIDを発行してください。');
+  ss.toast('シートを用意しました。名簿のB列に氏名、C列に名字のローマ字を入れて、メニューからIDを発行してください。');
 }
 
 function randomId_() {
@@ -272,31 +331,37 @@ function randomId_() {
   return out;
 }
 
-// 氏名があってIDが空の行にIDを発行する（何度実行しても既存のIDは変わらない）
+// 名字（ローマ字）をIDの頭の形にそろえる（全角→半角、大文字、英字のみ、最大12文字）
+function surnameKey_(s) {
+  return String(s == null ? '' : s).normalize('NFKC').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 12);
+}
+
+// IDが空の行に「名字＋英数字4文字」のIDを発行する（既存のIDは変えない）
 function issueIds() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sh = ss.getSheetByName(SHEET.roster);
   if (!sh) { setup(); return issueIds(); }
   const last = sh.getLastRow();
-  if (last < 2) { ss.toast('名簿のB列に氏名を入力してから実行してください。'); return; }
-  const rng = sh.getRange(2, 1, last - 1, 2);
+  if (last < 2) { ss.toast('名簿のB列に氏名、C列に名字のローマ字を入力してから実行してください。'); return; }
+  const rng = sh.getRange(2, 1, last - 1, 3);
   const vals = rng.getValues();
   const used = {};
   vals.forEach(function (r) { const x = normId_(r[0]); if (x) used[x] = true; });
-  let n = 0;
+  let n = 0, skipped = 0;
   for (const r of vals) {
-    const hasId = String(r[0]).trim() !== '';
-    if (hasId) { r[0] = normId_(r[0]); continue; }
-    if (String(r[1]).trim() === '') continue;
+    if (String(r[0]).trim() !== '') { r[0] = normId_(r[0]); continue; }
+    if (String(r[1]).trim() === '' && String(r[2]).trim() === '') continue;
+    const head = surnameKey_(r[2]);
+    if (!head) { skipped++; continue; }
     let id;
-    do { id = randomId_(); } while (used[id]);
+    do { id = head + randomId_(); } while (used[id]);
     used[id] = true;
     r[0] = id;
     n++;
   }
   sh.getRange(2, 1, last - 1, 1).setNumberFormat('@');
   rng.setValues(vals);
-  ss.toast(n + '人分のIDを発行しました。');
+  ss.toast(n + '人分のIDを発行しました。' + (skipped ? '（C列の名字ローマ字が空の ' + skipped + ' 行は発行していません）' : ''));
 }
 
 function buildSummary_(ss) {
