@@ -3,880 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>活用クイズ — être · aller · avoir · faire</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    /* 淡く温かな紙とインク。彩度をおさえた上品なトーン */
-    --bg:#f6efe9;                                  /* 生成り */
-    --bg-2:#efe6df;
-    --card:#fffdfb; --card-edge:#efe6dd;
-    --ink:#4a4048; --ink-soft:#8c8088; --ink-faint:#b6acb1;
-    --rule:#ece1da;
-    --gold:#c0a06a;                                /* やわらかい金 */
-    --accent:#b48aa8;                              /* 既定アクセント(藤鼠) */
-    --accent-ink:#8f667f;
-    --accent-wash:#f6eef3;
-    --good:#7a9b86; --good-ink:#5d7d69; --good-wash:#eef4ef;
-    --bad:#c98a86;  --bad-ink:#b16a66; --bad-wash:#f8eeed;
-    --shadow:rgba(150,120,135,.22);
-  }
-  /* 動詞ごとのアクセント（やさしい色相） */
-  body[data-verb="être"]  {--accent:#cf8aa0;--accent-ink:#b16880;--accent-wash:#faeef2;}
-  body[data-verb="aller"] {--accent:#d6a96f;--accent-ink:#b88a4f;--accent-wash:#faf2e7;}
-  body[data-verb="avoir"] {--accent:#8db79b;--accent-ink:#6c9a7f;--accent-wash:#eef5f0;}
-  body[data-verb="faire"] {--accent:#92a6cf;--accent-ink:#7186b4;--accent-wash:#eef1f8;}
-  body[data-verb="mix"]   {--accent:#b48aa8;--accent-ink:#8f667f;--accent-wash:#f6eef3;}
-
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    font-family:"Noto Sans JP",-apple-system,"Segoe UI",sans-serif;
-    color:var(--ink); min-height:100vh;
-    background:
-      radial-gradient(900px 480px at 88% -8%, rgba(207,138,160,.16), transparent 60%),
-      radial-gradient(820px 520px at 5% 108%, rgba(146,166,207,.14), transparent 58%),
-      radial-gradient(700px 400px at 50% 50%, rgba(214,169,111,.05), transparent 70%),
-      linear-gradient(170deg, var(--bg), var(--bg-2));
-    background-attachment:fixed;
-    display:flex; justify-content:center; padding:42px 18px 76px;
-    -webkit-font-smoothing:antialiased;
-  }
-  .wrap{width:100%;max-width:530px;}
-
-  /* ===== title ===== */
-  .crown{margin-bottom:24px;text-align:center;}
-  .eyebrow{font-size:10.5px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
-  .crown h1{
-    font-family:"Cormorant Garamond",serif;font-weight:600;margin:0;
-    font-size:42px;line-height:1.04;letter-spacing:.5px;color:#5a4e57;
-  }
-  .crown .verbs{display:inline-block;font-size:12px;color:var(--ink-soft);margin-top:12px;letter-spacing:1.5px;}
-  .crown .verbs i{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--accent-ink);}
-  .crown .verbs::before,.crown .verbs::after{content:"❦";color:var(--gold);opacity:.55;margin:0 12px;font-size:11px;vertical-align:middle;}
-
-  /* ===== card ===== */
-  .panel{
-    background:var(--card);
-    border:1px solid var(--card-edge);border-radius:26px;
-    box-shadow:0 30px 70px -34px var(--shadow), 0 1px 0 rgba(255,255,255,.8) inset;
-    padding:34px 30px;position:relative;
-  }
-
-  /* ===== HOME ===== */
-  .hello{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:600;margin:0 0 4px;color:var(--ink);}
-  .hello small{display:block;font-family:"Noto Sans JP";font-size:12.5px;color:var(--ink-soft);margin-top:8px;letter-spacing:.3px;}
-
-  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:24px 0 6px;
-    border:1px solid var(--rule);border-radius:18px;overflow:hidden;background:#fdf9f6;}
-  .stat{padding:16px 8px;text-align:center;position:relative;}
-  .stat+.stat{border-left:1px solid var(--rule);}
-  .stat .n{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:29px;line-height:1;color:var(--ink);}
-  .stat.acc .n{color:var(--gold);}
-  .stat .l{font-size:9.5px;color:var(--ink-faint);letter-spacing:1px;margin-top:6px;}
-  .stat .ico{display:none;}
-  @media(max-width:430px){.stat .n{font-size:24px;}}
-
-  /* ランク色（共通） */
-  .r-SSS{--rk-c:#b8860b;--rk-bg:linear-gradient(135deg,#fff4cf,#ffe9a8);}
-  .r-SS {--rk-c:#a06a2c;--rk-bg:linear-gradient(135deg,#fbeecf,#f3dca6);}
-  .r-S  {--rk-c:#8a6d3b;--rk-bg:linear-gradient(135deg,#f3ecd8,#e9dcbb);}
-  .r-A  {--rk-c:#6c9a7f;--rk-bg:linear-gradient(135deg,#e9f4ee,#d6ecdd);}
-  .r-B  {--rk-c:#7186b4;--rk-bg:linear-gradient(135deg,#eaeff8,#d9e2f4);}
-  .r-C  {--rk-c:#a08a90;--rk-bg:linear-gradient(135deg,#f2ecef,#e6dbe0);}
-  .r-none{--rk-c:var(--ink-faint);--rk-bg:#f3ede9;}
-
-  /* セクションボタン内のクリアタイム＋ランク */
-  .sb-time{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none;}
-  .sb-time .sb-t{font-family:"Cormorant Garamond",serif;font-size:15px;color:var(--ink-soft);
-    font-variant-numeric:tabular-nums;}
-  .sb-time .sb-rank{min-width:34px;text-align:center;font-family:"Cormorant Garamond",serif;font-weight:700;
-    font-size:14px;padding:2px 0;border-radius:7px;color:var(--rk-c);background:var(--rk-bg);letter-spacing:.5px;}
-  .sb-time .sb-none{font-size:11px;color:var(--ink-faint);letter-spacing:.5px;}
-
-  /* 結果画面のランクバッジ */
-  .rank-badge{display:none;}
-  .rank-badge.show{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
-    width:96px;height:96px;border-radius:50%;margin:8px auto 4px;color:var(--rk-c);background:var(--rk-bg);
-    box-shadow:0 8px 22px -12px var(--shadow), 0 0 0 1px rgba(0,0,0,.04) inset;}
-  .rank-badge .rk{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:38px;line-height:1;}
-  .rank-badge .rk-sub{font-size:9px;letter-spacing:3px;margin-top:3px;opacity:.7;}
-
-  .mode-row{display:flex;align-items:center;justify-content:space-between;margin:26px 0 4px;}
-  .mode-label{font-size:10.5px;color:var(--ink-faint);letter-spacing:2px;text-transform:uppercase;}
-  .mode-toggle{display:inline-flex;border:1px solid var(--rule);border-radius:30px;overflow:hidden;background:#f5ede7;padding:3px;gap:2px;}
-  .mode-btn{font-family:"Noto Sans JP";font-size:12.5px;padding:7px 18px;cursor:pointer;
-    background:transparent;border:none;color:var(--ink-soft);transition:all .2s;border-radius:30px;}
-  .mode-btn.on{background:var(--card);color:var(--accent-ink);box-shadow:0 2px 6px -2px var(--shadow);}
-
-  /* タイムアタック スイッチ */
-  .switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
-  .switch input{position:absolute;opacity:0;width:0;height:0;}
-  .switch-track{position:relative;width:44px;height:24px;border-radius:30px;background:#ddd3ca;
-    transition:background .2s;flex:none;}
-  .switch-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;
-    box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s;}
-  .switch input:checked + .switch-track{background:var(--accent);}
-  .switch input:checked + .switch-track .switch-thumb{transform:translateX(20px);}
-  .switch input:focus-visible + .switch-track{outline:2px solid var(--accent-ink);outline-offset:2px;}
-  .switch-text{font-size:12px;color:var(--ink-soft);letter-spacing:.5px;min-width:56px;}
-  body.no-ta .sb-time{opacity:.35;}
-
-  .section-label{font-size:10.5px;color:var(--ink-faint);letter-spacing:2px;text-transform:uppercase;
-    margin:26px 0 14px;display:flex;align-items:center;gap:14px;}
-  .section-label::before,.section-label::after{content:"";flex:1;height:1px;background:var(--rule);}
-
-  .sections{display:grid;grid-template-columns:1fr;gap:11px;}
-  .start-btn{display:flex;align-items:center;gap:14px;cursor:pointer;text-align:left;
-    background:#fdfaf8;border:1px solid var(--rule);border-radius:18px;padding:14px 18px;
-    font-family:"Noto Sans JP";position:relative;overflow:hidden;
-    transition:transform .18s cubic-bezier(.34,1.4,.5,1),box-shadow .18s,border-color .18s,background .18s;}
-  .start-btn[data-verb="être"] {--vc:#cf8aa0;--vcw:#faeef2;}
-  .start-btn[data-verb="aller"]{--vc:#d6a96f;--vcw:#faf2e7;}
-  .start-btn[data-verb="avoir"]{--vc:#8db79b;--vcw:#eef5f0;}
-  .start-btn[data-verb="faire"]{--vc:#92a6cf;--vcw:#eef1f8;}
-  /* 動詞色の小さな円バッジ */
-  .start-btn i{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:22px;
-    color:var(--vc,var(--gold));line-height:1;width:44px;height:44px;border-radius:50%;
-    background:var(--vcw,#f4ede6);display:flex;align-items:center;justify-content:center;flex:none;transition:transform .18s;}
-  .start-btn:hover{transform:translateY(-2px);box-shadow:0 14px 26px -16px var(--shadow);border-color:var(--vc,var(--gold));background:#fff;}
-  .start-btn:hover i{transform:scale(1.08) rotate(-3deg);}
-  .start-btn:active{transform:translateY(0);}
-  .start-btn:focus-visible{outline:2px solid var(--vc,var(--gold));outline-offset:3px;}
-  .start-btn .sb-name{font-size:13px;color:var(--ink);}
-  .start-btn.summary{width:100%;margin-top:6px;background:linear-gradient(135deg,#fdf6f0,#f8eef4);}
-  .start-btn.summary i{font-style:normal;color:var(--gold);font-family:"Noto Sans JP";font-size:17px;background:#fff;}
-  .start-btn.summary:hover{border-color:var(--gold);}
-
-  .mini-reset{display:block;margin:22px auto 0;background:none;border:none;cursor:pointer;
-    color:var(--ink-faint);font-family:"Noto Sans JP";font-size:11.5px;letter-spacing:1px;text-decoration:underline;text-underline-offset:3px;}
-  .mini-reset:hover{color:var(--bad-ink);}
-
-  /* ===== QUIZ ===== */
-  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-  .back{background:#fdfaf8;border:1px solid var(--rule);border-radius:50%;width:40px;height:40px;
-    cursor:pointer;font-size:17px;color:var(--ink-soft);line-height:1;transition:background .15s,transform .12s;}
-  .back:hover{background:var(--accent-wash);transform:translateX(-2px);}
-  .hearts{display:flex;gap:8px;}
-  .pdot{width:8px;height:8px;border-radius:50%;background:var(--rule);display:inline-block;transition:transform .25s,background .25s,box-shadow .25s;}
-  .pdot.d-ok{background:var(--good);}
-  .pdot.d-no{background:var(--bad);}
-  .pdot.d-now{background:var(--accent);transform:scale(1.5);box-shadow:0 0 0 4px var(--accent-wash);}
-  .qcount{font-family:"Cormorant Garamond",serif;font-size:19px;color:var(--ink-soft);font-style:italic;}
-  .live-timer{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:19px;color:var(--accent-ink);
-    font-variant-numeric:tabular-nums;min-width:80px;text-align:center;}
-
-  .round-label{font-size:10.5px;color:var(--accent-ink);letter-spacing:2.5px;text-transform:uppercase;
-    margin-bottom:14px;text-align:center;font-weight:500;}
-  .bar{height:5px;background:var(--rule);border-radius:5px;overflow:hidden;margin-bottom:28px;}
-  .bar .fill{height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .4s cubic-bezier(.4,1.2,.5,1);}
-
-  .verb-chip{display:inline-block;font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:600;
-    color:var(--accent-ink);background:var(--accent-wash);padding:5px 20px;border-radius:30px;font-size:19px;}
-  .prompt{font-family:"Cormorant Garamond",serif;font-size:32px;font-weight:500;line-height:1.45;margin:18px 0 4px;color:var(--ink);}
-  .blank{display:inline-block;min-width:50px;text-align:center;color:var(--accent-ink);font-weight:600;
-    border-bottom:2px dotted var(--accent);}
-  .jp{font-size:13px;color:var(--ink-soft);margin:4px 0 28px;letter-spacing:.3px;}
-
-  .opts{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
-  @media(max-width:430px){.opts{grid-template-columns:1fr;}}
-  .opt{
-    font-family:"Cormorant Garamond",serif;font-size:24px;font-weight:600;cursor:pointer;
-    padding:16px 10px;border-radius:16px;text-align:center;color:var(--ink);
-    background:#fdfaf8;border:1px solid var(--rule);position:relative;
-    transition:background .14s,border-color .14s,transform .08s,box-shadow .14s;}
-  .opt:hover{background:#fff;border-color:var(--accent);box-shadow:0 8px 18px -12px var(--shadow);transform:translateY(-1px);}
-  .opt:active{transform:translateY(0);}
-  .opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
-  .opt.correct{background:var(--good-wash);border-color:var(--good);color:var(--good-ink);}
-  .opt.wrong{background:var(--bad-wash);border-color:var(--bad);color:var(--bad-ink);}
-  .opt.dim{opacity:.38;}
-  .opt[disabled]{cursor:default;}
-
-  .write-box{display:flex;gap:12px;}
-  .write-input{flex:1;font-family:"Cormorant Garamond",serif;font-size:25px;font-weight:600;padding:14px 18px;
-    border:1px solid var(--rule);border-radius:16px;color:var(--ink);background:#fdfaf8;outline:none;transition:border-color .15s,box-shadow .15s,background .15s;}
-  .write-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-wash);background:#fff;}
-  .write-input.ok{border-color:var(--good);background:var(--good-wash);color:var(--good-ink);}
-  .write-input.no{border-color:var(--bad);background:var(--bad-wash);color:var(--bad-ink);}
-  .write-btn{font-family:"Noto Sans JP";font-size:14px;color:#fff;background:var(--accent-ink);
-    border:none;border-radius:16px;padding:0 26px;cursor:pointer;transition:background .15s;}
-  .write-btn:hover{background:var(--accent);}
-  .write-btn:disabled{opacity:.5;cursor:default;}
-
-  .fb{text-align:center;min-height:24px;margin-top:22px;font-family:"Cormorant Garamond",serif;
-    font-style:italic;font-size:19px;opacity:0;transition:opacity .15s;}
-  .fb.show{opacity:1;}
-  .fb.ok{color:var(--good-ink);}
-  .fb.no{color:var(--bad-ink);}
-  .fb .full{font-weight:600;font-style:normal;color:var(--ink);}
-  .hint{text-align:center;font-size:10.5px;color:var(--ink-faint);margin-top:12px;letter-spacing:.5px;}
-
-  /* ===== RESULT ===== */
-  .result{text-align:center;}
-  .result .face{font-family:"Cormorant Garamond",serif;font-size:42px;line-height:1;margin-bottom:8px;color:var(--gold);}
-  .result h2{font-size:10.5px;letter-spacing:3px;color:var(--ink-faint);margin:0 0 16px;font-weight:500;text-transform:uppercase;}
-  .ring{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:60px;line-height:1;color:var(--ink);}
-  .ring small{font-size:26px;color:var(--ink-faint);font-style:italic;}
-  .pct-pill{display:inline-block;margin-top:14px;background:var(--accent-wash);color:var(--accent-ink);
-    padding:7px 24px;border-radius:30px;font-size:15px;font-weight:500;}
-  .msg{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:20px;margin:22px 0 8px;color:var(--ink);}
-  .rtime{font-size:13.5px;color:var(--ink-soft);margin:2px 0 4px;letter-spacing:.3px;}
-  .rtime .rec{color:var(--accent-ink);font-weight:700;letter-spacing:.5px;}
-  .rtime .best{color:var(--ink-faint);font-size:12px;}
-  .review{text-align:left;background:#fbf5f1;border:1px solid var(--rule);border-radius:16px;
-    padding:18px 20px;margin-top:20px;}
-  .review .ttl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-faint);margin-bottom:12px;}
-  .rrow{font-size:13.5px;padding:9px 0;border-bottom:1px solid var(--rule);display:flex;
-    justify-content:space-between;gap:10px;align-items:center;}
-  .rrow:last-child{border-bottom:none;}
-  .rrow .miss{color:var(--bad-ink);text-decoration:line-through;font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:600;}
-  .rrow .got{color:var(--good-ink);font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:600;}
-  .rrow .ar{color:var(--ink-faint);}
-  .again{margin-top:24px;}
-  .play{display:block;width:100%;cursor:pointer;border:none;font-family:"Noto Sans JP";font-weight:500;
-    font-size:14.5px;color:#fff;letter-spacing:3px;padding:16px;border-radius:18px;
-    background:linear-gradient(135deg,var(--accent),var(--accent-ink));
-    box-shadow:0 12px 24px -14px var(--accent-ink);transition:transform .1s,box-shadow .1s,filter .15s;}
-  .play:hover{filter:brightness(1.05);transform:translateY(-2px);box-shadow:0 16px 28px -14px var(--accent-ink);}
-  .play:active{transform:translateY(0);}
-  .play:focus-visible{outline:2px solid var(--accent-ink);outline-offset:3px;}
-  .play .spark{display:none;}
-  .home-link{display:block;margin:16px auto 0;background:none;border:none;cursor:pointer;
-    color:var(--ink-faint);font-family:"Noto Sans JP";font-size:12px;letter-spacing:1px;text-decoration:underline;text-underline-offset:3px;}
-  .home-link:hover{color:var(--accent-ink);}
-  .hidden{display:none;}
-  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
-</style>
+<link rel="stylesheet" href="base.css">
+<title>フランス語 練習</title>
+<script src="config.js"></script>
+<script src="common.js"></script>
 </head>
 <body>
 <div class="wrap">
   <div class="crown">
-    <div class="eyebrow">Conjugaison · 直説法現在</div>
-    <h1>動詞活用クイズ</h1>
-    <span class="verbs"><i>être</i> · <i>aller</i> · <i>avoir</i> · <i>faire</i></span>
+    <div class="eyebrow">Français · Exercices</div>
+    <h1>フランス語 練習</h1>
   </div>
 
-  <!-- ===== HOME ===== -->
-  <div class="panel" id="homeScreen">
-    <p class="hello">10問チャレンジ<small>例文に合う正しい活用を答えてください。</small></p>
-    <div class="stat-grid">
-      <div class="stat"><div class="n" id="hTries">0</div><div class="l">挑戦回数</div></div>
-      <div class="stat acc"><div class="n" id="hAcc">—</div><div class="l">通算正答率</div></div>
-      <div class="stat"><div class="n" id="hBest">—</div><div class="l">自己ベスト</div></div>
-      <div class="stat"><div class="n" id="hAns">0</div><div class="l">累計解答</div></div>
+  <!-- ログイン -->
+  <div class="panel hidden" id="loginPanel">
+    <p class="hello">ログイン<small>先生から渡された6文字のIDを入力してください。一度入力すると、この端末では次回から入力しなくて済みます。</small></p>
+    <div class="idrow">
+      <input type="text" id="idInput" class="idin" maxlength="6" autocomplete="off" autocapitalize="characters"
+        spellcheck="false" placeholder="学生ID（6文字）">
+      <button class="idbtn" id="idBtn">ログイン</button>
     </div>
-
-    <div class="mode-row">
-      <span class="mode-label">出題形式</span>
-      <div class="mode-toggle">
-        <button class="mode-btn on" data-mode="choice">選択式</button>
-        <button class="mode-btn" data-mode="write">記述式</button>
-      </div>
-    </div>
-
-    <div class="mode-row">
-      <span class="mode-label">タイムアタック</span>
-      <label class="switch">
-        <input type="checkbox" id="taToggle" checked>
-        <span class="switch-track"><span class="switch-thumb"></span></span>
-        <span class="switch-text" id="taText">計測する</span>
-      </label>
-    </div>
-
-    <div class="section-label">セクションを選択</div>
-    <div class="sections">
-      <button class="start-btn" data-verb="être"><i>être</i><span class="sb-name">être（〜である）</span><span class="sb-time" data-sec="être"></span></button>
-      <button class="start-btn" data-verb="aller"><i>aller</i><span class="sb-name">aller（行く）</span><span class="sb-time" data-sec="aller"></span></button>
-      <button class="start-btn" data-verb="avoir"><i>avoir</i><span class="sb-name">avoir（持つ）</span><span class="sb-time" data-sec="avoir"></span></button>
-      <button class="start-btn" data-verb="faire"><i>faire</i><span class="sb-name">faire（する・作る）</span><span class="sb-time" data-sec="faire"></span></button>
-    </div>
-    <button class="start-btn summary" data-verb=""><i>★</i><span class="sb-name">総まとめ（4動詞ミックス）</span><span class="sb-time" data-sec="mix"></span></button>
-
-    <button class="mini-reset" id="resetBtn">記録をリセット</button>
+    <div class="note warn hidden" id="loginNote"></div>
   </div>
 
-  <!-- ===== QUIZ ===== -->
-  <div class="panel hidden" id="quizScreen">
-    <div class="topbar">
-      <button class="back" id="backBtn" aria-label="ホームに戻る">←</button>
-      <div class="live-timer" id="liveTimer">0.0秒</div>
-      <div class="qcount" id="qcount">1 / 10</div>
+  <!-- メニュー -->
+  <div class="panel hidden" id="menuPanel">
+    <div class="bar">
+      <p class="hello" id="hello" style="margin:0"></p>
+      <div class="streak" id="streak"></div>
     </div>
-    <div class="hearts" id="hearts" style="justify-content:center;margin-bottom:14px;"></div>
-    <div class="round-label" id="roundLabel"></div>
-    <div class="bar"><div class="fill" id="fill"></div></div>
-    <div><span class="verb-chip" id="vchip">être</span></div>
-    <div class="prompt" id="prompt"></div>
-    <div class="jp" id="jp"></div>
-    <div class="opts" id="opts"></div>
-    <div class="write-box hidden" id="writeBox">
-      <input type="text" id="writeInput" class="write-input" autocomplete="off"
-        autocapitalize="off" spellcheck="false" placeholder="活用を入力">
-      <button class="write-btn" id="writeBtn">解答</button>
+    <div class="note" id="who"></div>
+    <div class="menu">
+      <a class="card conj" href="conjugation.html">
+        <div class="ico">Cj</div>
+        <div class="tx"><div class="ti">動詞活用</div><div class="de">être · aller · avoir · faire ／ 直説法現在</div></div>
+        <div class="st" id="stConj"></div>
+      </a>
+      <a class="card grammar" href="grammar.html">
+        <div class="ico">Gr</div>
+        <div class="tx"><div class="ti">文法練習</div><div class="de">冠詞・前置詞・否定など</div></div>
+        <div class="soon">準備中</div>
+      </a>
+      <a class="card talk" href="conversation.html">
+        <div class="ico">Cv</div>
+        <div class="tx"><div class="ti">会話練習</div><div class="de">場面別の短い会話</div></div>
+        <div class="soon">準備中</div>
+      </a>
     </div>
-    <div class="fb" id="fb"></div>
-    <div class="hint" id="hintLine">1〜4キー または クリックで解答</div>
-  </div>
-
-  <!-- ===== RESULT ===== -->
-  <div class="panel hidden result" id="resultScreen">
-    <div class="face" id="rFace">◎</div>
-    <h2>結果</h2>
-    <div class="ring" id="rScore">0<small> / 10</small></div>
-    <div><span class="pct-pill" id="rPct">0%</span></div>
-    <div class="msg" id="rMsg"></div>
-    <div class="rank-badge" id="rRank"></div>
-    <div class="rtime" id="rTime"></div>
-    <div class="review" id="review"></div>
-    <button class="play again" id="againBtn">もう一度</button>
-    <button class="home-link" id="toHomeBtn">ホームにもどる</button>
+    <div class="note warn hidden" id="menuNote"></div>
+    <div style="margin-top:22px;text-align:center"><button class="link hidden" id="logoutBtn">ログアウト</button></div>
   </div>
 </div>
 
 <script>
-/* ============================================================
-   実在の活用 (forms) は主語キーごと。
-   near[主語] = その正解に「綴りが似た」紛らわしい誤答プール。
-   誤答は near から優先的に選ぶ → 正解の周辺だけで迷わせる。
-   ============================================================ */
-const VERBS={
-  "être":{
-    forms:{"je":"suis","tu":"es","il/elle":"est","nous":"sommes","vous":"êtes","ils/elles":"sont"},
-    near:{
-      "je":["sui","suit","suies","suist","suipe"],
-      "tu":["esse","esa","est","ès","esse"],
-      "il/elle":["es","et","ait","este","esse","ai"],
-      "nous":["somme","somment","somes","sons","somment"],
-      "vous":["ètes","étes","êtez","etes","ête"],
-      "ils/elles":["son","sonts","sontes","sons","sonts"]
-    }
-  },
-  "aller":{
-    forms:{"je":"vais","tu":"vas","il/elle":"va","nous":"allons","vous":"allez","ils/elles":"vont"},
-    near:{
-      "je":["vai","vaix","vait","vaie","vaise"],
-      "tu":["va","vat","vaz","vase","vaes"],
-      "il/elle":["vat","vah","vaa","vas","vad"],
-      "nous":["alons","allon","allont","alont","allont"],
-      "vous":["alez","allè","allès","allet","allé"],
-      "ils/elles":["von","vonts","vond","vons","vonts"]
-    }
-  },
-  "avoir":{
-    forms:{"j'":"ai","tu":"as","il/elle":"a","nous":"avons","vous":"avez","ils/elles":"ont"},
-    near:{
-      "j'":["ais","aie","aies","ait","é"],
-      "tu":["ase","ats","ah","ase","a"],
-      "il/elle":["as","ah","at","à","at"],
-      "nous":["avon","avont","aven","avos","avont"],
-      "vous":["ave","avè","avés","avet","avé"],
-      "ils/elles":["on","onts","ond","hont","ons"]
-    }
-  },
-  "faire":{
-    forms:{"je":"fais","tu":"fais","il/elle":"fait","nous":"faisons","vous":"faites","ils/elles":"font"},
-    near:{
-      "je":["faie","fai","faix","faiz","fez"],
-      "tu":["faie","fai","faiz","faix","fez"],
-      "il/elle":["fai","faite","fet","faix","faist"],
-      "nous":["faison","fesons","faissons","faison","faizons"],
-      "vous":["faite","faits","faîtes","fetes","faisez"],
-      "ils/elles":["fon","fonts","fond","fompt","fons"]
-    }
+(function(){
+  var Q=window.Quiz;
+  var loginPanel=document.getElementById("loginPanel"), menuPanel=document.getElementById("menuPanel");
+  function $(id){return document.getElementById(id);}
+
+  function renderStreak(){
+    var r=Q.streak();
+    $("streak").innerHTML="連続 "+r.n+"日"+(r.doneToday?" <small>今日済</small>":(r.n>0?" <small>今日はまだ</small>":""));
   }
-};
-/* 主語レジストリ: 表示主語 / 活用キー(j'は文組立てで処理) / 日本語 */
-const SUBJ={
-  je:   {disp:"Je",    key:"je",        jp:"私は"},
-  tu:   {disp:"Tu",    key:"tu",        jp:"君は"},
-  il:   {disp:"Il",    key:"il/elle",   jp:"彼は"},
-  elle: {disp:"Elle",  key:"il/elle",   jp:"彼女は"},
-  on:   {disp:"On",    key:"il/elle",   jp:"私たちは"},
-  nous: {disp:"Nous",  key:"nous",      jp:"私たちは"},
-  vous: {disp:"Vous",  key:"vous",      jp:"あなたは"},
-  ils:  {disp:"Ils",   key:"ils/elles", jp:"彼らは"},
-  elles:{disp:"Elles", key:"ils/elles", jp:"彼女たちは"}
-};
-
-/* 文型テンプレート:
-   pred  = 活用の後ろの述語（先頭にスペースを含む。疑問符等もここ）
-   jp    = 日本語の述語部分（主語の日本語＋これで一文にする）
-   subs  = この述語に自然な主語キーの配列
-   3人称専用の固有主語（Le café 等）は fixed で指定（人称は il/elle） */
-const SENT={
-  "être":[
-    {pred:" étudiant.",          jp:"学生です。",            subs:["je","tu","il"]},
-    {pred:" très fatigué.",      jp:"とても疲れている。",     subs:["je","tu","il","elle"]},
-    {pred:" en retard.",         jp:"遅刻している。",         subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" très gentil.",       jp:"とても親切だ。",         subs:["tu","il","vous"]},
-    {pred:" médecin.",           jp:"医者だ。",               subs:["je","tu","il","elle","vous"]},
-    {pred:" prêt.",              jp:"準備ができている。",     subs:["je","tu","il"]},
-    {pred:" prêts.",             jp:"準備ができている。",     subs:["nous","ils","elles","vous"]},
-    {pred:" français.",          jp:"フランス人だ。",         subs:["je","tu","il","vous"]},
-    {pred:" en avance.",         jp:"早く着いている。",       subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" content.",           jp:"満足している。",         subs:["je","tu","il"]},
-    {pred:" contents.",          jp:"満足している。",         subs:["nous","ils"]},
-    {pred:" dans le jardin.",    jp:"庭にいる。",             subs:["il","elle","nous","ils","elles"]},
-    {pred:" à Nara.",            jp:"奈良にいる。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" sûr de toi.",        jp:"自信がある。",           subs:["tu"]}
-  ],
-  "aller":[
-    {pred:" à Paris.",           jp:"パリへ行く。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" très bien.",         jp:"とても元気だ。",         subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" bien ?",             jp:"元気？",                 subs:["tu","il","vous"]},
-    {pred:" à l'école à pied.",  jp:"歩いて学校へ行く。",     subs:["je","tu","il","elle","nous","ils","elles"]},
-    {pred:" au travail.",        jp:"仕事に行く。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" chez le médecin.",   jp:"医者へ行く。",           subs:["je","tu","il","elle","nous","vous"]},
-    {pred:" ensemble.",          jp:"一緒に行く。",           subs:["nous","ils","elles","vous"]},
-    {pred:" au cinéma ce soir.", jp:"今夜映画に行く。",       subs:["je","tu","il","elle","nous","ils","elles"]},
-    {pred:" où ?",               jp:"どこへ行くの？",         subs:["tu","il","vous","ils"]},
-    {pred:" à la gare ?",        jp:"駅へ行くの？",           subs:["tu","il","vous"]},
-    {pred:" au marché.",         jp:"市場へ行く。",           subs:["je","tu","il","elle","nous","ils","elles"]},
-    {pred:" en vacances en été.",jp:"夏に休暇に行く。",       subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" à la plage.",        jp:"海辺へ行く。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" mieux maintenant.",  jp:"今は調子がいい。",       subs:["je","tu","il","elle"]}
-  ],
-  "avoir":[
-    {pred:" faim.",              jp:"お腹が空いている。",     subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" deux frères.",       jp:"兄弟が二人いる。",       subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" raison.",            jp:"言う通りだ。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" froid ?",            jp:"寒い？",                 subs:["tu","il","vous"]},
-    {pred:" vingt ans.",         jp:"20歳だ。",               subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" une belle voiture.", jp:"いい車を持っている。",   subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" le temps.",          jp:"時間がある。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" rendez-vous à midi.",jp:"正午に約束がある。",     subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" une question ?",     jp:"質問がある？",           subs:["tu","il","vous"]},
-    {pred:" de la chance.",      jp:"運がいい。",             subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" deux chats.",        jp:"猫を2匹飼っている。",    subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" soif.",              jp:"喉が渇いている。",       subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" sommeil.",           jp:"眠い。",                 subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" peur du noir.",      jp:"暗闇が怖い。",           subs:["je","tu","il","elle","nous","ils","elles"]}
-  ],
-  "faire":[
-    {pred:" du café.",           jp:"コーヒーを淹れる。",     subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" mes devoirs.",       jp:"宿題をする。",           subs:["je"]},
-    {pred:" tes devoirs.",       jp:"宿題をする。",           subs:["tu"]},
-    {pred:" ses devoirs.",       jp:"宿題をする。",           subs:["il","elle"]},
-    {pred:" quoi ?",             jp:"何をしているの？",       subs:["tu","il","vous"]},
-    {pred:" du piano ?",         jp:"ピアノを弾くの？",       subs:["tu","il","vous"]},
-    {pred:" un gâteau.",         jp:"ケーキを作る。",         subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" la cuisine.",        jp:"料理をする。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" une promenade.",     jp:"散歩をする。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" du sport ?",         jp:"スポーツをするの？",     subs:["tu","il","vous"]},
-    {pred:" attention.",         jp:"気をつける。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" beaucoup de bruit.", jp:"とても騒がしい。",       subs:["tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" la vaisselle.",      jp:"皿洗いをする。",         subs:["je","tu","il","elle","nous","vous","ils","elles"]},
-    {pred:" un voyage cet été.", jp:"この夏旅行をする。",     subs:["je","tu","il","elle","nous","vous","ils","elles"]}
-  ]
-};
-const VERB_KEYS=Object.keys(VERBS);
-const ROUND=10;
-
-/* ===== 永続記録 ===== */
-const KEY="conjQuizStats_v4";
-const SECTIONS=["être","aller","avoir","faire","mix"];
-const SECTION_LABEL={"être":"être","aller":"aller","avoir":"avoir","faire":"faire","mix":"総まとめ"};
-let store=load();
-function load(){
-  try{const r=JSON.parse(localStorage.getItem(KEY));if(r&&typeof r.tries==="number"){
-    if(!r.bestTimes)r.bestTimes={};                       // セクション別ベストタイム
-    SECTIONS.forEach(s=>{if(typeof r.bestTimes[s]==="undefined")r.bestTimes[s]=null;});
-    return r;
-  }}catch(e){}
-  // 旧v3データからの移行（単一bestTimeがあれば総まとめに引き継ぐ）
-  let migrated={};SECTIONS.forEach(s=>migrated[s]=null);
-  try{const old=JSON.parse(localStorage.getItem("conjQuizStats_v3"));
-    if(old&&typeof old.bestTime==="number")migrated.mix=old.bestTime;}catch(e){}
-  return {tries:0,answered:0,correct:0,best:null,bestTimes:migrated};
-}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
-function fmtTime(ms){
-  if(ms==null)return "—";
-  const s=ms/1000;
-  const m=Math.floor(s/60), sec=s-m*60;
-  return m>0 ? (m+"分"+sec.toFixed(1)+"秒") : (sec.toFixed(1)+"秒");
-}
-/* クリアタイム(ms)→ランク。全問正解タイムのみ対象。 */
-function rankOf(ms){
-  if(ms==null)return null;
-  const s=ms/1000;
-  if(s<=20)return "SSS";
-  if(s<=30)return "SS";
-  if(s<=45)return "S";
-  if(s<=60)return "A";
-  if(s<=120)return "B";
-  return "C";
-}
-
-/* ===== util ===== */
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function pick(a){return a[Math.floor(Math.random()*a.length)];}
-function clean(a){return [...new Set(a.filter(x=>x&&x.length))];}
-
-/* ===== 出題 =====
-   verb + テンプレート tpl + 主語トークン subTok から1問を組む。
-   選択肢 = 正解1 + 紛らわしい誤答1〜2 + 他人称の実在活用1〜2 */
-function buildOptions(verb, tpl, subTok){
-  const sub=SUBJ[subTok];
-  const key=sub.key;                       // 活用キー（avoirは il/elle 等。jeは "j'" を別扱い）
-  const conjKey = (verb==="avoir" && key==="je") ? "j'" : key;
-  const answer=VERBS[verb].forms[conjKey];
-
-  const otherPersons=clean(Object.values(VERBS[verb].forms).filter(x=>x!==answer));
-  const nearPool=clean((VERBS[verb].near[conjKey]||[]).filter(x=>x!==answer && !otherPersons.includes(x)));
-
-  let nNear = Math.random()<0.5?1:2;
-  nNear = Math.min(nNear, nearPool.length);
-  let nOther = 3 - nNear;
-  nOther = Math.min(nOther, otherPersons.length);
-  let deficit = 3 - (nNear+nOther);
-  if(deficit>0){ nNear=Math.min(nearPool.length, nNear+deficit); }
-
-  let distract=[
-    ...shuffle(nearPool.slice()).slice(0,nNear),
-    ...shuffle(otherPersons.slice()).slice(0,nOther)
-  ];
-  distract=clean(distract);
-  if(distract.length<3){
-    const backup=shuffle(clean([...nearPool,...otherPersons]).filter(x=>!distract.includes(x)&&x!==answer));
-    for(const b of backup){if(distract.length>=3)break;distract.push(b);}
+  function guestConj(){
+    try{var s=JSON.parse(localStorage.getItem("conjQuizStats_v4"));
+      if(s&&typeof s.tries==="number")return {tries:s.tries,answered:s.answered,correct:s.correct};}catch(e){}
+    return null;
   }
-  distract=distract.slice(0,3);
-
-  // 表示用：エリジオンの有無は実際の活用(answer)で判定する
-  const elide = (sub.disp==="Je" && /^[aeiouéèêhàâ]/i.test(answer));
-  const sentence = elide ? ("J'<BLANK>"+tpl.pred) : (sub.disp+" <BLANK>"+tpl.pred);
-  const full     = elide ? ("J'"+answer+tpl.pred) : (sub.disp+" "+answer+tpl.pred);
-  const jp = sub.jp + tpl.jp;
-  return {verb, subject:subTok, sentence, full, jp, answer,
-          options:shuffle([answer,...distract])};
-}
-
-/* ラウンドを「重複なし」＋「人称（活用形）が均等に分散」するよう構築。
-   手順:
-   1) 文型（動詞,テンプレート）を重複なしで ROUND 個選ぶ。
-   2) 各文型に主語を割り当てる。activationキー(je/tu/il-elle/nous/vous/ils-elles)の
-      使用回数が最小のものを優先して選び、偏りを防ぐ。
-   3) 選択肢の少ない（＝主語の自由度が低い）文型から先に割り当て、実現可能性を上げる。 */
-function conjKeyOf(verb, subTok){
-  const key=SUBJ[subTok].key;
-  return (verb==="avoir" && key==="je") ? "j'" : key;
-}
-function buildRound(verbFilter){
-  const verbs = verbFilter ? [verbFilter] : VERB_KEYS;
-  // 1) 文型候補を集めてシャッフル、重複なしで ROUND 個
-  let templates=[];
-  verbs.forEach(v=>{ SENT[v].forEach((tpl,ti)=>templates.push({verb:v,tplIndex:ti,tpl})); });
-  shuffle(templates);
-  let picked=[];const seen=new Set();
-  for(const t of templates){
-    const k=t.verb+"|"+t.tplIndex;
-    if(seen.has(k))continue;
-    seen.add(k);picked.push(t);
-    if(picked.length>=ROUND)break;
+  function renderMenu(){
+    var u=Q.user();
+    $("hello").textContent=u?u.name:"メニュー";
+    $("who").textContent=u?"ID: "+u.id:(Q.SYNC_ON?"":"ゲストモード（記録はこの端末内のみ）");
+    $("logoutBtn").classList.toggle("hidden",!u);
+    var st=null;
+    if(u){var c=Q.cached();st=c&&c.apps&&c.apps.conj;}else{st=guestConj();}
+    $("stConj").innerHTML=(st&&st.tries)?(st.tries+"回<small>正答率 "+Math.round(st.correct/st.answered*100)+"%</small>"):"";
+    renderStreak();
   }
-  // 2) 主語の自由度が低い順（選べる主語が少ない文型）から割り当てる
-  picked.sort((a,b)=>a.tpl.subs.length-b.tpl.subs.length);
-  const useCount={};                       // activationキーごとの使用回数
-  const assigned=picked.map(t=>{
-    // この文型で選べる主語を、activationキーの使用回数が少ない順に評価
-    const cands=shuffle(t.tpl.subs.slice());
-    let best=cands[0], bestC=Infinity;
-    for(const subTok of cands){
-      const ck=conjKeyOf(t.verb,subTok);
-      const c=useCount[ck]||0;
-      if(c<bestC){bestC=c;best=subTok;}
-    }
-    const ck=conjKeyOf(t.verb,best);
-    useCount[ck]=(useCount[ck]||0)+1;
-    return {verb:t.verb, tpl:t.tpl, subTok:best};
+  function showMenu(){loginPanel.classList.add("hidden");menuPanel.classList.remove("hidden");renderMenu();}
+  function showLogin(){menuPanel.classList.add("hidden");loginPanel.classList.remove("hidden");}
+  function note(t){var n=$("loginNote");n.textContent=t||"";n.classList.toggle("hidden",!t);}
+
+  async function doLogin(){
+    var btn=$("idBtn");btn.disabled=true;note("");
+    var r=await Q.login($("idInput").value);
+    btn.disabled=false;
+    if(r.ok){$("idInput").value="";showMenu();return;}
+    note(r.error==="format"?"IDは英数字6文字です。":
+         r.error==="locked"?"試行回数が多すぎます。しばらくしてからやり直してください。":
+         r.error==="network"?"通信できませんでした。通信環境を確認してください。":
+         "IDが見つかりません。入力を確認してください。");
+  }
+  $("idBtn").addEventListener("click",doLogin);
+  $("idInput").addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});
+  $("logoutBtn").addEventListener("click",function(){Q.logout();note("");showLogin();});
+  Q.onStats(function(){if(!menuPanel.classList.contains("hidden"))renderMenu();});
+
+  if(Q.SYNC_ON&&!Q.user()){showLogin();return;}
+  showMenu();
+  Q.refresh().then(function(st){
+    if(st==="auth"){Q.logout();showLogin();note("このIDは無効になっています。先生に確認してください。");}
   });
-  shuffle(assigned);                       // 出題順はランダムに戻す
-  return assigned.map(c=>buildOptions(c.verb,c.tpl,c.subTok));
-}
-
-/* ===== sound ===== */
-let actx=null;
-function ensureAudio(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}}
-function tone(f,start,dur,type,vol){
-  const o=actx.createOscillator(),g=actx.createGain();
-  o.type=type;o.frequency.value=f;
-  g.gain.setValueAtTime(0,start);
-  g.gain.linearRampToValueAtTime(vol,start+0.012);
-  g.gain.exponentialRampToValueAtTime(0.0001,start+dur);
-  o.connect(g).connect(actx.destination);o.start(start);o.stop(start+dur+0.02);
-}
-function playCorrect(){ // 上昇する短い和音
-  if(!actx)return;const t=actx.currentTime;
-  [659.25,783.99,987.77,1318.51].forEach((f,i)=>tone(f,t+i*0.07,0.26,"triangle",0.2));
-}
-function playWrong(){
-  if(!actx)return;const t=actx.currentTime;
-  tone(330,t,0.16,"sine",0.14);tone(247,t+0.12,0.2,"sine",0.14);
-}
-function playStart(){if(!actx)return;const t=actx.currentTime;tone(523.25,t,0.12,"triangle",0.15);tone(784,t+0.09,0.16,"triangle",0.15);}
-function playFanfare(){ // 全問正解クリア用の短いファンファーレ
-  if(!actx)return;const t=actx.currentTime;
-  // 旋律: ソ ソ ソ ド↑ — ド↑ ソ ド↑(伸ばし)
-  const mel=[
-    [783.99,0.00,0.14],[783.99,0.15,0.14],[783.99,0.30,0.14],[1046.50,0.45,0.30],
-    [1046.50,0.82,0.16],[783.99,1.00,0.16],[1046.50,1.18,0.55]
-  ];
-  mel.forEach(([f,d,dur])=>{
-    tone(f,t+d,dur,"triangle",0.2);
-    tone(f/2,t+d,dur,"sine",0.07); // 1oct下を薄く重ねて厚みを出す
-  });
-  // 最後に明るい和音（ド・ミ・ソ・ド）
-  const ch=t+1.18;
-  [523.25,659.25,783.99,1046.50].forEach((f,i)=>tone(f,ch+i*0.02,0.7,"triangle",0.13));
-}
-
-/* ===== screens ===== */
-const homeScreen=document.getElementById("homeScreen");
-const quizScreen=document.getElementById("quizScreen");
-const resultScreen=document.getElementById("resultScreen");
-function show(el){[homeScreen,quizScreen,resultScreen].forEach(s=>s.classList.add("hidden"));el.classList.remove("hidden");}
-
-/* ===== round state ===== */
-let questions=[],idx=0,roundCorrect=0,locked=false,misses=[];
-let curVerb=null;       // null=総まとめ
-let curMode="choice";   // "choice" | "write"
-let timeAttack = (typeof store.timeAttack==="boolean") ? store.timeAttack : true;
-let roundStart=0, roundTime=0, timerHandle=null;
-
-function goHome(){clearInterval(timerHandle);document.body.removeAttribute("data-verb");renderHome();show(homeScreen);}
-function renderHome(){
-  document.getElementById("hTries").textContent=store.tries;
-  document.getElementById("hAns").textContent=store.answered;
-  document.getElementById("hAcc").textContent=store.answered?Math.round(store.correct/store.answered*100)+"%":"—";
-  document.getElementById("hBest").textContent=store.best===null?"—":store.best+"/10";
-  // セクションボタン内に最速クリアタイム＋ランクを表示
-  document.querySelectorAll(".sb-time").forEach(el=>{
-    const s=el.dataset.sec, t=store.bestTimes[s], rk=rankOf(t);
-    if(t==null){
-      el.innerHTML='<span class="sb-none">未記録</span>';
-    }else{
-      el.innerHTML='<span class="sb-t">'+fmtTime(t)+'</span>'+
-        '<span class="sb-rank '+(rk?'r-'+rk:'r-none')+'">'+rk+'</span>';
-    }
-  });
-  // モードボタンの状態反映
-  document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("on",b.dataset.mode===curMode));
-}
-
-function startRound(verbFilter){
-  curVerb = verbFilter || null;
-  document.body.dataset.verb = curVerb || "mix";
-  ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();
-  questions=buildRound(curVerb);
-  idx=0;roundCorrect=0;misses=[];locked=false;
-  // タイトル表示
-  document.getElementById("roundLabel").textContent =
-    (curVerb?curVerb:"総まとめ") + " ／ " + (curMode==="choice"?"選択式":"記述式");
-  show(quizScreen);render();
-  // 計測（タイムアタック有効時のみ）
-  clearInterval(timerHandle);
-  const liveEl=document.getElementById("liveTimer");
-  if(timeAttack){
-    roundStart=performance.now();
-    if(liveEl){liveEl.style.display="";liveEl.textContent="0.0秒";}
-    timerHandle=setInterval(()=>{
-      if(liveEl)liveEl.textContent=fmtTime(performance.now()-roundStart);
-    },100);
-  }else{
-    if(liveEl)liveEl.style.display="none";
-    roundStart=0;
-  }
-}
-
-function render(){
-  const q=questions[idx];
-  document.getElementById("qcount").textContent=(idx+1)+" / "+ROUND;
-  document.getElementById("fill").style.width=(idx/ROUND*100)+"%";
-  let dots="";
-  for(let i=0;i<ROUND;i++){
-    let cls = i<idx ? (questions[i]._wrong?"d-no":"d-ok") : (i===idx?"d-now":"d-todo");
-    dots+='<span class="pdot '+cls+'"></span>';
-  }
-  document.getElementById("hearts").innerHTML=dots;
-  document.getElementById("vchip").textContent=q.verb;
-  document.getElementById("prompt").innerHTML=q.sentence.replace("<BLANK>",'<span class="blank">?</span>');
-  document.getElementById("jp").textContent=q.jp;
-
-  const optsBox=document.getElementById("opts");
-  const writeBox=document.getElementById("writeBox");
-  if(curMode==="choice"){
-    optsBox.classList.remove("hidden");writeBox.classList.add("hidden");
-    optsBox.innerHTML="";
-    q.options.forEach((opt,i)=>{
-      const b=document.createElement("button");
-      b.className="opt";b.textContent=opt;b.dataset.val=opt;
-      b.setAttribute("aria-label",(i+1)+". "+opt);
-      b.addEventListener("click",()=>resolve(opt,b));
-      optsBox.appendChild(b);
-    });
-    document.getElementById("hintLine").textContent="1〜4キー または クリックで解答";
-  }else{
-    optsBox.classList.add("hidden");writeBox.classList.remove("hidden");
-    const inp=document.getElementById("writeInput");
-    inp.value="";inp.disabled=false;inp.className="write-input";
-    document.getElementById("writeBtn").disabled=false;
-    document.getElementById("hintLine").textContent="活用を入力して Enter（アクセント記号は任意）";
-    setTimeout(()=>inp.focus(),30);
-  }
-  const fb=document.getElementById("fb");fb.className="fb";fb.textContent="";
-  locked=false;
-}
-
-// アクセント・大文字・前後空白を無視して比較
-function norm(s){
-  return (s||"").trim().toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-}
-
-function resolve(val, btn){
-  if(locked)return;locked=true;
-  const q=questions[idx];
-  const correct = norm(val)===norm(q.answer);
-  q._wrong=!correct;
-  const fb=document.getElementById("fb");
-
-  if(curMode==="choice"){
-    document.querySelectorAll(".opt").forEach(b=>{
-      b.disabled=true;
-      if(b.dataset.val===q.answer)b.classList.add("correct");
-      else if(b===btn)b.classList.add("wrong");
-      else b.classList.add("dim");
-    });
-  }else{
-    const inp=document.getElementById("writeInput");
-    inp.disabled=true;document.getElementById("writeBtn").disabled=true;
-    inp.classList.add(correct?"ok":"no");
-  }
-
-  if(correct){
-    roundCorrect++;
-    fb.className="fb show ok";fb.textContent=pick(["正解","Correct","Bien","Bravo"]);
-    playCorrect();
-  }else{
-    fb.className="fb show no";
-    fb.innerHTML='正解は <span class="full">'+q.answer+'</span>';
-    misses.push({sentence:q.sentence,full:q.full,answer:q.answer,chosen:(val||"（無回答）"),verb:q.verb});
-    playWrong();
-  }
-  document.getElementById("fill").style.width=((idx+1)/ROUND*100)+"%";
-  setTimeout(next,correct?750:1750);
-}
-
-function next(){idx++;if(idx<ROUND)render();else finishRound();}
-
-function finishRound(){
-  clearInterval(timerHandle);
-  roundTime = timeAttack ? (performance.now()-roundStart) : null;
-  store.tries++;store.answered+=ROUND;store.correct+=roundCorrect;
-  if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
-  // クリアタイム＝タイムアタック有効かつ全問正解時のみ、そのセクションのベストを更新
-  const sec = curVerb || "mix";
-  let newRecord=false;
-  if(timeAttack && roundCorrect===ROUND){
-    const prev=store.bestTimes[sec];
-    if(prev===null||roundTime<prev){store.bestTimes[sec]=roundTime;newRecord=true;}
-  }
-  save();
-  const pct=Math.round(roundCorrect/ROUND*100);
-  document.getElementById("rScore").innerHTML=roundCorrect+'<small> / '+ROUND+'</small>';
-  document.getElementById("rPct").textContent=pct+"%";
-  document.getElementById("rFace").textContent= pct===100?"◎": pct>=80?"○": pct>=50?"△":"✕";
-  document.getElementById("rMsg").textContent=
-    pct===100?"全問正解です。":
-    pct>=80 ?"よくできました。":
-    pct>=50 ?"あと少し。復習しましょう。":
-             "間違いを確認して再挑戦しましょう。";
-  // タイム＋ランク表示
-  const timeEl=document.getElementById("rTime");
-  const rankEl=document.getElementById("rRank");
-  if(!timeAttack){
-    // タイムアタック無効：タイム・ランクは表示しない
-    rankEl.className="rank-badge";rankEl.innerHTML="";
-    timeEl.innerHTML="";
-  }else if(roundCorrect===ROUND){
-    const rk=rankOf(roundTime);
-    rankEl.className="rank-badge show r-"+rk;
-    rankEl.innerHTML='<span class="rk">'+rk+'</span><span class="rk-sub">RANK</span>';
-    const best=store.bestTimes[sec];
-    timeEl.innerHTML='クリアタイム '+fmtTime(roundTime)+
-      (newRecord?' <span class="rec">★自己ベスト</span>':
-        (best!=null?' <span class="best">（ベスト '+fmtTime(best)+' / '+rankOf(best)+'）</span>':''));
-  }else{
-    rankEl.className="rank-badge";rankEl.innerHTML="";
-    timeEl.innerHTML='所要時間 '+fmtTime(roundTime)+
-      ' <span class="best">（ランク・クリアタイムは全問正解時に記録）</span>';
-  }
-  const rev=document.getElementById("review");
-  if(misses.length===0){
-    rev.innerHTML='<div class="ttl">全問正解</div>';
-  }else{
-    let h='<div class="ttl">復習</div>';
-    misses.forEach(m=>{
-      h+='<div class="rrow"><span>'+m.full+
-         ' <span style="color:var(--ink-soft)">['+m.verb+']</span></span>'+
-         '<span><span class="miss">'+m.chosen+'</span> <span class="ar">→</span> <span class="got">'+m.answer+'</span></span></div>';
-    });
-    rev.innerHTML=h;
-  }
-  show(resultScreen);
-  if(roundCorrect===ROUND){ setTimeout(playFanfare, 280); }
-}
-
-/* ===== events ===== */
-document.addEventListener("keydown",e=>{
-  if(quizScreen.classList.contains("hidden"))return;
-  if(curMode==="choice" && ["1","2","3","4"].includes(e.key)){
-    const b=document.querySelectorAll(".opt")[+e.key-1];
-    if(b&&!b.disabled)b.click();
-  }
-});
-// 動詞別＋総まとめの開始ボタン（data-verb）
-document.querySelectorAll(".start-btn").forEach(b=>{
-  b.addEventListener("click",()=>startRound(b.dataset.verb||null));
-});
-// 出題形式トグル
-document.querySelectorAll(".mode-btn").forEach(b=>{
-  b.addEventListener("click",()=>{curMode=b.dataset.mode;renderHome();});
-});
-// タイムアタック切替
-const taToggle=document.getElementById("taToggle");
-function applyTA(){
-  document.getElementById("taText").textContent = timeAttack ? "計測する" : "計測しない";
-  document.body.classList.toggle("no-ta", !timeAttack);
-}
-taToggle.checked=timeAttack;applyTA();
-taToggle.addEventListener("change",()=>{
-  timeAttack=taToggle.checked;
-  store.timeAttack=timeAttack;save();
-  applyTA();
-});
-// 記述式の解答送信
-document.getElementById("writeBtn").addEventListener("click",()=>{
-  resolve(document.getElementById("writeInput").value,null);
-});
-document.getElementById("writeInput").addEventListener("keydown",e=>{
-  if(e.key==="Enter"&&!locked)resolve(e.target.value,null);
-});
-
-document.getElementById("againBtn").addEventListener("click",()=>startRound(curVerb));
-document.getElementById("backBtn").addEventListener("click",goHome);
-document.getElementById("toHomeBtn").addEventListener("click",goHome);
-document.getElementById("resetBtn").addEventListener("click",()=>{
-  const keepTA=store.timeAttack;   // 設定は保持
-  store={tries:0,answered:0,correct:0,best:null,bestTimes:{},timeAttack:keepTA};
-  SECTIONS.forEach(s=>store.bestTimes[s]=null);save();renderHome();
-});
-
-renderHome();show(homeScreen);
+})();
 </script>
 </body>
 </html>

@@ -1,0 +1,62 @@
+:root{
+  --bg:#f6efe9; --bg-2:#efe6df;
+  --card:#fffdfb; --card-edge:#efe6dd;
+  --ink:#4a4048; --ink-soft:#8c8088; --ink-faint:#b6acb1;
+  --rule:#ece1da; --gold:#c0a06a;
+  --accent:#b48aa8; --accent-ink:#8f667f; --accent-wash:#f6eef3;
+  --shadow:rgba(150,120,135,.22);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:"Noto Sans JP",-apple-system,"Segoe UI",sans-serif;color:var(--ink);min-height:100vh;
+  background:
+    radial-gradient(900px 480px at 88% -8%, rgba(207,138,160,.16), transparent 60%),
+    radial-gradient(820px 520px at 5% 108%, rgba(146,166,207,.14), transparent 58%),
+    linear-gradient(170deg, var(--bg), var(--bg-2));
+  background-attachment:fixed;display:flex;justify-content:center;padding:42px 18px 76px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{width:100%;max-width:530px;}
+.crown{margin-bottom:24px;text-align:center;}
+.eyebrow{font-size:10.5px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.crown h1{font-family:"Cormorant Garamond",serif;font-weight:600;margin:0;font-size:42px;line-height:1.04;letter-spacing:.5px;color:#5a4e57;}
+.panel{background:var(--card);border:1px solid var(--card-edge);border-radius:26px;
+  box-shadow:0 30px 70px -34px var(--shadow), 0 1px 0 rgba(255,255,255,.8) inset;padding:34px 30px;position:relative;}
+.hello{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:600;margin:0 0 4px;color:var(--ink);}
+.hello small{display:block;font-family:"Noto Sans JP";font-size:12.5px;color:var(--ink-soft);margin-top:8px;letter-spacing:.3px;font-weight:400;}
+.hidden{display:none!important;}
+.note{margin-top:10px;color:var(--ink-faint);font-size:12px;line-height:1.7;}
+.warn{color:#a2453f;}
+.link{background:none;border:none;cursor:pointer;color:var(--ink-faint);font:inherit;font-size:12px;text-decoration:underline;
+  text-underline-offset:3px;padding:0;}
+.link:hover{color:var(--accent-ink);}
+
+/* ログイン */
+.idrow{display:flex;gap:8px;margin-top:22px;}
+.idin{flex:1;min-width:0;padding:12px 14px;border:1px solid rgba(60,40,40,.2);border-radius:12px;background:#fff;
+  font-family:"Cormorant Garamond",serif;font-size:26px;letter-spacing:6px;text-transform:uppercase;color:var(--ink);}
+.idin::placeholder{letter-spacing:1px;font-size:13px;font-family:"Noto Sans JP";text-transform:none;color:var(--ink-faint);}
+.idbtn{padding:0 22px;border:1px solid var(--accent-ink);border-radius:12px;background:var(--accent-ink);color:#fff;
+  font-family:"Noto Sans JP";font-size:14px;cursor:pointer;}
+.idbtn:disabled{opacity:.5;cursor:default;}
+
+/* メニュー */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+.streak{font-weight:500;color:var(--accent-ink);font-size:13px;white-space:nowrap;}
+.streak small{font-weight:400;color:var(--ink-faint);}
+.menu{display:flex;flex-direction:column;gap:12px;margin-top:22px;}
+.card{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;padding:18px 18px;
+  border:1px solid var(--rule);border-radius:18px;background:#fdf9f6;transition:transform .15s,box-shadow .15s,border-color .15s;}
+.card:hover{transform:translateY(-1px);border-color:var(--accent);box-shadow:0 12px 26px -18px var(--shadow);}
+.card .ico{flex:none;width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-family:"Cormorant Garamond",serif;font-style:italic;font-size:22px;font-weight:600;color:var(--c);background:var(--w);}
+.card .tx{flex:1;min-width:0;}
+.card .ti{font-size:15.5px;font-weight:500;color:var(--ink);}
+.card .de{font-size:11.5px;color:var(--ink-soft);margin-top:3px;line-height:1.5;}
+.card .st{flex:none;text-align:right;font-family:"Cormorant Garamond",serif;font-size:15px;color:var(--ink-soft);}
+.card .st small{display:block;font-family:"Noto Sans JP";font-size:10px;color:var(--ink-faint);}
+.card .soon{flex:none;font-size:10.5px;color:var(--ink-faint);border:1px solid var(--rule);border-radius:20px;padding:3px 10px;letter-spacing:1px;}
+.card.conj{--c:#b16880;--w:#faeef2;}
+.card.grammar{--c:#6c9a7f;--w:#eef5f0;}
+.card.talk{--c:#7186b4;--w:#eef1f8;}
