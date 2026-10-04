@@ -4,7 +4,8 @@
   var CFG = window.QUIZ_CONFIG || {};
   var SYNC_ON = !!CFG.SCRIPT_URL;
   var LOGIN_KEY = "conjQuizLogin";
-  var RE_ID = /^[A-Z0-9]{6}$/;
+  var RE_ID = /^[A-Z0-9_-]{3,20}$/;
+  function normId(s) { return String(s == null ? "" : s).normalize("NFKC").replace(/\s+/g, "").toUpperCase(); }
   var APPS = ["conj", "grammar", "talk"];
   var user = null;
   var flushing = false;
@@ -46,7 +47,14 @@
 
   /* ---- サーバー記録のキャッシュ ---- */
   function cached() { return user ? jget("conjQuizServer_" + user.id, null) : null; }
+  // 旧版サーバー（教材別でない集計）の応答も受け付ける
+  function fixStats(st) {
+    if (!st) return st;
+    if (!st.apps) st = { days: st.days || [], apps: { conj: st } };
+    return st;
+  }
   function setCached(stats) {
+    stats = fixStats(stats);
     if (!user || !stats) return;
     lsSet("conjQuizServer_" + user.id, JSON.stringify(stats));
     mergeDays(stats.days);
@@ -110,12 +118,13 @@
 
   /* ---- ログイン／ログアウト ---- */
   async function login(raw) {
-    var id = String(raw || "").trim().toUpperCase();
-    if (!RE_ID.test(id)) return { ok: false, error: "format" };
+    var id = normId(raw);
+    if (!RE_ID.test(id)) return { ok: false, error: "format", id: id };
     var res;
-    try { res = await call(id, "sync"); } catch (e) { return { ok: false, error: "network" }; }
-    if (!res.ok) return { ok: false, error: res.error === "locked" ? "locked" : (res.error === "auth" ? "auth" : "server"), detail: res.error };
-    if (!res.stats || !res.stats.apps) return { ok: false, error: "server", detail: "old_version" };
+    try { res = await call(id, "sync"); } catch (e) { return { ok: false, error: "network", id: id, detail: String(e && e.message || e) }; }
+    if (!res.ok) return { ok: false, id: id, version: res.version || "旧版",
+      error: res.error === "locked" ? "locked" : (res.error === "auth" ? "auth" : "server"),
+      detail: (res.error || "") + (res.message ? ": " + res.message : "") };
     user = { id: id, name: (res.user && res.user.name) || id };
     lsSet(LOGIN_KEY, JSON.stringify(user));
     setCached(res.stats);

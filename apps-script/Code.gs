@@ -16,10 +16,12 @@
  */
 
 // ===== 以下は通常変更しない =====
+const VERSION = '2026-10-04c';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計' };
 const ID_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';   // 0/O/1/I/L など紛らわしい文字を除く
-const ID_LEN = 6;
+const ID_LEN = 6;             // 自動発行するIDの長さ
+const ID_RE = /^[A-Z0-9_-]{3,20}$/;   // 受け付けるIDの形（手入力のIDも使えるよう、3〜20文字の英数字と - _）
 const MAX_FAILS = 100;        // 10分間にID照合の失敗がこの回数を超えたら一時停止（総当たり対策）
 const SECTION_LABEL = { 'être': 'être', aller: 'aller', avoir: 'avoir', faire: 'faire', mix: '総まとめ' };
 const MODE_LABEL = { choice: '選択式', write: '記述式' };
@@ -34,7 +36,7 @@ const SUMMARY_ROWS = 60;   // 集計の対象人数（名簿の2〜61行目）
 
 // ===== Webアプリの入口 =====
 function doGet() {
-  return json_({ ok: true, service: 'conjugation-quiz' });   // 動作確認用（URLをブラウザで開くと表示）
+  return json_({ ok: true, service: 'conjugation-quiz', version: VERSION });   // 動作確認用（URLをブラウザで開くと表示）
 }
 
 function doPost(e) {
@@ -43,10 +45,16 @@ function doPost(e) {
     const req = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     out = handle_(req);
   } catch (err) {
-    out = { ok: false, error: 'server' };
+    out = { ok: false, error: 'server', message: String(err && err.message || err).slice(0, 200) };
     console.error(err && err.stack || err);
   }
+  out.version = VERSION;
   return json_(out);
+}
+
+// IDの表記ゆれをそろえる（全角→半角、空白除去、大文字化）
+function normId_(s) {
+  return String(s == null ? '' : s).normalize('NFKC').replace(/\s+/g, '').toUpperCase();
 }
 
 function json_(obj) {
@@ -58,8 +66,8 @@ function handle_(req) {
   const cache = CacheService.getScriptCache();
   if (Number(cache.get('fails') || 0) >= MAX_FAILS) return { ok: false, error: 'locked' };
 
-  const id = String(req.id || '').trim().toUpperCase();
-  const name = /^[A-Z0-9]{6}$/.test(id) ? lookupRoster_(ss, id) : null;   // 名簿にいなければ null
+  const id = normId_(req.id);
+  const name = ID_RE.test(id) ? lookupRoster_(ss, id) : null;   // 名簿にいなければ null
   if (name === null) {
     cache.put('fails', String(Number(cache.get('fails') || 0) + 1), 600);
     return { ok: false, error: 'auth' };
@@ -104,7 +112,7 @@ function lookupRoster_(ss, id) {
   if (!sh || sh.getLastRow() < 2) return null;
   const vals = sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues();
   for (const row of vals) {
-    if (String(row[0]).trim().toUpperCase() === id) return String(row[1] || '').trim();
+    if (normId_(row[0]) === id) return String(row[1] || '').trim();
   }
   return null;
 }
@@ -207,7 +215,7 @@ function statsFor_(ss, id) {
   const vals = sh.getRange(2, 1, sh.getLastRow() - 1, N_COLS).getValues();
   const days = {};
   for (const r of vals) {
-    if (String(r[COL.id - 1]).trim().toUpperCase() !== id) continue;
+    if (normId_(r[COL.id - 1]) !== id) continue;
     const d = r[COL.date - 1];
     const dayStr = d instanceof Date ? Utilities.formatDate(d, TZ, 'yyyy-MM-dd') : String(d);
     if (dayStr) days[dayStr] = true;
@@ -239,6 +247,9 @@ function onOpen() {
   SpreadsheetApp.getUi().createMenu('活用クイズ')
     .addItem('初期設定（シート作成）', 'setup')
     .addItem('名簿の空欄にIDを発行', 'issueIds')
+    .addSeparator()
+    .addItem('ログインテスト（IDを確かめる）', 'testLogin')
+    .addItem('ログイン制限を解除', 'clearLock')
     .addToUi();
 }
 
@@ -271,11 +282,11 @@ function issueIds() {
   const rng = sh.getRange(2, 1, last - 1, 2);
   const vals = rng.getValues();
   const used = {};
-  vals.forEach(function (r) { const x = String(r[0]).trim().toUpperCase(); if (x) used[x] = true; });
+  vals.forEach(function (r) { const x = normId_(r[0]); if (x) used[x] = true; });
   let n = 0;
   for (const r of vals) {
     const hasId = String(r[0]).trim() !== '';
-    if (hasId) { r[0] = String(r[0]).trim().toUpperCase(); continue; }
+    if (hasId) { r[0] = normId_(r[0]); continue; }
     if (String(r[1]).trim() === '') continue;
     let id;
     do { id = randomId_(); } while (used[id]);
@@ -308,7 +319,7 @@ function buildSummary_(ss) {
       return guard('IF(COUNTIFS(' + cond + ')=0,"",MINIFS(' + R + 'J:J,' + cond + '))');
     };
     rows.push([
-      "=IF('名簿'!A" + r + '="","",UPPER(TRIM(\'名簿\'!A' + r + ')))',
+      "=IF('名簿'!A" + r + '="","",UPPER(SUBSTITUTE(ASC(TRIM(\'名簿\'!A' + r + '))," ","")))',
       guard("IF('名簿'!B" + r + "<>\"\",'名簿'!B" + r + ',IFERROR(INDEX(' + R + 'D:D,MATCH(' + a + ',' + R + 'C:C,0)),""))'),
       guard('COUNTIF(' + R + 'C:C,' + a + ')'),
       guard('IFERROR(COUNTUNIQUE(FILTER(' + R + 'B:B,' + R + 'C:C=' + a + ')),0)'),
@@ -323,4 +334,55 @@ function buildSummary_(ss) {
   sh.getRange(2, 1, SUMMARY_ROWS, headers.length).setFormulas(rows);
   sh.getRange(2, 8, SUMMARY_ROWS, 1).setNumberFormat('0%');
   sh.getRange(2, 12, SUMMARY_ROWS, 5).setNumberFormat('0.0');
+}
+
+// ===== 名簿の入力補助・点検 =====
+// 名簿のA列にIDを手入力したら、自動で半角・大文字にそろえる
+function onEdit(e) {
+  try {
+    const rng = e && e.range;
+    if (!rng || rng.getSheet().getName() !== SHEET.roster || rng.getColumn() !== 1 || rng.getRow() < 2) return;
+    if (rng.getNumRows() !== 1 || rng.getNumColumns() !== 1) return;
+    const v = rng.getValue();
+    const n = normId_(v);
+    if (v !== '' && String(v) !== n) { rng.setNumberFormat('@'); rng.setValue(n); }
+  } catch (err) {}
+}
+
+// メニューから：IDを入れると、ログインできるかどうかと理由を表示する
+function testLogin() {
+  const ui = SpreadsheetApp.getUi();
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const r = ui.prompt('ログインテスト', '試したいIDを入力してください', ui.ButtonSet.OK_CANCEL);
+  if (r.getSelectedButton() !== ui.Button.OK) return;
+  const raw = r.getResponseText();
+  const id = normId_(raw);
+  const lines = ['入力: ' + raw, '照合に使う形: ' + id];
+  const sh = ss.getSheetByName(SHEET.roster);
+  if (!sh) {
+    lines.push('×「' + SHEET.roster + '」シートがありません。メニューの「初期設定」を実行してください。');
+  } else if (!ID_RE.test(id)) {
+    lines.push('× IDの形が不正です（英数字と - _ の3〜20文字）。');
+  } else {
+    const name = lookupRoster_(ss, id);
+    if (name !== null) {
+      lines.push('○ 名簿に見つかりました' + (name ? '（氏名: ' + name + '）' : '') + '。');
+      lines.push('このIDでログインできるはずです。サイトでだめなら、デプロイが古い可能性があります。');
+      lines.push('（ウェブアプリのURLを開いて version が ' + VERSION + ' になっているか確認）');
+    } else {
+      lines.push('× 名簿に見つかりません。');
+      const last = sh.getLastRow();
+      const ids = last >= 2 ? sh.getRange(2, 1, last - 1, 1).getValues().map(function (x) { return normId_(x[0]); }).filter(String) : [];
+      lines.push('名簿のID（' + ids.length + '件）: ' + (ids.slice(0, 30).join(', ') || 'なし'));
+    }
+  }
+  const fails = Number(CacheService.getScriptCache().get('fails') || 0);
+  if (fails >= MAX_FAILS) lines.push('※ 失敗が多すぎて一時停止中です。「ログイン制限を解除」を実行してください。');
+  lines.push('コードの版: ' + VERSION);
+  ui.alert('ログインテスト', lines.join('\n'), ui.ButtonSet.OK);
+}
+
+function clearLock() {
+  CacheService.getScriptCache().remove('fails');
+  SpreadsheetApp.getActiveSpreadsheet().toast('ログイン制限を解除しました。');
 }

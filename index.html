@@ -8,8 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="base.css">
 <title>フランス語 練習</title>
-<script src="config.js"></script>
-<script src="common.js"></script>
+<script src="config.js?v=3"></script>
+<script src="common.js?v=3"></script>
 </head>
 <body>
 <div class="wrap">
@@ -20,10 +20,10 @@
 
   <!-- ログイン -->
   <div class="panel hidden" id="loginPanel">
-    <p class="hello">ログイン<small>先生から渡された6文字のIDを入力してください。一度入力すると、この端末では次回から入力しなくて済みます。</small></p>
+    <p class="hello">ログイン<small>先生から渡されたIDを入力してください。一度入力すると、この端末では次回から入力しなくて済みます。</small></p>
     <div class="idrow">
-      <input type="text" id="idInput" class="idin" maxlength="6" autocomplete="off" autocapitalize="characters"
-        spellcheck="false" placeholder="学生ID（6文字）">
+      <input type="text" id="idInput" class="idin" maxlength="20" autocomplete="off" autocapitalize="characters"
+        spellcheck="false" placeholder="学生ID">
       <button class="idbtn" id="idBtn">ログイン</button>
     </div>
     <div class="note warn hidden" id="loginNote"></div>
@@ -92,11 +92,12 @@
     var r=await Q.login($("idInput").value);
     btn.disabled=false;
     if(r.ok){$("idInput").value="";showMenu();return;}
-    note(r.error==="format"?"IDは英数字6文字です。":
-         r.error==="locked"?"試行回数が多すぎます。しばらくしてからやり直してください。":
-         r.error==="network"?"通信できませんでした。通信環境を確認してください。":
-         r.error==="server"?"サーバー側の設定に問題があります（"+(r.detail||"")+"）。先生に連絡してください。":
-         "IDが見つかりません。入力を確認してください。");
+    var v=" ［サーバー版: "+(r.version||"不明")+"］";
+    note(r.error==="format"?"IDは英数字（3〜20文字）で入力してください。":
+         r.error==="locked"?"試行回数が多すぎます。しばらくしてからやり直してください。"+v:
+         r.error==="network"?"サーバーに接続できませんでした（"+(r.detail||"")+"）。通信環境、またはウェブアプリの公開設定（アクセス: 全員）を確認してください。":
+         r.error==="server"?"サーバー側でエラーが出ました（"+(r.detail||"")+"）。"+v:
+         "「"+r.id+"」は名簿に見つかりません。入力を確認してください。"+v);
   }
   $("idBtn").addEventListener("click",doLogin);
   $("idInput").addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});
