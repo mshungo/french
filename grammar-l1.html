@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文法練習 Leçon 1 — 名詞と冠詞</title>
+<script src="config.js?v=4"></script>
+<script src="common.js?v=4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="grammar.css?v=1">
+<script src="sound.js?v=1"></script>
+<script src="grammar.js?v=1"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== Leçon 1：名詞の性・数、冠詞、C'est / Il y a / Voici ===== */
+window.LESSON={no:1,title:"名詞と冠詞",sub:"genre · nombre · articles",
+  lead:"名詞の性と数、3種類の冠詞、C'est / Il y a / Voici・Voilà を練習します。",
+  sections:[
+  {k:"n",t:"名詞の性と数",d:"Grammaire 1・2 ／ En plus 1・2",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
+   memo:'<p>すべての名詞は男性か女性。女性形はふつう<b>男性形＋e</b>、複数形はふつう<b>単数形＋s</b>（s は読まない）。</p>'+
+   '<p>-s, -x, -z で終わる名詞は複数でも同じ形：<span class="fr">le prix → les prix</span></p>'+
+   '<p>En plus：<span class="fr">-eau → -eaux</span>、<span class="fr">-eu → -eux</span>、<span class="fr">-al → -aux</span>、<span class="fr">-ail → -aux</span>（festival, détail などは例外）、<span class="fr">œil → yeux</span></p>'+
+   '<p>女性形の例外：<span class="fr">musicien → musicienne</span>、<span class="fr">-er → -ère</span>、<span class="fr">-eur → -euse</span>、<span class="fr">-teur → -trice</span></p>'},
+  {k:"ind",t:"不定冠詞",d:"un / une / des（Grammaire 3）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+   memo:'<table><tr><th>男性単数</th><th>女性単数</th><th>複数</th></tr><tr><td class="fr">un</td><td class="fr">une</td><td class="fr">des</td></tr></table>'+
+   '<p>数えられるもの、はじめて話題に出るものに使う。「ひとつの」「いくつかの」。</p>'},
+  {k:"part",t:"部分冠詞",d:"du / de la / de l'（Grammaire 3）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
+   memo:'<table><tr><th>男性</th><th>女性</th><th>母音・無音のhの前</th></tr><tr><td class="fr">du</td><td class="fr">de la</td><td class="fr">de l\'</td></tr></table>'+
+   '<p>数えられないもの（液体・食べ物の量・抽象的なもの）の「いくらか」。</p>'+
+   '<p>使い分け：<span class="fr">J\'aime le café.</span>（～というものが好き＝定冠詞）／<span class="fr">Je bois du café.</span>（いくらかの量＝部分冠詞）／<span class="fr">Un café, s\'il vous plaît.</span>（1杯＝不定冠詞）</p>'},
+  {k:"def",t:"定冠詞と縮約",d:"le / la / l' / les ／ au, du…（Grammaire 3 ／ En plus 3）",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8",
+   memo:'<table><tr><th>男性単数</th><th>女性単数</th><th>母音・無音のhの前</th><th>複数</th></tr><tr><td class="fr">le</td><td class="fr">la</td><td class="fr">l\'</td><td class="fr">les</td></tr></table>'+
+   '<p>特定のもの（その・あの）、または総称（～というもの）。国名にもつく：<span class="fr">le Japon, la France</span></p>'+
+   '<p>縮約：<span class="fr">à + le → au</span>、<span class="fr">à + les → aux</span>、<span class="fr">de + le → du</span>、<span class="fr">de + les → des</span>（à la, à l\', de la, de l\' はそのまま）</p>'},
+  {k:"pres",t:"C'est / Il y a / Voici",d:"提示の表現と数 0〜10（Grammaire 4）",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
+   memo:'<p><span class="fr">C\'est</span>＋単数／<span class="fr">Ce sont</span>＋複数：「それは～だ」</p>'+
+   '<p><span class="fr">Il y a</span>＋名詞：「～がある、いる」（単数・複数とも同じ形）</p>'+
+   '<p><span class="fr">Voici</span>（近く・はじめて出るもの）／<span class="fr">Voilà</span>（離れたもの・すでに出たもの）：「ここに／そこに～がある」</p>'+
+   '<p>数：zéro, un/une, deux, trois, quatre, cinq, six, sept, huit, neuf, dix</p>'}
+]};
+
+/* ---------- 名詞の性と数 ---------- */
+W("n","le livre → les ___","livres","複数形は原則として単数形＋s。s は発音しない。");
+W("n","la fleur → les ___","fleurs","複数形は単数形＋s。");
+W("n","le prix → les ___","prix","-s, -x, -z で終わる名詞は、複数形でも形が変わらない。");
+W("n","le bras → les ___","bras","-s で終わる名詞は複数形でも同じ形。");
+W("n","le nez → les ___","nez","-z で終わる名詞は複数形でも同じ形。");
+W("n","le gâteau → les ___","gâteaux","-eau で終わる名詞は -eaux（En plus 2）。");
+W("n","le bateau → les ___","bateaux","-eau → -eaux。");
+W("n","le jeu → les ___","jeux","-eu で終わる名詞は -eux（En plus 2）。");
+W("n","le journal → les ___","journaux","-al で終わる名詞は -aux（En plus 2）。");
+W("n","l'hôpital → les ___","hôpitaux","-al → -aux。");
+C("n","le festival → les ___","festivals",["festivals","festivaux","festivales"],"-al で終わっても festival は例外で、ふつうに -s をつける。");
+W("n","le travail → les ___","travaux","-ail → -aux（détail → détails などの例外もある）。");
+C("n","l'œil → les ___","yeux",["yeux","œils","œux"],"œil（目）の複数形は yeux。特殊な形なのでそのまま覚える。");
+W("n","un étudiant → une ___","étudiante","女性形は原則として男性形＋e。");
+W("n","un ami → une ___","amie","女性形は男性形＋e。発音は同じ。");
+C("n","un élève → une ___","élève",["élève","élèvee","élèveuse"],"-e で終わる名詞は男女同形。un élève / une élève のように冠詞で区別する。");
+C("n","un journaliste → une ___","journaliste",["journaliste","journalistee","journalistrice"],"-e で終わる名詞は男女同形。");
+W("n","un musicien → une ___","musicienne","語末の子音字を重ねて -e（-ien → -ienne）。En plus 1。");
+W("n","un boulanger → une ___","boulangère","-er で終わるものは -ère（アクセント記号がつく）。");
+W("n","un vendeur → une ___","vendeuse","-eur で終わるものは -euse。");
+C("n","un acteur → une ___","actrice",["actrice","acteuse","acteure"],"-teur で終わるものは -trice になることが多い（acteur → actrice）。");
+C("n","un prince → une ___","princesse",["princesse","princie","princienne"],"prince → princesse は特別な女性形。");
+
+/* ---------- 不定冠詞 ---------- */
+const IND=["un","une","des"];
+C("ind","___ vélo","un",IND,"vélo（自転車）は男性名詞 → un。",{ja:"1台の自転車"});
+C("ind","___ clé","une",IND,"clé（鍵）は女性名詞 → une。",{ja:"1本の鍵"});
+C("ind","___ robe","une",IND,"robe（ドレス）は女性名詞。",{ja:"1着のドレス"});
+C("ind","___ sac","un",IND,"sac（かばん）は男性名詞。",{ja:"1つのかばん"});
+C("ind","___ enfants","des",IND,"複数の名詞には、男性・女性に関係なく des。",{ja:"何人かの子ども"});
+C("ind","___ idée","une",IND,"idée は女性名詞。不定冠詞は母音の前でも形が変わらない（une idée）。",{ja:"ひとつの考え"});
+C("ind","___ hôtel","un",IND,"hôtel は男性名詞。無音の h の前でも un のまま。",{ja:"1軒のホテル"});
+C("ind","___ musée","un",IND,"musée は -ée で終わるが男性名詞。語尾だけで判断しないこと。",{ja:"ひとつの美術館"});
+C("ind","___ problème","un",IND,"problème は -e で終わるが男性名詞。",{ja:"ひとつの問題"});
+C("ind","___ chanson","une",IND,"chanson は女性名詞（-son, -tion で終わる名詞は女性が多い）。",{ja:"1曲の歌"});
+C("ind","___ pays","un",IND,"pays（国）は単数でも -s で終わる男性名詞。",{ja:"ひとつの国"});
+C("ind","___ lunettes","des",IND,"lunettes（めがね）はいつも複数形で使う → des。",{ja:"めがね"});
+C("ind","___ plage","une",IND,"plage（浜辺）は女性名詞。",{ja:"ひとつの浜辺"});
+C("ind","___ arbres","des",IND,"複数形 → des。",{ja:"何本かの木"});
+C("ind","___ église","une",IND,"église（教会）は女性名詞。",{ja:"ひとつの教会"});
+C("ind","___ dictionnaire","un",IND,"dictionnaire（辞書）は男性名詞。",{ja:"1冊の辞書"});
+T("ind","複数形に（冠詞も変える）","un crayon",["des crayons"],"un → des、名詞に -s。");
+T("ind","複数形に（冠詞も変える）","une chaise",["des chaises"],"une → des、名詞に -s。");
+T("ind","単数形に（冠詞も変える）","des voix",["une voix"],"voix（声）は女性名詞で、-x で終わるので単数も同じ形。");
+T("ind","単数形に（冠詞も変える）","des bus",["un bus"],"bus は男性名詞。-s で終わるので単数も同じ形。");
+
+/* ---------- 部分冠詞 ---------- */
+const PART=["du","de la","de l'"];
+C("part","Je bois ___ lait le matin.","du",PART,"lait（牛乳）は男性名詞・数えられない → du。",{ja:"朝は牛乳を飲む。"});
+C("part","Elle mange ___ soupe.","de la",PART,"soupe は女性名詞・数えられない → de la。",{ja:"彼女はスープを食べる。"});
+C("part","Tu veux ___ eau ?","de l'",PART,"eau（水）は母音で始まる → de l'。",{ja:"お水いる？"});
+C("part","Nous achetons ___ farine.","de la",PART,"farine（小麦粉）は女性名詞 → de la。",{ja:"私たちは小麦粉を買う。"});
+C("part","Il mange ___ riz.","du",PART,"riz（米）は男性名詞 → du。",{ja:"彼はごはんを食べる。"});
+C("part","J'ai ___ argent dans mon sac.","de l'",PART,"argent（お金）は母音で始まる → de l'。",{ja:"かばんにお金がある。"});
+C("part","Tu as ___ chance !","de la",PART,"chance（運）は女性名詞。抽象的なものにも部分冠詞を使う。",{ja:"きみは運がいいね！"});
+C("part","Elle a ___ courage.","du",PART,"courage（勇気）は男性名詞・抽象名詞 → du。",{ja:"彼女には勇気がある。"});
+C("part","Je prends ___ huile d'olive.","de l'",PART,"huile（油）は無音の h で始まる女性名詞 → de l'。",{ja:"オリーブオイルを使う。"});
+C("part","Il y a ___ vent aujourd'hui.","du",PART,"vent（風）は男性名詞 → du。",{ja:"今日は風がある。"});
+C("part","Vous avez ___ patience.","de la",PART,"patience（忍耐）は女性名詞 → de la。",{ja:"あなたは忍耐強い。"});
+C("part","On achète ___ fromage ?","du",PART,"fromage（チーズ）は男性名詞。量としてのチーズ → du。",{ja:"チーズを買う？"});
+C("part","J'aime ___ thé vert.","le",["le","du","un"],"aimer（好きだ）のあとは総称の定冠詞。「緑茶というもの」が好き。",{ja:"緑茶が好きだ。"});
+C("part","Je bois ___ thé vert.","du",["du","le","un"],"飲む量は数えない → 部分冠詞 du。",{ja:"緑茶を飲む。"});
+C("part","Garçon, ___ bière, s'il vous plaît !","une",["une","de la","la"],"注文で「1杯」と数えるときは不定冠詞。",{ja:"ビールを1杯ください！"});
+C("part","Elle déteste ___ poisson.","le",["le","du","un"],"détester（大嫌いだ）も好き嫌いの動詞 → 総称の定冠詞。",{ja:"彼女は魚が大嫌いだ。"});
+C("part","Ce soir, on mange ___ poisson.","du",["du","le","un"],"食べる量（いくらかの魚）→ 部分冠詞。",{ja:"今夜は魚を食べる。"});
+
+/* ---------- 定冠詞と縮約 ---------- */
+const DEF=["le","la","l'","les"];
+C("def","___ Japon","le",DEF,"国名にも定冠詞がつく。Japon は男性。",{ja:"日本"});
+C("def","___ France","la",DEF,"France は女性（-e で終わる国名は女性が多い）。",{ja:"フランス"});
+C("def","___ États-Unis","les",DEF,"États-Unis は複数形の国名 → les。",{ja:"アメリカ合衆国"});
+C("def","___ école","l'",DEF,"母音で始まる単数名詞の前では le / la → l'。",{ja:"その学校"});
+C("def","___ hôtel","l'",DEF,"無音の h の前でも l'。",{ja:"そのホテル"});
+C("def","___ soleil","le",DEF,"soleil（太陽）は男性名詞。ひとつしかないものには定冠詞。",{ja:"太陽"});
+C("def","___ lune","la",DEF,"lune（月）は女性名詞。",{ja:"月"});
+C("def","___ université","l'",DEF,"université は母音で始まる → l'。",{ja:"その大学"});
+C("def","___ amis de Paul","les",DEF,"特定の複数のもの → les。",{ja:"ポールの友人たち"});
+C("def","J'aime ___ musique.","la",DEF,"総称「音楽というもの」→ 定冠詞。musique は女性。",{ja:"音楽が好きだ。"});
+C("def","Il adore ___ chats.","les",DEF,"数えられるものの総称は複数の les。",{ja:"彼は猫が大好きだ。"});
+const AU=["au","à la","à l'","aux"],DU=["du","de la","de l'","des"];
+C("def","Je vais ___ cinéma.（à + le）","au",AU,"à + le → au（縮約）。",{ja:"映画館に行く。"});
+C("def","Elle habite ___ États-Unis.（à + les）","aux",AU,"à + les → aux。",{ja:"彼女はアメリカに住んでいる。"});
+C("def","Nous sommes ___ gare.（à + la）","à la",AU,"à + la は縮約しない。",{ja:"私たちは駅にいる。"});
+C("def","Il est ___ hôpital.（à + l'）","à l'",AU,"à + l' も縮約しない。",{ja:"彼は病院にいる。"});
+C("def","un gâteau ___ chocolat（à + le）","au",AU,"à + le → au。「～入りの、～味の」の à。",{ja:"チョコレートケーキ"});
+C("def","le sac ___ professeur（de + le）","du",DU,"de + le → du。",{ja:"先生のかばん"});
+C("def","les livres ___ étudiants（de + les）","des",DU,"de + les → des。",{ja:"学生たちの本"});
+C("def","la porte ___ maison（de + la）","de la",DU,"de + la は縮約しない。",{ja:"家のドア"});
+C("def","la clé ___ hôtel（de + l'）","de l'",DU,"de + l' も縮約しない。",{ja:"ホテルの鍵"});
+C("def","la fin ___ film（de + le）","du",DU,"de + le → du。",{ja:"映画の終わり"});
+C("def","Il parle ___ enfants.（à + les）","aux",AU,"à + les → aux。",{ja:"彼は子どもたちに話す。"});
+
+/* ---------- C'est / Il y a / Voici ---------- */
+const CS=["C'est","Ce sont"];
+C("pres","___ un cadeau pour toi.","C'est",CS,"単数名詞 → C'est。",{ja:"これはきみへのプレゼントだよ。"});
+C("pres","___ des amis de Léa.","Ce sont",CS,"複数名詞 → Ce sont。",{ja:"彼らはレアの友人たちです。"});
+C("pres","___ les clés de Marc.","Ce sont",CS,"複数名詞 → Ce sont。",{ja:"それはマルクの鍵です。"});
+C("pres","___ la voiture de mon père.","C'est",CS,"単数名詞 → C'est。",{ja:"それは父の車です。"});
+C("pres","Qu'est-ce que c'est ? — C'est ___ stylo.","un",["un","le","du"],"はじめて話題に出る、数えられるもの → 不定冠詞。",{ja:"これは何？ ― ペンだよ。"});
+C("pres","C'est ___ stylo de Julie.","le",["le","un","du"],"「ジュリーの」と特定されている → 定冠詞。",{ja:"それはジュリーのペンです。"});
+C("pres","Qu'est-ce que c'est ? — C'est ___ musée.","un",["un","le","la"],"はじめて出てくる → 不定冠詞。musée は男性名詞。",{ja:"あれは何？ ― 美術館だよ。"});
+C("pres","C'est ___ musée d'Orsay.","le",["le","un","la"],"固有の名前で特定されている → 定冠詞。",{ja:"それはオルセー美術館です。"});
+C("pres","___ un chat sous la table.","Il y a",["Il y a","C'est","Voilà"],"「～がある、いる」は Il y a。",{ja:"テーブルの下に猫がいる。"});
+C("pres","___ des étudiants dans la salle.","Il y a",["Il y a","Ce sont","Il y sont"],"Il y a は単数でも複数でも同じ形。",{ja:"教室に学生たちがいる。"});
+C("pres","（紹介して）___ Anne, ma sœur.","Voici",["Voici","Il y a","Ce sont"],"人を紹介するとき「こちらが～です」は Voici。",{ja:"こちらが姉のアンです。"});
+C("pres","Ah, ___ le bus !","voilà",["voilà","il y a","c'est un"],"「ほら、～だ」と離れたもの・待っていたものを示すときは voilà。",{ja:"あ、ほらバスが来た！"});
+T("pres","複数形の文に書きかえる","C'est une photo de Lyon.",["Ce sont des photos de Lyon."],"C'est → Ce sont、une → des、photo → photos。");
+T("pres","複数形の文に書きかえる","Il y a un chat dans le jardin.",["Il y a des chats dans le jardin."],"Il y a は複数でもそのまま。un → des。");
+T("pres","複数形の文に書きかえる","C'est la sœur de Marc.",["Ce sont les sœurs de Marc."],"C'est → Ce sont、la → les。");
+T("pres","複数形の文に書きかえる","Voici une lettre pour vous.",["Voici des lettres pour vous."],"Voici は複数でもそのまま。une → des。");
+B("pres","テーブルの上にパンがある。","Il y a du pain sur la table.",["de","le"],"量としてのパン → 部分冠詞 du。「～の上に」は sur。");
+B("pres","これはジュリーの自転車です。","C'est le vélo de Julie.",["un","Ce"],"特定されたもの → 定冠詞 le。",{cap:false});
+B("pres","それらは駅の写真です。","Ce sont des photos de la gare.",["C'est","du"],"複数 → Ce sont。de + la は縮約しない。");
+B("pres","ほら、雨が降ってきた。","Voilà la pluie !",["Il","y","a"],"「ほら～だ」は Voilà。");
+B("pres","冷蔵庫に卵がいくつかある。","Il y a des œufs dans le frigo.",["du","les"],"数えられるものの「いくつか」→ des。");
+C("pres","7 は？","sept",["sept","six","huit","neuf"],"sept の p は発音しない［sɛt］。");
+C("pres","9 は？","neuf",["neuf","nef","noeuf","dix"],"neuf［nœf］。");
+C("pres","« quatre » はいくつ？","4",["4","3","5","14"],"quatre＝4。",{cw:false});
+C("pres","« six » はいくつ？","6",["6","7","16","5"],"six＝6。語末の x は［s］で読む（単独のとき）。",{cw:false});
+W("pres","3 ＝ ___","trois","trois［trwa］。s は読まない。");
+W("pres","10 ＝ ___","dix","dix［dis］。");
+</script>
+</body>
+</html>

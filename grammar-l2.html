@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文法練習 Leçon 2 — 主語・動詞・限定詞</title>
+<script src="config.js?v=4"></script>
+<script src="common.js?v=4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="grammar.css?v=1">
+<script src="sound.js?v=1"></script>
+<script src="grammar.js?v=1"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== Leçon 2：主語人称代名詞、-er動詞、être / avoir、指示形容詞、所有形容詞 ===== */
+window.LESSON={no:2,title:"主語・動詞・限定詞",sub:"pronoms · verbes en -er · être · avoir",
+  lead:"主語人称代名詞、-er動詞と être・avoir の現在形、「この」「私の」などを練習します。",
+  sections:[
+  {k:"pro",t:"主語人称代名詞",d:"je, tu, il… / on（Grammaire 1 ／ En plus 1）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
+   memo:'<table><tr><th></th><th>単数</th><th>複数</th></tr><tr><td>1人称</td><td class="fr">je (j\')</td><td class="fr">nous</td></tr><tr><td>2人称</td><td class="fr">tu</td><td class="fr">vous</td></tr><tr><td>3人称</td><td class="fr">il / elle</td><td class="fr">ils / elles</td></tr></table>'+
+   '<p>tu は親しい相手1人。vous は丁寧な「あなた」と、複数の「あなたたち・きみたち」。</p>'+
+   '<p>il / elle は人にも物にも使う。男女まざった複数は <span class="fr">ils</span>。</p>'+
+   '<p><span class="fr">on</span>：「人々は」「だれかが」「私たちは」。文法上は3人称単数（il と同じ活用）。</p>'},
+  {k:"er",t:"-er動詞の現在形",d:"第1群規則動詞（Grammaire 2）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+   memo:'<p>語幹（-er を取った部分）＋語尾 <span class="fr">-e, -es, -e, -ons, -ez, -ent</span></p>'+
+   '<table><tr><td class="fr">je parle</td><td class="fr">nous parlons</td></tr><tr><td class="fr">tu parles</td><td class="fr">vous parlez</td></tr><tr><td class="fr">il / elle parle</td><td class="fr">ils / elles parlent</td></tr></table>'+
+   '<p>-e, -es, -ent は発音しない（parle, parles, parlent は同じ発音）。母音で始まる動詞の前で je → <span class="fr">j\'</span>。</p>'+
+   '<p>発展：<span class="fr">manger → nous mangeons</span>、<span class="fr">commencer → nous commençons</span>（発音を保つためのつづりの変化）</p>'},
+  {k:"ea",t:"être と avoir",d:"現在形と avoir の慣用表現（Grammaire 3 ／ En plus 2）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
+   memo:'<table><tr><th colspan="2">être（～である、いる）</th><th colspan="2">avoir（持つ）</th></tr>'+
+   '<tr><td class="fr">je suis</td><td class="fr">nous sommes</td><td class="fr">j\'ai</td><td class="fr">nous avons</td></tr>'+
+   '<tr><td class="fr">tu es</td><td class="fr">vous êtes</td><td class="fr">tu as</td><td class="fr">vous avez</td></tr>'+
+   '<tr><td class="fr">il est</td><td class="fr">ils sont</td><td class="fr">il a</td><td class="fr">ils ont</td></tr></table>'+
+   '<p>年齢は avoir：<span class="fr">J\'ai vingt ans.</span>（× Je suis vingt ans）。職業・国籍は無冠詞：<span class="fr">Elle est médecin.</span></p>'+
+   '<p>avoir faim / soif / sommeil / chaud / froid、avoir peur de ～、avoir besoin de ～、avoir mal à ～</p>'},
+  {k:"dem",t:"指示形容詞",d:"ce / cet / cette / ces（Grammaire 4）",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8",
+   memo:'<table><tr><th>男性単数</th><th>女性単数</th><th>複数</th></tr><tr><td class="fr">ce (cet)</td><td class="fr">cette</td><td class="fr">ces</td></tr></table>'+
+   '<p>母音・無音のhで始まる男性単数名詞の前では <span class="fr">cet</span>：cet arbre, cet hôtel。女性名詞は母音で始まっても cette。</p>'},
+  {k:"pos",t:"所有形容詞",d:"mon, ma, mes…（Grammaire 5）と数 11〜20",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
+   memo:'<table><tr><th></th><th>男性単数</th><th>女性単数</th><th>複数</th></tr>'+
+   '<tr><td>私の</td><td class="fr">mon</td><td class="fr">ma (mon)</td><td class="fr">mes</td></tr>'+
+   '<tr><td>きみの</td><td class="fr">ton</td><td class="fr">ta (ton)</td><td class="fr">tes</td></tr>'+
+   '<tr><td>彼の・彼女の</td><td class="fr">son</td><td class="fr">sa (son)</td><td class="fr">ses</td></tr>'+
+   '<tr><td>私たちの</td><td colspan="2" class="fr">notre</td><td class="fr">nos</td></tr>'+
+   '<tr><td>あなた(たち)の</td><td colspan="2" class="fr">votre</td><td class="fr">vos</td></tr>'+
+   '<tr><td>彼らの</td><td colspan="2" class="fr">leur</td><td class="fr">leurs</td></tr></table>'+
+   '<p>形を決めるのは<b>あとの名詞の性・数</b>（持ち主の性ではない）：<span class="fr">sa mère</span>＝彼の母／彼女の母。</p>'+
+   '<p>母音で始まる女性単数名詞の前では mon / ton / son：<span class="fr">mon amie</span></p>'+
+   '<p>数：onze, douze, treize, quatorze, quinze, seize, dix-sept, dix-huit, dix-neuf, vingt</p>'}
+]};
+
+/* ---------- 主語人称代名詞 ---------- */
+const P6=["il","elle","ils","elles"];
+C("pro","mon oncle → ___","il",P6,"男性単数 → il。");
+C("pro","ma tante → ___","elle",P6,"女性単数 → elle。");
+C("pro","Paul et Marie → ___","ils",P6,"男女まざった複数 → ils。");
+C("pro","Léa et Chloé → ___","elles",P6,"女性だけの複数 → elles。");
+C("pro","ce livre → ___","il",P6,"物にも il / elle を使う。livre は男性名詞。");
+C("pro","la table → ___","elle",P6,"table は女性名詞 → elle（「それは」）。");
+C("pro","ces fleurs → ___","elles",P6,"fleur は女性名詞の複数 → elles。");
+C("pro","mes parents → ___","ils",P6,"両親（男女）→ ils。");
+C("pro","les voitures → ___","elles",P6,"voiture は女性名詞の複数 → elles。");
+C("pro","mon frère et moi → ___","nous",["nous","vous","ils"],"「私」を含む複数 → nous。");
+C("pro","ta mère et toi → ___","vous",["vous","nous","ils","elles"],"「きみ」を含む複数 → vous。");
+C("pro","___ es fatigué, papa ?","Tu",["Tu","Vous"],"家族など親しい相手1人 → tu（être は tu es）。",{ja:"パパ、疲れてる？"});
+C("pro","___ êtes professeur, madame ?","Vous",["Vous","Tu"],"初対面・目上の人 → vous（être は vous êtes）。",{ja:"先生でいらっしゃいますか？"});
+C("pro","___ êtes prêts, les enfants ?","Vous",["Vous","Tu"],"親しい相手でも複数なら vous。",{ja:"みんな、準備できた？"});
+C("pro","Au Québec, on parle français. の on は？","人々は（一般）",["人々は（一般）","私たちは","だれかが"],"「ケベックでは（人々は）フランス語を話す」。一般の人々を表す on。",{cw:false});
+C("pro","Ce soir, on dîne ensemble ? の on は？","私たちは",["私たちは","人々は（一般）","だれかが"],"会話で on は nous のかわりによく使われる。",{cw:false});
+C("pro","On frappe à la porte. の on は？","だれかが",["だれかが","私たちは","人々は（一般）"],"「だれかがドアをノックしている」。",{cw:false});
+C("pro","Nous, on ___ le cinéma.（aimer）","aime",["aime","aimons","aiment"],"on は3人称単数扱い → il と同じ aime。",{ja:"私たちは映画が好きなんだ。"});
+
+/* ---------- -er動詞 ---------- */
+W("er","Tu ___ japonais ?（parler）","parles","tu → -es。");
+W("er","Nous ___ à Nara.（habiter）","habitons","nous → -ons。");
+W("er","Elles ___ bien.（chanter）","chantent","ils / elles → -ent（発音しない）。");
+W("er","Vous ___ le thé ?（aimer）","aimez","vous → -ez。");
+W("er","Je ___ le samedi.（travailler）","travaille","je → -e。");
+W("er","J'___ de la musique.（écouter）","écoute","母音で始まる動詞なので je → j'。語尾は -e。");
+W("er","Il ___ la télévision.（regarder）","regarde","il → -e。");
+W("er","Les enfants ___ dans le jardin.（jouer）","jouent","主語が複数の名詞 → ils と同じ -ent。");
+W("er","Mes parents ___ à Kobe.（habiter）","habitent","mes parents ＝ ils → -ent。");
+W("er","Vous ___ le français.（étudier）","étudiez","vous → -ez。");
+W("er","Nous ___ un appartement.（chercher）","cherchons","nous → -ons。");
+W("er","Marie ___ des fleurs à sa mère.（donner）","donne","Marie ＝ elle → -e。");
+W("er","Tu ___ demain ?（arriver）","arrives","tu → -es。");
+W("er","On ___ ?（danser）","danse","on は3人称単数扱い → -e。");
+C("er","Ils ___ français.（parler）","parlent",["parlent","parlont","parles","parlez"],"ils → -ent。× parlont（-ont は avoir や être の形と混同しやすい）。");
+C("er","Nous ___ souvent.（marcher）","marchons",["marchons","marchez","marchent","marchonts"],"nous → -ons。");
+C("er","___ aime le chocolat.","J'",["J'","Je"],"aimer は母音で始まる → j'。");
+C("er","___ travaille ici.","Je",["Je","J'"],"travailler は子音で始まる → je のまま。");
+C("er","___ habite à Osaka.","J'",["J'","Je"],"無音の h で始まる動詞の前でも j'。");
+W("er","Nous ___ ensemble.（manger）","mangeons","発展：manger は nous のとき mangeons（g の音を保つため e を入れる）。");
+W("er","Nous ___ à neuf heures.（commencer）","commençons","発展：commencer は nous のとき commençons（c を［s］で読むため ç）。");
+
+/* ---------- être と avoir ---------- */
+W("ea","Je ___ étudiante.（être）","suis","être：je suis。職業・身分は無冠詞。");
+W("ea","Vous ___ japonais ?（être）","êtes","être：vous êtes（ê に注意）。");
+W("ea","Nous ___ dans le train.（être）","sommes","être：nous sommes。");
+W("ea","Ils ___ en retard.（être）","sont","être：ils sont。");
+W("ea","Tu ___ là ?（être）","es","être：tu es。");
+W("ea","Elle ___ médecin.（être）","est","être：elle est。職業は無冠詞（× une médecin）。");
+W("ea","J'___ vingt ans.（avoir）","ai","avoir：j'ai。年齢は avoir で言う。");
+W("ea","Tu ___ un stylo ?（avoir）","as","avoir：tu as。");
+W("ea","Nous ___ cours demain.（avoir）","avons","avoir：nous avons。");
+W("ea","Ils ___ deux chiens.（avoir）","ont","avoir：ils ont（sont と混同しないこと）。");
+W("ea","Vous ___ des frères ?（avoir）","avez","avoir：vous avez。");
+W("ea","Elle ___ une voiture.（avoir）","a","avoir：elle a（à ではない）。");
+C("ea","J'___ dix-neuf ans.","ai",["ai","suis"],"年齢は avoir。× Je suis dix-neuf ans。",{ja:"私は19歳です。"});
+C("ea","Ils ___ étudiants.","sont",["sont","ont"],"「～である」は être。",{ja:"彼らは学生です。"});
+C("ea","Elles ___ trois enfants.","ont",["ont","sont"],"「持っている」は avoir。",{ja:"彼女たちには子どもが3人いる。"});
+const IDI=["faim","soif","sommeil","peur","besoin","mal","froid","chaud"];
+C("ea","Midi ! J'ai ___.","faim",IDI,"avoir faim「おなかがすいている」。",{ja:"お昼だ！おなかがすいた。"});
+C("ea","Tu as ___ ? Voici de l'eau.","soif",IDI,"avoir soif「のどがかわく」。",{ja:"のどかわいた？はい、お水。"});
+C("ea","Il est minuit. Tu as ___ ?","sommeil",IDI,"avoir sommeil「眠い」。",{ja:"もう夜中だ。眠い？"});
+C("ea","Elle a ___ des araignées.","peur",IDI,"avoir peur de ～「～がこわい」。de + les → des。",{ja:"彼女はクモがこわい。"});
+C("ea","J'ai ___ de ton aide.","besoin",IDI,"avoir besoin de ～「～が必要だ」。",{ja:"きみの助けが必要だ。"});
+C("ea","J'ai ___ à la tête.","mal",IDI,"avoir mal à ～「～が痛い」。",{ja:"頭が痛い。"});
+C("ea","Il neige. J'ai ___.","froid",IDI,"avoir froid「寒い」。",{ja:"雪だ。寒い。"});
+C("ea","Il fait 35 degrés ! On a ___.","chaud",IDI,"avoir chaud「暑い」。",{ja:"35度だ！暑いね。"});
+
+/* ---------- 指示形容詞 ---------- */
+const DEM=["ce","cet","cette","ces"];
+C("dem","___ livre","ce",DEM,"子音で始まる男性単数 → ce。",{ja:"この本"});
+C("dem","___ maison","cette",DEM,"女性単数 → cette。",{ja:"この家"});
+C("dem","___ arbre","cet",DEM,"母音で始まる男性単数 → cet。",{ja:"この木"});
+C("dem","___ homme","cet",DEM,"無音の h で始まる男性単数 → cet。",{ja:"この男性"});
+C("dem","___ amie","cette",DEM,"女性名詞は母音で始まっても cette。",{ja:"この女友だち"});
+C("dem","___ enfants","ces",DEM,"複数 → 男性・女性とも ces。",{ja:"この子どもたち"});
+C("dem","___ hôtel","cet",DEM,"hôtel は無音の h で始まる男性名詞 → cet。",{ja:"このホテル"});
+C("dem","___ école","cette",DEM,"école は女性名詞 → cette。",{ja:"この学校"});
+C("dem","___ matin","ce",DEM,"ce matin＝今朝。",{ja:"今朝"});
+C("dem","___ semaine","cette",DEM,"cette semaine＝今週。",{ja:"今週"});
+C("dem","___ ordinateur","cet",DEM,"ordinateur は母音で始まる男性名詞 → cet。",{ja:"このパソコン"});
+C("dem","___ fleurs","ces",DEM,"複数 → ces。",{ja:"これらの花"});
+C("dem","___ été","cet",DEM,"été（夏）は母音で始まる男性名詞 → cet été＝この夏。",{ja:"この夏"});
+C("dem","___ année","cette",DEM,"année は女性名詞 → cette année＝今年。",{ja:"今年"});
+C("dem","___ soir","ce",DEM,"ce soir＝今晩。",{ja:"今晩"});
+C("dem","___ étudiants","ces",DEM,"複数 → ces（母音の前でリエゾン）。",{ja:"この学生たち"});
+
+/* ---------- 所有形容詞 ---------- */
+C("pos","（私の）___ père","mon",["mon","ma","mes"],"père は男性単数 → mon。");
+C("pos","（私の）___ sœur","ma",["ma","mon","mes"],"sœur は女性単数 → ma。");
+C("pos","（私の）___ amie","mon",["mon","ma","mes"],"母音で始まる女性単数名詞の前では ma → mon（mon amie）。");
+C("pos","（きみの）___ chaussures","tes",["tes","ton","ta","vos"],"複数 → tes。");
+C("pos","（彼の）___ mère","sa",["sa","son","ses","leur"],"mère は女性 → sa。持ち主（彼）の性は関係ない。");
+C("pos","（彼女の）___ frère","son",["son","sa","ses","leur"],"frère は男性 → son。持ち主が女性でも son。");
+C("pos","（私たちの）___ professeur","notre",["notre","nos","votre"],"単数 → notre。");
+C("pos","（あなたの）___ passeport","votre",["votre","vos","ton"],"単数 → votre。");
+C("pos","（彼らの）___ enfants","leurs",["leurs","leur","ses"],"「彼らの」＋複数 → leurs。");
+C("pos","（彼らの）___ maison","leur",["leur","leurs","sa"],"「彼らの」＋単数 → leur。");
+C("pos","（きみの）___ école","ton",["ton","ta","tes"],"école は母音で始まる女性名詞 → ta ではなく ton。");
+C("pos","（彼女の）___ adresse","son",["son","sa","ses"],"adresse は母音で始まる女性名詞 → son。");
+C("pos","（あなたたちの）___ valises","vos",["vos","votre","leurs"],"複数 → vos。");
+C("pos","（私たちの）___ voisins","nos",["nos","notre","vos"],"複数 → nos。");
+T("pos","名詞を複数にして書きかえる（動詞も変える）","Mon ami habite à Paris.",["Mes amis habitent à Paris."],"mon → mes、ami → amis、habite → habitent。");
+T("pos","名詞を複数にして書きかえる（動詞も変える）","Sa fille travaille à Lyon.",["Ses filles travaillent à Lyon."],"sa → ses、travaille → travaillent。");
+T("pos","名詞を複数にして書きかえる（動詞も変える）","Notre voisin chante bien.",["Nos voisins chantent bien."],"notre → nos、chante → chantent。");
+T("pos","名詞を複数にして書きかえる（動詞も変える）","Ton chat mange beaucoup.",["Tes chats mangent beaucoup."],"ton → tes、mange → mangent。");
+B("pos","私たちはいっしょに日本語を勉強している。","Nous étudions le japonais ensemble.",["étudiez","un"],"nous → étudions。言語名には定冠詞。");
+B("pos","彼女の兄弟たちは東京に住んでいる。","Ses frères habitent à Tokyo.",["Leurs","habite"],"「彼女の」＋複数 → ses。");
+B("pos","このホテルはとても高い。","Cet hôtel est très cher.",["Ce","a"],"無音の h の前 → cet。");
+B("pos","私は20歳です。","J'ai vingt ans.",["suis","Je"],"年齢は avoir。",{cap:true});
+C("pos","15 は？","quinze",["quinze","quatorze","cinq","seize"],"quinze＝15、quatorze＝14、seize＝16。");
+C("pos","12 は？","douze",["douze","deux","treize","onze"],"douze＝12。");
+C("pos","« dix-sept » はいくつ？","17",["17","7","16","70"],"dix-sept＝10＋7。",{cw:false});
+W("pos","20 ＝ ___","vingt","vingt［vɛ̃］。g と t は発音しない。");
+W("pos","13 ＝ ___","treize","treize。");
+</script>
+</body>
+</html>

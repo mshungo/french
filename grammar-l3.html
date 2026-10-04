@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文法練習 Leçon 3 — 形容詞・否定・疑問</title>
+<script src="config.js?v=4"></script>
+<script src="common.js?v=4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="grammar.css?v=1">
+<script src="sound.js?v=1"></script>
+<script src="grammar.js?v=1"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== Leçon 3：形容詞、-ir動詞、否定文、疑問文、答え方 ===== */
+window.LESSON={no:3,title:"形容詞・否定・疑問",sub:"adjectifs · verbes en -ir · négation · interrogation",
+  lead:"形容詞の一致と位置、-ir動詞、否定文・疑問文のつくりかたと答えかたを練習します。",
+  sections:[
+  {k:"adj",t:"形容詞",d:"一致と位置（Grammaire 1 ／ En plus 1〜3）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
+   memo:'<p>修飾する名詞に合わせて性・数が変わる。原則：女性形は<b>＋e</b>、複数形は<b>＋s</b>。</p>'+
+   '<p>-e で終わる形容詞は男女同形（jeune）、-s, -x で終わるものは複数も同形（gros, délicieux）。</p>'+
+   '<p>ふつうは名詞のあと：<span class="fr">un chat noir</span>。よく使う短い形容詞（grand, petit, beau, joli, bon, mauvais, jeune, vieux, nouveau）は前：<span class="fr">un bon restaurant</span>。</p>'+
+   '<p>形容詞が複数名詞の前にあると des → <span class="fr">de</span>：<span class="fr">de jolies fleurs</span></p>'+
+   '<p>En plus：bon → bonne、-er → -ère、-eux → -euse、-f → -ve、long → longue、blanc → blanche、frais → fraîche、-al → -aux。beau / nouveau / vieux は母音の前で <span class="fr">bel / nouvel / vieil</span>。</p>'},
+  {k:"ir",t:"-ir動詞の現在形",d:"第2群規則動詞（Grammaire 2）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+   memo:'<p>語幹＋語尾 <span class="fr">-is, -is, -it, -issons, -issez, -issent</span></p>'+
+   '<table><tr><td class="fr">je finis</td><td class="fr">nous finissons</td></tr><tr><td class="fr">tu finis</td><td class="fr">vous finissez</td></tr><tr><td class="fr">il / elle finit</td><td class="fr">ils / elles finissent</td></tr></table>'+
+   '<p>同じ活用：choisir, réussir, grandir, grossir, maigrir, obéir, réfléchir, bâtir</p>'},
+  {k:"neg",t:"否定文",d:"ne ～ pas と、その他の否定（Grammaire 3 ／ En plus 4）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
+   memo:'<p>主語＋<span class="fr">ne (n\')</span>＋動詞＋<span class="fr">pas</span>：<span class="fr">Je ne parle pas.</span>　母音の前で n\'：<span class="fr">Elle n\'aime pas…</span></p>'+
+   '<p>否定文では、直接目的補語につく<b>不定冠詞・部分冠詞が de (d\')</b> になる：<span class="fr">J\'ai un vélo. → Je n\'ai pas de vélo.</span>　Il y a のあとも同じ。</p>'+
+   '<p>定冠詞はそのまま（Je n\'aime pas <b>le</b> café）。être のあとも de にならない（Ce n\'est pas <b>un</b> problème）。</p>'+
+   '<p>ne ～ jamais（決して～ない）、ne ～ plus（もう～ない）、ne ～ rien（何も～ない）、ne ～ personne（だれも～ない）、ne ～ aucun(e)＋名詞（ひとつも～ない）</p>'},
+  {k:"int",t:"疑問文",d:"イントネーション・Est-ce que・倒置（Grammaire 4）",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8",
+   memo:'<p>① 文末を上げる：<span class="fr">Tu aimes le chocolat ?</span></p>'+
+   '<p>② 文頭に <span class="fr">Est-ce que (qu\')</span>：<span class="fr">Est-ce qu\'elle est actrice ?</span></p>'+
+   '<p>③ 倒置：主語代名詞と動詞を入れかえ、- でつなぐ：<span class="fr">Aimez-vous le cinéma ?</span>　動詞が母音で終わり、主語が il / elle / on なら <span class="fr">-t-</span>：<span class="fr">A-t-il… ? Parle-t-elle… ?</span></p>'+
+   '<p>主語が名詞なら、名詞のあとに代名詞で倒置：<span class="fr">Marie aime-t-elle Paul ?</span></p>'},
+  {k:"rep",t:"答えかたと数",d:"oui / si / non（Grammaire 5）と数 21〜70",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
+   memo:'<p>肯定の疑問文に：はい＝<span class="fr">oui</span>、いいえ＝<span class="fr">non</span></p>'+
+   '<p>否定の疑問文に：「いいえ、～します」＝<span class="fr">si</span>、「はい、～しません」＝<span class="fr">non</span></p>'+
+   '<p>数：vingt et un, vingt-deux… trente, quarante, cinquante, soixante, soixante-dix（70＝60＋10）</p>'}
+]};
+
+/* ---------- 形容詞 ---------- */
+W("adj","une robe ___（vert）","verte","女性名詞 → ＋e。",{ja:"緑のドレス"});
+W("adj","des chaussures ___（noir）","noires","女性・複数 → ＋es。",{ja:"黒い靴"});
+W("adj","une ___ maison（petit）","petite","女性 → ＋e。petit は名詞の前に置く形容詞。",{ja:"小さな家"});
+W("adj","des étudiants ___（sérieux）","sérieux","-x で終わる形容詞は男性複数でも同じ形。",{ja:"まじめな学生たち"});
+W("adj","une fille ___（sérieux）","sérieuse","-eux → -euse（En plus 1）。",{ja:"まじめな女の子"});
+W("adj","une jupe ___（jaune）","jaune","-e で終わる形容詞は男女同形。",{ja:"黄色いスカート"});
+W("adj","une histoire ___（long）","longue","long → longue（特殊な女性形）。",{ja:"長い話"});
+W("adj","une chemise ___（blanc）","blanche","blanc → blanche（特殊な女性形）。",{ja:"白いシャツ"});
+W("adj","une ___ idée（bon）","bonne","bon → bonne（子音字を重ねて -e）。",{ja:"いい考え"});
+W("adj","une langue ___（étranger）","étrangère","-er → -ère。",{ja:"外国語"});
+W("adj","une femme ___（actif）","active","-f → -ve。",{ja:"活発な女性"});
+W("adj","une personne ___（gentil）","gentille","gentil → gentille（l を重ねる）。",{ja:"親切な人"});
+W("adj","une boisson ___（frais）","fraîche","frais → fraîche（特殊な女性形）。",{ja:"冷たい飲み物"});
+W("adj","des problèmes ___（social）","sociaux","-al → -aux（男性複数）。",{ja:"社会問題"});
+W("adj","des hommes ___（heureux）","heureux","-x で終わるので男性複数も同じ形。",{ja:"幸せな男性たち"});
+C("adj","un ___ hôtel（beau）","bel",["bel","beau","belle"],"母音・無音のhで始まる男性単数名詞の前では beau → bel。",{ja:"美しいホテル"});
+C("adj","un ___ homme（vieux）","vieil",["vieil","vieux","vieille"],"母音・無音のhの前では vieux → vieil。",{ja:"老人"});
+C("adj","un ___ appartement（nouveau）","nouvel",["nouvel","nouveau","nouvelle"],"母音の前では nouveau → nouvel。",{ja:"新しいアパルトマン"});
+C("adj","une ___ voiture（nouveau）","nouvelle",["nouvelle","nouvel","nouveau"],"女性形は nouvelle。",{ja:"新しい車"});
+C("adj","des ___ jardins（beau）","beaux",["beaux","beau","bels"],"-eau の男性複数は -eaux。",{ja:"美しい庭"});
+C("adj","おいしいレストラン","un bon restaurant",["un bon restaurant","un restaurant bon"],"bon は名詞の前に置く短い形容詞。",{cw:false});
+C("adj","日本製の車","une voiture japonaise",["une voiture japonaise","une japonaise voiture"],"国籍などの形容詞は名詞のあと。",{cw:false});
+C("adj","かわいい女の子たち","de jolies filles",["de jolies filles","des jolies filles","des filles jolies"],"形容詞が複数名詞の前にくると不定冠詞 des → de。",{cw:false});
+C("adj","大きな家","une grande maison",["une grande maison","une maison grande"],"grand は名詞の前。",{cw:false});
+C("adj","赤いかばん","un sac rouge",["un sac rouge","un rouge sac"],"色の形容詞は名詞のあと。",{cw:false});
+W("adj","Les fleurs sont ___.（beau）","belles","属詞（「AはBである」のB）も主語に一致する。fleurs は女性複数 → belles。",{ja:"花がきれいだ。"});
+W("adj","Ma sœur est ___.（grand）","grande","sœur は女性 → grande。",{ja:"姉は背が高い。"});
+W("adj","Ces exercices sont ___.（difficile）","difficiles","男性複数 → ＋s。",{ja:"これらの練習問題は難しい。"});
+
+/* ---------- -ir動詞 ---------- */
+W("ir","Je ___ à cinq heures.（finir）","finis","je → -is。");
+W("ir","Tu ___ ce gâteau ?（choisir）","choisis","tu → -is。");
+W("ir","Il ___ ses devoirs.（finir）","finit","il → -it。");
+W("ir","Nous ___ un cadeau pour Léa.（choisir）","choisissons","nous → -issons。");
+W("ir","Vous ___ trop.（réfléchir）","réfléchissez","vous → -issez。");
+W("ir","Ils ___ vite.（grandir）","grandissent","ils → -issent。");
+W("ir","Elle ___ toujours.（réussir）","réussit","elle → -it。");
+W("ir","Les élèves ___ au professeur.（obéir）","obéissent","主語が複数名詞 → -issent。obéir à ～「～に従う」。");
+W("ir","On ___ tard aujourd'hui.（finir）","finit","on は3人称単数扱い → -it。");
+W("ir","Je ___ en hiver.（grossir）","grossis","je → -is。");
+W("ir","Nous ___ le repas.（finir）","finissons","nous → -issons。");
+C("ir","Vous ___ ce livre ?（choisir）","choisissez",["choisissez","choisez","choisisez"],"vous → -issez（s は2つ）。");
+C("ir","Elles ___ le travail.（finir）","finissent",["finissent","finent","finisent"],"elles → -issent。");
+C("ir","Il ___ beaucoup.（maigrir）","maigrit",["maigrit","maigris","maigre"],"il → -it。");
+
+/* ---------- 否定文 ---------- */
+T("neg","否定文に","Je parle allemand.",["Je ne parle pas allemand."],"動詞を ne と pas ではさむ。");
+T("neg","否定文に","Elle aime le sport.",["Elle n'aime pas le sport."],"母音の前で ne → n'。定冠詞 le はそのまま。");
+T("neg","否定文に","Nous avons une voiture.",["Nous n'avons pas de voiture."],"否定文では直接目的補語の不定冠詞 une → de。");
+T("neg","否定文に","Il mange du pain.",["Il ne mange pas de pain."],"部分冠詞 du も否定文では de。");
+T("neg","否定文に","Il y a des étudiants dans la salle.",["Il n'y a pas d'étudiants dans la salle."],"Il y a のあとの des → de、母音の前で d'。");
+T("neg","否定文に","Tu as des frères ?",["Tu n'as pas de frères ?"],"des → de。");
+T("neg","否定文に","C'est un bon film.",["Ce n'est pas un bon film."],"être のあとの冠詞は de にならない（un のまま）。");
+T("neg","否定文に","J'habite à Paris.",["Je n'habite pas à Paris."],"j' は否定文では je に戻り、n'habite。");
+T("neg","否定文に","Vous écoutez la radio.",["Vous n'écoutez pas la radio."],"定冠詞 la はそのまま。");
+C("neg","Je n'ai pas ___ argent.","d'",["d'","de l'","un"],"否定文では部分冠詞 de l' → d'。",{ja:"お金を持っていない。"});
+C("neg","Ce n'est pas ___ problème.","un",["un","de","d'"],"être の補語なので不定冠詞のまま。",{ja:"問題ないよ（それは問題ではない）。"});
+C("neg","Il n'y a pas ___ lait dans le frigo.","de",["de","du","le"],"Il y a の否定では du → de。",{ja:"冷蔵庫に牛乳がない。"});
+C("neg","Je n'aime pas ___ café.","le",["le","de","du"],"aimer のあとの定冠詞は否定文でもそのまま。",{ja:"コーヒーは好きじゃない。"});
+const NEG=["jamais","plus","rien","personne","aucun"];
+C("neg","Je ne suis ___ en retard.","jamais",NEG,"ne ～ jamais「決して～ない」。",{ja:"私は決して遅刻しない。"});
+C("neg","Il n'habite ___ ici.","plus",NEG,"ne ～ plus「もう～ない」。",{ja:"彼はもうここに住んでいない。"});
+C("neg","Elle ne mange ___ le matin.","rien",NEG,"ne ～ rien「何も～ない」。",{ja:"彼女は朝は何も食べない。"});
+C("neg","Il n'y a ___ dans la classe.","personne",NEG,"ne ～ personne「だれも～ない」。",{ja:"教室にはだれもいない。"});
+C("neg","Il n'a ___ ami.","aucun",NEG,"ne ～ aucun(e)＋名詞「ひとつ（ひとり）も～ない」。ami は男性 → aucun。",{ja:"彼には友だちがひとりもいない。"});
+B("neg","冷蔵庫にはもう牛乳がない。","Il n'y a plus de lait dans le frigo.",["du","pas"],"ne ～ plus「もう～ない」。否定なので du → de。");
+B("neg","私には兄弟がいない。","Je n'ai pas de frères.",["des","suis"],"否定文で des → de。");
+
+/* ---------- 疑問文 ---------- */
+T("int","Est-ce que を使った疑問文に","Vous aimez le jazz.",["Est-ce que vous aimez le jazz ?"],"文頭に Est-ce que をつけ、語順はそのまま。");
+T("int","Est-ce que を使った疑問文に","Il habite ici.",["Est-ce qu'il habite ici ?"],"il の前では que → qu'。");
+T("int","Est-ce que を使った疑問文に","Elles sont étudiantes.",["Est-ce qu'elles sont étudiantes ?"],"elles の前でも qu'。");
+T("int","倒置疑問文に","Tu parles anglais.",["Parles-tu anglais ?"],"主語代名詞と動詞を入れかえ、- でつなぐ。");
+T("int","倒置疑問文に","Vous êtes japonaise.",["Êtes-vous japonaise ?"],"Êtes-vous …?（文頭の大文字 Ê）。");
+T("int","倒置疑問文に","Il a un chien.",["A-t-il un chien ?"],"a は母音で終わる → 動詞と il の間に -t-。");
+T("int","倒置疑問文に","Elle chante bien.",["Chante-t-elle bien ?"],"-er動詞の3人称単数も母音で終わる → -t-。");
+T("int","倒置疑問文に","Il y a du lait.",["Y a-t-il du lait ?"],"Il y a の倒置は Y a-t-il …?");
+T("int","倒置疑問文に","Paul travaille demain.",["Paul travaille-t-il demain ?"],"主語が名詞のときは、名詞を残し、代名詞 il で倒置する。");
+T("int","倒置疑問文に","Tes parents habitent à Kobe.",["Tes parents habitent-ils à Kobe ?"],"名詞の主語（複数）→ 動詞のあとに -ils。");
+T("int","倒置疑問文に","Marie aime le cinéma.",["Marie aime-t-elle le cinéma ?"],"名詞の主語＋動詞＋-t-elle。");
+C("int","正しい倒置疑問文はどれ？","Parle-t-il français ?",["Parle-t-il français ?","Parle-il français ?","Parle-t-il-français ?"],"母音で終わる動詞と il の間に -t-。",{cw:false});
+C("int","正しいのはどれ？","Est-ce qu'elle travaille ?",["Est-ce qu'elle travaille ?","Est-ce que elle travaille ?","Est-ce qu'elle travaille-t-elle ?"],"elle の前では qu'。Est-ce que と倒置はいっしょに使わない。",{cw:false});
+C("int","正しいのはどれ？","Avez-vous des enfants ?",["Avez-vous des enfants ?","Avez-t-vous des enfants ?","Avez vous des enfants ?"],"-t- は il / elle / on のときだけ。- （トレ・デュニオン）を忘れずに。",{cw:false});
+B("int","日曜日は働いていますか？（Est-ce que で）","Est-ce que tu travailles le dimanche ?",["travaille","qu'"],"Est-ce que＋主語＋動詞。");
+B("int","音楽はお好きですか？（倒置で）","Aimez-vous la musique ?",["Aime","-t-"],"Aimez と -vous を入れかえた形。");
+B("int","この近くに公園はありますか？（倒置で）","Y a-t-il un parc près d'ici ?",["Il","de"],"Il y a の倒置は Y a-t-il。");
+
+/* ---------- 答えかたと数 ---------- */
+C("rep","Tu n'aimes pas le café ? ―（いや、好きだよ）___, j'aime le café.","Si",["Si","Oui","Non"],"否定の疑問に「いいえ、～です」と肯定で答えるときは si。");
+C("rep","Vous êtes étudiante ? ―（はい）___, je suis étudiante.","Oui",["Oui","Si","Non"],"肯定の疑問に「はい」→ oui。");
+C("rep","Il ne travaille pas aujourd'hui ? ―（うん、働かないよ）___, il ne travaille pas.","Non",["Non","Oui","Si"],"否定の疑問に否定で答える（日本語の「はい」）→ non。");
+C("rep","Tu as faim ? ―（いいえ）___, je n'ai pas faim.","Non",["Non","Si","Oui"],"肯定の疑問に「いいえ」→ non。");
+C("rep","Elles n'habitent pas à Paris ? ―（いいえ、住んでいます）___, elles habitent à Paris.","Si",["Si","Oui","Non"],"否定の疑問に肯定で答える → si。");
+C("rep","Vous n'avez pas de voiture ? ―（ええ、持っていません）___, je n'ai pas de voiture.","Non",["Non","Si","Oui"],"日本語では「ええ」でも、フランス語では否定の答えなので non。");
+T("rep","「はい」で答える","Aimez-vous le thé ?",["Oui, j'aime le thé."],"vous で聞かれたら je で答える。");
+T("rep","「いいえ」で答える","Aimez-vous le thé ?",["Non, je n'aime pas le thé."],"定冠詞 le は否定文でもそのまま。");
+T("rep","「いいえ、持ってるよ」と答える","Tu n'as pas de vélo ?",["Si, j'ai un vélo."],"si で答えると肯定文に戻るので、de → un に戻る。");
+T("rep","「うん、持ってないよ」と答える","Tu n'as pas de vélo ?",["Non, je n'ai pas de vélo."],"否定の答え → non＋否定文。");
+C("rep","21 は？","vingt et un",["vingt et un","vingt-un","un-vingt"],"21, 31, 41, 51, 61 は et un でつなぐ（vingt et un）。");
+C("rep","70 は？","soixante-dix",["soixante-dix","septante","sept-dix","soixante-et-dix"],"70＝60＋10（soixante-dix）。");
+W("rep","45 ＝ ___","quarante-cinq","40＝quarante。22〜29 などは - でつなぐ。");
+W("rep","33 ＝ ___","trente-trois","30＝trente。");
+W("rep","68 ＝ ___","soixante-huit","60＝soixante。");
+C("rep","« cinquante-deux » はいくつ？","52",["52","42","62","25"],"cinquante＝50。",{cw:false});
+B("adj","これは私の新しい携帯電話です。","C'est mon nouveau portable.",["nouvel","ma"],"nouveau は名詞の前。portable は子音で始まるので nouvel ではない。");
+B("adj","姉はまじめな学生です。","Ma sœur est une étudiante sérieuse.",["sérieux","Mon"],"女性名詞 → sérieuse。",{cap:true});
+</script>
+</body>
+</html>
