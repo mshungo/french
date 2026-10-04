@@ -89,7 +89,7 @@ function shell(){
     '<details class="memo"><summary>'+esc(s.t)+'</summary><div class="memo-body">'+s.memo+'</div></details>').join("");
   return ''+
 '<div class="wrap">'+
-'  <div class="crown"><div class="eyebrow">Grammaire · Leçon '+L.no+'</div><h1>'+esc(L.title)+'</h1>'+
+'  <div class="crown"><div class="crest"><svg width="30" height="30" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7.5c-1.2 5.5-1.3 11.4.8 15.6 2 4 10.4 4 12.4 0 2.1-4.2 2-10.1.8-15.6-3.1 2-10.9 2-14 0z"/><circle cx="12.8" cy="14.6" r="2.7"/><circle cx="19.2" cy="14.6" r="2.7"/><circle cx="12.8" cy="14.6" r=".8" fill="currentColor" stroke="none"/><circle cx="19.2" cy="14.6" r=".8" fill="currentColor" stroke="none"/><path d="M15.2 18.2l.8 1.5.8-1.5"/><path d="M12 23.2c1.3.8 2.7.8 4 0 1.3.8 2.7.8 4 0"/></svg></div><div class="eyebrow">Naralingo · Leçon '+L.no+'</div><h1>'+esc(L.title)+'</h1>'+
 '    <span class="verbs">'+esc(L.sub||"")+'</span></div>'+
 '  <div class="panel" id="homeScreen">'+
 '    <div class="acct"><div class="row"><a class="link" href="grammar.html">← Leçon 一覧</a><div class="streak" id="streak"></div></div></div>'+

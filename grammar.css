@@ -391,3 +391,6 @@
   .badge.medal.on{border-color:#b8860b;color:#8a6200;}
   .heard.fast{color:var(--good-ink);font-weight:600;}
   .sb-prog b.clr{color:#9a7b45;font-weight:700;letter-spacing:.5px;}
+
+  .crest{display:flex;justify-content:center;color:var(--gold);margin-bottom:6px;opacity:.9;}
+  .crest svg{display:block;}

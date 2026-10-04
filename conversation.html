@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>会話練習 — 暗記フレーズ集</title>
+<title>会話練習 — Naralingo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
 <script src="common.js?v=4"></script>
 <script src="audio/talk/index.js?v=1"></script>
@@ -352,12 +353,46 @@
   .rrow .rtx{flex:1;min-width:0;display:flex;flex-direction:column;}
   .rrow .rfr{font-family:"Cormorant Garamond",serif;font-size:17.5px;font-weight:600;color:var(--ink);line-height:1.3;}
   .rrow .rja{font-size:11px;color:var(--ink-soft);}
+
+  /* マイク */
+  .speak-ctl{flex-direction:column;gap:14px;}
+  .speak-sub{display:flex;gap:8px;justify-content:center;}
+  .hintline{font-size:13px;color:var(--accent-ink);background:var(--accent-wash);border-radius:12px;padding:6px 14px;}
+  .mic{display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .mic-btn{position:relative;width:76px;height:76px;border-radius:50%;border:none;cursor:pointer;color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent-ink));box-shadow:0 12px 24px -12px var(--accent-ink);
+    display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s;}
+  .mic-btn:hover{transform:scale(1.04);}
+  .mic-btn::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid transparent;}
+  .mic-st{font-size:12.5px;color:var(--ink-soft);min-height:1.3em;text-align:center;}
+  .mic[data-state="prep"] .mic-btn{background:#b9aab3;}
+  .mic[data-state="listen"] .mic-btn,.mic[data-state="voice"] .mic-btn{background:linear-gradient(135deg,#d9726b,#b5524c);}
+  .mic[data-state="listen"] .mic-btn::after{border-color:rgba(217,114,107,.55);animation:ring 1.3s ease-out infinite;}
+  .mic[data-state="voice"] .mic-btn::after{border-color:rgba(217,114,107,.8);animation:ring .7s ease-out infinite;}
+  .mic[data-state="listen"] .mic-st,.mic[data-state="voice"] .mic-st{color:#b5524c;font-weight:600;}
+  .mic[data-state="proc"] .mic-btn{background:#c0a06a;animation:pulse 1s ease-in-out infinite;}
+  .mic[data-state="err"] .mic-st{color:var(--bad-ink);}
+  @keyframes ring{0%{transform:scale(.92);opacity:1;}100%{transform:scale(1.35);opacity:0;}}
+  .heard.altok{color:var(--good-ink);}
+  .practice{margin-top:14px;padding:14px;border:1px dashed var(--accent);border-radius:14px;background:#fff;}
+  .practice-h{font-size:11.5px;color:var(--ink-soft);margin-bottom:10px;}
+  .practice .mic-btn{width:60px;height:60px;}
+  .practice-out{margin-top:10px;}
+  .p-words{font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:600;line-height:1.4;}
+  .p-words .w-ok{color:var(--good-ink);} .p-words .w-ng{color:var(--ink-faint);text-decoration:underline dotted;}
+  .p-heard{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+  .p-res{font-size:12.5px;margin-top:4px;font-weight:600;} .p-res.ok{color:var(--good-ink);} .p-res.ng{color:var(--bad-ink);}
+  .pr-open{margin-top:10px;}
+
+  .crest{display:flex;justify-content:center;color:var(--gold);margin-bottom:6px;opacity:.9;}
+  .crest svg{display:block;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="crown">
-    <div class="eyebrow">Conversation · 暗記フレーズ集</div>
+    <div class="crest"><svg width="30" height="30" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 20c.4-5 3.6-8.5 8-8.6.8-2.6 2.7-4.2 5.1-4.2 2.9 0 4.4 2.2 4.4 4.5l2.7 1.1-2.8 1.2c-.6 5.4-4.6 9-10.6 9H10l-5.5 2.6 2.7-4.2c.7-.6 1.5-1 1.8-1.4z"/><path d="M12.5 17c2.4 3.2 6.6 3 8.8.1"/><circle cx="22.8" cy="10.6" r=".75" fill="currentColor" stroke="none"/><path d="M14.5 23l-.6 3M18 23l.3 3"/></svg></div>
+    <div class="eyebrow">Naralingo · Conversation</div>
     <h1>会話練習</h1>
     <span class="verbs">écouter · choisir · <i>parler</i></span>
   </div>
@@ -937,7 +972,7 @@ function startRound(sec){
 
 /* ----- 1問の描画 ----- */
 function render(){
-  clearTimeout(autoNext);stopSpeak();try{rec&&rec.abort();}catch(e){}
+  clearTimeout(autoNext);stopSpeak();try{rec&&rec.abort();}catch(e){}rec=null;
   const q=questions[idx];q.t0=performance.now();locked=false;
   const N=questions.length;
   $("qcount").textContent=(idx+1)+" / "+N;
@@ -993,10 +1028,17 @@ function render(){
   }else if(q.type==="speak"){
     st.innerHTML='<div class="prompt-ja big">'+esc(q.v.ja)+'</div><div class="qtext">フランス語で、声に出して言ってみよう</div>'+
       '<div class="think" id="think"><span></span></div>'+
-      '<div class="speak-ctl">'+(SR?'<button class="write-btn" id="micBtn">● 話して答える</button>':'')+
-      '<button class="mini" id="revealBtn">答えを見る</button></div><div class="micmsg" id="micMsg"></div>';
+      '<div class="speak-ctl">'+(SR?micUI("mic","押して話す"):'')+
+      '<div class="speak-sub"><button class="mini" id="hintBtn">ヒント</button><button class="mini" id="revealBtn">答えを見る</button></div>'+
+      '<div class="hintline hidden" id="hintText"></div></div>';
     requestAnimationFrame(()=>requestAnimationFrame(()=>{const t=$("think");if(t)t.classList.add("run");}));
-    if(SR)$("micBtn").onclick=()=>startMic(q);
+    if(SR)bindMic($("mic"),alts=>{
+      if(q._done)return;
+      const r=judgeSpeech(alts,q);
+      q.heard=r.best;q.byMic=true;q.altOk=r.alt;
+      grade(r.ok,{chosen:r.best});
+    });
+    $("hintBtn").onclick=()=>{const h=$("hintText");h.textContent=hintFor(q);h.classList.remove("hidden");q.hinted=true;};
     $("revealBtn").onclick=()=>revealSelf(q);
     hint.textContent=SR?"マイクで答えると自動で判定（Enter：答えを見る）":"頭の中ではなく、実際に声に出してから「答えを見る」（Enter）";
   }
@@ -1043,33 +1085,104 @@ function checkFill(q){
   grade(ok,{chosen:val.trim()});
 }
 /* ----- 言ってみる ----- */
+/* ===== 音声認識（マイク） =====
+   状態をはっきり表示し、マイクが完全に閉じてから音を鳴らす（直後に再生するとノイズが出る端末があるため）。 */
 let rec=null;
-function startMic(q){
-  if(locked||!SR)return;
-  const btn=$("micBtn"),msg=$("micMsg");
-  try{rec=new SR();}catch(e){msg.textContent="マイクを使えませんでした。「答えを見る」で自分で判定してください。";return;}
-  rec.lang="fr-FR";rec.interimResults=false;rec.maxAlternatives=5;
-  let got=false;
-  btn.disabled=true;btn.classList.add("rec");btn.textContent="● 聞いています…";msg.textContent="";
-  const reset=()=>{const b=$("micBtn");if(b){b.disabled=false;b.classList.remove("rec");b.textContent="● もう一度話す";}};
-  rec.onresult=e=>{
-    got=true;if(q._done)return;
-    const alts=[...e.results[0]].map(a=>a.transcript);
-    let best=alts[0],sc=-1;alts.forEach(a=>{const s=bestSim(a,q.targets);if(s>sc){sc=s;best=a;}});
-    q.heard=best;q.byMic=true;
-    grade(sc>=0.8,{chosen:best});
+const MIC_SVG='<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0"/><path d="M12 17.5V21"/></svg>';
+function micUI(id,label){
+  return '<div class="mic" id="'+id+'" data-state="idle"><button class="mic-btn" type="button" aria-label="'+esc(label)+'">'+MIC_SVG+'</button>'+
+    '<div class="mic-st">'+esc(label)+'</div></div>';
+}
+function setMic(box,state,text){if(!box)return;box.dataset.state=state;const t=box.querySelector(".mic-st");if(t)t.textContent=text;}
+function bindMic(box,onResult){
+  if(!box)return;
+  const btn=box.querySelector(".mic-btn");
+  btn.onclick=()=>{
+    if(box.dataset.state==="listen"||box.dataset.state==="voice"){try{rec&&rec.stop();}catch(e){}return;}
+    if(box.dataset.state==="prep"||box.dataset.state==="proc")return;
+    recognize(box,onResult);
   };
-  rec.onerror=e=>{
-    if(q._done)return;
-    const m={"not-allowed":"マイクの使用が許可されていません。","service-not-allowed":"マイクの使用が許可されていません。","no-speech":"声が聞こえませんでした。","audio-capture":"マイクが見つかりません。","network":"音声認識の通信に失敗しました。"};
-    msg.textContent=(m[e.error]||"音声を認識できませんでした。")+" もう一度押すか、「答えを見る」で確認してください。";reset();
+}
+function recognize(box,onResult){
+  if(!SR){setMic(box,"err","このブラウザは音声認識に対応していません");return;}
+  try{rec&&rec.abort();}catch(e){}
+  let r;try{r=new SR();}catch(e){setMic(box,"err","マイクを使えませんでした");return;}
+  rec=r;r.lang="fr-FR";r.interimResults=false;r.maxAlternatives=5;
+  let alts=null,err=null,finished=false;
+  stopSpeak();
+  setMic(box,"prep","マイクを準備中…");
+  r.onaudiostart=()=>setMic(box,"listen","聞き取り中… フランス語で話してください");
+  r.onspeechstart=()=>setMic(box,"voice","声を聞いています…（話し終わったら少し待つ）");
+  r.onspeechend=()=>setMic(box,"proc","認識しています…");
+  r.onresult=e=>{alts=[...e.results[0]].map(x=>x.transcript);};
+  r.onerror=e=>{err=e.error;};
+  const finish=()=>{
+    if(finished)return;finished=true;
+    setTimeout(()=>{
+      if(rec!==r)return;
+      if(alts&&alts.length){setMic(box,"idle","もう一度話すには押す");onResult(alts);}
+      else{
+        const m={"not-allowed":"マイクの使用が許可されていません","service-not-allowed":"マイクの使用が許可されていません","no-speech":"声が聞こえませんでした。もう一度押して話す","audio-capture":"マイクが見つかりません","network":"音声認識の通信に失敗しました"};
+        setMic(box,"err",(m[err]||"聞き取れませんでした。もう一度押して話す"));
+      }
+    },450);
   };
-  rec.onend=()=>{if(!got&&!q._done){reset();if(!msg.textContent)msg.textContent="聞き取れませんでした。もう一度押すか、「答えを見る」で確認してください。";}};
-  try{rec.start();}catch(e){reset();}
+  r.onend=finish;
+  try{r.start();}catch(e){finish();}
+  setTimeout(()=>{if(!finished){try{r.stop();}catch(e){}}},10000);
+}
+/* 言い方の違い（tu / vous、倒置 / Est-ce que / 語順）を許した比較 */
+const P2=new Set(["tu","te","t","toi","vous"]),POS2=new Set(["ton","ta","tes","votre","vos"]);
+function canonWords(str){
+  let w=nrm(str).replace(/\best ce qu'?e?\b/g," ").replace(/'/g,"' ").split(/\s+/).filter(Boolean);
+  return w.map(x=>{x=x.replace(/'$/,"");if(P2.has(x))return "#2";if(POS2.has(x))return "#p2";return x.length>4?x.slice(0,4):x;}).filter(x=>x&&x!=="qu");
+}
+function looseSim(said,target){
+  const a=canonWords(said),b=canonWords(target);if(!a.length||!b.length)return 0;
+  const cnt={};b.forEach(x=>cnt[x]=(cnt[x]||0)+1);
+  let hit=0;a.forEach(x=>{if(cnt[x]>0||/[○◯]/.test(x)){hit++;if(cnt[x])cnt[x]--;}});
+  const p=hit/a.length,r=hit/b.length;return p+r?2*p*r/(p+r):0;
+}
+function judgeSpeech(alts,q){
+  let best=alts[0],sc=-1;alts.forEach(a=>{const v=bestSim(a,q.targets);if(v>sc){sc=v;best=a;}});
+  if(sc>=0.8)return {ok:true,alt:false,best};
+  let b2=best,sc2=-1;alts.forEach(a=>{const v=Math.max(...q.targets.map(t=>looseSim(a,t)));if(v>sc2){sc2=v;b2=a;}});
+  if(sc2>=0.8)return {ok:true,alt:true,best:b2};
+  return {ok:false,alt:false,best};
+}
+/* ヒント：最初の1語と、tu / vous どちらで言うか */
+function hintFor(q){
+  const w=q.v.fr.split(/\s+/);
+  const first=w[0]+(w.length>1?" …":"");
+  const lw=nrm(q.v.fr).split(" ");
+  let reg="";
+  if(lw.includes("vous"))reg="（vous を使う丁寧な言い方）";
+  else if(lw.some(x=>["tu","te","toi","t'as"].includes(x)||/^t'/.test(x)))reg="（tu を使う親しい言い方）";
+  return "ヒント："+first+"　"+w.filter(x=>/[A-Za-zÀ-ÿ○◯]/.test(x)).length+"語"+reg;
+}
+/* 発音練習：お手本の単語ごとに、言えた語を色で示す */
+function practiceHTML(q){
+  return '<div class="practice"><div class="practice-h">発音練習 ― お手本を聞いて、まねして言ってみよう（採点には影響しません）</div>'+
+    micUI("pmic","押して話す")+'<div class="practice-out" id="pout"></div></div>';
+}
+function bindPractice(q){
+  bindMic($("pmic"),alts=>{
+    let best=alts[0],sc=-1;alts.forEach(a=>{const v=Math.max(bestSim(a,q.targets),looseSim(a,q.targets[0]));if(v>sc){sc=v;best=a;}});
+    const heard=new Set(nrm(best).split(" "));
+    const words=q.v.fr.split(/\s+/).map(w=>{
+      const parts=nrm(w).split(" ").filter(Boolean);
+      const ok=!parts.length||parts.every(p=>heard.has(p)||/[○◯]/.test(p));
+      return '<span class="'+(ok?"w-ok":"w-ng")+'">'+esc(w)+'</span>';
+    }).join(" ");
+    const good=sc>=0.8;
+    $("pout").innerHTML='<div class="p-words">'+words+'</div><div class="p-heard">認識：«'+esc(best)+'»</div>'+
+      '<div class="p-res '+(good?"ok":"ng")+'">'+(good?"よく言えています！":"色の薄い語を意識して、もう一度")+'</div>';
+    if(good&&typeof playCorrect==="function")playCorrect();
+  });
 }
 function revealSelf(q){
   if(locked)return;locked=true;
-  try{rec&&rec.abort();}catch(e){}
+  try{rec&&rec.abort();}catch(e){}rec=null;
   q.rt=performance.now()-q.t0;
   const t=$("think");if(t)t.classList.remove("run");
   const sc=$("stage").querySelector(".speak-ctl");if(sc)sc.classList.add("hidden");
@@ -1114,8 +1227,10 @@ function grade(ok,info){
 }
 function showAfter(q){
   const a=$("after");a.classList.remove("hidden");
+  const sctl=$("stage").querySelector(".speak-ctl");if(sctl)sctl.classList.add("hidden");
   let extra="";
   if(q.type==="speak"&&q.byMic)extra+='<div class="heard">認識された文：«'+esc(q.heard||"")+'»</div>';
+  if(q.altOk)extra+='<div class="heard altok">言い方は違うけれど正解。教材の形は上の文。</div>';
   if(q.type==="fill"&&q.accentNote)extra+='<div class="heard">正解。ただしつづりは <b>'+esc(q.answer)+'</b>（アクセント記号に注意）</div>';
   if(!q.ok&&(q.type==="choose"||q.type==="build")&&q.chosen&&q.chosen!==q.v.fr)extra+='<div class="heard">あなたの答え：<s>'+esc(q.chosen)+'</s></div>';
   if(!q.ok&&q.type==="fill")extra+='<div class="heard">空欄の正解：<b>'+esc(q.answer)+'</b></div>';
@@ -1124,11 +1239,16 @@ function showAfter(q){
   a.innerHTML='<div class="ans-fr">'+esc(q.v.fr)+'</div><div class="ans-ja">'+esc(q.v.ja)+'</div>'+altLine(q)+extra+
     '<div class="btns"><button class="mini" id="rep1">▶ もう一度</button><button class="mini" id="rep2">▶ ゆっくり</button>'+fix+
     '<button class="next-btn" id="nextBtn">'+(idx+1<questions.length?"次へ →":"結果を見る")+'</button></div>'+
-    '<div class="shadow">音声のあとに、まねして声に出してみよう</div>';
+    (SR?(q.ok?'<div class="pr-open"><button class="mini" id="prOpen">発音を練習する</button></div><div id="prBox"></div>':'<div id="prBox">'+practiceHTML(q)+'</div>'):
+      '<div class="shadow">音声のあとに、まねして声に出してみよう</div>');
   $("rep1").onclick=()=>{clearTimeout(autoNext);speak(q.v.fr);};
   $("rep2").onclick=()=>{clearTimeout(autoNext);speak(q.v.fr,true);};
   $("nextBtn").onclick=next;
   if(fix)$("fixBtn").onclick=()=>overrideCorrect(q);
+  if(SR){
+    if(q.ok)$("prOpen").onclick=()=>{clearTimeout(autoNext);$("prOpen").parentNode.remove();$("prBox").innerHTML=practiceHTML(q);bindPractice(q);};
+    else bindPractice(q);
+  }
   $("hintLine").textContent="Enter で次へ";
   const isSelf=q.type==="speak"&&!q.byMic;  // 自己判定は読み上げ済み
   if(q.ok){
