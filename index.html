@@ -8,8 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="base.css">
 <title>フランス語 練習</title>
-<script src="config.js?v=3"></script>
-<script src="common.js?v=3"></script>
+<script src="config.js?v=4"></script>
+<script src="common.js?v=4"></script>
 </head>
 <body>
 <div class="wrap">
@@ -49,8 +49,8 @@
       </a>
       <a class="card talk" href="conversation.html">
         <div class="ico">Cv</div>
-        <div class="tx"><div class="ti">会話練習</div><div class="de">場面別の短い会話</div></div>
-        <div class="soon">準備中</div>
+        <div class="tx"><div class="ti">会話練習</div><div class="de">暗記フレーズ集 100（第1〜14週）</div></div>
+        <div class="st" id="stTalk"></div>
       </a>
     </div>
     <div class="note warn hidden" id="menuNote"></div>
@@ -81,6 +81,9 @@
     var st=null;
     if(u){var c=Q.cached();st=c&&c.apps&&c.apps.conj;}else{st=guestConj();}
     $("stConj").innerHTML=(st&&st.tries)?(st.tries+"回<small>正答率 "+Math.round(st.correct/st.answered*100)+"%</small>"):"";
+    var t=null;try{t=JSON.parse(localStorage.getItem("talkQuiz_v1_"+(u?u.id:"guest")));}catch(e){}
+    if(t&&t.tries){var m=0;for(var k in (t.lv||{}))if(t.lv[k]>=4)m++;
+      $("stTalk").innerHTML=t.tries+"回<small>習得 "+m+"/100</small>";}else{$("stTalk").innerHTML="";}
     renderStreak();
   }
   function showMenu(){loginPanel.classList.add("hidden");menuPanel.classList.remove("hidden");renderMenu();}
