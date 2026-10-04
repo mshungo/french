@@ -114,7 +114,8 @@
     if (!RE_ID.test(id)) return { ok: false, error: "format" };
     var res;
     try { res = await call(id, "sync"); } catch (e) { return { ok: false, error: "network" }; }
-    if (!res.ok) return { ok: false, error: res.error === "locked" ? "locked" : "auth" };
+    if (!res.ok) return { ok: false, error: res.error === "locked" ? "locked" : (res.error === "auth" ? "auth" : "server"), detail: res.error };
+    if (!res.stats || !res.stats.apps) return { ok: false, error: "server", detail: "old_version" };
     user = { id: id, name: (res.user && res.user.name) || id };
     lsSet(LOGIN_KEY, JSON.stringify(user));
     setCached(res.stats);

@@ -95,6 +95,7 @@
     note(r.error==="format"?"IDは英数字6文字です。":
          r.error==="locked"?"試行回数が多すぎます。しばらくしてからやり直してください。":
          r.error==="network"?"通信できませんでした。通信環境を確認してください。":
+         r.error==="server"?"サーバー側の設定に問題があります（"+(r.detail||"")+"）。先生に連絡してください。":
          "IDが見つかりません。入力を確認してください。");
   }
   $("idBtn").addEventListener("click",doLogin);
