@@ -6,6 +6,7 @@
 <title>会話練習 — 暗記フレーズ集</title>
 <script src="config.js?v=4"></script>
 <script src="common.js?v=4"></script>
+<script src="audio/talk/index.js?v=1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -369,7 +370,7 @@
       <div class="stat"><div class="n" id="hTries">0</div><div class="l">挑戦回数</div></div>
       <div class="stat acc"><div class="n" id="hAcc">—</div><div class="l">通算正答率</div></div>
       <div class="stat"><div class="n" id="hMaster">0</div><div class="l">習得フレーズ</div></div>
-      <div class="stat"><div class="n" id="hAns">0</div><div class="l">累計解答</div></div>
+      <div class="stat"><div class="n" id="hTime">0分</div><div class="l">勉強時間</div></div>
     </div>
 
     <div class="mode-row">
@@ -377,6 +378,13 @@
       <div class="mode-toggle">
         <button class="mode-btn on" data-mode="auto">おまかせ</button>
         <button class="mode-btn" data-mode="speak">言ってみる</button>
+      </div>
+    </div>
+    <div class="mode-row">
+      <span class="mode-label">音声</span>
+      <div class="mode-toggle">
+        <button class="mode-btn on" data-voice="f">女声</button>
+        <button class="mode-btn" data-voice="m">男声</button>
       </div>
     </div>
     <div class="mode-row">
@@ -727,37 +735,30 @@ function masteredIn(list){return list.filter(p=>lvOf(p.n)>=4).length;}
 function weakList(){return PH.filter(p=>(store.wrong[p.n]||0)>0&&lvOf(p.n)<5);}
 
 /* ===== 音声（読み上げ・音声認識） ===== */
-const TTS=("speechSynthesis" in window)&&("SpeechSynthesisUtterance" in window);
+/* 音声は、フランス語の音声モデルで作った録音ファイル（audio/talk/）を再生する。
+   ブラウザの読み上げ機能は、端末にフランス語の声がないと別の言語の声で読んでしまうため使わない。 */
+const AUDIO=window.TALK_AUDIO||null;
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
-let frVoice=null,voiceOK=false;
-function pickVoice(){
-  if(!TTS)return;
-  const vs=speechSynthesis.getVoices()||[];
-  const fr=vs.filter(v=>/^fr/i.test(v.lang));
-  frVoice=fr.find(v=>/fr[-_]FR/i.test(v.lang)&&/Google|Microsoft|Amélie|Audrey|Thomas|Denise|Hortense|Julie|Paul|Marie/i.test(v.name))
-        ||fr.find(v=>/fr[-_]FR/i.test(v.lang))||fr[0]||null;
-  voiceOK=!!frVoice;
-  renderVoiceNote();
-}
-if(TTS){pickVoice();try{speechSynthesis.addEventListener("voiceschanged",pickVoice);}catch(e){speechSynthesis.onvoiceschanged=pickVoice;}}
-function ttsText(s){return s.replace(/«\s*[○◯]+\s*»|[○◯]+/g,"quelque chose").replace(/\s*\.\.\.|…/g,"");}
-let speakToken=0;
-/* 読み上げ。終わったら cb（終了イベントが来ない環境に備えて時間でも打ち切る） */
+const voiceOK=!!AUDIO;
+let player=null,speakToken=0;
+function audioFile(text){return AUDIO&&AUDIO[text]?"audio/talk/"+(store.voice==="m"?"m":"f")+"/"+AUDIO[text]:null;}
+/* 再生。終わったら cb。録音がない文は鳴らさない */
 function speak(text,slow,cb){
   const my=++speakToken;let done=false;
   const fin=()=>{if(done||my!==speakToken)return;done=true;cb&&cb();};
-  if(!TTS){setTimeout(fin,300);return;}
+  const f=audioFile(text);
+  if(!f){setTimeout(fin,300);return;}
   try{
-    speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(ttsText(text));
-    u.lang="fr-FR";if(frVoice)u.voice=frVoice;
-    u.rate=(slow||store.slow)?(slow===true&&store.slow?0.6:0.72):0.95;
-    u.onend=fin;u.onerror=fin;
-    speechSynthesis.speak(u);
-    setTimeout(fin,1500+text.length*(store.slow||slow?120:85));
+    if(player){player.pause();}
+    player=new Audio(f);
+    const rate=(slow===true)?(store.slow?0.65:0.75):(store.slow?0.8:1);
+    player.playbackRate=rate;try{player.preservesPitch=true;}catch(e){}
+    player.onended=fin;player.onerror=fin;
+    const p=player.play();if(p&&p.catch)p.catch(()=>fin());
+    setTimeout(fin,15000);
   }catch(e){setTimeout(fin,300);}
 }
-function stopSpeak(){speakToken++;try{speechSynthesis.cancel();}catch(e){}}
+function stopSpeak(){speakToken++;try{player&&player.pause();}catch(e){}}
 
 /* ===== 照合（書き取り・音声認識） ===== */
 function nrm(s){
@@ -885,15 +886,14 @@ function setAccent(sec){
 function renderVoiceNote(){
   const el=$("voiceNote");if(!el)return;
   const msgs=[];
-  if(!TTS)msgs.push("このブラウザは読み上げに対応していないため、聞き取り問題は出ません。");
-  else if(!voiceOK)msgs.push("この端末にフランス語の音声が見つかりません。聞き取り問題は出ません（Chrome や Edge なら使えることが多いです）。");
+  if(!voiceOK)msgs.push("音声ファイルを読み込めなかったため、聞き取り問題は出ません。");
   if(!SR)msgs.push("音声認識に対応していないブラウザです。「言ってみる」は、答えを見て自分で判定する形になります（Chrome / Edge なら自動判定）。");
   el.textContent=msgs.join(" ");el.classList.toggle("hidden",!msgs.length);
 }
 function lvDots(lv){let s="";for(let i=0;i<5;i++)s+=i<lv?"●":"○";return s;}
 function renderHome(){
   $("hTries").textContent=store.tries;
-  $("hAns").textContent=store.answered;
+  $("hTime").textContent=fmtDur(store.timeMs);
   $("hAcc").textContent=store.answered?Math.round(store.correct/store.answered*100)+"%":"—";
   $("hMaster").innerHTML=masteredIn(PH)+'<small>/'+PH.length+'</small>';
   let h="";
@@ -910,6 +910,7 @@ function renderHome(){
   $("mixProg").textContent="習得 "+masteredIn(PH)+"/"+PH.length;
   document.querySelectorAll(".mode-btn[data-mode]").forEach(b=>b.classList.toggle("on",b.dataset.mode===curMode));
   document.querySelectorAll(".mode-btn[data-slow]").forEach(b=>b.classList.toggle("on",(b.dataset.slow==="1")===!!store.slow));
+  document.querySelectorAll(".mode-btn[data-voice]").forEach(b=>b.classList.toggle("on",b.dataset.voice===(store.voice==="m"?"m":"f")));
   document.querySelectorAll("#secList .start-btn").forEach(b=>b.addEventListener("click",()=>startRound(b.dataset.sec)));
   renderStreak();renderVoiceNote();
 }
@@ -917,6 +918,7 @@ function renderStreak(){
   const el=$("streak");if(!el||!Q)return;const r=Q.streak();
   el.innerHTML='連続 '+r.n+'日'+(r.doneToday?' <small>今日済</small>':(r.n>0?' <small>今日はまだ</small>':''));
 }
+function fmtDur(ms){const m=Math.round((ms||0)/60000);return m<60?m+"分":Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
 function fmtTime(ms){const s=ms/1000,m=Math.floor(s/60);return m>0?(m+"分"+(s-m*60).toFixed(0)+"秒"):(s.toFixed(1)+"秒");}
 
 function startRound(sec){
@@ -1155,6 +1157,7 @@ function finishRound(){
   clearInterval(timerHandle);stopSpeak();
   const N=questions.length,time=performance.now()-roundStart;
   store.tries++;store.answered+=N;store.correct+=roundCorrect;
+  store.timeMs=(store.timeMs||0)+Math.min(time,N*90000);   // 勉強時間（放置分は1問90秒まで）
   if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
   save();
   if(Q)Q.markToday();
@@ -1166,7 +1169,7 @@ function finishRound(){
   const avg=questions.reduce((s,q)=>s+(q.rt||0),0)/N;
   $("rTime").innerHTML='所要時間 '+fmtTime(time)+' <span class="best">（1問あたり '+(avg/1000).toFixed(1)+'秒）</span>';
   const list=poolFor(curSec==="weak"?"mix":curSec);
-  $("rMastery").textContent=(curSec==="weak"||curSec==="mix"?"全体":"このセクション")+"の習得："+masteredIn(list)+" / "+list.length+"　（●が4つ以上で習得）";
+  $("rMastery").textContent=(curSec==="weak"||curSec==="mix"?"全体":"このセクション")+"の習得："+masteredIn(list)+" / "+list.length+"　（●が4つ以上で習得）　／　通算 "+fmtDur(store.timeMs)+"・累計 "+store.answered+"問";
   let h='<div class="ttl">今回のフレーズ（▶で音声）</div>';
   questions.forEach((q,i)=>{
     h+='<div class="rrow"><span class="mk '+(q.ok?"ok":"no")+'">'+(q.ok?"○":"✕")+'</span>'+
@@ -1195,7 +1198,8 @@ document.addEventListener("keydown",e=>{
   if(q.type==="speak"&&e.key==="Enter"){e.preventDefault();revealSelf(q);}
 });
 document.querySelectorAll(".mode-btn[data-mode]").forEach(b=>b.addEventListener("click",()=>{curMode=b.dataset.mode;store.mode=curMode;save();renderHome();}));
-document.querySelectorAll(".mode-btn[data-slow]").forEach(b=>b.addEventListener("click",()=>{store.slow=b.dataset.slow==="1";save();renderHome();speak("Bonjour !");}));
+document.querySelectorAll(".mode-btn[data-voice]").forEach(b=>b.addEventListener("click",()=>{store.voice=b.dataset.voice;save();renderHome();speak("Bonjour ! Comment allez-vous ?");}));
+document.querySelectorAll(".mode-btn[data-slow]").forEach(b=>b.addEventListener("click",()=>{store.slow=b.dataset.slow==="1";save();renderHome();speak("Bonjour ! Comment allez-vous ?");}));
 $("mixBtn").addEventListener("click",()=>startRound("mix"));
 $("weakBtn").addEventListener("click",()=>startRound("weak"));
 $("againBtn").addEventListener("click",()=>{if(curSec==="weak"&&weakList().length<3){goHome();return;}startRound(curSec);});
@@ -1203,7 +1207,7 @@ $("backBtn").addEventListener("click",goHome);
 $("toHomeBtn").addEventListener("click",goHome);
 $("resetBtn").addEventListener("click",()=>{
   if(!confirmReset())return;
-  store={tries:0,answered:0,correct:0,best:null,lv:{},wrong:{},seen:{},mode:curMode,slow:store.slow};save();renderHome();
+  store={tries:0,answered:0,correct:0,best:null,lv:{},wrong:{},seen:{},mode:curMode,slow:store.slow,voice:store.voice};save();renderHome();
 });
 let resetArmed=0;
 function confirmReset(){ // 2回押しで確定（誤操作防止、ダイアログを使わない）

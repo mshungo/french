@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=1">
+<link rel="stylesheet" href="grammar.css?v=2">
 </head>
 <body>
 <div class="wrap">
@@ -24,20 +24,22 @@
 <script>
 (function(){
   var L=[
-    {no:1,t:"名詞と冠詞",d:"名詞の性・数／不定・部分・定冠詞／C'est・Il y a・Voici",n:1,c:"#cf8aa0",cw:"#faeef2"},
-    {no:2,t:"主語・動詞・限定詞",d:"主語人称代名詞／-er動詞／être・avoir／ce・mon など",n:2,c:"#d6a96f",cw:"#faf2e7"},
-    {no:3,t:"形容詞・否定・疑問",d:"形容詞／-ir動詞／否定文・疑問文・答えかた",n:3,c:"#8db79b",cw:"#eef5f0"},
+    {no:1,t:"名詞と冠詞",d:"名詞の性・数／不定・部分・定冠詞／C'est・Il y a・Voici",n:108,c:"#cf8aa0",cw:"#faeef2"},
+    {no:2,t:"主語・動詞・限定詞",d:"主語人称代名詞／-er動詞／être・avoir／ce・mon など",n:105,c:"#d6a96f",cw:"#faf2e7"},
+    {no:3,t:"形容詞・否定・疑問",d:"形容詞／-ir動詞／否定文・疑問文・答えかた",n:97,c:"#8db79b",cw:"#eef5f0"},
     {no:4,t:"Leçon 4",d:"準備中",soon:true,c:"#92a6cf",cw:"#eef1f8"},
     {no:5,t:"Leçon 5",d:"準備中",soon:true,c:"#b48aa8",cw:"#f6eef3"},
     {no:6,t:"Leçon 6",d:"準備中",soon:true,c:"#c0a06a",cw:"#f8f1e4"}
   ];
+  function fmtDur(ms){var m=Math.round((ms||0)/60000);return m<60?m+"分":Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
   var who=(window.Quiz&&Quiz.user())?Quiz.user().id:"guest";
   var h="";
   L.forEach(function(l){
     var prog="";
     if(!l.soon){try{var s=JSON.parse(localStorage.getItem("gramQuiz_L"+l.no+"_v1_"+who));
-      if(s&&s.tries){var m=0;for(var k in s.it){var x=s.it[k];if(x.last===1&&x.c>=2)m++;}
-        prog='<span class="sb-prog"><span>'+s.tries+'回 ・ 習得 '+m+'問</span></span>';}}catch(e){}}
+      if(s&&s.tries){var m=0;for(var k in s.it){var x=s.it[k];var run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);if(!x.wk&&(run>=2||x.m))m++;}
+        var pct=l.n?Math.round(m/l.n*100):0;
+        prog='<span class="sb-prog"><span>'+s.tries+'回 ・ '+fmtDur(s.timeMs)+'</span><span>習得 '+pct+'%'+(s.answered>=300?' ・ <b class="clr">CLEAR</b>':'')+(m>=l.n?' ・ <b class="clr">勲章</b>':'')+'</span></span>';}}catch(e){}}
     h+=(l.soon?'<div class="start-btn soon"':'<a class="start-btn" href="grammar-l'+l.no+'.html"')+' style="--vc:'+l.c+';--vcw:'+l.cw+'">'+
       '<i class="wk">L'+l.no+'</i><span class="sb-name">'+(l.soon?l.t:"Leçon "+l.no+"　"+l.t)+'<span class="sb-desc">'+l.d+'</span></span>'+prog+
       (l.soon?'</div>':'</a>');

@@ -60,3 +60,10 @@ body{
 .card.conj{--c:#b16880;--w:#faeef2;}
 .card.grammar{--c:#6c9a7f;--w:#eef5f0;}
 .card.talk{--c:#7186b4;--w:#eef1f8;}
+
+.sumgrid{display:grid;grid-template-columns:repeat(4,1fr);margin:16px 0 4px;border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#fdf9f6;}
+.sum{padding:12px 6px;text-align:center;}
+.sum+.sum{border-left:1px solid var(--rule);}
+.sum .n{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:24px;line-height:1.1;color:var(--ink);}
+.sum .l{font-size:9.5px;color:var(--ink-faint);letter-spacing:1px;margin-top:4px;}
+@media(max-width:430px){.sum .n{font-size:19px;}}

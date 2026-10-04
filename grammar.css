@@ -377,3 +377,17 @@
   .start-btn.soon{opacity:.5;cursor:default;}
   .start-btn.soon:hover{transform:none;box-shadow:none;}
   #app{width:100%;display:flex;justify-content:center;}
+
+  .goal{margin:14px 0 0;padding:12px 16px;border:1px solid var(--rule);border-radius:16px;background:#fdfaf8;}
+  .goal-row{display:flex;align-items:center;gap:10px;margin:4px 0;font-size:12px;color:var(--ink-soft);}
+  .goal-l{flex:none;width:64px;}
+  .goal-bar{flex:1;height:6px;background:var(--rule);border-radius:6px;overflow:hidden;}
+  .goal-bar span{display:block;height:100%;background:linear-gradient(90deg,#d6a96f,#c0a06a);border-radius:6px;}
+  .goal-bar.m span{background:linear-gradient(90deg,#8db79b,#6c9a7f);}
+  .goal-n{flex:none;font-variant-numeric:tabular-nums;min-width:86px;text-align:right;}
+  .badges{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .badge{font-size:11px;letter-spacing:1px;padding:4px 12px;border-radius:20px;border:1px dashed var(--rule);color:var(--ink-faint);}
+  .badge.on{border:1px solid #c0a06a;color:#9a7b45;background:linear-gradient(135deg,#fff4cf,#ffe9a8);font-weight:600;}
+  .badge.medal.on{border-color:#b8860b;color:#8a6200;}
+  .heard.fast{color:var(--good-ink);font-weight:600;}
+  .sb-prog b.clr{color:#9a7b45;font-weight:700;letter-spacing:.5px;}

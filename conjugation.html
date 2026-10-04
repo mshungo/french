@@ -677,7 +677,7 @@ let questions=[],idx=0,roundCorrect=0,locked=false,misses=[];
 let curVerb=null;       // null=総まとめ
 let curMode="choice";   // "choice" | "write"
 let timeAttack = (typeof store.timeAttack==="boolean") ? store.timeAttack : true;
-let roundStart=0, roundTime=0, timerHandle=null;
+let roundStart=0, roundTime=0, timerHandle=null, roundBegin=0;
 
 function goHome(){clearInterval(timerHandle);document.body.removeAttribute("data-verb");renderHome();show(homeScreen);}
 function renderHome(){
@@ -701,6 +701,7 @@ function renderHome(){
 }
 
 function startRound(verbFilter){
+  roundBegin=performance.now();
   curVerb = verbFilter || null;
   document.body.dataset.verb = curVerb || "mix";
   ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();
@@ -810,6 +811,7 @@ function finishRound(){
   clearInterval(timerHandle);
   roundTime = timeAttack ? (performance.now()-roundStart) : null;
   store.tries++;store.answered+=ROUND;store.correct+=roundCorrect;
+  store.timeMs=(store.timeMs||0)+Math.min(performance.now()-roundBegin,ROUND*90000);   // 勉強時間（放置分は1問90秒まで）
   if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
   // クリアタイム＝タイムアタック有効かつ全問正解時のみ、そのセクションのベストを更新
   const sec = curVerb || "mix";

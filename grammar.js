@@ -18,6 +18,8 @@ window.T=function(sec,inst,src,a,ex,x){add(Object.assign({t:"t",sec,inst,src,a:a
 window.B=function(sec,ja,a,extra,ex,x){add(Object.assign({t:"b",sec,ja,a:[a],extra:extra||[],ex},x||{}));};
 
 const ROUND=10;
+const CLEAR_ANS=300;      // 累計解答数がこれに達したら「クリア」（約1時間の練習の目安）
+const FAST_MS=5000;       // 記述で5秒以内に正解したら、その場で「習得」
 const $=id=>document.getElementById(id);
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -61,14 +63,19 @@ function joinTiles(ws){
 let L,store,KEY,WHO;
 function load(){
   try{const r=JSON.parse(localStorage.getItem(KEY));if(r&&typeof r.tries==="number"){r.it=r.it||{};return r;}}catch(e){}
-  return {tries:0,answered:0,correct:0,best:null,it:{},mode:"choice"};
+  return {tries:0,answered:0,correct:0,best:null,it:{},mode:"choice",timeMs:0};
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
-function st(it){return store.it[it.id]||{c:0,w:0,last:null};}
-function mastered(it){const s=st(it);return s.last===1&&s.c>=2;}
+function st(it){const s=store.it[it.id]||{c:0,w:0,last:null};if(s.run==null)s.run=(s.last===1?Math.min(s.c,1):0);return s;}
+/* 習得：2回連続正解、または記述で5秒以内に正解（苦手が付いていない問題のみ） */
+function mastered(it){const s=st(it);return !s.wk&&(s.run>=2||s.m===true);}
+/* 苦手：間違えたら付き、2回連続で正解するまで消えない */
+function weak(it){return !!st(it).wk;}
+function fmtDur(ms){const m=Math.round((ms||0)/60000);if(m<60)return m+"分";return Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
+function pctMastered(){return ITEMS.length?Math.round(ITEMS.filter(mastered).length/ITEMS.length*100):0;}
 function itemsOf(sec){
   if(sec==="mix")return ITEMS.slice();
-  if(sec==="weak")return ITEMS.filter(it=>st(it).last===0);
+  if(sec==="weak")return ITEMS.filter(weak);
   return ITEMS.filter(it=>it.sec===sec);
 }
 
@@ -90,12 +97,13 @@ function shell(){
 '    <div class="stat-grid">'+
 '      <div class="stat"><div class="n" id="hTries">0</div><div class="l">挑戦回数</div></div>'+
 '      <div class="stat acc"><div class="n" id="hAcc">—</div><div class="l">通算正答率</div></div>'+
-'      <div class="stat"><div class="n" id="hMaster">0</div><div class="l">習得した問題</div></div>'+
-'      <div class="stat"><div class="n" id="hAns">0</div><div class="l">累計解答</div></div>'+
+'      <div class="stat"><div class="n" id="hMaster">0</div><div class="l">習得率</div></div>'+
+'      <div class="stat"><div class="n" id="hTime">0分</div><div class="l">勉強時間</div></div>'+
 '    </div>'+
+'    <div class="goal" id="goal"></div>'+
 '    <div class="mode-row"><span class="mode-label">出題形式</span><div class="mode-toggle">'+
 '      <button class="mode-btn" data-mode="choice">選択式</button><button class="mode-btn" data-mode="write">記述式</button></div></div>'+
-'    <div class="guide"><b>選択式</b>は選択肢から選び、<b>記述式</b>は同じ問題を自分で書いて答えます。書きかえ・並べかえの問題はどちらでも出ます。<br>2回続けて正解した問題は「習得」になり、出にくくなります。間違えた問題は「苦手」として優先して出ます。</div>'+
+'    <div class="guide"><b>選択式</b>は選択肢から選び、<b>記述式</b>は同じ問題を自分で書いて答えます。書きかえ・並べかえの問題はどちらでも出ます。<br>2回続けて正解すると「習得」（記述で<b>5秒以内</b>に正解なら一発で習得）。間違えた問題は「苦手」になり、2回続けて正解するまで残ります。<br>累計'+CLEAR_ANS+'問（約1時間）で<b>クリア</b>、全問習得で<b>勲章</b>。</div>'+
 '    <div class="section-label">項目を選択</div>'+
 '    <div class="sections">'+secBtns+'</div>'+
 '    <div class="extra-row">'+
@@ -144,10 +152,19 @@ function setAccent(k){
 function fmtTime(ms){const s=ms/1000,m=Math.floor(s/60);return m>0?(m+"分"+(s-m*60).toFixed(0)+"秒"):(s.toFixed(1)+"秒");}
 
 function renderHome(){
-  $("hTries").textContent=store.tries;$("hAns").textContent=store.answered;
+  $("hTries").textContent=store.tries;
   $("hAcc").textContent=store.answered?Math.round(store.correct/store.answered*100)+"%":"—";
   const m=ITEMS.filter(mastered).length;
-  $("hMaster").innerHTML=m+'<small>/'+ITEMS.length+'</small>';
+  $("hMaster").innerHTML=pctMastered()+'<small>%</small>';
+  $("hTime").textContent=fmtDur(store.timeMs);
+  const ans=store.answered,clr=ans>=CLEAR_ANS,all=m===ITEMS.length;
+  $("goal").innerHTML=
+    '<div class="goal-row"><span class="goal-l">クリアまで</span><span class="goal-bar"><span style="width:'+Math.min(100,Math.round(ans/CLEAR_ANS*100))+'%"></span></span>'+
+    '<span class="goal-n">'+Math.min(ans,CLEAR_ANS)+' / '+CLEAR_ANS+'問</span></div>'+
+    '<div class="goal-row"><span class="goal-l">習得</span><span class="goal-bar m"><span style="width:'+pctMastered()+'%"></span></span>'+
+    '<span class="goal-n">'+m+' / '+ITEMS.length+'問</span></div>'+
+    '<div class="badges"><span class="badge'+(clr?' on':'')+'">'+(clr?'CLEAR':'クリア前')+'</span>'+
+    '<span class="badge medal'+(all?' on':'')+'">'+(all?'勲章 · Maîtrise':'勲章：全問習得で')+'</span></div>';
   L.sections.forEach(s=>{
     const list=itemsOf(s.k),mm=list.filter(mastered).length;
     const el=document.querySelector('[data-prog="'+s.k+'"]');
@@ -166,7 +183,7 @@ function buildRound(sec){
   const pool=itemsOf(sec).map(it=>{
     const s=st(it);let pr=Math.random()*1.6;
     if(s.last===null)pr+=0.4;
-    if(s.last===0)pr-=1.5;
+    if(s.wk)pr-=1.5;
     if(mastered(it))pr+=2.2;
     pr+=Math.min(s.c,4)*0.25;
     return {it,pr};
@@ -287,7 +304,12 @@ function grade(r,chosen){
   locked=true;q.rt=performance.now()-q.t0;
   q.ok=r>0;q.accent=(r===1);q.chosen=chosen;
   const s=st(q.it);
-  if(q.ok){s.c++;s.last=1;roundCorrect++;}else{s.w++;s.last=0;}
+  q.fast=false;
+  if(q.ok){
+    s.c++;s.last=1;s.run=(s.run||0)+1;roundCorrect++;
+    if(s.wk&&s.run>=2)s.wk=false;                       // 苦手は2回連続正解で解除
+    if(!s.wk&&(q.kind==="w"||q.kind==="t")&&q.rt<=FAST_MS){if(!s.m)q.fast=true;s.m=true;}  // 記述で5秒以内 → 即習得
+  }else{s.w++;s.last=0;s.run=0;s.wk=true;s.m=false;}
   store.it[q.it.id]=s;save();
   const fb=$("fb");
   if(q.ok){fb.className="fb show ok";fb.textContent=pick(["Bien !","Très bien !","Parfait !","Exact !","Bravo !"]);if(typeof playCorrect==="function")playCorrect();}
@@ -302,6 +324,8 @@ function answerLine(q){
 function showAfter(q){
   const it=q.it,a=$("after");a.classList.remove("hidden");
   let extra="";
+  if(q.fast)extra+='<div class="heard fast">5秒以内に正解 → 習得！</div>';
+  else if(q.ok&&weak(it))extra+='<div class="heard">苦手を解除するには、もう1回続けて正解しよう</div>';
   if(q.accent)extra+='<div class="heard">正解。ただしつづりは <b>'+esc(it.a[0])+'</b>（アクセント記号に注意）</div>';
   if(!q.ok&&q.chosen!=null)extra+='<div class="heard">あなたの答え：<s>'+esc(q.chosen)+'</s></div>';
   const alts=it.a.slice(1);
@@ -321,7 +345,9 @@ function next(){
 function finishRound(){
   clearInterval(timerHandle);
   const N=questions.length,time=performance.now()-roundStart;
+  const wasClear=store.answered>=CLEAR_ANS,wasAll=ITEMS.every(mastered)&&false;
   store.tries++;store.answered+=N;store.correct+=roundCorrect;
+  store.timeMs=(store.timeMs||0)+Math.min(time,N*90000);   // 放置した時間は数えすぎないよう1問90秒まで
   if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
   save();if(window.Quiz)Quiz.markToday();
   const pct=Math.round(roundCorrect/N*100);
@@ -331,7 +357,10 @@ function finishRound(){
   $("rMsg").textContent=pct===100?"Parfait ! 全問正解です。":pct>=80?"よくできました。":pct>=50?"あと少し。下のポイントを確認しよう。":"ポイントを読んでから、もう一度挑戦しよう。";
   $("rTime").innerHTML='所要時間 '+fmtTime(time);
   const list=itemsOf(curSec==="weak"?"mix":curSec);
-  $("rMastery").textContent=(curSec==="mix"||curSec==="weak"?"Leçon "+L.no+" 全体":"この項目")+"の習得："+list.filter(mastered).length+" / "+list.length;
+  let mt=(curSec==="mix"||curSec==="weak"?"Leçon "+L.no+" 全体":"この項目")+"の習得："+list.filter(mastered).length+" / "+list.length+"　／　通算 "+fmtDur(store.timeMs);
+  if(!wasClear&&store.answered>=CLEAR_ANS)mt+="　★ Leçon "+L.no+" クリア！";
+  if(ITEMS.every(mastered)&&!store.medal){store.medal=true;save();mt+="　勲章獲得：全問習得！";}
+  $("rMastery").textContent=mt;
   const miss=questions.filter(q=>!q.ok);
   let h='<div class="ttl">'+(miss.length?"間違えた問題":"全問正解")+'</div>';
   miss.forEach(q=>{
