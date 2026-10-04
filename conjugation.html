@@ -932,7 +932,7 @@ function renderAcct(){
   const u=Q.user();
   const n=u?Q.pendingCount():0;
   document.getElementById("acctState").textContent=
-    u?(u.name+(n?"（未送信 "+n+"件）":"")):(Q.SYNC_ON?"":"ゲスト（記録は端末内のみ）");
+    u?(u.name+(n?"（未送信 "+n+"件）":"")):"";
   const resetBtn=document.getElementById("resetBtn");
   if(resetBtn)resetBtn.style.display=u?"none":"";
 }

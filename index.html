@@ -76,7 +76,7 @@
   function renderMenu(){
     var u=Q.user();
     $("hello").textContent=u?u.name:"メニュー";
-    $("who").textContent=u?"ID: "+u.id:(Q.SYNC_ON?"":"ゲストモード（記録はこの端末内のみ）");
+    $("who").textContent=u?"ID: "+u.id:(Q.SYNC_ON?"":"記録はこの端末に保存されます");
     $("logoutBtn").classList.toggle("hidden",!u);
     var st=null;
     if(u){var c=Q.cached();st=c&&c.apps&&c.apps.conj;}else{st=guestConj();}
