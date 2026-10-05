@@ -22,9 +22,12 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-05b';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-05c';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
-const SHEET = { roster: '名簿', results: '結果', summary: '集計' };
+const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック' };
+const PRACTICE_ID = 'NARAF26';   // 練習用ID（名簿には載せない）。フィードバックの送信だけ受け付ける
+const FEEDBACK_HEADERS = ['日時', '学生ID', '氏名', 'ページ', '種類', 'コメント', 'そのときの画面', '端末', '対応メモ'];
+const FEEDBACK_KINDS = ['答えがおかしい', '選択肢がおかしい', '訳・解説がおかしい', '音声・表示の不具合', 'その他'];
 const ID_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';   // 0/O/1/I/L など紛らわしい文字を除く
 const ID_LEN = 4;             // 名字のあとにつける英数字の数
 const ID_RE = /^[A-Z0-9_-]{3,20}$/;   // 受け付けるIDの形（手入力のIDも使えるよう、3〜20文字の英数字と - _）
@@ -34,7 +37,9 @@ const LIMIT = {
   submitMinGapSec: 5,    // 結果の送信は5秒に1回まで
   submitPerHour: 60,     // 1時間に60回まで（10問×60回＝600問）
   submitPerDay: 300,     // 1日に300回まで
-  readPerMin: 20         // 記録の読み込み（ログイン・学習記録の表示）は1分に20回まで
+  readPerMin: 20,        // 記録の読み込み（ログイン・学習記録の表示）は1分に20回まで
+  feedbackPerHour: 20,   // 問題の報告は1つのIDにつき1時間20件まで
+  feedbackPerDay: 60     // 1日60件まで
 };
 const SECTION_LABEL = { 'être': 'être', aller: 'aller', avoir: 'avoir', faire: 'faire', mix: '総まとめ' };
 const MODE_LABEL = { choice: '選択式', write: '記述式' };
@@ -74,8 +79,15 @@ function normId_(s) {
 function normPw_(s) {
   return String(s == null ? '' : s).normalize('NFKC').replace(/\s+/g, '').toLowerCase();
 }
+// スクリプトのプロパティ PASSWORD（名前の大文字小文字・前後の空白は問わない）。なければシート「設定」の B1。
 function password_() {
-  return normPw_(PropertiesService.getScriptProperties().getProperty('PASSWORD'));
+  const props = PropertiesService.getScriptProperties().getProperties();
+  for (const k in props) if (k.trim().toUpperCase() === 'PASSWORD' && normPw_(props[k])) return normPw_(props[k]);
+  try {
+    const sh = ss_().getSheetByName('設定');
+    if (sh) return normPw_(sh.getRange('B1').getValue());
+  } catch (e) {}
+  return '';
 }
 
 function json_(obj) {
@@ -91,7 +103,8 @@ function handle_(req) {
   if (!pass) return { ok: false, error: 'nopass' };   // 共通パスワードが未設定
   const id = normId_(req.id);
   const pwOk = normPw_(req.pw) === pass;
-  const name = (pwOk && ID_RE.test(id)) ? lookupRoster_(ss, id) : null;   // パスワード違い・名簿にいなければ null
+  let name = (pwOk && ID_RE.test(id)) ? lookupRoster_(ss, id) : null;   // パスワード違い・名簿にいなければ null
+  if (name === null && pwOk && id === PRACTICE_ID && req.action === 'feedback') name = '練習用';
   if (name === null) {
     addFail_(cache);
     return { ok: false, error: 'auth' };
@@ -109,6 +122,16 @@ function handle_(req) {
     if (!v) return { ok: false, error: 'bad_request' };
     appendResult_(ss, user, v);
     return { ok: true, user: user, stats: statsFor_(ss, id) };
+  }
+  if (req.action === 'feedback') {
+    if (!rateOk_(cache, 'f:h:' + id, LIMIT.feedbackPerHour, 3600) || !rateOk_(cache, 'f:d:' + id, LIMIT.feedbackPerDay, 86400)) return { ok: false, error: 'rate' };
+    const f = req.feedback || {};
+    const kind = FEEDBACK_KINDS.indexOf(f.kind) >= 0 ? f.kind : 'その他';
+    const text = safe_(f.text, 500), ctx = safe_(f.context, 800);
+    if (!text && !ctx) return { ok: false, error: 'bad_request' };
+    const sh = ensureSheet_(ss, SHEET.feedback, FEEDBACK_HEADERS);
+    sh.appendRow([new Date(), id, safe_(user.name, 40), safe_(f.page, 80), kind, text, ctx, safe_(f.device, 120), '']);
+    return { ok: true };
   }
   return { ok: false, error: 'bad_request' };
 }
@@ -342,6 +365,7 @@ function setup() {
   roster.setFrozenRows(1);
   roster.getRange(2, 1, 500, 1).setNumberFormat('@');
   resultsSheet_(ss);
+  ensureSheet_(ss, SHEET.feedback, FEEDBACK_HEADERS);
   buildSummary_(ss);
   ss.toast('シートを用意しました。名簿のB列に氏名、C列に名字のローマ字を入れて、メニューからIDを発行してください。');
 }

@@ -154,6 +154,16 @@
     } catch (e) { return "error"; }
   }
 
+  /* 問題の報告（練習用IDからも送れる）。戻り値: "ok" | "rate" | "auth" | "error" | "noauth" */
+  async function feedback(fb) {
+    if (!SYNC_ON || !user) return "noauth";
+    try {
+      var res = await call(user, "feedback", { feedback: fb });
+      if (res.ok) return "ok";
+      return res.error === "rate" ? "rate" : (res.error === "auth" || res.error === "locked") ? "auth" : "error";
+    } catch (e) { return "error"; }
+  }
+
   /* ---- ログイン／ログアウト ---- */
   /* 本人の学習記録（サーバーにある分）。戻り値: {ok, history:[{t,app,sec,score,total,dur}]} */
   async function history() {
@@ -175,7 +185,7 @@
       var h = ""; try { h = await sha256("naralingo:" + pw); } catch (e) {}
       if (h !== PRACTICE.pwHash) return { ok: false, error: "auth", id: id };
       clearPractice();
-      user = { id: id, name: PRACTICE.name, pw: "", practice: true };
+      user = { id: id, name: PRACTICE.name, pw: pw, practice: true };   // pw はフィードバック送信にだけ使う（sessionStorage のみ）
       keep(user, false);   // 練習用はブラウザを閉じたら終わり
       return { ok: true, user: user };
     }
@@ -205,7 +215,7 @@
     todayJST: todayJST, days: days, markToday: markToday, streak: streak,
     cached: cached, onStats: onStats,
     pendingCount: function () { return getPending().length; },
-    submit: submit, flush: flush, refresh: refresh, history: history,
+    submit: submit, flush: flush, refresh: refresh, history: history, feedback: feedback,
     login: login, logout: logout, requireLogin: requireLogin
   };
 })();
