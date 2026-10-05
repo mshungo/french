@@ -106,8 +106,8 @@
   }
 
   /* ---- サーバー呼び出し ---- */
-  function call(cred, action, extra) {
-    var ctl = new AbortController(); var tm = setTimeout(function () { ctl.abort(); }, 20000);
+  function call(cred, action, extra, ms) {
+    var ctl = new AbortController(); var tm = setTimeout(function () { ctl.abort(); }, ms || 20000);
     var body = { action: action, id: cred.id, pw: cred.pw }; for (var k in (extra || {})) body[k] = extra[k];
     return fetch(CFG.SCRIPT_URL, { method: "POST", signal: ctl.signal, body: JSON.stringify(body) })
       .then(function (r) { return r.json(); })
@@ -190,14 +190,15 @@
       return { ok: true, user: user };
     }
     var res;
-    try { res = await call({ id: id, pw: pw }, "sync"); } catch (e) { return { ok: false, error: "network", id: id, detail: String(e && e.message || e) }; }
+    try { res = await call({ id: id, pw: pw }, "sync", null, 35000); }   // サーバーが眠っていると最初の応答に時間がかかるので長めに待つ
+    catch (e) { return { ok: false, error: (e && e.name === "AbortError") ? "timeout" : "network", id: id, detail: String(e && e.message || e) }; }
     if (!res.ok) return { ok: false, id: id, version: res.version || "旧版",
       error: (res.error === "locked" || res.error === "rate" || res.error === "auth" || res.error === "nopass") ? res.error : "server",
       detail: (res.error || "") + (res.message ? ": " + res.message : "") };
     user = { id: id, name: (res.user && res.user.name) || id, pw: pw, practice: false };
     keep(user, remember);
     setCached(res.stats);
-    if (getPending().length) await flush();
+    if (getPending().length) flush();   // 未送信の結果は裏で送る（ログインは待たせない）
     return { ok: true, user: user };
   }
   function logout() { if (user && user.practice) clearPractice(); user = null; lsDel(LOGIN_KEY); ssDel(LOGIN_KEY); }
