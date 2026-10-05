@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 5 補語人称代名詞 — Naralingo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
+<script src="config.js?v=4"></script>
+<script src="common.js?v=9"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="grammar.css?v=3">
+<script src="sound.js?v=1"></script>
+<script src="badge.js?v=2"></script>
+<script src="grammar.js?v=6"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== Leçon 5：faire・partir・sortir、補語人称代名詞、強勢形、非人称構文・所有代名詞 ===== */
+window.LESSON={no:5,title:"補語人称代名詞",sub:"faire · partir · sortir · pronoms compléments · pronoms toniques",
+  lead:"faire・partir・sortir の活用、直接・間接目的補語の代名詞とその語順、強勢形、非人称構文と所有代名詞を練習します。",
+  sections:[
+  {k:"verb",t:"faire・partir・sortir",d:"直説法現在（Grammaire 1）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
+   memo:'<table><tr><td class="fr">je fais</td><td class="fr">nous faisons</td></tr><tr><td class="fr">tu fais</td><td class="fr">vous faites</td></tr><tr><td class="fr">il / elle fait</td><td class="fr">ils / elles font</td></tr></table>'+
+   '<p>faisons の発音に注意：［フゾン］</p>'+
+   '<table><tr><td class="fr">je pars</td><td class="fr">nous partons</td></tr><tr><td class="fr">tu pars</td><td class="fr">vous partez</td></tr><tr><td class="fr">il / elle part</td><td class="fr">ils / elles partent</td></tr></table>'+
+   '<p>sortir も同じ型：<span class="fr">je sors, il sort, nous sortons, ils sortent</span></p>'},
+  {k:"cod",t:"補語人称代名詞",d:"直接目的補語・間接目的補語（Grammaire 2-①）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+   memo:'<table><tr><td>主語</td><td>直接目的「～を」</td><td>間接目的「～に」</td></tr>'+
+   '<tr><td class="fr">je</td><td class="fr">me (m\')</td><td class="fr">me (m\')</td></tr><tr><td class="fr">tu</td><td class="fr">te (t\')</td><td class="fr">te (t\')</td></tr>'+
+   '<tr><td class="fr">il / elle</td><td class="fr">le (l\') / la (l\')</td><td class="fr">lui</td></tr><tr><td class="fr">nous</td><td class="fr">nous</td><td class="fr">nous</td></tr>'+
+   '<tr><td class="fr">vous</td><td class="fr">vous</td><td class="fr">vous</td></tr><tr><td class="fr">ils / elles</td><td class="fr">les</td><td class="fr">leur</td></tr></table>'+
+   '<p>直接目的補語は人も物も受ける。間接目的補語は「à＋名詞（おもに人）」を受ける。</p>'+
+   '<p>動詞の<b>直前</b>に置く：<span class="fr">Je l\'achète.</span>　否定文：<span class="fr">Je ne la trouve pas.</span>　倒置：<span class="fr">La fermes-tu ?</span></p>'+
+   '<p>aller＋不定詞などでは、不定詞の直前：<span class="fr">Je vais lui téléphoner.</span></p>'},
+  {k:"ordre",t:"代名詞2つの語順",d:"直接目的＋間接目的（Grammaire 2-②）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
+   memo:'<p>主語 (＋ne)＋<span class="fr">me / te / nous / vous</span>＋<span class="fr">le / la / les</span>＋動詞 (＋pas)</p>'+
+   '<p>主語 (＋ne)＋<span class="fr">le / la / les</span>＋<span class="fr">lui / leur</span>＋動詞 (＋pas)</p>'+
+   '<p><span class="fr">Je vous prête ce stylo. → Je vous le prête.</span><br><span class="fr">J\'offre ce sac à Julie. → Je le lui offre.</span></p>'+
+   '<p>否定文：<span class="fr">Paul ne me les montre pas.</span>　倒置：<span class="fr">Le leur cache-t-elle ?</span></p>'},
+  {k:"ton",t:"人称代名詞の強勢形",d:"moi, toi, lui…（Grammaire 3）",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8",
+   memo:'<table><tr><td class="fr">je → moi</td><td class="fr">nous → nous</td></tr><tr><td class="fr">tu → toi</td><td class="fr">vous → vous</td></tr><tr><td class="fr">il / elle → lui / elle</td><td class="fr">ils / elles → eux / elles</td></tr></table>'+
+   '<p>① 主語の強調：<span class="fr">Moi, je suis étudiante.</span></p>'+
+   '<p>② 前置詞のあと：<span class="fr">avec moi, chez eux, à toi</span>（être à＋強勢形「～のものだ」）</p>'+
+   '<p>③ C\'est のあと：<span class="fr">C\'est toi ?</span>　④ et, ou で結ばれるとき：<span class="fr">Elle et moi, nous…</span></p>'},
+  {k:"imp",t:"非人称構文・所有代名詞",d:"Il pleut, Il faut… ／ le mien（En plus 1・2）",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
+   memo:'<p>天候：<span class="fr">Il pleut.</span>（pleuvoir）<span class="fr">Il neige.</span>　<span class="fr">Il fait beau / mauvais / chaud / froid.</span></p>'+
+   '<p><span class="fr">Il faut</span>＋名詞 / 不定詞「～が必要だ／～しなければならない」、<span class="fr">Il ne faut pas</span>＋不定詞「～してはいけない」</p>'+
+   '<p><span class="fr">Il vaut mieux</span>＋不定詞「～したほうがよい」、<span class="fr">Il est</span>＋形容詞＋<span class="fr">de</span>＋不定詞「…することは～だ」</p>'+
+   '<p>所有代名詞「～のもの」は、受ける名詞の性数で変わる：<span class="fr">le mien / la mienne / les miens / les miennes</span>（tien, sien も同じ）、<span class="fr">le nôtre / la nôtre / les nôtres</span>（vôtre, leur も同じ）</p>'}
+]};
+
+/* ---------- faire・partir・sortir ---------- */
+W("verb","Je ___ du tennis.（faire）","fais","faire：je fais。faire du ＋スポーツ「～をする」。",{ja:"私はテニスをする。"});
+W("verb","Tu ___ la cuisine ce soir ?（faire）","fais","faire：tu fais。",{ja:"今夜はきみが料理するの？"});
+W("verb","Nous ___ une promenade.（faire）","faisons","faire：nous faisons（発音は［フゾン］）。",{ja:"私たちは散歩する。"});
+W("verb","Qu'est-ce que vous ___ ?（faire）","faites","faire：vous faites（-ez ではない）。",{ja:"何をしているのですか？"});
+W("verb","Ils ___ leurs devoirs.（faire）","font","faire：ils font。",{ja:"彼らは宿題をする。"});
+W("verb","Je ___ demain pour Paris.（partir）","pars","partir：je pars。partir pour ～「～に向けて出発する」。",{ja:"私は明日パリに出発する。"});
+W("verb","Le train ___ à dix heures.（partir）","part","partir：il part。",{ja:"列車は10時に出発する。"});
+W("verb","Nous ___ en vacances en août.（partir）","partons","partir：nous partons。",{ja:"私たちは8月に休暇に出かける。"});
+W("verb","Vous ___ quand ?（partir）","partez","partir：vous partez。",{ja:"いつ出発しますか？"});
+W("verb","Elles ___ tôt le matin.（partir）","partent","partir：elles partent。",{ja:"彼女たちは朝早く出発する。"});
+W("verb","Tu ___ ce soir ?（sortir）","sors","sortir：tu sors。",{ja:"今夜出かけるの？"});
+W("verb","Elle ___ avec ses amis.（sortir）","sort","sortir：elle sort。",{ja:"彼女は友だちと出かける。"});
+W("verb","Nous ___ du cinéma à neuf heures.（sortir）","sortons","sortir：nous sortons。sortir de ～「～から出る」。",{ja:"私たちは9時に映画館を出る。"});
+W("verb","Ils ___ souvent le samedi.（sortir）","sortent","sortir：ils sortent。",{ja:"彼らは土曜日によく出かける。"});
+C("verb","Vous ___ du sport ?（faire）","faites",["faites","faisez","faisons"],"vous → faites。",{ja:"スポーツをしますか？"});
+C("verb","Ils ___ la vaisselle.（faire）","font",["font","faisent","fait"],"ils → font。",{ja:"彼らは皿洗いをする。"});
+C("verb","Il ___ froid aujourd'hui.（faire）","fait",["fait","fais","font"],"天候の il fait（非人称）。",{ja:"今日は寒い。"});
+C("verb","Tu ___ à quelle heure ?（partir）","pars",["pars","partes","part"],"tu → pars。",{ja:"何時に出発するの？"});
+C("verb","Elle ___ du bureau à six heures.（sortir）","sort",["sort","sors","sortent"],"elle → sort。",{ja:"彼女は6時に会社を出る。"});
+B("verb","週末は何をするの？","Qu'est-ce que tu fais ce week-end ?",["fait","qui"],"faire：tu fais。「何を」→ qu'est-ce que。");
+B("verb","私たちは明日の朝出発する。","Nous partons demain matin.",["partez","sortons"],"partir：nous partons。");
+
+/* ---------- 補語人称代名詞 ---------- */
+T("cod","« ce livre » を代名詞に","J'achète ce livre.",["Je l'achète."],"ce livre は直接目的補語（男性単数）→ le。母音の前で l'。");
+T("cod","« la télévision » を代名詞に","Je regarde la télévision.",["Je la regarde."],"直接目的補語（女性単数）→ la。動詞の直前に置く。");
+T("cod","« mes parents » を代名詞に","J'aime mes parents.",["Je les aime."],"直接目的補語（複数）→ les。");
+T("cod","« Marie » を代名詞に","Tu invites Marie ?",["Tu l'invites ?"],"直接目的補語（女性単数）→ la → 母音の前で l'。");
+T("cod","« Pierre et Luc » を代名詞に","Nous cherchons Pierre et Luc.",["Nous les cherchons."],"直接目的補語（複数）→ les。");
+T("cod","« à Julie » を代名詞に","Paul téléphone à Julie.",["Paul lui téléphone."],"à＋人（単数）は間接目的補語 → lui。");
+T("cod","« à ses amis » を代名詞に","Elle parle à ses amis.",["Elle leur parle."],"à＋人（複数）は間接目的補語 → leur（s はつかない）。");
+T("cod","« à ton père » を代名詞に","Tu ressembles à ton père.",["Tu lui ressembles."],"ressembler à ～「～に似ている」。à＋人 → lui。");
+T("cod","« ce film » を代名詞に","Nous ne regardons pas ce film.",["Nous ne le regardons pas."],"否定文：ne＋代名詞＋動詞＋pas。");
+T("cod","« à tes parents » を代名詞に","Tu ne téléphones pas à tes parents ?",["Tu ne leur téléphones pas ?"],"否定文：ne＋leur＋動詞＋pas。");
+T("cod","« la porte » を代名詞に","Fermes-tu la porte ?",["La fermes-tu ?"],"倒置疑問文：代名詞＋動詞-主語。");
+T("cod","« le gâteau » を代名詞に","Elle va faire le gâteau.",["Elle va le faire."],"aller＋不定詞では、代名詞は不定詞の直前に置く。");
+C("cod","Tu aimes ce chanteur ? ― Oui, je ___ aime beaucoup.","l'",["l'","le","lui"],"直接目的補語 le は母音の前で l'。",{ja:"この歌手好き？ ― うん、大好き。"});
+C("cod","Vous écoutez la radio ? ― Oui, je ___ écoute le matin.","l'",["l'","la","lui"],"la も母音の前で l'。",{ja:"ラジオを聞きますか？ ― はい、朝に聞きます。"});
+C("cod","Tu téléphones à tes parents ? ― Oui, je ___ téléphone le dimanche.","leur",["leur","les","leurs"],"téléphoner à＋人（複数）→ 間接目的補語 leur。",{ja:"両親に電話する？ ― うん、日曜日に電話するよ。"});
+C("cod","Il parle à Julie ? ― Oui, il ___ parle.","lui",["lui","la","l'"],"parler à＋人（単数）→ lui（男女同形）。",{ja:"彼はジュリーに話しかけるの？ ― うん、話しかけるよ。"});
+C("cod","Tu m'aimes ? ― Oui, je ___ aime.","t'",["t'","te","m'"],"「きみを」→ te。母音の前で t'。",{ja:"私のこと好き？ ― うん、好きだよ。"});
+C("cod","Vous nous invitez ? ― Oui, nous ___ invitons.","vous",["vous","nous","les"],"「あなたたちを」→ vous。",{ja:"私たちを招待してくれるのですか？ ― ええ、招待します。"});
+C("cod","Il ___ donne un cadeau.（私に）","me",["me","moi","je"],"「私に」（間接目的補語）→ me。",{ja:"彼は私にプレゼントをくれる。"});
+C("cod","Ces fleurs ? Je ___ achète pour ma mère.","les",["les","leur","la"],"ces fleurs（複数・直接目的）→ les。",{ja:"この花？ 母のために買うの。"});
+C("cod","Tu ne regardes pas ce match ? ― Non, je ne ___ regarde pas.","le",["le","lui","l'"],"ce match（男性単数・直接目的）→ le。",{ja:"この試合見ないの？ ― うん、見ない。"});
+C("cod","彼女に電話するつもりだ。","Je vais lui téléphoner.",["Je vais lui téléphoner.","Je lui vais téléphoner.","Je vais téléphoner lui."],"代名詞は不定詞の直前。",{cw:false});
+C("cod","それ（la clé）が見つからない。","Je ne la trouve pas.",["Je ne la trouve pas.","Je la ne trouve pas.","Je ne trouve pas la."],"ne＋代名詞＋動詞＋pas。",{cw:false});
+B("cod","私は毎日彼に電話する。","Je lui téléphone tous les jours.",["le","leur"],"téléphoner à＋人 → lui を動詞の前に。");
+B("cod","私たちはそれ（cette voiture）を買わない。","Nous ne l'achetons pas.",["la","lui"],"la → 母音の前で l'。ne＋代名詞＋動詞＋pas。");
+
+/* ---------- 代名詞2つの語順 ---------- */
+T("ordre","« ce stylo » を代名詞に","Je te prête ce stylo.",["Je te le prête."],"te（間接）＋le（直接）の順。");
+T("ordre","« ces photos » を代名詞に","Il nous montre ces photos.",["Il nous les montre."],"nous（間接）＋les（直接）の順。");
+T("ordre","« les clés » を代名詞に","Vous me donnez les clés ?",["Vous me les donnez ?"],"me＋les の順。");
+T("ordre","« ce sac » と « à sa mère » を代名詞に","Il offre ce sac à sa mère.",["Il le lui offre."],"le（直接）＋lui（間接）の順。lui / leur のときは le / la / les が先。");
+T("ordre","« la lettre » と « à ses parents » を代名詞に","Elle montre la lettre à ses parents.",["Elle la leur montre."],"la＋leur の順。");
+T("ordre","« mon vélo » と « à Paul » を代名詞に","Je ne prête pas mon vélo à Paul.",["Je ne le lui prête pas."],"否定文：ne＋le＋lui＋動詞＋pas。");
+T("ordre","« ces livres » を代名詞に","Tu ne me donnes pas ces livres ?",["Tu ne me les donnes pas ?"],"否定文：ne＋me＋les＋動詞＋pas。");
+T("ordre","« la photo » と « à ses amis » を代名詞に","Montre-t-elle la photo à ses amis ?",["La leur montre-t-elle ?"],"倒置疑問文：la＋leur＋動詞-主語。");
+C("ordre","Je ___ prête.（あなたに・それ（le）を）","vous le",["vous le","le vous","vous lui"],"vous（間接）＋le（直接）。",{ja:"あなたにそれをお貸しします。"});
+C("ordre","Il ___ donne.（彼女に・それ（la）を）","la lui",["la lui","lui la","la leur"],"lui のときは la が先：la lui。",{ja:"彼は彼女にそれをあげる。"});
+C("ordre","Nous ___ envoyons.（彼らに・それらを）","les leur",["les leur","leur les","les leurs"],"les＋leur の順。leur に s はつかない。",{ja:"私たちは彼らにそれらを送る。"});
+C("ordre","Elle ___ montre.（私に・それらを）","me les",["me les","les me","me leur"],"me＋les の順。",{ja:"彼女は私にそれらを見せる。"});
+C("ordre","Paul ne ___ prête pas.（私に・それ（le）を）","me le",["me le","le me","me lui"],"否定文でも語順は同じ：ne＋me＋le＋動詞＋pas。",{ja:"ポールは私にそれを貸してくれない。"});
+C("ordre","それを彼に渡さない。","Je ne le lui donne pas.",["Je ne le lui donne pas.","Je ne lui le donne pas.","Je le ne lui donne pas."],"ne＋le＋lui＋動詞＋pas。",{cw:false});
+C("ordre","それ（ta voiture）を私に貸してくれる？","Tu me la prêtes ?",["Tu me la prêtes ?","Tu la me prêtes ?","Tu me prêtes la ?"],"me＋la＋動詞。",{cw:false});
+B("ordre","私はそれ（ce livre）をあなたにあげます。","Je vous le donne.",["lui","la"],"vous＋le＋動詞。");
+B("ordre","彼女はそれら（les photos）を彼らに見せない。","Elle ne les leur montre pas.",["leurs","lui"],"ne＋les＋leur＋動詞＋pas。");
+B("ordre","彼はそれ（la carte）を私たちに送ってくれる。","Il nous l'envoie.",["les","leur"],"nous＋la → l'＋動詞。");
+
+/* ---------- 強勢形 ---------- */
+C("ton","___, je suis étudiante.","Moi",["Moi","Je","Me"],"主語の強調には強勢形 moi。",{ja:"私はね、学生なの。"});
+C("ton","Ce sac est à ___ ?（きみ）","toi",["toi","tu","te"],"être à＋強勢形「～のものだ」。",{ja:"このかばん、きみの？"});
+C("ton","Il habite avec ___.（彼女）","elle",["elle","la","lui"],"前置詞のあとは強勢形。彼女 → elle。",{ja:"彼は彼女といっしょに住んでいる。"});
+C("ton","Je vais chez ___.（彼ら）","eux",["eux","ils","leur"],"前置詞のあと、ils の強勢形は eux。",{ja:"私は彼らの家に行く。"});
+C("ton","Allô, c'est ___, Marie ?（きみ）","toi",["toi","tu","te"],"C'est のあとは強勢形。",{ja:"もしもし、マリー、きみ？"});
+C("ton","___ et moi, nous sommes amis.（彼）","Lui",["Lui","Il","Le"],"et で結ばれるときは強勢形。il → lui。",{ja:"彼と私は友だちだ。"});
+C("ton","Nous dînons avec ___.（あなたたち）","vous",["vous","votre","leur"],"前置詞のあと、vous の強勢形は vous。",{ja:"私たちはあなたたちと夕食をとる。"});
+C("ton","Ce livre est à ___.（彼女たち）","elles",["elles","leur","eux"],"elles の強勢形は elles。",{ja:"この本は彼女たちのものだ。"});
+C("ton","Je suis japonaise. Et ___ ?（あなた）","vous",["vous","tu","votre"],"Et＋強勢形「あなたは？」。",{ja:"私は日本人です。あなたは？"});
+W("ton","Ce dictionnaire est à ___.（私）","moi","être à＋強勢形「～のものだ」。",{ja:"この辞書は私のです。"});
+W("ton","Il pense toujours à ___.（彼女）","elle","penser à＋人は、代名詞にするとき強勢形（à elle）。",{ja:"彼はいつも彼女のことを考えている。"});
+W("ton","Tu viens avec ___ ?（私たち）","nous","前置詞のあとは強勢形。",{ja:"私たちと来る？"});
+W("ton","C'est ___ !（彼）","lui","C'est のあとは強勢形。il → lui。",{ja:"彼だ！"});
+W("ton","___, il est médecin.（彼）","Lui","主語の強調。",{ja:"彼はね、医者なんだ。"});
+W("ton","Après ___ !（あなた）","vous","前置詞 après のあと → 強勢形。「お先にどうぞ」の決まり文句。",{ja:"お先にどうぞ。"});
+W("ton","Je pense souvent à ___.（彼ら）","eux","ils の強勢形は eux。",{ja:"私はよく彼らのことを考える。"});
+B("ton","彼と私は同じ大学に通っている。","Lui et moi, nous allons à la même université.",["Il","je"],"et で結ぶときは強勢形。");
+B("ton","このペンはきみの？","Ce stylo est à toi ?",["tu","ton"],"être à＋強勢形。");
+
+/* ---------- 非人称構文・所有代名詞 ---------- */
+C("imp","___ pleut depuis ce matin.","Il",["Il","Elle","On"],"天候を表す非人称の il。",{ja:"今朝から雨が降っている。"});
+C("imp","Quel temps fait-il ? ― Il ___ beau.","fait",["fait","est","a"],"天気は il fait＋形容詞。",{ja:"どんな天気？ ― いい天気だよ。"});
+C("imp","Il fait ___ en hiver.（寒い）","froid",["froid","chaud","beau"],"寒い＝froid、暑い＝chaud。",{ja:"冬は寒い。"});
+C("imp","Il ___ une heure pour aller à Osaka.","faut",["faut","fait","vaut"],"il faut＋名詞「～が必要だ」。",{ja:"大阪に行くには1時間かかる。"});
+C("imp","Il ne faut pas ___ ici.","fumer",["fumer","fume","fumez"],"il ne faut pas＋不定詞「～してはいけない」。",{ja:"ここでタバコを吸ってはいけない。"});
+C("imp","Il vaut ___ rester à la maison.","mieux",["mieux","bien","plus"],"il vaut mieux＋不定詞「～したほうがよい」。",{ja:"家にいたほうがいい。"});
+C("imp","Il est difficile ___ parler français.","de",["de","à","pour"],"il est＋形容詞＋de＋不定詞「…することは～だ」。",{ja:"フランス語を話すのは難しい。"});
+C("imp","Il ___ souvent dans cette région.（雪が降る）","neige",["neige","pleut","fait"],"雪が降る＝il neige。",{ja:"この地方ではよく雪が降る。"});
+W("imp","Il ___ partir tout de suite.（falloir）","faut","il faut＋不定詞「～しなければならない」。",{ja:"すぐに出発しなければならない。"});
+W("imp","Il ___ chaud aujourd'hui.（暑い）","fait","il fait chaud「暑い」。",{ja:"今日は暑い。"});
+W("imp","Il ___ mieux attendre.（valoir）","vaut","il vaut mieux＋不定詞。",{ja:"待ったほうがいい。"});
+W("imp","Il ___ beaucoup en juin.（pleuvoir）","pleut","pleuvoir → il pleut。",{ja:"6月はよく雨が降る。"});
+C("imp","Ta robe est bleue, ___ est rouge.（私のもの）","la mienne",["la mienne","le mien","ma"],"robe は女性単数 → la mienne。",{ja:"きみのドレスは青で、私のは赤だ。"});
+C("imp","Ce sont mes chaussures. Où sont ___ ?（あなたのもの）","les vôtres",["les vôtres","vos","les nôtres"],"chaussures は複数 → les vôtres。",{ja:"これは私の靴です。あなたのはどこですか？"});
+C("imp","Mon père est professeur. Et ___ ?（きみのもの）","le tien",["le tien","la tienne","ton"],"père は男性単数 → le tien。",{ja:"私の父は教師なの。きみのお父さんは？"});
+C("imp","C'est ta voiture ? ― Oui, c'est ___.（私のもの）","la mienne",["la mienne","le mien","les miennes"],"voiture は女性単数 → la mienne。",{ja:"それきみの車？ ― うん、私のだよ。"});
+C("imp","Leur maison est grande ; ___ est petite.（私たちのもの）","la nôtre",["la nôtre","le nôtre","notre"],"maison は女性単数 → la nôtre（ô にアクサン）。",{ja:"彼らの家は大きいが、私たちのは小さい。"});
+C("imp","Ces livres sont à Paul ? ― Oui, ce sont ___.（彼のもの）","les siens",["les siens","les siennes","ses"],"livres は男性複数 → les siens。",{ja:"これらの本はポールの？ ― うん、彼のだよ。"});
+C("imp","Nos enfants vont à l'école à pied ; ___ prennent le bus.（彼らのもの）","les leurs",["les leurs","les leur","leurs"],"enfants は複数 → les leurs（s がつく）。",{ja:"うちの子どもたちは歩いて学校に行くが、彼らの子どもたちはバスに乗る。"});
+W("imp","Ce n'est pas mon sac, c'est ___.（きみのもの）","le tien","sac は男性単数 → le tien。",{ja:"これは私のかばんじゃない、きみのだ。"});
+W("imp","Votre appartement est grand ; ___ est petit.（私たちのもの）","le nôtre","appartement は男性単数 → le nôtre。",{ja:"あなたのアパルトマンは広いが、私たちのは狭い。"});
+B("imp","ここでタバコを吸ってはいけない。","Il ne faut pas fumer ici.",["fait","vaut"],"il ne faut pas＋不定詞。");
+B("imp","今日はとても暑い。","Il fait très chaud aujourd'hui.",["est","a"],"天気は il fait＋形容詞。");
+</script>
+</body>
+</html>

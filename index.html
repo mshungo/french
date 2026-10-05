@@ -10,7 +10,7 @@
 <title>Naralingo — フランス語練習</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=8"></script>
+<script src="common.js?v=9"></script>
 <script src="badge.js?v=2"></script>
 </head>
 <body>
@@ -46,9 +46,9 @@
     </div>
     <div class="trial">
       <div class="trial-tx"><b>練習用で使いたいとき</b>
-        ID「<code>naraf26</code>」、パスワード「<code>shika</code>」と入れてください。<br>
+        ID「<code>naraf26</code>」と、授業で伝えたパスワードを入れてください。<br>
         <small>お試し用なので、記録は先生にも、この端末にも一切残りません。</small></div>
-      <button class="link" id="trialBtn">練習用で入る</button>
+      <button class="link" id="trialBtn">練習用IDを入れる</button>
     </div>
   </div>
 
@@ -74,7 +74,7 @@
       </a>
       <a class="card grammar" href="grammar.html">
         <div class="ico"><svg width="28" height="28" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7.5c-1.2 5.5-1.3 11.4.8 15.6 2 4 10.4 4 12.4 0 2.1-4.2 2-10.1.8-15.6-3.1 2-10.9 2-14 0z"/><circle cx="12.8" cy="14.6" r="2.7"/><circle cx="19.2" cy="14.6" r="2.7"/><circle cx="12.8" cy="14.6" r=".8" fill="currentColor" stroke="none"/><circle cx="19.2" cy="14.6" r=".8" fill="currentColor" stroke="none"/><path d="M15.2 18.2l.8 1.5.8-1.5"/><path d="M12 23.2c1.3.8 2.7.8 4 0 1.3.8 2.7.8 4 0"/></svg></div>
-        <div class="tx"><div class="ti">文法練習</div><div class="de">教科書『Accès』Leçon 1〜3</div></div>
+        <div class="tx"><div class="ti">文法練習</div><div class="de">教科書『Accès』Leçon 1〜6</div></div>
         <div class="st" id="stGram"></div>
       </a>
       <a class="card talk" href="conversation.html">
@@ -123,10 +123,10 @@
     var t=J("talkQuiz_v1_"+who);addTot(t);
     if(t&&t.tries){var m=0;for(var k in (t.lv||{}))if(t.lv[k]>=4)m++;
       $("stTalk").innerHTML=t.tries+"回<small>習得 "+m+"/100"+(t.timeMs?" ・ "+fmtDur(t.timeMs):"")+bTag(bN(t))+"</small>";}else{$("stTalk").innerHTML="";}
-    // 文法練習（Leçon 1〜3）
+    // 文法練習（Leçon 1〜6）
     var gT=0,clr=0,gt=0,gb=0;
-    for(var n=1;n<=3;n++){var g=J("gramQuiz_L"+n+"_v1_"+who);addTot(g);gb+=bN(g);if(g&&g.tries){gT+=g.tries;gt+=g.timeMs||0;if(g.answered>=300)clr++;}}
-    $("stGram").innerHTML=gT?(gT+"回<small>クリア "+clr+"/3"+(gt?" ・ "+fmtDur(gt):"")+bTag(gb)+"</small>"):"";
+    for(var n=1;n<=6;n++){var g=J("gramQuiz_L"+n+"_v1_"+who);addTot(g);gb+=bN(g);if(g&&g.tries){gT+=g.tries;gt+=g.timeMs||0;if(g.answered>=300)clr++;}}
+    $("stGram").innerHTML=gT?(gT+"回<small>クリア "+clr+"/6"+(gt?" ・ "+fmtDur(gt):"")+bTag(gb)+"</small>"):"";
     $("sTime").textContent=fmtDur(tot.time);$("sTries").textContent=tot.tries;$("sAns").textContent=tot.ans;
     $("sAcc").textContent=tot.ans?Math.round(tot.cor/tot.ans*100)+"%":"—";
     renderStreak();
@@ -153,7 +153,7 @@
   $("idBtn").addEventListener("click",doLogin);
   $("idInput").addEventListener("keydown",function(e){if(e.key==="Enter")$("pwInput").focus();});
   $("pwInput").addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});
-  $("trialBtn").addEventListener("click",function(){$("idInput").value="naraf26";$("pwInput").value="shika";doLogin();});
+  $("trialBtn").addEventListener("click",function(){$("idInput").value="naraf26";$("pwInput").value="";note("");$("pwInput").focus();});
   $("logoutBtn").addEventListener("click",function(){Q.logout();note("");showLogin();});
   Q.onStats(function(){if(!menuPanel.classList.contains("hidden"))renderMenu();});
 

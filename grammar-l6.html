@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 6 代名動詞と命令法 — Naralingo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
+<script src="config.js?v=4"></script>
+<script src="common.js?v=9"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="grammar.css?v=3">
+<script src="sound.js?v=1"></script>
+<script src="badge.js?v=2"></script>
+<script src="grammar.js?v=6"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== Leçon 6：lire・dire・écrire・attendre・mettre、代名動詞、命令法 ===== */
+window.LESSON={no:6,title:"代名動詞と命令法",sub:"lire · écrire · attendre · verbes pronominaux · impératif",
+  lead:"lire・dire・écrire・attendre・mettre の活用、代名動詞の形と用法、命令法（代名詞・代名動詞をともなう命令も）を練習します。",
+  sections:[
+  {k:"verb",t:"lire・dire・écrire・attendre・mettre",d:"直説法現在（Grammaire 1）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
+   memo:'<p><span class="fr">lire</span>：lis, lis, lit, lisons, lisez, lisent</p>'+
+   '<p><span class="fr">dire</span>：dis, dis, dit, disons, <b>dites</b>, disent</p>'+
+   '<p><span class="fr">écrire</span>：écris, écris, écrit, écrivons, écrivez, écrivent</p>'+
+   '<p><span class="fr">attendre</span>：attends, attends, <b>attend</b>, attendons, attendez, attendent（3人称単数は d で終わる）</p>'+
+   '<p><span class="fr">mettre</span>：mets, mets, met, mettons, mettez, mettent</p>'+
+   '<p>attendre と同じ型：entendre（聞く）、répondre（答える）、perdre（失う）、rendre（返す）、vendre（売る）、descendre（降りる）。mettre と同じ型：permettre、promettre。</p>'},
+  {k:"pr",t:"代名動詞の形",d:"活用・否定文・疑問文（Grammaire 2）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+   memo:'<p>主語と同じ人・物を指す再帰代名詞をともなう動詞。</p>'+
+   '<table><tr><td class="fr">je me réveille</td><td class="fr">nous nous réveillons</td></tr><tr><td class="fr">tu te réveilles</td><td class="fr">vous vous réveillez</td></tr><tr><td class="fr">il / elle se réveille</td><td class="fr">ils / elles se réveillent</td></tr></table>'+
+   '<p>母音・無音の h の前で <span class="fr">m\', t\', s\'</span>：<span class="fr">je m\'habille, il s\'appelle</span></p>'+
+   '<p>否定文：主語＋<b>ne</b>＋再帰代名詞＋動詞＋<b>pas</b>：<span class="fr">Il ne s\'habille pas.</span></p>'+
+   '<p>倒置疑問文：再帰代名詞＋動詞-主語：<span class="fr">Te couches-tu tard ?</span></p>'},
+  {k:"usage",t:"代名動詞の用法",d:"再帰・相互・受動・本来的 ／ 自動詞と他動詞（Grammaire 2 ／ En plus 1）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
+   memo:'<p>① 再帰的「自分を（に）～する」：<span class="fr">Je me lave.</span>　体の部分は定冠詞で：<span class="fr">Je me lave les mains.</span>（me は間接目的）</p>'+
+   '<p>② 相互的「互いに～し合う」（主語は複数）：<span class="fr">Ils s\'aiment.</span></p>'+
+   '<p>③ 受動的「～される」（主語は物）：<span class="fr">Ce livre se vend bien.</span></p>'+
+   '<p>④ 本来的（代名動詞の形しかない）：<span class="fr">se souvenir de ～</span>「～を覚えている」</p>'+
+   '<p>En plus：自動詞は目的補語をとらない（Il marche vite.）。他動詞は直接目的補語（J\'écris une lettre.）または à, de を伴う間接目的補語（Elle parle à sa fille.）をとる。</p>'},
+  {k:"imp",t:"命令法",d:"肯定命令・否定命令（Grammaire 3）",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8",
+   memo:'<p>tu, nous, vous の現在形から主語をとる：<span class="fr">Tournez à gauche. Attendons un peu.</span></p>'+
+   '<p>tu の活用が <b>-es</b> で終わる動詞（-er動詞など）と aller は、tu の命令で語尾の s をとる：<span class="fr">Tu rentres → Rentre ! Tu vas → Va !</span></p>'+
+   '<table><tr><td></td><td class="fr">avoir</td><td class="fr">être</td></tr><tr><td>tu</td><td class="fr">aie</td><td class="fr">sois</td></tr><tr><td>nous</td><td class="fr">ayons</td><td class="fr">soyons</td></tr><tr><td>vous</td><td class="fr">ayez</td><td class="fr">soyez</td></tr></table>'+
+   '<p>否定命令：<span class="fr">Ne (N\')</span>＋命令形＋<span class="fr">pas</span>：<span class="fr">Ne fume pas ici !</span></p>'},
+  {k:"impp",t:"代名詞・代名動詞の命令",d:"Regarde-moi. Couche-toi.（En plus 2）",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
+   memo:'<p>肯定命令：命令形-代名詞（直接目的-間接目的の順）。me → <b>moi</b>：<span class="fr">Regarde-moi. Téléphonez-nous. Passe-le-moi.</span></p>'+
+   '<p>否定命令：ne＋代名詞＋命令形＋pas（語順は平叙文と同じ）：<span class="fr">Ne me regarde pas.</span></p>'+
+   '<p>代名動詞の肯定命令：命令形-再帰代名詞。te → <b>toi</b>：<span class="fr">Couche-toi. Amusons-nous. Reposez-vous.</span></p>'+
+   '<p>代名動詞の否定命令：<span class="fr">Ne t\'inquiète pas. Ne vous couchez pas tard.</span></p>'}
+]};
+
+/* ---------- lire・dire・écrire・attendre・mettre ---------- */
+W("verb","Je ___ le journal le matin.（lire）","lis","lire：je lis。",{ja:"私は朝、新聞を読む。"});
+W("verb","Elle ___ un roman.（lire）","lit","lire：elle lit。",{ja:"彼女は小説を読んでいる。"});
+W("verb","Nous ___ un texte en français.（lire）","lisons","lire：nous lisons。",{ja:"私たちはフランス語の文章を読む。"});
+W("verb","Ils ___ des mangas.（lire）","lisent","lire：ils lisent。",{ja:"彼らはマンガを読む。"});
+W("verb","Qu'est-ce que tu ___ ?（dire）","dis","dire：tu dis。",{ja:"何て言ったの？（何を言っているの？）"});
+W("verb","Il ___ bonjour à tout le monde.（dire）","dit","dire：il dit。",{ja:"彼はみんなにあいさつをする。"});
+W("verb","Vous ___ la vérité ?（dire）","dites","dire：vous dites（-ez ではない）。",{ja:"本当のことを言っていますか？"});
+W("verb","Ils ___ que c'est facile.（dire）","disent","dire：ils disent。",{ja:"彼らはそれは簡単だと言う。"});
+W("verb","J'___ une lettre à ma grand-mère.（écrire）","écris","écrire：j'écris。",{ja:"私は祖母に手紙を書く。"});
+W("verb","Nous ___ un mail au professeur.（écrire）","écrivons","écrire：nous écrivons（v が入る）。",{ja:"私たちは先生にメールを書く。"});
+W("verb","Elles ___ des poèmes.（écrire）","écrivent","écrire：elles écrivent。",{ja:"彼女たちは詩を書く。"});
+W("verb","J'___ le bus.（attendre）","attends","attendre：j'attends。",{ja:"私はバスを待っている。"});
+W("verb","Elle ___ son ami devant la gare.（attendre）","attend","attendre：elle attend（d で終わる）。",{ja:"彼女は駅の前で友だちを待っている。"});
+W("verb","Vous ___ quelqu'un ?（attendre）","attendez","attendre：vous attendez。",{ja:"だれかを待っているのですか？"});
+W("verb","Je ___ du sucre dans mon café.（mettre）","mets","mettre：je mets。",{ja:"私はコーヒーに砂糖を入れる。"});
+W("verb","Il ___ son manteau.（mettre）","met","mettre：il met。",{ja:"彼はコートを着る。"});
+W("verb","Nous ___ la table.（mettre）","mettons","mettre：nous mettons。mettre la table「食卓の準備をする」。",{ja:"私たちは食卓の準備をする。"});
+W("verb","Ils ___ une heure pour venir.（mettre）","mettent","mettre：ils mettent。mettre＋時間「（時間）をかける」。",{ja:"彼らは来るのに1時間かかる。"});
+C("verb","Qu'est-ce que vous ___ ?（dire）","dites",["dites","disez","disons"],"vous → dites。",{ja:"何とおっしゃいましたか？"});
+C("verb","Tu ___ à ma question ?（répondre）","réponds",["réponds","répond","répondes"],"répondre は attendre と同じ型：tu réponds。",{ja:"私の質問に答えてくれる？"});
+C("verb","Il ___ souvent ses clés.（perdre）","perd",["perd","perds","perde"],"perdre は attendre と同じ型：il perd。",{ja:"彼はよく鍵をなくす。"});
+C("verb","On ___ des fruits au marché.（vendre）","vend",["vend","vends","vent"],"vendre：on vend（d で終わる）。",{ja:"市場では果物を売っている。"});
+C("verb","Nous ___ du train à Nara.（descendre）","descendons",["descendons","descendez","descends"],"descendre：nous descendons。",{ja:"私たちは奈良で電車を降りる。"});
+C("verb","Elles ___ des lettres.（écrire）","écrivent",["écrivent","écrient","écrisent"],"écrire の複数形は v が入る。",{ja:"彼女たちは手紙を書く。"});
+C("verb","Il ___ de venir demain.（promettre）","promet",["promet","promets","promette"],"promettre は mettre と同じ型：il promet。",{ja:"彼は明日来ると約束する。"});
+B("verb","私は駅の前で友だちを待っている。","J'attends mon ami devant la gare.",["attend","à"],"attendre：j'attends。attendre は直接目的補語をとる（à は不要）。");
+
+/* ---------- 代名動詞の形 ---------- */
+W("pr","Je ___ à sept heures.（se réveiller）","me réveille","je → me＋動詞。",{ja:"私は7時に目が覚める。"});
+W("pr","Tu ___ tard ?（se coucher）","te couches","tu → te＋動詞。",{ja:"きみは遅く寝るの？"});
+W("pr","Je ___ Yuki.（s'appeler）","m'appelle","je → m'（母音の前）。appeler の活用は l を重ねる：j'appelle。",{ja:"私の名前はユキです。"});
+W("pr","Tu ___ comment ?（s'appeler）","t'appelles","tu → t'（母音の前）＋appelles。",{ja:"名前はなんていうの？"});
+W("pr","Nous ___ vite.（s'habiller）","nous habillons","nous → nous＋動詞（nous が2回）。",{ja:"私たちは急いで服を着る。"});
+W("pr","Vous ___ à quelle heure ?（se réveiller）","vous réveillez","vous → vous＋動詞。",{ja:"何時に起きますか？"});
+W("pr","Elles ___ les mains.（se laver）","se lavent","elles → se＋動詞。",{ja:"彼女たちは手を洗う。"});
+W("pr","Il ___ le dimanche.（se reposer）","se repose","il → se＋動詞。",{ja:"彼は日曜日に休む。"});
+T("pr","否定文に","Je me couche tard.",["Je ne me couche pas tard."],"ne＋再帰代名詞＋動詞＋pas。");
+T("pr","否定文に","Il s'habille seul.",["Il ne s'habille pas seul."],"ne＋s'habille＋pas。");
+T("pr","否定文に","Nous nous reposons le dimanche.",["Nous ne nous reposons pas le dimanche."],"ne＋nous reposons＋pas。");
+T("pr","倒置疑問文に","Tu te couches tard.",["Te couches-tu tard ?"],"再帰代名詞＋動詞-主語。");
+T("pr","倒置疑問文に","Vous vous appelez Marie.",["Vous appelez-vous Marie ?"],"再帰代名詞 vous＋動詞-vous。");
+T("pr","倒置疑問文に","Elle se réveille tôt.",["Se réveille-t-elle tôt ?"],"母音で終わる動詞と elle の間に -t-。");
+C("pr","Je ___ réveille.","me",["me","se","te"],"je の再帰代名詞は me。",{ja:"私は目が覚める。"});
+C("pr","Nous ___ habillons.","nous",["nous","se","vous"],"nous の再帰代名詞は nous。",{ja:"私たちは服を着る。"});
+C("pr","Ils ___ couchent tard.","se",["se","leur","les"],"ils の再帰代名詞は se。",{ja:"彼らは遅く寝る。"});
+C("pr","Vous ___ appelez comment ?","vous",["vous","se","nous"],"vous の再帰代名詞は vous。",{ja:"お名前は何とおっしゃいますか？"});
+C("pr","正しい否定文はどれ？","Je ne me lave pas.",["Je ne me lave pas.","Je me ne lave pas.","Je ne lave me pas."],"ne は再帰代名詞の前に置く。",{cw:false});
+C("pr","正しい倒置疑問文はどれ？","Te réveilles-tu tôt ?",["Te réveilles-tu tôt ?","Réveilles-tu te tôt ?","Tu réveilles-te tôt ?"],"再帰代名詞は動詞の前に残る。",{cw:false});
+B("pr","私は7時に起きる。","Je me réveille à sept heures.",["se","réveilles"],"je me réveille。");
+B("pr","彼女は日曜日には早く寝ない。","Elle ne se couche pas tôt le dimanche.",["me","couchent"],"ne＋se couche＋pas。");
+
+/* ---------- 代名動詞の用法 ---------- */
+const USE=["再帰的用法","相互的用法","受動的用法","本来的用法"];
+C("usage","Elle se regarde dans le miroir.","再帰的用法",USE,"「自分を見る」→ 再帰的用法。",{cw:false,ja:"彼女は鏡で自分の姿を見る。"});
+C("usage","Paul et Marie s'aiment.","相互的用法",USE,"主語が複数で「互いに愛し合う」→ 相互的用法。",{cw:false,ja:"ポールとマリーは愛し合っている。"});
+C("usage","Ils se téléphonent tous les soirs.","相互的用法",USE,"「互いに電話し合う」→ 相互的用法（se は間接目的）。",{cw:false,ja:"彼らは毎晩電話し合っている。"});
+C("usage","Ce livre se vend bien.","受動的用法",USE,"主語が物で「売られる」→ 受動的用法。",{cw:false,ja:"この本はよく売れる。"});
+C("usage","Le français se parle au Canada.","受動的用法",USE,"「話されている」→ 受動的用法。",{cw:false,ja:"カナダではフランス語が話されている。"});
+C("usage","Je me souviens de cet été.","本来的用法",USE,"se souvenir de ～ は代名動詞の形しかない → 本来的用法。",{cw:false,ja:"私はあの夏のことを覚えている。"});
+C("usage","Je me lave. の me は？","直接目的補語",["直接目的補語","間接目的補語"],"「自分を洗う」→ me は直接目的補語。",{cw:false});
+C("usage","Je me lave les mains. の me は？","間接目的補語",["間接目的補語","直接目的補語"],"les mains が直接目的補語。me は「自分の（手を）」を表す間接目的補語。",{cw:false});
+C("usage","Je me lave ___ mains.","les",["les","mes","des"],"体の部分は定冠詞＋名詞（所有形容詞は使わない）。",{ja:"私は手を洗う。"});
+C("usage","私は8時に娘を起こす。","Je réveille ma fille à huit heures.",["Je réveille ma fille à huit heures.","Je me réveille ma fille à huit heures."],"「（人）を起こす」は他動詞 réveiller。",{cw:false});
+C("usage","私は7時に起きる（目が覚める）。","Je me réveille à sept heures.",["Je me réveille à sept heures.","Je réveille à sept heures."],"「自分が目覚める」は代名動詞 se réveiller。",{cw:false});
+W("usage","Nous ___ souvent.（se téléphoner）","nous téléphonons","nous → nous téléphonons（互いに電話し合う）。",{ja:"私たちはよく電話し合う。"});
+W("usage","Je ___ bien de cet élève.（se souvenir）","me souviens","se souvenir は venir と同じ型の活用：je me souviens。",{ja:"その生徒のことはよく覚えています。"});
+W("usage","Ce livre ___ bien.（se vendre）","se vend","受動的用法。vendre：il vend。",{ja:"この本はよく売れる。"});
+W("usage","Ils ___ depuis dix ans.（s'aimer）","s'aiment","相互的用法。ils → s'aiment。",{ja:"彼らは10年前から愛し合っている。"});
+const VT=["自動詞","他動詞（直接目的補語をとる）","他動詞（間接目的補語をとる）"];
+C("usage","Il marche vite. の marche は？","自動詞",VT,"目的補語をとらない → 自動詞。",{cw:false});
+C("usage","J'écris une lettre. の écris は？","他動詞（直接目的補語をとる）",VT,"une lettre が直接目的補語。",{cw:false});
+C("usage","Elle parle à sa fille. の parle は？","他動詞（間接目的補語をとる）",VT,"à sa fille が間接目的補語。",{cw:false});
+B("usage","私は顔を洗う。","Je me lave le visage.",["mon","se"],"体の部分は定冠詞。me は間接目的補語。");
+B("usage","フランス語はケベックで話されている。","Le français se parle au Québec.",["est","parlé"],"代名動詞の受動的用法。");
+
+/* ---------- 命令法 ---------- */
+T("imp","命令文に（tu）","Tu tournes à droite.",["Tourne à droite."],"-er動詞の tu の命令では語尾の s をとる。");
+T("imp","命令文に（vous）","Vous parlez lentement.",["Parlez lentement."],"主語 vous をとる。");
+T("imp","命令文に（nous）","Nous partons maintenant.",["Partons maintenant."],"主語 nous をとる：「～しよう」。");
+T("imp","命令文に（tu）","Tu vas à l'école.",["Va à l'école."],"aller も tu の命令で s をとる：Va。");
+T("imp","命令文に（tu）","Tu finis ton repas.",["Finis ton repas."],"-ir動詞は tu finis → Finis（s はとらない）。");
+T("imp","命令文に（tu）","Tu attends un peu.",["Attends un peu."],"attendre は tu attends → Attends（s はとらない）。");
+T("imp","命令文に（vous）","Vous êtes calmes.",["Soyez calmes."],"être の vous の命令形は soyez。");
+T("imp","命令文に（tu）","Tu es gentil avec elle.",["Sois gentil avec elle."],"être の tu の命令形は sois。");
+T("imp","命令文に（nous）","Nous avons du courage.",["Ayons du courage."],"avoir の nous の命令形は ayons。");
+T("imp","否定命令に","Tu fumes ici.",["Ne fume pas ici."],"Ne＋命令形＋pas。-er動詞なので s をとる。");
+T("imp","否定命令に","Vous parlez fort.",["Ne parlez pas fort."],"Ne＋命令形＋pas。");
+T("imp","否定命令に","Tu es en retard.",["Ne sois pas en retard."],"Ne＋sois＋pas。");
+T("imp","否定命令に","Vous entrez.",["N'entrez pas."],"母音の前で ne → n'。");
+C("imp","（tu に）早く帰ってきて。","Rentre vite.",["Rentre vite.","Rentres vite.","Tu rentre vite."],"-er動詞の tu の命令は s をとる。",{cw:false});
+C("imp","（tu に）パンを買いに行ってきて。","Va chercher le pain.",["Va chercher le pain.","Vas chercher le pain.","Allons chercher le pain."],"aller の tu の命令は va。",{cw:false});
+C("imp","（vous に）落ち着いてください。","Soyez calmes.",["Soyez calmes.","Êtes calmes.","Soyons calmes."],"être の vous の命令形は soyez。",{cw:false});
+C("imp","（nous）ちょっと待ちましょう。","Attendons un peu.",["Attendons un peu.","Nous attendons un peu.","Attendez un peu."],"nous の命令は主語をとる。",{cw:false});
+C("imp","（tu に）がんばって。","Aie du courage.",["Aie du courage.","As du courage.","Aies du courage."],"avoir の tu の命令形は aie。",{cw:false});
+W("imp","___ à gauche.（tourner：vous に）","Tournez","vous の命令：Tournez。",{ja:"左に曲がってください。"});
+W("imp","___ tes devoirs.（finir：tu に）","Finis","-ir動詞の tu の命令：Finis。",{ja:"宿題を終わらせなさい。"});
+W("imp","___ ensemble.（chanter：nous）","Chantons","nous の命令：Chantons。",{ja:"いっしょに歌おう。"});
+W("imp","___ gentille avec ta sœur.（être：tu に）","Sois","être の tu の命令形は sois。",{ja:"妹に優しくしなさい。"});
+B("imp","（vous に）大声で話さないでください。","Ne parlez pas fort.",["parles","nous"],"Ne＋命令形＋pas。");
+B("imp","ちょっと待ちましょう。","Attendons un peu.",["Nous","attendez"],"nous の命令は主語をとる。");
+
+/* ---------- 代名詞・代名動詞の命令 ---------- */
+T("impp","命令文に（tu）","Tu me regardes.",["Regarde-moi."],"肯定命令：命令形-代名詞。me は moi に変わる。");
+T("impp","命令文に（tu）","Tu le regardes.",["Regarde-le."],"命令形-le。");
+T("impp","命令文に（vous）","Vous nous téléphonez.",["Téléphonez-nous."],"命令形-nous。");
+T("impp","命令文に（tu）","Tu lui parles.",["Parle-lui."],"命令形-lui。");
+T("impp","命令文に（vous）","Vous l'achetez.",["Achetez-le.","Achetez-la."],"命令形-le / la（命令文ではエリズィオンしない）。");
+T("impp","命令文に（tu）","Tu me passes le sel.",["Passe-moi le sel."],"命令形-moi＋名詞。");
+T("impp","命令文に（tu）","Tu me le passes.",["Passe-le-moi."],"肯定命令では 直接目的（le）-間接目的（moi） の順。");
+T("impp","否定命令に","Tu me regardes.",["Ne me regarde pas."],"否定命令：Ne＋代名詞＋命令形＋pas（me のまま）。");
+T("impp","否定命令に","Vous lui téléphonez.",["Ne lui téléphonez pas."],"Ne＋lui＋命令形＋pas。");
+T("impp","命令文に（tu）","Tu te couches tôt.",["Couche-toi tôt."],"代名動詞の肯定命令：命令形-再帰代名詞。te は toi に変わる。");
+T("impp","命令文に（nous）","Nous nous amusons ce soir.",["Amusons-nous ce soir."],"命令形-nous。");
+T("impp","命令文に（vous）","Vous vous reposez.",["Reposez-vous."],"命令形-vous。");
+T("impp","命令文に（tu）","Tu te réveilles.",["Réveille-toi."],"-er動詞なので s をとり、te → toi。");
+T("impp","否定命令に","Tu t'inquiètes.",["Ne t'inquiète pas."],"代名動詞の否定命令：Ne＋再帰代名詞＋命令形＋pas。");
+T("impp","否定命令に","Vous vous couchez tard.",["Ne vous couchez pas tard."],"Ne＋vous＋couchez＋pas。");
+C("impp","（tu に）私を見て。","Regarde-moi.",["Regarde-moi.","Regarde-me.","Me regarde."],"肯定命令では me → moi。",{cw:false});
+C("impp","（tu に）それ（le sel）を私に渡して。","Passe-le-moi.",["Passe-le-moi.","Passe-moi-le.","Le me passe."],"肯定命令：命令形-le-moi の順。",{cw:false});
+C("impp","（tu に）心配しないで。","Ne t'inquiète pas.",["Ne t'inquiète pas.","Ne toi inquiète pas.","N'inquiète-toi pas."],"否定命令では te のまま動詞の前（t'）。",{cw:false});
+C("impp","（tu に）早く寝なさい。","Couche-toi tôt.",["Couche-toi tôt.","Couche-te tôt.","Te couche tôt."],"肯定命令では te → toi。",{cw:false});
+C("impp","（vous に）彼女に電話しないでください。","Ne lui téléphonez pas.",["Ne lui téléphonez pas.","Ne téléphonez-lui pas.","Téléphonez-lui pas."],"否定命令：Ne＋代名詞＋命令形＋pas。",{cw:false});
+B("impp","今夜は楽しもう。","Amusons-nous ce soir.",["amusez","-vous"],"代名動詞の nous の命令：Amusons-nous。");
+B("impp","（vous に）ゆっくり休んでください。","Reposez-vous bien.",["-nous","reposes"],"代名動詞の vous の命令：Reposez-vous。");
+B("impp","（tu に）彼に話しかけないで。","Ne lui parle pas.",["le","parles"],"否定命令：Ne＋lui＋命令形＋pas。");
+</script>
+</body>
+</html>

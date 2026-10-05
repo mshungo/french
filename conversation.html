@@ -6,7 +6,7 @@
 <title>会話練習 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=8"></script>
+<script src="common.js?v=9"></script>
 <script src="audio/talk/index.js?v=1"></script>
 <script src="badge.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -373,6 +373,8 @@
   .mic[data-state="listen"] .mic-st,.mic[data-state="voice"] .mic-st{color:#b5524c;font-weight:600;}
   .mic[data-state="proc"] .mic-btn{background:#c0a06a;animation:pulse 1s ease-in-out infinite;}
   .mic[data-state="err"] .mic-st{color:var(--bad-ink);}
+  .mic-help{max-width:330px;font-size:12px;line-height:1.75;color:var(--ink);background:#fff8f6;border:1px solid #efd6d1;border-radius:12px;padding:10px 13px;text-align:left;}
+  .mic-help b{display:block;color:var(--bad-ink);font-weight:600;margin-bottom:2px;}
   @keyframes ring{0%{transform:scale(.92);opacity:1;}100%{transform:scale(1.35);opacity:0;}}
   .heard.altok{color:var(--good-ink);}
   .practice{margin-top:14px;padding:14px;border:1px dashed var(--accent);border-radius:14px;background:#fff;}
@@ -1148,6 +1150,21 @@ function micUI(id,label){
   return '<div class="mic" id="'+id+'" data-state="idle"><button class="mic-btn" type="button" aria-label="'+esc(label)+'">'+MIC_SVG+'</button>'+
     '<div class="mic-st">'+esc(label)+'</div></div>';
 }
+/* マイクの許可状態（対応ブラウザのみ）。"prompt"＝まだ聞かれていない、"denied"＝ブロック中 */
+let micPerm="unknown";
+try{navigator.permissions&&navigator.permissions.query({name:"microphone"}).then(st=>{micPerm=st.state;st.onchange=()=>{micPerm=st.state;};}).catch(()=>{});}catch(e){}
+function micHelpHTML(err){
+  const ua=navigator.userAgent,ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),android=/Android/.test(ua);
+  const how=ios?'Safari：アドレスバーの「ぁあ」→「Webサイトの設定」→「マイク」を「許可」にする。<br>iPhoneの「設定」→「Safari」→「マイク」が「拒否」になっていないかも確認。'+
+      (err==="service-not-allowed"?'<br>iPhoneの音声入力がオフだと使えないことがある（「設定」→「一般」→「キーボード」→「音声入力」）。':'')
+    :android?'Chrome：アドレスバー左のアイコン →「権限」→「マイク」をオンにする。'
+    :'アドレスバー左のアイコン（鍵や調整のマーク）→「マイク」を「許可」にする。';
+  return '<div class="mic-help"><b>マイクが使えない設定になっています</b>'+how+'<br>変えたら、ページを再読み込みしてください。</div>';
+}
+function showMicHelp(box,on,err){
+  if(!box)return;const h=box.querySelector(".mic-help");if(h)h.remove();
+  if(on)box.insertAdjacentHTML("beforeend",micHelpHTML(err));
+}
 function setMic(box,state,text){if(!box)return;box.dataset.state=state;const t=box.querySelector(".mic-st");if(t)t.textContent=text;}
 function bindMic(box,onResult){
   if(!box)return;
@@ -1164,8 +1181,9 @@ function recognize(box,onResult){
   let r;try{r=new SR();}catch(e){setMic(box,"err","マイクを使えませんでした");return;}
   rec=r;r.lang="fr-FR";r.interimResults=false;r.maxAlternatives=5;
   let alts=null,err=null,finished=false;
-  stopSpeak();
-  setMic(box,"prep","マイクを準備中…");
+  stopSpeak();showMicHelp(box,false);
+  if(micPerm==="denied"){setMic(box,"err","マイクがブロックされています");showMicHelp(box,true);return;}
+  setMic(box,"prep",micPerm==="prompt"?"マイクの使用を聞かれたら「許可」を押してください":"マイクを準備中…");
   r.onaudiostart=()=>setMic(box,"listen","聞き取り中… フランス語で話してください");
   r.onspeechstart=()=>setMic(box,"voice","声を聞いています…（話し終わったら少し待つ）");
   r.onspeechend=()=>setMic(box,"proc","認識しています…");
@@ -1179,6 +1197,7 @@ function recognize(box,onResult){
       else{
         const m={"not-allowed":"マイクの使用が許可されていません","service-not-allowed":"マイクの使用が許可されていません","no-speech":"声が聞こえませんでした。もう一度押して話す","audio-capture":"マイクが見つかりません","network":"音声認識の通信に失敗しました"};
         setMic(box,"err",(m[err]||"聞き取れませんでした。もう一度押して話す"));
+        if(err==="not-allowed"||err==="service-not-allowed")showMicHelp(box,true,err);
       }
     },450);
   };

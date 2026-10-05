@@ -10,7 +10,12 @@
   /* 練習用ID：サーバーには送らず、端末にも残さない（ID・パスワードはログイン画面に書いてあるもの）。
      各教材が localStorage に書く「…_NARAF26」の記録は、すべて sessionStorage（そのタブだけ・閉じると消える）に回す。
      ログインし直すたび、ログアウトするたびにも消す。 */
-  var PRACTICE = { id: "NARAF26", pw: "shika", name: "練習用" };
+  /* パスワードは授業で口頭で伝えるので、ここには書かずハッシュ値（SHA-256）だけを置く */
+  var PRACTICE = { id: "NARAF26", pwHash: "b89dd8c6b09a3846760cae7d53a579c8975ee62620421bc18317830cda64c44f", name: "練習用" };
+  async function sha256(s) {
+    var b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+    return Array.prototype.map.call(new Uint8Array(b), function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+  }
   var PRAC_RE = /_NARAF26$/;
   (function () {
     try {
@@ -167,7 +172,8 @@
     if (!RE_ID.test(id)) return { ok: false, error: "format", id: id };
     if (!pw) return { ok: false, error: "nopw", id: id };
     if (id === PRACTICE.id) {
-      if (pw !== PRACTICE.pw) return { ok: false, error: "auth", id: id };
+      var h = ""; try { h = await sha256("naralingo:" + pw); } catch (e) {}
+      if (h !== PRACTICE.pwHash) return { ok: false, error: "auth", id: id };
       clearPractice();
       user = { id: id, name: PRACTICE.name, pw: "", practice: true };
       keep(user, false);   // 練習用はブラウザを閉じたら終わり

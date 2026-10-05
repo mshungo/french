@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 4 疑問詞と近接未来 — Naralingo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
+<script src="config.js?v=4"></script>
+<script src="common.js?v=9"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="grammar.css?v=3">
+<script src="sound.js?v=1"></script>
+<script src="badge.js?v=2"></script>
+<script src="grammar.js?v=6"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== Leçon 4：aller・venir・tenir、近接未来・近接過去、疑問代名詞、疑問副詞・疑問形容詞、時刻と数 ===== */
+window.LESSON={no:4,title:"疑問詞と近接未来",sub:"aller · venir · futur proche · interrogatifs · l'heure",
+  lead:"aller・venir・tenir の活用、近接未来と近接過去、疑問代名詞・疑問副詞・疑問形容詞、時刻と大きな数を練習します。",
+  sections:[
+  {k:"verb",t:"aller・venir・tenir",d:"直説法現在（Grammaire 1）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
+   memo:'<table><tr><td class="fr">je vais</td><td class="fr">nous allons</td></tr><tr><td class="fr">tu vas</td><td class="fr">vous allez</td></tr><tr><td class="fr">il / elle va</td><td class="fr">ils / elles vont</td></tr></table>'+
+   '<table><tr><td class="fr">je viens</td><td class="fr">nous venons</td></tr><tr><td class="fr">tu viens</td><td class="fr">vous venez</td></tr><tr><td class="fr">il / elle vient</td><td class="fr">ils / elles viennent</td></tr></table>'+
+   '<p>tenir（つかむ、持つ）も venir と同じ型：<span class="fr">je tiens, nous tenons, ils tiennent</span></p>'+
+   '<p>同じ型の動詞：devenir（～になる）、revenir（戻る）、obtenir（手に入れる）</p>'},
+  {k:"proche",t:"近接未来・近接過去",d:"aller＋不定詞 ／ venir de＋不定詞（Grammaire 2）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+   memo:'<p>近接未来：<b>aller の現在形＋不定詞</b>「～しようとしている、～することになっている」：<span class="fr">Je vais sortir ce soir.</span></p>'+
+   '<p>文脈によっては「～しに行く」：<span class="fr">Je vais faire des courses.</span></p>'+
+   '<p>近接過去：<b>venir de (d\')＋不定詞</b>「～したところだ」：<span class="fr">Elle vient d\'arriver.</span></p>'+
+   '<p>de のない <b>venir＋不定詞</b> は「～しに来る」：<span class="fr">Il vient dîner ce soir.</span></p>'+
+   '<p>否定文は aller / venir を ne ～ pas ではさむ：<span class="fr">Je ne vais pas sortir.</span></p>'},
+  {k:"pron",t:"疑問代名詞",d:"qui・que・quoi ／ lequel（Grammaire 3 ／ En plus 1）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
+   memo:'<table><tr><td></td><td>主語</td><td>直接目的・属詞</td><td>前置詞のあと</td></tr>'+
+   '<tr><td>人</td><td class="fr">qui<br>qui est-ce qui</td><td class="fr">qui<br>qui est-ce que</td><td class="fr">前置詞＋qui</td></tr>'+
+   '<tr><td>人以外</td><td class="fr">qu\'est-ce qui</td><td class="fr">que<br>qu\'est-ce que</td><td class="fr">前置詞＋quoi</td></tr></table>'+
+   '<p>qui はエリズィオンしない（qui est-ce qui）。que は母音の前で qu\'。est-ce que を使うときは倒置しない。</p>'+
+   '<p>口語では quoi を文末に置くこともある：<span class="fr">C\'est quoi ? Tu fais quoi ?</span></p>'+
+   '<p>En plus：「（～のうちの）どれ」＝ <span class="fr">lequel, laquelle, lesquels, lesquelles</span>（受ける名詞に性数一致）。de＋lequel → duquel、à＋lequel → auquel。</p>'},
+  {k:"adv",t:"疑問副詞・疑問形容詞",d:"quand・où・comment… ／ quel（Grammaire 4・5）",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8",
+   memo:'<p><span class="fr">quand</span> いつ／<span class="fr">où</span> どこ／<span class="fr">comment</span> どのように／<span class="fr">pourquoi</span> なぜ（答えは <span class="fr">parce que</span>）／<span class="fr">combien</span> どのくらい（<span class="fr">combien de</span>＋名詞：いくつの～）</p>'+
+   '<p>語順は3通り：<span class="fr">Où habites-tu ? ／ Tu habites où ? ／ Où est-ce que tu habites ?</span></p>'+
+   '<p>疑問形容詞 quel は名詞に性数一致：<span class="fr">quel, quelle, quels, quelles</span></p>'+
+   '<p>① quel＋名詞「どんな～」：<span class="fr">Quel âge as-tu ?</span>　② quel＋être＋主語「～は何」：<span class="fr">Quelle est ta nationalité ?</span>　③ 感嘆：<span class="fr">Quelle chance !</span></p>'},
+  {k:"heure",t:"時刻と数",d:"時刻の表現 ／ 71〜（En plus 2 ／ Nombres 4）",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
+   memo:'<p><span class="fr">Quelle heure est-il ?</span> ― <span class="fr">Il est une heure. ／ Il est deux heures.</span></p>'+
+   '<p>15分＝<span class="fr">et quart</span>、30分＝<span class="fr">et demie</span>、45分＝<span class="fr">moins le quart</span>（次の時刻から15分前）、50分＝<span class="fr">moins dix</span></p>'+
+   '<p>正午＝<span class="fr">midi</span>、午前0時＝<span class="fr">minuit</span>。midi / minuit のあとは <span class="fr">et demi</span>（男性形）。</p>'+
+   '<p>70＝soixante-dix、71＝soixante <b>et</b> onze、80＝quatre-vingt<b>s</b>、81＝quatre-vingt-un（s なし）、90＝quatre-vingt-dix</p>'+
+   '<p>100＝cent、200＝deux cent<b>s</b>、201＝deux cent un（s なし）、1000＝mille（変化しない）、100万＝un million、10億＝un milliard</p>'}
+]};
+
+/* ---------- aller・venir・tenir ---------- */
+W("verb","Je ___ à la bibliothèque.（aller）","vais","aller：je vais。",{ja:"私は図書館に行く。"});
+W("verb","Tu ___ au cinéma ce soir ?（aller）","vas","aller：tu vas。",{ja:"今夜映画に行くの？"});
+W("verb","Il ___ à Kyoto en train.（aller）","va","aller：il va。",{ja:"彼は電車で京都に行く。"});
+W("verb","Nous ___ chez Marie.（aller）","allons","aller：nous allons。",{ja:"私たちはマリーの家に行く。"});
+W("verb","Comment ___-vous ?（aller）","allez","aller：vous allez。Comment allez-vous ?「お元気ですか」。",{ja:"お元気ですか？"});
+W("verb","Ils ___ à l'université à pied.（aller）","vont","aller：ils vont。",{ja:"彼らは歩いて大学に行く。"});
+W("verb","Je ___ du Japon.（venir）","viens","venir：je viens。venir de ～「～から来る、～の出身だ」。",{ja:"私は日本から来ました。"});
+W("verb","Tu ___ avec nous ?（venir）","viens","venir：tu viens。",{ja:"いっしょに来る？"});
+W("verb","Elle ___ de Lyon.（venir）","vient","venir：elle vient。",{ja:"彼女はリヨンの出身だ。"});
+W("verb","Nous ___ à la fête samedi.（venir）","venons","venir：nous venons。",{ja:"私たちは土曜日のパーティーに行きます。"});
+W("verb","D'où ___-vous ?（venir）","venez","venir：vous venez。d'où ＝ de＋où。",{ja:"どちらのご出身ですか？"});
+W("verb","Ils ___ ce soir.（venir）","viennent","venir：ils viennent（n を重ねる）。",{ja:"彼らは今夜来る。"});
+W("verb","Elle ___ un parapluie à la main.（tenir）","tient","tenir は venir と同じ型：elle tient。",{ja:"彼女は手に傘を持っている。"});
+W("verb","Les enfants ___ la main de leur mère.（tenir）","tiennent","tenir：ils tiennent（n を重ねる）。",{ja:"子どもたちは母親と手をつないでいる。"});
+W("verb","Il ___ médecin.（devenir）","devient","devenir は venir と同じ型：il devient。",{ja:"彼は医者になる。"});
+W("verb","Nous ___ demain.（revenir）","revenons","revenir は venir と同じ型：nous revenons。",{ja:"私たちは明日戻ります。"});
+W("verb","Vous ___ votre diplôme en mars ?（obtenir）","obtenez","obtenir は venir と同じ型：vous obtenez。",{ja:"3月に卒業証書を取るのですか？"});
+C("verb","Vous ___ à Paris ?（aller）","allez",["allez","allons","vont"],"vous → allez。",{ja:"パリに行くのですか？"});
+C("verb","Elles ___ de Nara.（venir）","viennent",["viennent","venent","vient"],"ils / elles → viennent（n を重ねる）。",{ja:"彼女たちは奈良の出身だ。"});
+C("verb","Nous ___ un petit café.（tenir）","tenons",["tenons","tienons","tenez"],"nous / vous の語幹は ten-（tenons, tenez）。tenir un café「カフェを経営する」。",{ja:"私たちは小さなカフェを営んでいる。"});
+C("verb","Tu ___ souvent ici ?（venir）","viens",["viens","vient","venes"],"tu → viens。",{ja:"よくここに来るの？"});
+C("verb","Je ___ bien, merci.（aller）","vais",["vais","va","allons"],"je → vais。aller bien「元気だ」。",{ja:"元気です、ありがとう。"});
+B("verb","今年、彼らはフランスに行く。","Cette année, ils vont en France.",["va","au"],"aller：ils vont。France は女性名詞なので en France。");
+B("verb","どちらのご出身ですか？","D'où venez-vous ?",["viens","Où"],"venir de ～「～の出身だ」。de＋où → d'où。");
+
+/* ---------- 近接未来・近接過去 ---------- */
+T("proche","近接未来（aller＋不定詞）に","Je visite le musée.",["Je vais visiter le musée."],"aller の現在形＋動詞の原形。");
+T("proche","近接未来に","Nous déjeunons ensemble.",["Nous allons déjeuner ensemble."],"nous allons＋原形。");
+T("proche","近接未来に","Elles regardent un film.",["Elles vont regarder un film."],"elles vont＋原形。");
+T("proche","近接未来に","Tu finis ce travail.",["Tu vas finir ce travail."],"tu vas＋原形。");
+T("proche","近接未来に","Vous êtes en retard.",["Vous allez être en retard."],"être も原形のまま aller のあとに置く。");
+T("proche","近接過去（venir de＋不定詞）に","J'arrive à la gare.",["Je viens d'arriver à la gare."],"venir de＋原形。母音の前で de → d'。");
+T("proche","近接過去に","Il termine ses devoirs.",["Il vient de terminer ses devoirs."],"il vient de＋原形。");
+T("proche","近接過去に","Nous dînons.",["Nous venons de dîner."],"nous venons de＋原形。");
+T("proche","近接過去に","Elles rentrent.",["Elles viennent de rentrer."],"elles viennent de＋原形。");
+T("proche","否定文に","Je vais sortir ce soir.",["Je ne vais pas sortir ce soir."],"活用している aller を ne ～ pas ではさむ。");
+C("proche","Le train ___ partir.","va",["va","vient de","vient"],"「まもなく～する」は近接未来 aller＋原形。",{ja:"列車はまもなく出発する。"});
+C("proche","Le film ___ commencer.","vient de",["vient de","va","vient"],"「～したところだ」は近接過去 venir de＋原形。",{ja:"映画は始まったところだ。"});
+C("proche","Je ___ faire des courses.","vais",["vais","viens de","viens"],"aller＋原形は文脈によって「～しに行く」の意味にもなる。",{ja:"買い物をしに行く。"});
+C("proche","Paul ___ dîner chez nous ce soir.","vient",["vient","vient de","viennent"],"de のない venir＋原形は「～しに来る」。",{ja:"ポールが今夜うちに夕食を食べに来る。"});
+C("proche","Nous ___ d'arriver.","venons",["venons","allons","venez"],"venir de＋原形「～したところだ」。nous → venons。",{ja:"私たちは着いたところです。"});
+C("proche","Qu'est-ce que tu ___ faire ce week-end ?","vas",["vas","viens de","va"],"これからの予定は近接未来。tu → vas。",{ja:"週末は何をするつもり？"});
+W("proche","Elle ___ sortir.（近接過去：「出かけたところだ」）","vient de","venir de＋原形。elle → vient de。",{ja:"彼女は出かけたところだ。"});
+W("proche","Ils ___ partir en vacances.（近接未来）","vont","aller＋原形。ils → vont。",{ja:"彼らはもうすぐ休暇に出かける。"});
+W("proche","Je ___ téléphoner à Marie.（近接過去）","viens de","venir de＋原形。je → viens de。",{ja:"マリーに電話したところだ。"});
+W("proche","Vous ___ voir ce film ?（近接未来）","allez","aller＋原形。vous → allez。",{ja:"その映画を見るつもりですか？"});
+B("proche","私たちは来週パリを訪れる予定だ。","Nous allons visiter Paris la semaine prochaine.",["venons","de"],"予定は近接未来 aller＋原形。");
+B("proche","彼女はたった今、家に帰ってきたところだ。","Elle vient de rentrer à la maison.",["va","d'"],"近接過去 venir de＋原形。");
+B("proche","今夜、映画を見に行くよ。","Je vais voir un film ce soir.",["viens","de"],"aller＋原形「～しに行く」。");
+
+/* ---------- 疑問代名詞 ---------- */
+C("pron","___ vient ce soir ?","Qui",["Qui","Que","Qu'est-ce qui"],"人について「だれが」→ qui（＝qui est-ce qui）。",{ja:"今夜だれが来るの？",cw:false});
+C("pron","___ tu cherches ?","Qui est-ce que",["Qui est-ce que","Qui est-ce qui","Qu'est-ce que"],"「だれを」は qui est-ce que。est-ce que のあとは倒置しない。",{ja:"だれを探しているの？"});
+C("pron","___ cherches-tu ?","Qui",["Qui","Que","Quoi"],"「だれを」を倒置で聞くときは qui＋動詞-主語。",{ja:"だれを探しているの？"});
+C("pron","___ vous faites le dimanche ?","Qu'est-ce que",["Qu'est-ce que","Qu'est-ce qui","Qui est-ce que"],"「何を」→ qu'est-ce que＋主語＋動詞。",{ja:"日曜日は何をしていますか？"});
+C("pron","___ faites-vous le dimanche ?","Que",["Que","Qu'est-ce que","Quoi"],"「何を」を倒置で聞くときは que＋動詞-主語。",{ja:"日曜日は何をしていますか？"});
+C("pron","___ ne va pas ?","Qu'est-ce qui",["Qu'est-ce qui","Qu'est-ce que","Que"],"人以外が主語「何が」→ qu'est-ce qui。",{ja:"どうしたの（何がうまくいかないの）？"});
+C("pron","___ est sur la table ?","Qu'est-ce qui",["Qu'est-ce qui","Qui est-ce que","Que"],"「何が」→ qu'est-ce qui。",{ja:"テーブルの上に何があるの？"});
+C("pron","___ est-ce ? ― C'est mon frère.","Qui",["Qui","Que","Quoi"],"人について属詞「だれ」→ qui。",{ja:"あれはだれ？ ― 私の兄です。"});
+C("pron","Avec ___ vas-tu au cinéma ?","qui",["qui","quoi","que"],"前置詞のあと、人なら qui。",{ja:"だれと映画に行くの？"});
+C("pron","À ___ penses-tu ?","quoi",["quoi","que","qui"],"前置詞のあと、人以外なら quoi。",{ja:"何を考えているの？"});
+C("pron","De ___ parlez-vous ?","quoi",["quoi","que","qu'"],"前置詞のあと、人以外なら quoi。parler de ～「～について話す」。",{ja:"何の話をしているのですか？"});
+C("pron","De ___ parle-t-il ?","qui",["qui","quoi","que"],"前置詞のあと、人なら qui。",{ja:"彼はだれのことを話しているの？"});
+C("pron","Tu fais ___ ce soir ?","quoi",["quoi","que","qu'est-ce que"],"口語では文末に quoi を置いて「何を」とたずねる。",{ja:"今夜は何するの？（くだけた言い方）"});
+W("pron","___ êtes-vous ? ― Je suis le père de Léa.","Qui","人について属詞「だれ」→ qui。",{ja:"どなたですか？ ― レアの父です。"});
+W("pron","___ regardes-tu ? ― Je regarde la télé.","Que","「何を」を倒置で → que。",{ja:"何を見ているの？ ― テレビを見ているよ。"});
+W("pron","___ c'est ? ― C'est un dictionnaire.","Qu'est-ce que","「これは何ですか」＝ Qu'est-ce que c'est ?",{ja:"これは何ですか？ ― 辞書です。"});
+C("pron","De ces deux robes, ___ préfères-tu ?","laquelle",["laquelle","lequel","lesquelles"],"「どれ」は受ける名詞に性数一致。robe は女性単数 → laquelle。",{ja:"この2着のドレスのうち、どちらが好き？"});
+C("pron","Voici trois livres. ___ choisis-tu ?","Lequel",["Lequel","Laquelle","Lesquels"],"livre は男性。「どれを（1冊）」→ lequel。",{ja:"本が3冊あるよ。どれを（1冊）選ぶ？"});
+C("pron","Parmi ces chaussures, ___ achètes-tu ?","lesquelles",["lesquelles","lesquels","laquelle"],"chaussures は女性複数 → lesquelles。",{ja:"この靴の中で、どれを買うの？"});
+C("pron","J'ai deux frères. ― ___ habite à Tokyo ?","Lequel",["Lequel","Laquelle","Lesquels"],"frère は男性。「どちらが（ひとり）」→ lequel。",{ja:"兄弟が2人いるんだ。 ― どちらが東京に住んでいるの？"});
+C("pron","Il parle d'un de ses romans. ― ___ parle-t-il ?","Duquel",["Duquel","Desquels","Auquel"],"de＋lequel → duquel。roman は男性単数。",{ja:"彼は自分の小説のひとつについて話している。 ― どの小説のこと？"});
+B("pron","だれが明日来るの？（est-ce を使って）","Qui est-ce qui vient demain ?",["que","viens"],"人が主語「だれが」→ qui est-ce qui。");
+B("pron","何を探しているの？（est-ce que で）","Qu'est-ce que tu cherches ?",["qui","cherche"],"「何を」→ qu'est-ce que＋主語＋動詞。");
+B("pron","だれのことを考えているの？","À qui penses-tu ?",["quoi","que"],"penser à ～。前置詞のあと、人なら qui。");
+
+/* ---------- 疑問副詞・疑問形容詞 ---------- */
+C("adv","___ partez-vous ? ― Demain matin.","Quand",["Quand","Où","Comment"],"「いつ」→ quand。",{ja:"いつ出発しますか？ ― 明日の朝です。"});
+C("adv","___ habites-tu ? ― À Nara.","Où",["Où","Quand","Combien"],"「どこ」→ où（u にアクサン・グラーヴ）。",{ja:"どこに住んでいるの？ ― 奈良だよ。"});
+C("adv","___ allez-vous ? ― Je vais bien, merci.","Comment",["Comment","Pourquoi","Où"],"「どのように」→ comment。",{ja:"お元気ですか？ ― 元気です、ありがとう。"});
+C("adv","___ est-il absent ? ― Parce qu'il est malade.","Pourquoi",["Pourquoi","Comment","Quand"],"「なぜ」→ pourquoi。答えは parce que (qu')。",{ja:"なぜ彼は休みなの？ ― 病気だからです。"});
+C("adv","Ça coûte ___ ? ― Dix euros.","combien",["combien","comment","quand"],"値段「いくら」→ combien。",{ja:"それはいくらですか？ ― 10ユーロです。"});
+C("adv","Tu as ___ frères et sœurs ?","combien de",["combien de","combien","quel"],"combien de＋名詞「いくつの～、何人の～」。",{ja:"きょうだいは何人いるの？"});
+C("adv","Pourquoi tu ne viens pas ? ― ___ je suis occupée.","Parce que",["Parce que","Pourquoi","Comment"],"「なぜなら」→ parce que。",{ja:"どうして来ないの？ ― 忙しいからよ。"});
+W("adv","___ vas-tu ? ― Je vais à la gare.","Où","「どこへ」→ où。",{ja:"どこへ行くの？ ― 駅に行くよ。"});
+W("adv","___ coûte ce sac ?","Combien","値段 → combien。",{ja:"このかばんはいくらですか？"});
+W("adv","___ est-ce que tu rentres ? ― Ce soir.","Quand","「いつ」→ quand。",{ja:"いつ帰ってくるの？ ― 今夜だよ。"});
+C("adv","___ âge as-tu ?","Quel",["Quel","Quelle","Quels"],"âge は男性単数 → quel。",{ja:"何歳なの？"});
+C("adv","___ heure est-il ?","Quelle",["Quelle","Quel","Quelles"],"heure は女性単数 → quelle。",{ja:"何時ですか？"});
+C("adv","___ est votre nom ?","Quel",["Quel","Quelle","Que"],"quel＋être＋主語「～は何ですか」。nom は男性 → quel。",{ja:"お名前は何ですか？"});
+C("adv","___ est ta nationalité ?","Quelle",["Quelle","Quel","Qu'est-ce que"],"nationalité は女性 → quelle。",{ja:"きみの国籍は？"});
+C("adv","___ langues parles-tu ?","Quelles",["Quelles","Quels","Quelle"],"langues は女性複数 → quelles。",{ja:"何語を話すの？"});
+C("adv","___ films aimez-vous ?","Quels",["Quels","Quelles","Quel"],"films は男性複数 → quels。",{ja:"どんな映画が好きですか？"});
+C("adv","___ belle maison !","Quelle",["Quelle","Quel","Comment"],"quel＋名詞で感嘆「なんて～だろう」。maison は女性 → quelle。",{ja:"なんてきれいな家だろう！"});
+W("adv","___ est ton adresse ?（quel）","Quelle","adresse は女性単数 → quelle。",{ja:"きみの住所は？"});
+W("adv","___ sont tes couleurs préférées ?（quel）","Quelles","couleurs は女性複数 → quelles。",{ja:"好きな色は何？"});
+W("adv","___ jour sommes-nous ?（quel）","Quel","jour は男性単数 → quel。",{ja:"今日は何曜日？"});
+T("adv","倒置疑問文に","Tu habites où ?",["Où habites-tu ?"],"疑問副詞を文頭に出し、主語と動詞を倒置する。");
+T("adv","倒置疑問文に","Vous arrivez quand ?",["Quand arrivez-vous ?"],"Quand＋動詞-主語。");
+T("adv","Est-ce que を使った疑問文に","Tu habites où ?",["Où est-ce que tu habites ?"],"疑問副詞＋est-ce que＋主語＋動詞。");
+B("adv","どうしてきみは悲しいの？","Pourquoi es-tu triste ?",["Parce","que"],"Pourquoi＋動詞-主語。");
+B("adv","あなたのご住所は？","Quelle est votre adresse ?",["Quel","où"],"adresse は女性 → quelle。");
+
+/* ---------- 時刻と数 ---------- */
+C("heure","3時15分です。","Il est trois heures et quart.",["Il est trois heures et quart.","Il est trois heures moins le quart.","Il est trois heure et quart."],"15分＝et quart。2時以降は heures（複数）。",{cw:false});
+C("heure","6時半です。","Il est six heures et demie.",["Il est six heures et demie.","Il est six heures et demi.","Il est six heures moins demie."],"heure は女性名詞なので et demie。",{cw:false});
+C("heure","（昼の）12時半です。","Il est midi et demi.",["Il est midi et demi.","Il est midi demi.","Il est douze et demie."],"midi / minuit のあとは et demi（男性形）。",{cw:false});
+C("heure","6時45分です。","Il est sept heures moins le quart.",["Il est sept heures moins le quart.","Il est six heures moins le quart.","Il est sept heures et quart."],"45分は「次の時刻まで15分前」＝ moins le quart。",{cw:false});
+C("heure","7時50分です。","Il est huit heures moins dix.",["Il est huit heures moins dix.","Il est sept heures moins dix.","Il est huit heures dix."],"50分は「8時10分前」＝ huit heures moins dix。",{cw:false});
+C("heure","1時です。","Il est une heure.",["Il est une heure.","Il est un heure.","Il est une heures."],"heure は女性 → une heure（単数）。",{cw:false});
+C("heure","午前0時です。","Il est minuit.",["Il est minuit.","Il est midi.","Il est nuit."],"午前0時＝minuit、正午＝midi。",{cw:false});
+C("heure","今何時かわかりますか？","Vous avez l'heure ?",["Vous avez l'heure ?","Vous avez une heure ?","Vous êtes l'heure ?"],"Vous avez l'heure ?＝Quelle heure est-il ?",{cw:false});
+W("heure","Il est cinq heures ___.（5時5分）","cinq","「～時…分」は heures のあとに数を言う。",{ja:"5時5分です。"});
+W("heure","Il est onze heures ___.（11時15分）","et quart","15分＝et quart。",{ja:"11時15分です。"});
+W("heure","Il est ___.（正午）","midi","正午＝midi。",{ja:"正午です。"});
+W("heure","___ heure est-il ?","Quelle","heure は女性 → quelle。",{ja:"何時ですか？"});
+C("heure","71 は？","soixante et onze",["soixante et onze","soixante-onze","soixante-dix-un"],"71＝60＋11。21, 31 … と同じく et でつなぐ。",{cw:false});
+C("heure","75 は？","soixante-quinze",["soixante-quinze","soixante-cinq","soixante-dix-cinq"],"75＝60＋15。");
+C("heure","80 は？","quatre-vingts",["quatre-vingts","quatre-vingt","huit-dix"],"80＝4×20。80 ちょうどのときだけ vingts に s。");
+C("heure","81 は？","quatre-vingt-un",["quatre-vingt-un","quatre-vingts-un","quatre-vingt et un"],"81〜99 では vingt に s をつけない。81 は et を使わない。");
+C("heure","90 は？","quatre-vingt-dix",["quatre-vingt-dix","quatre-vingts-dix","neuf-dix"],"90＝80＋10。");
+C("heure","200 は？","deux cents",["deux cents","deux cent","deux centaines"],"200, 300 などちょうどの数のときだけ cents。",{cw:false});
+C("heure","201 は？","deux cent un",["deux cent un","deux cents un","deux cent et un"],"端数があるときは cent（s なし）。",{cw:false});
+C("heure","1000 は？","mille",["mille","un mille","milles"],"mille は un をつけず、変化もしない。");
+C("heure","100万 は？","un million",["un million","mille mille","un milliard"],"100万＝un million、10億＝un milliard。");
+C("heure","« quatre-vingt-dix-sept » はいくつ？","97",["97","87","77"],"quatre-vingt-dix-sept＝80＋17。",{cw:false});
+C("heure","« soixante-dix-huit » はいくつ？","78",["78","68","98"],"soixante-dix-huit＝60＋18。",{cw:false});
+W("heure","99 ＝ ___","quatre-vingt-dix-neuf","99＝80＋19。");
+W("heure","72 ＝ ___","soixante-douze","72＝60＋12。");
+W("heure","85 ＝ ___","quatre-vingt-cinq","85＝80＋5。vingt に s はつけない。");
+W("heure","300 ＝ ___",["trois cents","trois-cents"],"ちょうどの数なので cents。");
+W("heure","2000 ＝ ___",["deux mille","deux-mille"],"mille は複数でも s をつけない。");
+</script>
+</body>
+</html>
