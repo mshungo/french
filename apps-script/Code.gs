@@ -22,7 +22,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-05c';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-05d';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック' };
 const PRACTICE_ID = 'NARAF26';   // 練習用ID（名簿には載せない）。フィードバックの送信だけ受け付ける
@@ -113,6 +113,7 @@ function handle_(req) {
 
   if (req.action === 'sync' || req.action === 'history') {
     if (!rateOk_(cache, 'r:' + id, LIMIT.readPerMin, 60)) return { ok: false, error: 'rate' };
+    try { touchLogin_(ss, cache, id); } catch (e) {}   // 失敗してもログインは止めない
     if (req.action === 'history') return { ok: true, user: user, history: historyFor_(ss, id) };
     return { ok: true, user: user, stats: statsFor_(ss, id) };
   }
@@ -190,6 +191,23 @@ function lookupRoster_(ss, id) {
     if (normId_(row[0]) === id) return String(row[1] || '').trim();
   }
   return null;
+}
+
+// 名簿のE列「最終ログイン」に日時を書く。書き込みは1つのIDにつき1時間に1回まで（負荷を抑えるため）
+const LASTLOGIN_COL = 5;
+function touchLogin_(ss, cache, id) {
+  if (cache.get('ll:' + id)) return;
+  cache.put('ll:' + id, '1', 3600);
+  const sh = ss.getSheetByName(SHEET.roster);
+  if (!sh || sh.getLastRow() < 2) return;
+  if (!sh.getRange(1, LASTLOGIN_COL).getValue()) sh.getRange(1, LASTLOGIN_COL).setValue('最終ログイン').setFontWeight('bold');
+  const ids = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) {
+    if (normId_(ids[i][0]) === id) {
+      sh.getRange(i + 2, LASTLOGIN_COL).setValue(new Date()).setNumberFormat('yyyy-mm-dd hh:mm');
+      return;
+    }
+  }
 }
 
 // ===== 結果の検証と追記 =====
@@ -361,7 +379,7 @@ function setup() {
   ss.setSpreadsheetTimeZone(TZ);
 
   const roster = ensureSheet_(ss, SHEET.roster, null);
-  roster.getRange(1, 1, 1, 4).setValues([['学生ID', '氏名', '名字（ローマ字）', 'メモ(任意)']]).setFontWeight('bold');
+  roster.getRange(1, 1, 1, 5).setValues([['学生ID', '氏名', '名字（ローマ字）', 'メモ(任意)', '最終ログイン']]).setFontWeight('bold');
   roster.setFrozenRows(1);
   roster.getRange(2, 1, 500, 1).setNumberFormat('@');
   resultsSheet_(ss);

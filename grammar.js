@@ -416,6 +416,18 @@ function finishRound(){
   if(window.Quiz)Quiz.submit("grammar",{section:"L"+L.no+"-"+curSec,mode:curMode,durMs:Math.round(time),score:roundCorrect,total:N,timeAttack:false,timeMs:null,
     misses:miss.map(q=>({full:q.it.t==="b"?q.it.ja:(q.it.q||q.it.src||""),verb:"L"+L.no,chosen:q.chosen||"",answer:q.it.a[0]}))});
 }
+/* 問題の報告用：このラウンドで出た問題（新しい順）。feedback.js が使う */
+window.FB_QUESTIONS=function(){
+  if(!L||!questions.length)return [];
+  const out=[],n=Math.min(questions.length,idx+1);
+  for(let i=n-1;i>=0;i--){
+    const q=questions[i],it=q.it,body=it.t==="t"?it.inst+"："+it.src:it.t==="b"?it.ja:(it.q||"");
+    out.push({label:(i+1)+". "+body,
+      detail:"文法練習 Leçon "+L.no+"／"+secInfo(it.sec).t+"／ラウンドの第"+(i+1)+"問（問題ID "+it.id+"）\n問題："+body+(it.ja&&it.t!=="b"?"（"+it.ja+"）":"")+
+        "\n正解："+it.a.join(" / ")+"\n自分の答え："+(q.ok==null?"（まだ答えていない）":(q.chosen||"")+(q.ok?"　○":"　✕"))});
+  }
+  return out;
+};
 function goHome(){clearInterval(timerHandle);clearTimeout(autoNext);setAccent(null);renderHome();show(homeScreen);}
 
 /* ---------- 起動 ---------- */

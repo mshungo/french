@@ -42,6 +42,13 @@
     '.nlfb-k[aria-pressed="true"]{border-color:#8f667f;background:#8f667f;color:#fff;}' +
     '.nlfb-ctx{margin-top:10px;font-size:11px;color:#8c8088;background:#f8f3ef;border-radius:10px;padding:7px 10px;max-height:4.6em;overflow:hidden;line-height:1.55;white-space:pre-line;}' +
     '.nlfb-ctx b{color:#9a7b45;font-weight:500;}' +
+    '.nlfb-qh{margin-top:12px;font-size:12px;font-weight:500;color:#4a4048;}' +
+    '.nlfb-qh small{font-weight:400;color:#8c8088;margin-left:4px;}' +
+    '.nlfb-qs{display:flex;flex-direction:column;gap:5px;margin-top:6px;max-height:228px;overflow-y:auto;padding:2px;}' +
+    '.nlfb-q{text-align:left;padding:8px 11px;border:1px solid #e6dad2;border-radius:10px;background:#fff;color:#4a4048;font:inherit;font-size:12.5px;line-height:1.45;cursor:pointer;' +
+    'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none;}' +
+    '.nlfb-q[aria-pressed="true"]{border-color:#8f667f;background:#f6eef3;box-shadow:inset 3px 0 0 #8f667f;}' +
+    '.nlfb-q0{color:#8c8088;}' +
     '.nlfb-txt{display:block;width:100%;box-sizing:border-box;margin-top:10px;padding:10px 12px;border:1px solid rgba(60,40,40,.18);border-radius:12px;' +
     'font:inherit;font-size:16px;line-height:1.5;color:#4a4048;background:#fff;resize:vertical;min-height:62px;}' +
     '.nlfb-send{display:block;width:100%;margin-top:10px;padding:12px;border:none;border-radius:12px;background:#8f667f;color:#fff;font:inherit;font-size:14.5px;letter-spacing:2px;cursor:pointer;}' +
@@ -54,7 +61,7 @@
   var ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     '<path d="M4 5h16v11H9l-4 3.5V16H4z"/><path d="M12 8.5v3.2"/><circle cx="12" cy="13.7" r=".6" fill="currentColor"/></svg>';
 
-  var root, kind = "", ctxText = "";
+  var root, kind = "", ctxText = "", qs = [], qSel = -1;
 
   function closed() {
     root.innerHTML = '<button class="nlfb-open" type="button">' + ICON + '問題や表示がおかしいときは、ここから先生に知らせる</button>';
@@ -62,11 +69,18 @@
   }
   function openBox() {
     kind = ""; ctxText = screenText();
+    /* 各教材が用意する「このラウンドで出た問題」（新しい順）。ある場合は、どの問題かを選んでもらう */
+    qs = []; try { if (typeof window.FB_QUESTIONS === "function") qs = (window.FB_QUESTIONS() || []).slice(0, 12); } catch (e) { qs = []; }
+    qSel = qs.length ? 0 : -1;
     root.innerHTML = '<div class="nlfb-box">' +
       '<div class="nlfb-h"><span class="nlfb-t">先生に知らせる</span><button class="nlfb-x" type="button" aria-label="閉じる">×</button></div>' +
       '<div class="nlfb-sub">どれに近いかタップして送ってください。ひとことは書かなくても大丈夫です。</div>' +
       '<div class="nlfb-kinds">' + KINDS.map(function (k) { return '<button class="nlfb-k" type="button" aria-pressed="false">' + esc(k) + '</button>'; }).join("") + '</div>' +
-      (ctxText ? '<div class="nlfb-ctx"><b>いまの画面も添えて送ります：</b>\n' + esc(ctxText.slice(0, 160)) + (ctxText.length > 160 ? "…" : "") + '</div>' : '') +
+      (qs.length ?
+        '<div class="nlfb-qh">どの問題？<small>（このラウンドで出た問題・新しい順）</small></div><div class="nlfb-qs">' +
+        qs.map(function (q, i) { return '<button class="nlfb-q" type="button" data-i="' + i + '" aria-pressed="' + (i === 0) + '">' + esc(q.label) + '</button>'; }).join("") +
+        '<button class="nlfb-q nlfb-q0" type="button" data-i="-1" aria-pressed="false">特定の問題ではない</button></div>'
+      : (ctxText ? '<div class="nlfb-ctx"><b>いまの画面も添えて送ります：</b>\n' + esc(ctxText.slice(0, 160)) + (ctxText.length > 160 ? "…" : "") + '</div>' : '')) +
       '<textarea class="nlfb-txt" maxlength="500" rows="2" placeholder="ひとこと（例：正解が２つあると思う）"></textarea>' +
       '<button class="nlfb-send" type="button" disabled>送る</button><div class="nlfb-msg"></div></div>';
     var btns = root.querySelectorAll(".nlfb-k"), send = root.querySelector(".nlfb-send"), txt = root.querySelector(".nlfb-txt");
@@ -79,6 +93,13 @@
       };
     });
     txt.oninput = upd;
+    var qb = root.querySelectorAll(".nlfb-q");
+    Array.prototype.forEach.call(qb, function (b) {
+      b.onclick = function () {
+        Array.prototype.forEach.call(qb, function (x) { x.setAttribute("aria-pressed", "false"); });
+        b.setAttribute("aria-pressed", "true"); qSel = +b.dataset.i;
+      };
+    });
     root.querySelector(".nlfb-x").onclick = closed;
     send.onclick = function () { doSend(send, txt); };
   }
@@ -86,7 +107,7 @@
     var msg = root.querySelector(".nlfb-msg");
     send.disabled = true; msg.className = "nlfb-msg"; msg.textContent = "送信中…";
     var page = (document.title || "").replace(/\s*—\s*Naralingo$/, "") + "（" + (location.pathname.split("/").pop() || "index.html") + "）";
-    var st = await Q.feedback({ kind: kind || "その他", text: txt.value.trim(), context: ctxText, page: page, device: device() });
+    var st = await Q.feedback({ kind: kind || "その他", text: txt.value.trim(), context: (qs.length ? (qSel >= 0 ? qs[qSel].detail : "（特定の問題ではない）\n" + ctxText) : ctxText).slice(0, 790), page: page, device: device() });
     if (st === "ok") {
       root.innerHTML = '<div class="nlfb-done">送りました。ありがとう！ 先生が確認します。<br><button type="button">もうひとつ送る</button></div>';
       root.querySelector(".nlfb-done button").onclick = openBox;
