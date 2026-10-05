@@ -73,6 +73,39 @@ function mastered(it){const s=st(it);return !s.wk&&(s.run>=2||s.m===true);}
 function weak(it){return !!st(it).wk;}
 function fmtDur(ms){const m=Math.round((ms||0)/60000);if(m<60)return m+"分";return Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
 function pctMastered(){return ITEMS.length?Math.round(ITEMS.filter(mastered).length/ITEMS.length*100):0;}
+/* ---------- バッジ ----------
+   項目（セクション）の問題をすべて習得 → 項目バッジ ／ 累計300問 → クリア ／ 全問習得 → 勲章
+   一度もらったバッジは、あとで苦手が付いても消えない */
+let fresh={};
+function badgeTargets(){
+  const out=L.sections.map(s=>{const list=itemsOf(s.k);return {key:"s:"+s.k,kind:"sec",color:s.c,name:s.t,
+    done:list.length>0&&list.every(mastered),sub:"この項目の "+list.length+" 問をすべて習得しました"};});
+  out.push({key:"clear",kind:"clear",name:"Leçon "+L.no+" クリア",done:store.answered>=CLEAR_ANS,sub:"累計 "+CLEAR_ANS+" 問の練習を達成しました"});
+  out.push({key:"medal",kind:"medal",name:"Leçon "+L.no+" 勲章",done:ITEMS.length>0&&ITEMS.every(mastered),sub:"全 "+ITEMS.length+" 問を習得しました"});
+  return out;
+}
+/* まだ持っていないバッジのうち、条件を満たしたものを付与して返す */
+function awardBadges(){
+  store.badges=store.badges||{};
+  const got=badgeTargets().filter(b=>b.done&&!store.badges[b.key]);
+  got.forEach(b=>{store.badges[b.key]=Date.now();fresh[b.key]=1;});
+  if(got.length)save();
+  return got;
+}
+function renderShelf(){
+  const B=store.badges||{},T=badgeTargets(),ans=store.answered;
+  const items=L.sections.map((s,i)=>{const list=itemsOf(s.k),m=list.filter(mastered).length;
+    return {kind:"sec",on:!!B["s:"+s.k],fresh:!!fresh["s:"+s.k],color:s.c,pct:list.length?m/list.length:0,label:i+1,cap:String(i+1),title:s.t};});
+  const m=ITEMS.filter(mastered).length;
+  const big=[
+    {kind:"clear",on:!!B.clear,fresh:!!fresh.clear,pct:Math.min(1,ans/CLEAR_ANS),cap:"クリア",
+     status:B.clear?"累計"+CLEAR_ANS+"問 達成":"あと "+Math.max(0,CLEAR_ANS-ans)+" 問"},
+    {kind:"medal",on:!!B.medal,fresh:!!fresh.medal,pct:ITEMS.length?m/ITEMS.length:0,cap:"勲章",
+     status:B.medal?"全問習得":"習得 "+m+" / "+ITEMS.length+" 問"}];
+  fresh={};
+  return window.Badge?Badge.shelf({title:"項目バッジ",items,big}):"";
+}
+
 function itemsOf(sec){
   if(sec==="mix")return ITEMS.slice();
   if(sec==="weak")return ITEMS.filter(weak);
@@ -100,7 +133,7 @@ function shell(){
 '      <div class="stat"><div class="n" id="hMaster">0</div><div class="l">習得率</div></div>'+
 '      <div class="stat"><div class="n" id="hTime">0分</div><div class="l">勉強時間</div></div>'+
 '    </div>'+
-'    <div class="goal" id="goal"></div>'+
+'    <div id="goal"></div>'+
 '    <div class="mode-row"><span class="mode-label">出題形式</span><div class="mode-toggle">'+
 '      <button class="mode-btn" data-mode="choice">選択式</button><button class="mode-btn" data-mode="write">記述式</button></div></div>'+
 '    <div class="guide"><b>選択式</b>は選択肢から選び、<b>記述式</b>は同じ問題を自分で書いて答えます。書きかえ・並べかえの問題はどちらでも出ます。<br>2回続けて正解すると「習得」（記述で<b>5秒以内</b>に正解なら一発で習得）。間違えた問題は「苦手」になり、2回続けて正解するまで残ります。<br>累計'+CLEAR_ANS+'問（約1時間）で<b>クリア</b>、全問習得で<b>勲章</b>。</div>'+
@@ -157,19 +190,16 @@ function renderHome(){
   const m=ITEMS.filter(mastered).length;
   $("hMaster").innerHTML=pctMastered()+'<small>%</small>';
   $("hTime").textContent=fmtDur(store.timeMs);
-  const ans=store.answered,clr=ans>=CLEAR_ANS,all=m===ITEMS.length;
-  $("goal").innerHTML=
-    '<div class="goal-row"><span class="goal-l">クリアまで</span><span class="goal-bar"><span style="width:'+Math.min(100,Math.round(ans/CLEAR_ANS*100))+'%"></span></span>'+
-    '<span class="goal-n">'+Math.min(ans,CLEAR_ANS)+' / '+CLEAR_ANS+'問</span></div>'+
-    '<div class="goal-row"><span class="goal-l">習得</span><span class="goal-bar m"><span style="width:'+pctMastered()+'%"></span></span>'+
-    '<span class="goal-n">'+m+' / '+ITEMS.length+'問</span></div>'+
-    '<div class="badges"><span class="badge'+(clr?' on':'')+'">'+(clr?'CLEAR':'クリア前')+'</span>'+
-    '<span class="badge medal'+(all?' on':'')+'">'+(all?'勲章 · Maîtrise':'勲章：全問習得で')+'</span></div>';
+  const B=store.badges||{};
   L.sections.forEach(s=>{
-    const list=itemsOf(s.k),mm=list.filter(mastered).length;
-    const el=document.querySelector('[data-prog="'+s.k+'"]');
-    if(el)el.innerHTML='<span>習得 '+mm+'/'+list.length+'</span><span class="pbar"><span style="width:'+(list.length?Math.round(mm/list.length*100):0)+'%"></span></span>';
+    const list=itemsOf(s.k),mm=list.filter(mastered).length,done=!!B["s:"+s.k];
+    const el=document.querySelector('[data-prog="'+s.k+'"]');if(!el)return;
+    el.parentNode.classList.toggle("mastered",done);
+    el.innerHTML=done&&window.Badge?
+      Badge.seal({kind:"sec",on:true,color:s.c,size:30})+'<span class="sb-done">習得 '+mm+'/'+list.length+'<small>Maîtrise</small></span>':
+      '<span>習得 '+mm+'/'+list.length+'</span><span class="pbar"><span style="width:'+(list.length?Math.round(mm/list.length*100):0)+'%"></span></span>';
   });
+  $("goal").innerHTML=renderShelf();
   $("mixProg").textContent="全"+ITEMS.length+"問から出題";
   const wk=itemsOf("weak").length;
   $("weakCount").textContent=wk?wk+"問":"なし";$("weakBtn").disabled=wk<1;
@@ -369,7 +399,7 @@ function finishRound(){
   const list=itemsOf(curSec==="weak"?"mix":curSec);
   let mt=(curSec==="mix"||curSec==="weak"?"Leçon "+L.no+" 全体":"この項目")+"の習得："+list.filter(mastered).length+" / "+list.length+"　／　通算 "+fmtDur(store.timeMs);
   if(!wasClear&&store.answered>=CLEAR_ANS)mt+="　★ Leçon "+L.no+" クリア！";
-  if(ITEMS.every(mastered)&&!store.medal){store.medal=true;save();mt+="　勲章獲得：全問習得！";}
+  const newB=awardBadges();
   $("rMastery").textContent=mt;
   const miss=questions.filter(q=>!q.ok);
   let h='<div class="ttl">'+(miss.length?"間違えた問題":"全問正解")+'</div>';
@@ -382,6 +412,7 @@ function finishRound(){
   $("review").innerHTML=h;
   show(resultScreen);
   if(roundCorrect===N&&typeof playFanfare==="function")setTimeout(playFanfare,280);
+  if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),roundCorrect===N?1900:500);
   if(window.Quiz)Quiz.submit("grammar",{section:"L"+L.no+"-"+curSec,mode:curMode,durMs:Math.round(time),score:roundCorrect,total:N,timeAttack:false,timeMs:null,
     misses:miss.map(q=>({full:q.it.t==="b"?q.it.ja:(q.it.q||q.it.src||""),verb:"L"+L.no,chosen:q.chosen||"",answer:q.it.a[0]}))});
 }
@@ -394,6 +425,7 @@ function init(){
   WHO=(window.Quiz&&Quiz.user())?Quiz.user().id:"guest";
   KEY="gramQuiz_L"+L.no+"_v1_"+WHO;
   store=load();curMode=store.mode||"choice";
+  if(!store.badges){store.badges={};awardBadges();fresh={};}   // この版より前に達成していた分は、お祝いなしで付ける
   const app=document.getElementById("app");app.innerHTML=shell();
   homeScreen=$("homeScreen");quizScreen=$("quizScreen");resultScreen=$("resultScreen");
   document.querySelectorAll(".sections .start-btn").forEach(b=>b.onclick=()=>startRound(b.dataset.sec));
@@ -406,7 +438,7 @@ function init(){
   $("resetBtn").onclick=()=>{
     const b=$("resetBtn");
     if(Date.now()-armed<4000){armed=0;b.textContent="記録をリセット";
-      store={tries:0,answered:0,correct:0,best:null,it:{},mode:curMode};save();renderHome();return;}
+      store={tries:0,answered:0,correct:0,best:null,it:{},mode:curMode,badges:{}};save();renderHome();return;}
     armed=Date.now();b.textContent="もう一度押すとリセットします";
     setTimeout(()=>{if(armed&&Date.now()-armed>=4000){armed=0;b.textContent="記録をリセット";}},4100);
   };

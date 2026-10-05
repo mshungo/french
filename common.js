@@ -7,8 +7,28 @@
   var RE_ID = /^[A-Z0-9_-]{3,20}$/;
   function normId(s) { return String(s == null ? "" : s).normalize("NFKC").replace(/\s+/g, "").toUpperCase(); }
   function normPw(s) { return String(s == null ? "" : s).normalize("NFKC").replace(/\s+/g, "").toLowerCase(); }
-  /* 練習用ID：サーバーには送らず、記録はこの端末にだけ残す（ID・パスワードはログイン画面に書いてあるもの） */
+  /* 練習用ID：サーバーには送らず、端末にも残さない（ID・パスワードはログイン画面に書いてあるもの）。
+     各教材が localStorage に書く「…_NARAF26」の記録は、すべて sessionStorage（そのタブだけ・閉じると消える）に回す。
+     ログインし直すたび、ログアウトするたびにも消す。 */
   var PRACTICE = { id: "NARAF26", pw: "shika", name: "練習用" };
+  var PRAC_RE = /_NARAF26$/;
+  (function () {
+    try {
+      var P = Storage.prototype, g = P.getItem, s = P.setItem, r = P.removeItem;
+      var L = window.localStorage, S = window.sessionStorage;
+      var to = function (st, k) { return (st === L && PRAC_RE.test(String(k))) ? S : st; };
+      P.getItem = function (k) { return g.call(to(this, k), k); };
+      P.setItem = function (k, v) { return s.call(to(this, k), k, v); };
+      P.removeItem = function (k) { return r.call(to(this, k), k); };
+      for (var i = L.length - 1; i >= 0; i--) { var k = L.key(i); if (PRAC_RE.test(k)) r.call(L, k); }   // 以前の版で端末に残った分
+    } catch (e) {}
+  })();
+  function clearPractice() {
+    try {
+      var S = window.sessionStorage;
+      for (var i = S.length - 1; i >= 0; i--) { var k = S.key(i); if (PRAC_RE.test(k)) S.removeItem(k); }
+    } catch (e) {}
+  }
   var APPS = ["conj", "grammar", "talk"];
   var user = null;
   var flushing = false;
@@ -148,8 +168,9 @@
     if (!pw) return { ok: false, error: "nopw", id: id };
     if (id === PRACTICE.id) {
       if (pw !== PRACTICE.pw) return { ok: false, error: "auth", id: id };
+      clearPractice();
       user = { id: id, name: PRACTICE.name, pw: "", practice: true };
-      keep(user, remember);
+      keep(user, false);   // 練習用はブラウザを閉じたら終わり
       return { ok: true, user: user };
     }
     var res;
@@ -163,7 +184,7 @@
     if (getPending().length) await flush();
     return { ok: true, user: user };
   }
-  function logout() { user = null; lsDel(LOGIN_KEY); ssDel(LOGIN_KEY); }
+  function logout() { if (user && user.practice) clearPractice(); user = null; lsDel(LOGIN_KEY); ssDel(LOGIN_KEY); }
 
   /* 教材ページの入口：ログインが必要な設定で未ログインなら、メニューへ戻す */
   function requireLogin() {
