@@ -22,7 +22,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-05a';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-05b';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計' };
 const ID_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';   // 0/O/1/I/L など紛らわしい文字を除く
@@ -85,7 +85,7 @@ function json_(obj) {
 function handle_(req) {
   const ss = ss_();
   const cache = CacheService.getScriptCache();
-  if (Number(cache.get('fails') || 0) >= MAX_FAILS) return { ok: false, error: 'locked' };
+  if (failCount_(cache) >= MAX_FAILS) return { ok: false, error: 'locked' };
 
   const pass = password_();
   if (!pass) return { ok: false, error: 'nopass' };   // 共通パスワードが未設定
@@ -93,7 +93,7 @@ function handle_(req) {
   const pwOk = normPw_(req.pw) === pass;
   const name = (pwOk && ID_RE.test(id)) ? lookupRoster_(ss, id) : null;   // パスワード違い・名簿にいなければ null
   if (name === null) {
-    cache.put('fails', String(Number(cache.get('fails') || 0) + 1), 600);
+    addFail_(cache);
     return { ok: false, error: 'auth' };
   }
   const user = { id: id, name: name || id };
@@ -114,19 +114,24 @@ function handle_(req) {
 }
 
 // ===== 送信回数の制限 =====
+// 区切った時間枠（1分・1時間など）ごとに数える。枠が変われば0から数え直す。
+// （以前は書き込むたびに有効期限が延びて、使い続けると数がリセットされなかった）
 function rateOk_(cache, key, max, sec) {
-  const n = Number(cache.get(key) || 0);
+  const k = key + '@' + Math.floor(Date.now() / 1000 / sec);
+  const n = Number(cache.get(k) || 0);
   if (n >= max) return false;
-  cache.put(key, String(n + 1), sec);   // 最初の記録から sec 秒で数え直し（目安の制限）
+  cache.put(k, String(n + 1), Math.min(sec + 60, 21600));
   return true;
 }
+function failCount_(cache) { return Number(cache.get('fails@' + Math.floor(Date.now() / 600000)) || 0); }
+function addFail_(cache) { cache.put('fails@' + Math.floor(Date.now() / 600000), String(failCount_(cache) + 1), 700); }
 function submitAllowed_(cache, id) {
   const now = Date.now();
   const last = Number(cache.get('s:last:' + id) || 0);
   if (now - last < LIMIT.submitMinGapSec * 1000) return false;
   if (!rateOk_(cache, 's:h:' + id, LIMIT.submitPerHour, 3600)) return false;
   const dayKey = 's:d:' + id + ':' + Utilities.formatDate(new Date(), TZ, 'yyyyMMdd');
-  if (!rateOk_(cache, dayKey, LIMIT.submitPerDay, 21600)) return false;
+  if (!rateOk_(cache, dayKey, LIMIT.submitPerDay, 86400)) return false;
   cache.put('s:last:' + id, String(now), 600);
   return true;
 }
@@ -473,13 +478,13 @@ function testLogin() {
     }
   }
   lines.push(password_() ? '共通パスワード: ' + password_() : '× 共通パスワードが未設定です。メニュー「共通パスワードを設定」を実行してください。');
-  const fails = Number(CacheService.getScriptCache().get('fails') || 0);
+  const fails = failCount_(CacheService.getScriptCache());
   if (fails >= MAX_FAILS) lines.push('※ 失敗が多すぎて一時停止中です。「ログイン制限を解除」を実行してください。');
   lines.push('コードの版: ' + VERSION);
   ui.alert('ログインテスト', lines.join('\n'), ui.ButtonSet.OK);
 }
 
 function clearLock() {
-  CacheService.getScriptCache().remove('fails');
+  CacheService.getScriptCache().remove('fails@' + Math.floor(Date.now() / 600000));
   SpreadsheetApp.getActiveSpreadsheet().toast('ログイン制限を解除しました。');
 }

@@ -155,7 +155,7 @@
     var res;
     try { res = await call({ id: id, pw: pw }, "sync"); } catch (e) { return { ok: false, error: "network", id: id, detail: String(e && e.message || e) }; }
     if (!res.ok) return { ok: false, id: id, version: res.version || "旧版",
-      error: (res.error === "locked" || res.error === "rate") ? "locked" : (res.error === "auth" || res.error === "nopass") ? res.error : "server",
+      error: (res.error === "locked" || res.error === "rate" || res.error === "auth" || res.error === "nopass") ? res.error : "server",
       detail: (res.error || "") + (res.message ? ": " + res.message : "") };
     user = { id: id, name: (res.user && res.user.name) || id, pw: pw, practice: false };
     keep(user, remember);
