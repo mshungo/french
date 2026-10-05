@@ -1,5 +1,5 @@
 /**
- * 動詞活用クイズ：結果記録用 Apps Script（学生IDログイン版）
+ * 動詞活用クイズ：結果記録用 Apps Script（学生ID＋共通パスワード版）
  *
  * 使い方
  *  1. 結果を溜めたいスプレッドシートを開く →「拡張機能 > Apps Script」に、このファイルの全文を貼り付けて保存
@@ -7,7 +7,12 @@
  *  3.「デプロイ > 新しいデプロイ > ウェブアプリ」
  *       実行ユーザー: 自分 / アクセスできるユーザー: 全員
  *     → 表示された「ウェブアプリのURL」（…/exec）をクイズHTMLの CONFIG.SCRIPT_URL に貼る
- *  4. 学生を追加するとき: シート「名簿」のB列に氏名、C列に名字のローマ字（例：MORITA）を書き、
+ *  4. メニュー「活用クイズ > 共通パスワードを設定」でパスワード（例：授業で伝える語）を登録する。
+ *     パスワードはこのコードには書かず、スクリプトのプロパティ PASSWORD に保存される（コードはGitHubで公開されるため）。
+ *     メニューが出ないときは、Apps Script の「プロジェクトの設定 > スクリプト プロパティ」に PASSWORD を直接追加してもよい。
+ *     大文字・小文字と全角・半角は区別しない。変えると、全員がログインし直しになる。
+ *     練習用ID（NARAF26）はサイト側だけで動き、ここには何も送られない。
+ *  5. 学生を追加するとき: シート「名簿」のB列に氏名、C列に名字のローマ字（例：MORITA）を書き、
  *     メニュー「活用クイズ > 名簿の空欄にIDを発行」を実行する → A列に「名字＋英数字4文字」のID（例：MORITA7K3Q）が入る。
  *     IDが漏れたときは、A列のIDを消して再発行すれば、古いIDは使えなくなる（記録は古いIDのまま残る）。
  *     そのIDを学生に伝える。いつでも追加できる。
@@ -17,7 +22,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-04d';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-05a';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計' };
 const ID_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';   // 0/O/1/I/L など紛らわしい文字を除く
@@ -44,7 +49,7 @@ const SUMMARY_ROWS = 60;   // 集計の対象人数（名簿の2〜61行目）
 
 // ===== Webアプリの入口 =====
 function doGet() {
-  return json_({ ok: true, service: 'conjugation-quiz', version: VERSION });   // 動作確認用（URLをブラウザで開くと表示）
+  return json_({ ok: true, service: 'conjugation-quiz', version: VERSION, password: password_() ? '設定済み' : '未設定' });   // 動作確認用（URLをブラウザで開くと表示）
 }
 
 function doPost(e) {
@@ -65,6 +70,14 @@ function normId_(s) {
   return String(s == null ? '' : s).normalize('NFKC').replace(/\s+/g, '').toUpperCase();
 }
 
+// パスワードの表記ゆれをそろえる（全角→半角、空白除去、小文字化）
+function normPw_(s) {
+  return String(s == null ? '' : s).normalize('NFKC').replace(/\s+/g, '').toLowerCase();
+}
+function password_() {
+  return normPw_(PropertiesService.getScriptProperties().getProperty('PASSWORD'));
+}
+
 function json_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -74,8 +87,11 @@ function handle_(req) {
   const cache = CacheService.getScriptCache();
   if (Number(cache.get('fails') || 0) >= MAX_FAILS) return { ok: false, error: 'locked' };
 
+  const pass = password_();
+  if (!pass) return { ok: false, error: 'nopass' };   // 共通パスワードが未設定
   const id = normId_(req.id);
-  const name = ID_RE.test(id) ? lookupRoster_(ss, id) : null;   // 名簿にいなければ null
+  const pwOk = normPw_(req.pw) === pass;
+  const name = (pwOk && ID_RE.test(id)) ? lookupRoster_(ss, id) : null;   // パスワード違い・名簿にいなければ null
   if (name === null) {
     cache.put('fails', String(Number(cache.get('fails') || 0) + 1), 600);
     return { ok: false, error: 'auth' };
@@ -304,6 +320,7 @@ function onOpen() {
   SpreadsheetApp.getUi().createMenu('活用クイズ')
     .addItem('初期設定（シート作成）', 'setup')
     .addItem('名簿の空欄にIDを発行', 'issueIds')
+    .addItem('共通パスワードを設定', 'setPassword')
     .addSeparator()
     .addItem('ログインテスト（IDを確かめる）', 'testLogin')
     .addItem('ログイン制限を解除', 'clearLock')
@@ -322,6 +339,20 @@ function setup() {
   resultsSheet_(ss);
   buildSummary_(ss);
   ss.toast('シートを用意しました。名簿のB列に氏名、C列に名字のローマ字を入れて、メニューからIDを発行してください。');
+}
+
+// メニューから：共通パスワードを登録・変更する
+function setPassword() {
+  const ui = SpreadsheetApp.getUi();
+  const cur = password_();
+  const r = ui.prompt('共通パスワードを設定',
+    (cur ? '現在のパスワード: ' + cur + '\n' : 'まだ設定されていません。\n') + '新しいパスワードを入力してください（大文字・小文字は区別しません）',
+    ui.ButtonSet.OK_CANCEL);
+  if (r.getSelectedButton() !== ui.Button.OK) return;
+  const pw = normPw_(r.getResponseText());
+  if (pw.length < 3) { ui.alert('3文字以上にしてください。'); return; }
+  PropertiesService.getScriptProperties().setProperty('PASSWORD', pw);
+  SpreadsheetApp.getActiveSpreadsheet().toast('共通パスワードを「' + pw + '」にしました。');
 }
 
 function randomId_() {
@@ -441,6 +472,7 @@ function testLogin() {
       lines.push('名簿のID（' + ids.length + '件）: ' + (ids.slice(0, 30).join(', ') || 'なし'));
     }
   }
+  lines.push(password_() ? '共通パスワード: ' + password_() : '× 共通パスワードが未設定です。メニュー「共通パスワードを設定」を実行してください。');
   const fails = Number(CacheService.getScriptCache().get('fails') || 0);
   if (fails >= MAX_FAILS) lines.push('※ 失敗が多すぎて一時停止中です。「ログイン制限を解除」を実行してください。');
   lines.push('コードの版: ' + VERSION);

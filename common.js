@@ -1,4 +1,4 @@
-/* 共通部品：学生IDログイン／結果送信／連続日数。index.html と各教材ページが読み込む。 */
+/* 共通部品：学生ID＋パスワードでログイン／結果送信／連続日数。index.html と各教材ページが読み込む。 */
 (function () {
   "use strict";
   var CFG = window.QUIZ_CONFIG || {};
@@ -6,6 +6,9 @@
   var LOGIN_KEY = "conjQuizLogin";
   var RE_ID = /^[A-Z0-9_-]{3,20}$/;
   function normId(s) { return String(s == null ? "" : s).normalize("NFKC").replace(/\s+/g, "").toUpperCase(); }
+  function normPw(s) { return String(s == null ? "" : s).normalize("NFKC").replace(/\s+/g, "").toLowerCase(); }
+  /* 練習用ID：サーバーには送らず、記録はこの端末にだけ残す（ID・パスワードはログイン画面に書いてあるもの） */
+  var PRACTICE = { id: "NARAF26", pw: "shika", name: "練習用" };
   var APPS = ["conj", "grammar", "talk"];
   var user = null;
   var flushing = false;
@@ -22,10 +25,12 @@
   /* ログイン情報：「この端末に記憶」なら localStorage、そうでなければ sessionStorage（ブラウザを閉じると消える） */
   try {
     var c = JSON.parse(lsGet(LOGIN_KEY) || ssGet(LOGIN_KEY));
-    if (c && RE_ID.test(c.id)) user = { id: c.id, name: c.name || c.id };
+    if (c && RE_ID.test(c.id) && (c.practice ? c.id === PRACTICE.id : (c.pw || !SYNC_ON)))   // パスワードのない古いログイン情報は無効
+      user = { id: c.id, name: c.name || c.id, pw: c.pw || "", practice: !!c.practice };
   } catch (e) {}
 
   function who() { return user ? user.id : "guest"; }
+  function online() { return SYNC_ON && !!user && !user.practice; }   // サーバーとやりとりするか
 
   /* ---- 日付・連続日数（日本時間） ---- */
   function todayJST() { return new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" }); }
@@ -76,9 +81,9 @@
   }
 
   /* ---- サーバー呼び出し ---- */
-  function call(id, action, extra) {
+  function call(cred, action, extra) {
     var ctl = new AbortController(); var tm = setTimeout(function () { ctl.abort(); }, 20000);
-    var body = { action: action, id: id }; for (var k in (extra || {})) body[k] = extra[k];
+    var body = { action: action, id: cred.id, pw: cred.pw }; for (var k in (extra || {})) body[k] = extra[k];
     return fetch(CFG.SCRIPT_URL, { method: "POST", signal: ctl.signal, body: JSON.stringify(body) })
       .then(function (r) { return r.json(); })
       .then(function (j) { clearTimeout(tm); return j; }, function (e) { clearTimeout(tm); throw e; });
@@ -88,12 +93,12 @@
   /* 未送信を順に送る。戻り値: "ok" | "auth" | "rate" | "error" | "skip"
      サーバー側で「5秒に1回」の送信制限があるので、2件以上たまっていたら間をあけて送る */
   async function flush() {
-    if (!SYNC_ON || !user || flushing) return "skip";
+    if (!online() || flushing) return "skip";
     flushing = true; var status = "ok";
     try {
       var q = getPending();
       while (q.length) {
-        var res = await call(user.id, "submit", { result: q[0] });
+        var res = await call(user, "submit", { result: q[0] });
         if (res.ok) { q.shift(); setPending(q); if (!q.length) setCached(res.stats); else await sleep(5500); }
         else if (res.error === "auth" || res.error === "locked") { status = "auth"; break; }
         else if (res.error === "rate") { status = "rate"; break; }
@@ -105,7 +110,8 @@
   }
 
   function submit(app, result) {
-    if (!SYNC_ON || !user) return Promise.resolve("noauth");
+    if (user && user.practice) return Promise.resolve("practice");
+    if (!online()) return Promise.resolve("noauth");
     result.app = app; result.rid = newRid();
     var q = getPending(); q.push(result); setPending(q);
     return flush();
@@ -113,10 +119,10 @@
 
   /* 開いたときの再同期。戻り値: "ok" | "auth" | "error" | "skip" */
   async function refresh() {
-    if (!SYNC_ON || !user) return "skip";
+    if (!online()) return "skip";
     if (getPending().length) return flush();
     try {
-      var res = await call(user.id, "sync");
+      var res = await call(user, "sync");
       if (res.ok) { setCached(res.stats); return "ok"; }
       if (res.error === "auth") return "auth";
       return "error";
@@ -126,21 +132,33 @@
   /* ---- ログイン／ログアウト ---- */
   /* 本人の学習記録（サーバーにある分）。戻り値: {ok, history:[{t,app,sec,score,total,dur}]} */
   async function history() {
-    if (!SYNC_ON || !user) return { ok: false, error: "noauth" };
-    try { return await call(user.id, "history"); } catch (e) { return { ok: false, error: "network" }; }
+    if (user && user.practice) return { ok: false, error: "practice" };
+    if (!online()) return { ok: false, error: "noauth" };
+    try { return await call(user, "history"); } catch (e) { return { ok: false, error: "network" }; }
   }
 
-  async function login(raw, remember) {
-    var id = normId(raw);
+  function keep(u, remember) {
+    var rec = JSON.stringify(u);
+    if (remember === false) { ssSet(LOGIN_KEY, rec); lsDel(LOGIN_KEY); }
+    else { lsSet(LOGIN_KEY, rec); ssDel(LOGIN_KEY); }
+  }
+  async function login(raw, rawPw, remember) {
+    var id = normId(raw), pw = normPw(rawPw);
     if (!RE_ID.test(id)) return { ok: false, error: "format", id: id };
+    if (!pw) return { ok: false, error: "nopw", id: id };
+    if (id === PRACTICE.id) {
+      if (pw !== PRACTICE.pw) return { ok: false, error: "auth", id: id };
+      user = { id: id, name: PRACTICE.name, pw: "", practice: true };
+      keep(user, remember);
+      return { ok: true, user: user };
+    }
     var res;
-    try { res = await call(id, "sync"); } catch (e) { return { ok: false, error: "network", id: id, detail: String(e && e.message || e) }; }
+    try { res = await call({ id: id, pw: pw }, "sync"); } catch (e) { return { ok: false, error: "network", id: id, detail: String(e && e.message || e) }; }
     if (!res.ok) return { ok: false, id: id, version: res.version || "旧版",
-      error: (res.error === "locked" || res.error === "rate") ? "locked" : (res.error === "auth" ? "auth" : "server"),
+      error: (res.error === "locked" || res.error === "rate") ? "locked" : (res.error === "auth" || res.error === "nopass") ? res.error : "server",
       detail: (res.error || "") + (res.message ? ": " + res.message : "") };
-    user = { id: id, name: (res.user && res.user.name) || id };
-    if (remember === false) { ssSet(LOGIN_KEY, JSON.stringify(user)); lsDel(LOGIN_KEY); }
-    else { lsSet(LOGIN_KEY, JSON.stringify(user)); ssDel(LOGIN_KEY); }
+    user = { id: id, name: (res.user && res.user.name) || id, pw: pw, practice: false };
+    keep(user, remember);
     setCached(res.stats);
     if (getPending().length) await flush();
     return { ok: true, user: user };
@@ -156,6 +174,7 @@
   window.Quiz = {
     SYNC_ON: SYNC_ON, APPS: APPS,
     user: function () { return user; },
+    isPractice: function () { return !!(user && user.practice); },
     todayJST: todayJST, days: days, markToday: markToday, streak: streak,
     cached: cached, onStats: onStats,
     pendingCount: function () { return getPending().length; },
