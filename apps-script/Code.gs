@@ -12,7 +12,11 @@
  *     メニューが出ないときは、Apps Script の「プロジェクトの設定 > スクリプト プロパティ」に PASSWORD を直接追加してもよい。
  *     大文字・小文字と全角・半角は区別しない。変えると、全員がログインし直しになる。
  *     練習用ID（NARAF26）はサイト側だけで動き、ここには何も送られない。
- *  5. 学生を追加するとき: シート「名簿」のB列に氏名、C列に名字のローマ字（例：MORITA）を書き、
+ *  5. 学生の登録（おすすめ）: メニュー「活用クイズ > 登録フォームを作る／URLを表示」を一度実行し、出てきたURLを学生に配る。
+ *     学生が氏名・名字ローマ字・メール・希望ID（名字＋英数字3〜8文字、数字を1つ以上）を送ると、
+ *     名簿にIDが自動で発行され（同じ氏名でIDが空の行があればそこに紐づけ）、本人にIDがメールで届く。パスワードはメールに書かない。
+ *     同じメールで送り直すと、新しいIDは作らず同じIDを再送する（ID忘れ対策）。
+ *     手で追加するとき: シート「名簿」のB列に氏名、C列に名字のローマ字（例：MORITA）を書き、
  *     メニュー「活用クイズ > 名簿の空欄にIDを発行」を実行する → A列に「名字＋英数字4文字」のID（例：MORITA7K3Q）が入る。
  *     IDが漏れたときは、A列のIDを消して再発行すれば、古いIDは使えなくなる（記録は古いIDのまま残る）。
  *     そのIDを学生に伝える。いつでも追加できる。
@@ -22,7 +26,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-07d';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-07e';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
@@ -63,7 +67,9 @@ function doGet() {
   // 動作確認用（URLをブラウザで開くと表示）。ログイン画面はここから「お知らせ」も受け取る
   let notices = [];
   try { notices = notices_(); } catch (e) {}
-  return json_({ ok: true, service: 'conjugation-quiz', version: VERSION, password: password_() ? '設定済み' : '未設定', notices: notices });
+  let reg = '';
+  try { reg = regUrl_(); } catch (e) {}
+  return json_({ ok: true, service: 'conjugation-quiz', version: VERSION, password: password_() ? '設定済み' : '未設定', notices: notices, reg: reg });
 }
 
 // ===== お知らせ（シート「お知らせ」でA列にチェックを入れた行を、ログイン画面とメニューの上に出す）=====
@@ -256,6 +262,7 @@ function lookupRoster_(ss, id) {
 
 // 名簿のE列「最終ログイン」に日時を書く。書き込みは1つのIDにつき1時間に1回まで（負荷を抑えるため）
 const LASTLOGIN_COL = 5;
+const ROSTER_HEADERS = ['学生ID', '氏名', '名字（ローマ字）', 'メモ(任意)', '最終ログイン', 'メール'];
 function touchLogin_(ss, cache, id) {
   if (cache.get('ll:' + id)) return;
   cache.put('ll:' + id, '1', 3600);
@@ -735,6 +742,9 @@ function onOpen() {
     .addItem('名簿の空欄にIDを発行', 'issueIds')
     .addItem('共通パスワードを設定', 'setPassword')
     .addSeparator()
+    .addItem('登録フォームを作る／URLを表示', 'createRegistrationForm')
+    .addItem('登録フォームの未処理分を処理', 'processPendingRegistrations')
+    .addSeparator()
     .addItem('毎日の自動バックアップを有効にする', 'enableDailyBackup')
     .addItem('今すぐバックアップ', 'backupFromMenu')
     .addItem('集計を今すぐ更新', 'refreshSummaryFromMenu')
@@ -751,7 +761,7 @@ function setup() {
   ss.setSpreadsheetTimeZone(TZ);
 
   const roster = ensureSheet_(ss, SHEET.roster, null);
-  roster.getRange(1, 1, 1, 5).setValues([['学生ID', '氏名', '名字（ローマ字）', 'メモ(任意)', '最終ログイン']]).setFontWeight('bold');
+  roster.getRange(1, 1, 1, ROSTER_HEADERS.length).setValues([ROSTER_HEADERS]).setFontWeight('bold');
   roster.setFrozenRows(1);
   roster.getRange(2, 1, 500, 1).setNumberFormat('@');
   resultsSheet_(ss);
@@ -816,6 +826,227 @@ function issueIds() {
   ss.toast(n + '人分のIDを発行しました。' + (skipped ? '（C列の名字ローマ字が空の ' + skipped + ' 行は発行していません）' : ''));
 }
 
+
+// ===== 利用登録フォーム（学生がGoogleフォームで登録 → 名簿にIDを自動発行 → メールで知らせる）=====
+// メニュー「登録フォームを作る／URLを表示」を一度実行すると、フォーム作成・このスプレッドシートへの接続・自動処理の設定までを行う。
+const REG = {
+  title: 'Naralingo 利用登録',
+  qName: '氏名', qSurname: '名字（ローマ字）', qEmail: 'メールアドレス', qId: '希望するID',
+  sheet: '登録フォームの回答',
+  perHour: 60,     // 1時間に受け付ける登録の上限（いたずら対策。超えた分は「未処理」で残り、メニューからあとで処理できる）
+  resendMin: 10    // 登録済みのメールにIDを送り直す間隔（分）
+};
+const SITE_URL = 'https://mshungo.github.io/french/';
+const EMAIL_COL = 6;   // 名簿のF列「メール」
+
+function createRegistrationForm() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ui = SpreadsheetApp.getUi();
+  const props = PropertiesService.getScriptProperties();
+  const old = props.getProperty('FORM_ID');
+  if (old) {
+    try {
+      const f0 = FormApp.openById(old);
+      installRegTrigger_(ss);
+      props.setProperty('FORM_URL', f0.getPublishedUrl());
+      ui.alert('登録フォーム', '学生に配るURL：\n' + f0.getPublishedUrl() +
+        '\n\n受付を止めるときは、フォームの「回答」タブで「回答を受け付ける」をオフにする。', ui.ButtonSet.OK);
+      return;
+    } catch (e) { /* フォームが削除されていたら作り直す */ }
+  }
+  const form = FormApp.create(REG.title);
+  form.setDescription('Naralingo（フランス語の自習サイト）を使うための登録です。\n' +
+    '送ると、IDが下のメールアドレスに届きます。パスワードは授業で伝えたものを使います。\n' +
+    'IDを忘れたときは、同じメールアドレスでもう一度送ると、同じIDがもう一度届きます。');
+  form.setConfirmationMessage('受け付けました。IDはメールで届きます（数分かかることがあります）。\n届かないときは、迷惑メールのフォルダも確かめてください。');
+  form.setAllowResponseEdits(false);
+  try { form.setShowLinkToRespondAgain(false); } catch (e) {}
+  form.addTextItem().setTitle(REG.qName).setHelpText('例：奈良 花子').setRequired(true);
+  form.addTextItem().setTitle(REG.qSurname).setHelpText('半角の英字で。例：NARA').setRequired(true)
+    .setValidation(FormApp.createTextValidation().requireTextMatchesPattern('^[A-Za-z]{1,12}$')
+      .setHelpText('名字を半角の英字だけで書いてください（12文字まで）').build());
+  form.addTextItem().setTitle(REG.qEmail).setHelpText('IDのお知らせが届きます。ふだん見ているアドレスにしてください。').setRequired(true)
+    .setValidation(FormApp.createTextValidation().requireTextIsEmail().setHelpText('メールアドレスの形で書いてください').build());
+  form.addTextItem().setTitle(REG.qId)
+    .setHelpText('名字のローマ字のあとに、好きな英数字を3〜8文字（数字を1つ以上入れる）。例：NARA7K2\n' +
+      '人に当てられにくいものにしてください。すでに使われていたときは、うしろに2文字足して発行します。')
+    .setRequired(true)
+    .setValidation(FormApp.createTextValidation().requireTextMatchesPattern('^[A-Za-z]+[0-9][A-Za-z0-9]*$')
+      .setHelpText('半角の英字で始めて、数字を1つ以上入れてください（記号・空白は使えません）').build());
+  form.setDestination(FormApp.DestinationType.SPREADSHEET, ss.getId());
+  SpreadsheetApp.flush();
+  ss.getSheets().forEach(function (s) {
+    try { const u = s.getFormUrl(); if (u && u.indexOf(form.getId()) >= 0 && !ss.getSheetByName(REG.sheet)) s.setName(REG.sheet); } catch (e) {}
+  });
+  props.setProperty('FORM_ID', form.getId());
+  props.setProperty('FORM_URL', form.getPublishedUrl());
+  rosterSheet_(ss);
+  installRegTrigger_(ss);
+  ui.alert('登録フォームを作りました', '学生に配るURL：\n' + form.getPublishedUrl() +
+    '\n\n回答はシート「' + REG.sheet + '」に入り、IDが名簿に自動で発行され、本人にメールが届く。\n' +
+    'ログイン画面にもこのフォームへのリンクが出る（受付を止めると消える。反映まで最大5分）。', ui.ButtonSet.OK);
+}
+
+function installRegTrigger_(ss) {
+  const has = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === 'onRegister'; });
+  if (!has) ScriptApp.newTrigger('onRegister').forSpreadsheet(ss).onFormSubmit().create();
+}
+
+// 名簿シート（F列「メール」まで）を用意する
+function rosterSheet_(ss) {
+  const sh = ensureSheet_(ss, SHEET.roster, ROSTER_HEADERS);
+  if (!String(sh.getRange(1, EMAIL_COL).getValue()).trim()) sh.getRange(1, EMAIL_COL).setValue('メール').setFontWeight('bold');
+  return sh;
+}
+
+// フォームが送られたとき（インストール型トリガーから呼ばれる）
+function onRegister(e) {
+  if (!e || !e.range || !e.namedValues || !e.namedValues[REG.qId]) return;   // ほかのフォームは無視
+  const v = function (k) { return String((e.namedValues[k] || [''])[0] || '').trim(); };
+  registerRow_(e.range.getSheet(), e.range.getRow(),
+    { name: v(REG.qName), surname: v(REG.qSurname), email: v(REG.qEmail), want: v(REG.qId) }, false);
+}
+
+// メニューから：まだ「発行ID」が空の回答をまとめて処理する（上限で止まった分や、トリガーの失敗分）
+function processPendingRegistrations() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let n = 0, ng = 0;
+  ss.getSheets().forEach(function (sh) {
+    if (sh.getLastRow() < 2 || sh.getLastColumn() < 1) return;
+    const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+    if (head.indexOf(REG.qId) < 0) return;
+    const ix = function (k) { return head.indexOf(k); };
+    const rows = sh.getRange(2, 1, sh.getLastRow() - 1, head.length).getValues();
+    rows.forEach(function (r, i) {
+      if (ix('発行ID') >= 0 && String(r[ix('発行ID')]).trim()) return;
+      if (!String(r[ix(REG.qEmail)] || '').trim()) return;
+      const res = registerRow_(sh, i + 2, { name: String(r[ix(REG.qName)] || ''), surname: String(r[ix(REG.qSurname)] || ''),
+        email: String(r[ix(REG.qEmail)] || ''), want: String(r[ix(REG.qId)] || '') }, true);
+      if (res && res.id) n++; else ng++;
+    });
+  });
+  ss.toast(n + '件を処理しました。' + (ng ? '（発行できなかった ' + ng + ' 件は「処理」列を見てください）' : ''), '登録フォーム', 8);
+}
+
+// 回答1件を処理して、回答シートの右端「発行ID」「処理」に結果を書く
+function registerRow_(sh, row, f, byTeacher) {
+  const ss = sh.getParent();
+  const res = withLock_(30000, function () {
+    const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+    let c = head.indexOf('発行ID') + 1;
+    if (!c) { c = head.length + 1; sh.getRange(1, c, 1, 2).setValues([['発行ID', '処理']]).setFontWeight('bold'); }
+    if (String(sh.getRange(row, c).getValue()).trim()) return null;   // 処理済み
+    const r = issueFromForm_(ss, f, byTeacher);
+    r.col = c;
+    return r;
+  });
+  if (!res) return null;
+  let memo = res.memo;
+  if (res.mail) memo += ' / ' + sendIdMail_(res);
+  sh.getRange(row, res.col, 1, 2).setValues([[res.id || '', memo]]);
+  return res;
+}
+
+// 名簿にIDを発行する（ロックの中で呼ぶ）。戻り値 { id, name, email, memo, mail, note }
+function issueFromForm_(ss, f, byTeacher) {
+  const cache = CacheService.getScriptCache();
+  const email = String(f.email || '').normalize('NFKC').trim().toLowerCase();
+  const name = String(f.name || '').normalize('NFKC').replace(/\s+/g, ' ').trim().slice(0, 40);
+  const key = surnameKey_(f.surname);
+  if (!name || !key || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { memo: '未発行：入力が足りない／形がちがう' };
+  if (!byTeacher && !rateOk_(cache, 'reg', REG.perHour, 3600)) return { memo: '未発行：1時間の登録上限（メニュー「登録フォームの未処理分を処理」であとで発行できる）' };
+
+  const sh = rosterSheet_(ss);
+  const last = sh.getLastRow();
+  const vals = last >= 2 ? sh.getRange(2, 1, last - 1, EMAIL_COL).getValues() : [];
+  const used = {}; used[PRACTICE_ID] = true;
+  vals.forEach(function (r) { const x = normId_(r[0]); if (x) used[x] = true; });
+
+  // 同じメールで登録済み → 新しく作らず、同じIDを送り直す（ID忘れ対策）
+  for (let i = 0; i < vals.length; i++) {
+    const id0 = normId_(vals[i][0]);
+    if (id0 && String(vals[i][EMAIL_COL - 1]).trim().toLowerCase() === email) {
+      if (!byTeacher && !rateOk_(cache, 'rs:' + email, 1, REG.resendMin * 60)) return { memo: '登録済み：再送は' + REG.resendMin + '分あけて（' + id0 + '）' };
+      return { id: id0, name: String(vals[i][1] || name).trim(), email: email, memo: '登録済み：同じIDを再送', mail: true, note: 'again' };
+    }
+  }
+
+  // 希望のID：名字で始まっていなければ名字を頭に付ける。名字のあとが3〜8文字で数字を含むこと
+  let want = String(f.want || '').normalize('NFKC').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (want.indexOf(key) !== 0) want = key + want;
+  const suf = want.slice(key.length);
+  let id = '', note = '';
+  if (suf.length >= 3 && suf.length <= 8 && /[0-9]/.test(suf) && ID_RE.test(want)) {
+    if (!used[want]) id = want;
+    else {
+      note = 'taken';
+      for (let t = 0; t < 30 && !id && want.length <= 18; t++) { const c = want + randomId_().slice(0, 2); if (!used[c]) id = c; }
+    }
+  } else note = 'shape';
+  if (!id) { do { id = key + randomId_(); } while (used[id]); }
+
+  // 名簿に同じ氏名の行（IDとメールが空）があれば、その行に紐づける。なければ末尾に足す
+  const nk = function (s) { return String(s || '').normalize('NFKC').replace(/\s+/g, ''); };
+  let at = -1;
+  for (let i = 0; i < vals.length; i++) {
+    if (!normId_(vals[i][0]) && !String(vals[i][EMAIL_COL - 1]).trim() && nk(vals[i][1]) === nk(name)) { at = i; break; }
+  }
+  const stamp = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd');
+  let memo;
+  if (at >= 0) {
+    const row = at + 2;
+    sh.getRange(row, 1).setNumberFormat('@');
+    sh.getRange(row, 1).setValue(id);
+    if (!String(vals[at][2]).trim()) sh.getRange(row, 3).setValue(key);
+    sh.getRange(row, EMAIL_COL).setValue(email);
+    memo = '発行：名簿' + row + '行目に紐づけ';
+  } else {
+    const row = Math.max(last, 1) + 1;
+    sh.getRange(row, 1).setNumberFormat('@');
+    sh.getRange(row, 1, 1, EMAIL_COL).setValues([[id, name, key, 'フォーム登録 ' + stamp, '', email]]);
+    memo = '発行：名簿' + row + '行目に追加';
+  }
+  if (note === 'taken') memo += '（希望IDは使用中のため2文字追加）';
+  if (note === 'shape') memo += '（希望IDの形が合わないため自動のID）';
+  return { id: id, name: name, email: email, memo: memo, mail: true, note: note };
+}
+
+function sendIdMail_(res) {
+  try {
+    if (MailApp.getRemainingDailyQuota() < 1) return 'メール未送信：今日の送信上限';
+    const lines = [
+      res.name + ' さん', '',
+      res.note === 'again' ? 'Naralingo のIDをもう一度お送りします。' : 'Naralingo の登録ができました。', '',
+      'ID：' + res.id,
+      'パスワード：授業で伝えたもの',
+      'サイト：' + SITE_URL, ''
+    ];
+    if (res.note === 'taken') lines.push('希望のIDはすでに使われていたので、うしろに2文字足しました。', '');
+    if (res.note === 'shape') lines.push('希望のIDが「名字＋英数字3〜8文字（数字を1つ以上）」の形ではなかったので、IDを自動で作りました。', '');
+    lines.push('・IDは自分だけのものです。他の人に教えないでください。',
+      '・他の人に知られたかもしれないときは、すぐに先生に伝えてください。新しいIDを再発行します。',
+      '・このメールに心あたりがないときは、何もしなくてかまいません。');
+    MailApp.sendEmail({ to: res.email, subject: '【Naralingo】ログインID', name: 'Naralingo', body: lines.join('\n') });
+    return 'メール送信済み';
+  } catch (err) {
+    return 'メール送信失敗：' + String(err && err.message || err).slice(0, 80);
+  }
+}
+
+// ログイン画面に出す登録フォームのURL（受付中のときだけ。5分キャッシュ）
+function regUrl_() {
+  const cache = CacheService.getScriptCache();
+  const c = cache.get('regurl');
+  if (c !== null) return c;
+  let url = '';
+  try {
+    const p = PropertiesService.getScriptProperties();
+    const id = p.getProperty('FORM_ID');
+    if (id) { const f = FormApp.openById(id); if (f.isAcceptingResponses()) url = p.getProperty('FORM_URL') || f.getPublishedUrl(); }
+  } catch (e) { url = ''; }
+  cache.put('regurl', url, 300);
+  return url;
+}
 
 // ===== 名簿の入力補助・点検 =====
 // 名簿のA列にIDを手入力したら、自動で半角・大文字にそろえる

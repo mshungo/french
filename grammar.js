@@ -137,7 +137,7 @@ function shell(){
 '    <div class="mode-pick"><div class="mp-h">答え方をえらぶ</div><div class="mp-row">'+
 '      <button class="mode-btn mp" data-mode="choice"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"4\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"10\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"16\" width=\"17\" height=\"4.5\" rx=\"2\"/><path d=\"M6.5 12.2l1.3 1.2 2.4-2.6\"/></svg></span><b>選択式</b><small>選んで答える</small></button>'+
 '      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z\"/><path d=\"M14.5 7.5l3 3\"/><path d=\"M12 20h8\"/></svg></span><b>記述式</b><small>自分で書いて答える</small></button></div></div>'+
-'    <div class="guide"><b>選択式</b>は選択肢から選び、<b>記述式</b>は同じ問題を自分で書いて答えます。書きかえ・並べかえの問題はどちらでも出ます。<br>2回続けて正解すると「習得」（記述で<b>5秒以内</b>に正解なら一発で習得）。間違えた問題は「苦手」になり、2回続けて正解するまで残ります。<br>累計'+CLEAR_ANS+'問（約1時間）で<b>クリア</b>、全問習得で<b>勲章</b>。</div>'+
+'    <div class="guide"><b>選択式</b>はすべてタップで答え（書きかえは札を並べる）、<b>記述式</b>は自分で書いて答えます。並べかえ（仏作文）の問題はどちらでも出ます。<br>2回続けて正解すると「習得」（記述で<b>5秒以内</b>に正解なら一発で習得）。間違えた問題は「苦手」になり、2回続けて正解するまで残ります。<br>累計'+CLEAR_ANS+'問（約1時間）で<b>クリア</b>、全問習得で<b>勲章</b>。</div>'+
 '    <div class="section-label">項目を選択</div>'+
 '    <div class="sections">'+secBtns+'</div>'+
 '    <div class="extra-row">'+
@@ -233,14 +233,91 @@ function buildRound(sec){
   take(pool.slice().sort(older),ROUND);                            // それでも足りなければ直近の問題も
   return shuffle(out.map(makeQ));
 }
+/* 選択式で出すとき、書いて答える問題（W）の選択肢を自動で作る。
+   ① 同じ語（（aller）など）を使う問題の正解 ② 語尾などを取り違えた形 ③ 同じ項目の問題の正解 の順に選ぶ */
+function hintOf(it){const m=String(it.q||"").match(/（([^）]+)）\s*$/);return m?m[1]:"";}
+const LAT=/^[a-zàâçéèêëîïôûùüÿœæ' -]+$/i;
+const NUM20=["zéro","un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix","onze","douze","treize","quatorze","quinze","seize","dix-sept","dix-huit","dix-neuf","vingt"];
+const IRR_IR=/(venir|tenir|partir|sortir|dormir|sentir|servir|ouvrir|offrir|courir|mourir|acquérir)$/;
+function capF(x){return x.charAt(0).toUpperCase()+x.slice(1);}
+// 規則動詞（-er／-ir 第2群）の直説法現在の形。ほかの動詞は null（同じ動詞の別の問題の答えを使う）
+function verbForms(inf){
+  if(!inf||inf==="aller")return null;
+  if(/er$/.test(inf)){const st=inf.slice(0,-2);return [st+"e",st+"es",st+"ons",st+"ez",st+"ent"];}
+  if(/ir$/.test(inf)&&!/oir$/.test(inf)&&!IRR_IR.test(inf)){const st=inf.slice(0,-2);return [st+"is",st+"it",st+"issons",st+"issez",st+"issent"];}
+  return null;
+}
+// 名詞・形容詞の性数の取り違え
+function agree(w,src){
+  const r=[];
+  if(/aux$/.test(w))r.push(w.slice(0,-3)+"als");
+  else if(/(eau|eu)x$/.test(w))r.push(w.slice(0,-1)+"s");
+  else if(/es$/.test(w))r.push(w.slice(0,-1));
+  else if(/s$/.test(w)){if(src!==w)r.push(w.slice(0,-1));}
+  else if(/[ez]$/.test(w))r.push(w+"s");
+  else if(!/x$/.test(w))r.push(w+"s",w+"e");
+  const noAcc=w.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  if(noAcc!==w)r.push(noAcc);
+  return r.filter(x=>x.length>=2);
+}
+function autoOptions(it){
+  const ans=it.a[0],ok=new Set(it.a.map(a=>nz(a,true))),seen=new Set([nz(ans,true)]),out=[];
+  const upper=/^[A-ZÀ-ÖØ-Þ]/.test(ans);
+  const add=x=>{x=String(x||"").trim();if(!x||out.length>=3)return;
+    x=upper?capF(x):(/^[A-ZÀ-ÖØ-Þ][a-zà-ÿ]/.test(x)?x.charAt(0).toLowerCase()+x.slice(1):x);   // 大文字・小文字を答えにそろえる
+    const k=nz(x,true);if(ok.has(k)||seen.has(k))return;seen.add(k);out.push(x);};
+  const h=hintOf(it),ws=ITEMS.filter(o=>o!==it&&o.t==="w");
+  const base=h.split("：")[0].trim(),imp=h.indexOf("：")>=0&&LAT.test(base);
+  const refl=/^(se |s')/.test(base),inf=base.replace(/^(se |s')/,"");
+  const plain=x=>x.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+  const verb=LAT.test(base)&&/(er|ir|re|oir)$/.test(inf)&&!plain(ans).startsWith(plain(inf));   // noir → noire などは形容詞として扱う
+  if(h)shuffle(ws.filter(o=>hintOf(o)===h).map(o=>o.a[0])).forEach(add);      // 同じ動詞・語の別の形
+  if(imp){                                                                      // 命令法
+    let f=base==="être"?["Sois","Soyons","Soyez","Es"]:base==="avoir"?["Aie","Ayons","Ayez","As"]:null;
+    const v=verbForms(base);if(!f&&v)f=(/er$/.test(base)?[v[0],v[1],v[2],v[3]]:[v[0],v[2],v[3],v[1]]).map(capF);
+    if(f)shuffle(f).forEach(add);
+  }else if(refl){                                                               // 代名動詞：再帰代名詞・語尾の取り違え
+    const m=ans.match(/^(me |te |se |nous |vous |m'|t'|s')(.+)$/);
+    if(m){
+      const form=m[2],vow=/^[aeiouyhàâéèêëîïôû]/i.test(form);
+      const prs=(vow?["m'","t'","s'","nous ","vous "]:["me ","te ","se ","nous ","vous "]).filter(p=>p!==m[1]);
+      shuffle(prs).slice(0,2).forEach(p=>add(p+form));
+      const v=verbForms(inf);if(v)shuffle(v).forEach(x=>add(m[1]+x));
+    }
+  }else if(verb){
+    const v=verbForms(inf);
+    if(v)shuffle(v).forEach(add);
+    else if(/(venir|tenir)$/.test(inf)&&!/^(venir|tenir)$/.test(inf)){        // devenir, obtenir など
+      const root=/venir$/.test(inf)?"venir":"tenir",pfx=inf.slice(0,-5);
+      shuffle(ITEMS.filter(o=>o.t==="w"&&hintOf(o)===root).map(o=>pfx+o.a[0])).forEach(add);
+    }
+  }
+  const num=(String(it.q||"").match(/^(\d+)\s*＝\s*___$/)||[])[1];            // 数（0〜20）
+  if(num&&+num<=20){const n=+num;[n+1,n-1,n+10,n-10,n+2].filter(x=>x>=0&&x<=20).forEach(x=>add(NUM20[x]));}
+  const src=(String(it.q||"").match(/^(?:le |la |les |l'|un |une |des )?([^→（]+?)\s*→/)||[])[1];
+  if(!verb&&!refl&&!imp&&/^[a-zàâçéèêëîïôûùüÿœæ]/.test(ans)&&!/\s/.test(ans)&&((h&&LAT.test(h))||src)){   // 性・数
+    if(h&&LAT.test(h))add(h);
+    if(src&&LAT.test(src))add(src);
+    shuffle(agree(ans,src)).forEach(add);
+  }
+  const eq=/＝/.test(it.q||""),words=ans.split(/\s+/).length,wc=x=>x.split(/\s+/).length;
+  const secAns=ws.filter(o=>o.sec===it.sec&&/＝/.test(o.q||"")===eq).map(o=>o.a[0]);
+  shuffle(secAns.filter(x=>wc(x)===words)).forEach(add);                       // 同じ項目・同じ形の問題の答え（語数が同じものから）
+  shuffle(secAns).forEach(add);
+  shuffle(ws.filter(o=>/^[A-ZÀ-ÖØ-Þ]/.test(o.a[0])===upper&&o.a[0].split(/\s+/).length===words&&/＝/.test(o.q||"")===eq).map(o=>o.a[0])).forEach(add);
+  return out.length>=2?shuffle(out.concat([ans])):null;
+}
 function makeQ(it){
   const q={it,ok:null};
   if(it.t==="c")q.kind=(curMode==="write"&&it.cw!==false)?"w":"c";
   else q.kind=it.t;
   if(q.kind==="c")q.options=shuffle(it.o.slice());
+  // 選択式では書く問題を出さない：空欄（W）は選択肢に、書きかえ（T）は札の並べかえにする
+  if(curMode==="choice"&&it.t==="w"){const o=autoOptions(it);if(o){q.kind="c";q.options=o;q.label="選んで答える";}}
+  if(curMode==="choice"&&it.t==="t"){q.kind="b";q.label="書きかえ（札を並べる）";}
   if(q.kind==="b"){
     const m=tiles(it.a[0],it.cap);q.words=m.words;q.end=m.end;
-    q.tiles=shuffle(m.words.concat(it.extra).map((w,i)=>({w,id:i})));
+    q.tiles=shuffle(m.words.concat(it.extra||[]).map((w,i)=>({w,id:i})));
     if(q.tiles.length>1&&q.tiles.map(t=>t.w).join(" ")===m.words.join(" "))q.tiles.reverse();
   }
   return q;
@@ -283,7 +360,7 @@ function render(){
   $("fill").style.width=(idx/N*100)+"%";
   let dots="";for(let i=0;i<N;i++)dots+='<span class="pdot '+(i<idx?(questions[i].ok?"d-ok":"d-no"):(i===idx?"d-now":"d-todo"))+'"></span>';
   $("hearts").innerHTML=dots;
-  $("qType").textContent=KIND_LABEL[q.kind];
+  $("qType").textContent=q.label||KIND_LABEL[q.kind];
   $("qSec").textContent=secInfo(it.sec).t+(mastered(it)?"　（習得済み）":"");
   $("fb").className="fb";$("fb").textContent="";
   const a=$("after");a.classList.add("hidden");a.innerHTML="";
@@ -314,13 +391,14 @@ function render(){
       '<button class="write-btn" id="writeBtn">解答</button></div>';
     bindWrite(q);hint.textContent="文全体を入力して Enter（文末の . ? は省略可）";
   }else if(q.kind==="b"){
-    stg.innerHTML='<div class="prompt-ja">'+esc(it.ja)+'</div><div class="qtext">単語を並べてフランス語の文にしよう</div>'+
+    stg.innerHTML=(it.t==="t"?'<div class="inst">'+esc(it.inst)+'</div><div class="src">'+esc(it.src)+'</div><div class="qtext">札を並べて、書きかえた文を作ろう</div>':
+      '<div class="prompt-ja">'+esc(it.ja)+'</div><div class="qtext">単語を並べてフランス語の文にしよう</div>')+
       '<div class="tray" id="tray"></div><div class="bank" id="bank"></div>'+
       '<div class="build-ctl"><button class="mini" id="undoBtn">1つ戻す</button><button class="mini" id="clearBtn">やり直す</button></div>';
     q.picked=[];drawTiles(q);
     $("undoBtn").onclick=()=>{if(locked)return;q.picked.pop();drawTiles(q);};
     $("clearBtn").onclick=()=>{if(locked)return;q.picked=[];drawTiles(q);};
-    hint.textContent="タップした順に並びます"+(it.extra.length?"（使わない札が混ざっています）":"");
+    hint.textContent="タップした順に並びます"+((it.extra||[]).length?"（使わない札が混ざっています）":"");
   }
 }
 function bindWrite(q){
