@@ -30,7 +30,7 @@
     <div class="logform">
       <label class="fld"><span>学生ID</span>
         <input type="text" id="idInput" class="idin" maxlength="20" autocomplete="username" autocapitalize="characters"
-          spellcheck="false" placeholder="例：MORITA7K3Q"></label>
+          spellcheck="false"></label>
       <label class="fld"><span>パスワード</span>
         <input type="password" id="pwInput" class="idin pwin" maxlength="40" autocomplete="current-password"
           autocapitalize="none" spellcheck="false" placeholder="パスワード"></label>
@@ -48,14 +48,14 @@
       <ul>
         <li>IDは自分だけのものです。他の人に教えないでください。</li>
         <li>残るのは自主学習の記録だけで、それ以外の情報は残りません。</li>
-        <li>このサイトはまだ<b>ベータ版</b>です。うまく動かないところや、おかしな問題があれば、ログイン後に各ページの一番下にある「先生に知らせる」から教えてください。</li>
+        <li>このサイトはまだ<b>ベータ版</b>です。うまく動かないところやおかしな問題、感想やアイデアがあれば、ページの一番下の「ひとことポスト」から気軽に教えてください。</li>
         <li>もし他の人に知られたら、すぐに先生に伝えてください。新しいIDを再発行します。</li>
       </ul>
     </div>
     <div class="trial">
       <div class="trial-tx"><b>練習用で使いたいとき</b>
         ID「<code>naraf26</code>」と、授業で伝えたパスワードを入れてください。<br>
-        <small>お試し用なので、記録は先生にも、この端末にも一切残りません。</small></div>
+        <small>お試し用なので、記録はどこにも残りません。</small></div>
       <button class="link" id="trialBtn">練習用IDを入れる</button>
     </div>
   </div>
@@ -142,8 +142,8 @@
     $("sAcc").textContent=tot.ans?Math.round(tot.cor/tot.ans*100)+"%":"—";
     renderStreak();
   }
-  function showMenu(){loginPanel.classList.add("hidden");menuPanel.classList.remove("hidden");renderMenu();if(window.Feedback)Feedback.mount();}
-  function showLogin(){menuPanel.classList.add("hidden");loginPanel.classList.remove("hidden");var fb=document.getElementById("fbCorner");if(fb)fb.remove();}
+  function showMenu(){loginPanel.classList.add("hidden");menuPanel.classList.remove("hidden");renderMenu();var fb=document.getElementById("fbCorner");if(fb)fb.remove();if(window.Feedback)Feedback.mount();}
+  function showLogin(){menuPanel.classList.add("hidden");loginPanel.classList.remove("hidden");var fb=document.getElementById("fbCorner");if(fb)fb.remove();if(window.Feedback)Feedback.mount();}
   function note(t){var n=$("loginNote");n.textContent=t||"";n.classList.toggle("hidden",!t);}
 
   async function doLogin(){

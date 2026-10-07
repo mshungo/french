@@ -275,6 +275,28 @@
 
   .crest{display:flex;justify-content:center;color:var(--gold);margin-bottom:6px;opacity:.9;}
   .crest svg{display:block;}
+
+  /* 答え方の選択（大きく、わかりやすく） */
+  .mode-pick{margin:24px 0 6px;}
+  .mp-h{font-size:12.5px;font-weight:500;color:var(--ink);margin-bottom:8px;letter-spacing:1px;}
+  .mp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .mode-btn.mp{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:14px 8px 12px;border:2px solid var(--rule);
+    border-radius:16px;background:#fff;color:var(--ink-soft);font-family:"Noto Sans JP";cursor:pointer;transition:all .2s;box-shadow:none;}
+  .mode-btn.mp:hover{border-color:var(--accent);}
+  .mode-btn.mp b{font-size:16px;font-weight:700;color:var(--ink);}
+  .mode-btn.mp small{font-size:11px;color:var(--ink-soft);}
+  .mode-btn.mp .mp-ic{color:var(--ink-faint);line-height:0;}
+  .mode-btn.mp.on{border-color:var(--accent-ink);background:var(--accent-wash,#f6eef3);box-shadow:0 8px 18px -12px var(--accent-ink);}
+  .mode-btn.mp.on .mp-ic,.mode-btn.mp.on b{color:var(--accent-ink);}
+  .mode-btn.mp.on::after{content:"✓";position:absolute;top:7px;right:9px;width:18px;height:18px;border-radius:50%;background:var(--accent-ink);
+    color:#fff;font-size:11px;line-height:18px;text-align:center;}
+  /* 記述欄：解答ボタンは入力欄の下に（横にはみ出さない） */
+  .write-box{flex-direction:column;}
+  .write-input{min-width:0;width:100%;box-sizing:border-box;}
+  .write-box .write-btn{padding:12px;}
+  /* 間違えたところだけを練習 */
+  .play.retry{background:#fff;color:var(--accent-ink);border:2px solid var(--accent-ink);box-shadow:none;margin-bottom:10px;}
+  .play.retry:hover{background:var(--accent-wash,#f6eef3);}
 </style>
 </head>
 <body>
@@ -304,13 +326,10 @@
       <div class="stat"><div class="n" id="hAns">0</div><div class="l">累計解答</div></div>
     </div>
 
-    <div class="mode-row">
-      <span class="mode-label">出題形式</span>
-      <div class="mode-toggle">
-        <button class="mode-btn on" data-mode="choice">選択式</button>
-        <button class="mode-btn" data-mode="write">記述式</button>
-      </div>
-    </div>
+    <div class="mode-pick"><div class="mp-h">答え方をえらぶ</div><div class="mp-row">
+      <button class="mode-btn mp on" data-mode="choice"><span class="mp-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="4.5" rx="2"/><rect x="3.5" y="10" width="17" height="4.5" rx="2"/><rect x="3.5" y="16" width="17" height="4.5" rx="2"/><path d="M6.5 12.2l1.3 1.2 2.4-2.6"/></svg></span><b>選択式</b><small>選んで答える</small></button>
+      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 7.5l3 3"/><path d="M12 20h8"/></svg></span><b>記述式</b><small>自分で書いて答える</small></button>
+    </div></div>
 
     <div class="mode-row">
       <span class="mode-label">タイムアタック</span>
@@ -367,6 +386,7 @@
     <div class="rtime" id="rTime"></div>
     <div class="rsync" id="rSync"></div>
     <div class="review" id="review"></div>
+    <button class="play retry hidden" id="retryBtn">間違えたところだけを練習</button>
     <button class="play again" id="againBtn">もう一度</button>
     <button class="home-link" id="toHomeBtn">ホームにもどる</button>
   </div>
@@ -680,6 +700,7 @@ function show(el){[homeScreen,quizScreen,resultScreen].forEach(s=>s.classList.ad
 
 /* ===== round state ===== */
 let questions=[],idx=0,roundCorrect=0,locked=false,misses=[];
+let retry=false;   // 間違えたところだけの練習中（成績・記録には入れない）
 let curVerb=null;       // null=総まとめ
 let curMode="choice";   // "choice" | "write"
 let timeAttack = (typeof store.timeAttack==="boolean") ? store.timeAttack : true;
@@ -719,6 +740,7 @@ function renderHome(){
 }
 
 function startRound(verbFilter){
+  retry=false;
   roundBegin=performance.now();
   curVerb = verbFilter || null;
   document.body.dataset.verb = curVerb || "mix";
@@ -746,10 +768,11 @@ function startRound(verbFilter){
 
 function render(){
   const q=questions[idx];
-  document.getElementById("qcount").textContent=(idx+1)+" / "+ROUND;
-  document.getElementById("fill").style.width=(idx/ROUND*100)+"%";
+  const NQ=questions.length;
+  document.getElementById("qcount").textContent=(idx+1)+" / "+NQ;
+  document.getElementById("fill").style.width=(idx/NQ*100)+"%";
   let dots="";
-  for(let i=0;i<ROUND;i++){
+  for(let i=0;i<NQ;i++){
     let cls = i<idx ? (questions[i]._wrong?"d-no":"d-ok") : (i===idx?"d-now":"d-todo");
     dots+='<span class="pdot '+cls+'"></span>';
   }
@@ -819,14 +842,40 @@ function resolve(val, btn){
     misses.push({sentence:q.sentence,full:q.full,answer:q.answer,chosen:(val||"（無回答）"),verb:q.verb});
     playWrong();
   }
-  document.getElementById("fill").style.width=((idx+1)/ROUND*100)+"%";
+  document.getElementById("fill").style.width=((idx+1)/questions.length*100)+"%";
   setTimeout(next,correct?750:1750);
 }
 
-function next(){idx++;if(idx<ROUND)render();else finishRound();}
+function next(){idx++;if(idx<questions.length)render();else finishRound();}
+/* 間違えたところだけを、もう一度（成績・記録には入らない） */
+function startRetry(){
+  const miss=questions.filter(q=>q._wrong);if(!miss.length)return;
+  retry=true;
+  ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();
+  questions=shuffle(miss.map(q=>Object.assign({},q,{_wrong:undefined,_chosen:undefined})));
+  idx=0;roundCorrect=0;misses=[];locked=false;
+  document.getElementById("roundLabel").textContent="間違えたところだけ（記録には入りません）";
+  clearInterval(timerHandle);const liveEl=document.getElementById("liveTimer");if(liveEl)liveEl.style.display="none";roundStart=0;
+  show(quizScreen);render();
+}
+function finishRetry(){
+  const N=questions.length,pct=Math.round(roundCorrect/N*100);
+  document.getElementById("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
+  document.getElementById("rPct").textContent=pct+"%";
+  document.getElementById("rFace").textContent=pct===100?"◎":pct>=80?"○":pct>=50?"△":"✕";
+  document.getElementById("rMsg").textContent=pct===100?"全部できました。この調子！":"あと少し。もう一度ためしてみよう。";
+  const rankEl=document.getElementById("rRank");rankEl.className="rank-badge";rankEl.innerHTML="";
+  document.getElementById("rTime").innerHTML='<span class="best">間違えたところだけの練習なので、成績・記録には入りません。</span>';
+  const rev=document.getElementById("review");
+  rev.innerHTML=misses.length?'<div class="ttl">まだ間違えたところ</div>'+misses.map(m=>'<div class="rrow"><span>'+m.full+' <span style="color:var(--ink-soft)">['+m.verb+']</span></span><span><span class="miss">'+m.chosen+'</span> <span class="ar">→</span> <span class="got">'+m.answer+'</span></span></div>').join(""):'<div class="ttl">全部正解</div>';
+  const rb=document.getElementById("retryBtn");rb.classList.toggle("hidden",!misses.length);rb.textContent="まだ間違えたところを、もう一度";
+  show(resultScreen);
+  if(roundCorrect===N)setTimeout(playFanfare,280);
+}
 
 function finishRound(){
   clearInterval(timerHandle);
+  if(retry){finishRetry();return;}
   roundTime = timeAttack ? (performance.now()-roundStart) : null;
   store.tries++;store.answered+=ROUND;store.correct+=roundCorrect;
   store.timeMs=(store.timeMs||0)+Math.min(performance.now()-roundBegin,ROUND*90000);   // 勉強時間（放置分は1問90秒まで）
@@ -881,6 +930,7 @@ function finishRound(){
     });
     rev.innerHTML=h;
   }
+  const rb=document.getElementById("retryBtn");rb.classList.toggle("hidden",!misses.length);rb.textContent="間違えたところだけを練習";
   show(resultScreen);
   submitRound({section:sec,mode:curMode,durMs:Math.round(performance.now()-roundBegin),score:roundCorrect,total:ROUND,timeAttack:timeAttack,
     timeMs:timeAttack?Math.round(roundTime):null,
@@ -925,6 +975,7 @@ document.getElementById("writeInput").addEventListener("keydown",e=>{
 });
 
 document.getElementById("againBtn").addEventListener("click",()=>startRound(curVerb));
+document.getElementById("retryBtn").addEventListener("click",startRetry);
 document.getElementById("backBtn").addEventListener("click",goHome);
 document.getElementById("toHomeBtn").addEventListener("click",goHome);
 document.getElementById("resetBtn").addEventListener("click",()=>{

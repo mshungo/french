@@ -22,7 +22,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-07c';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-07d';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
@@ -32,7 +32,8 @@ const BACKUP_FOLDER = 'Naralingo バックアップ';
 const BACKUP_KEEP = 30;   // 自動バックアップを何日分残すか
 const PRACTICE_ID = 'NARAF26';   // 練習用ID（名簿には載せない）。フィードバックの送信だけ受け付ける
 const FEEDBACK_HEADERS = ['日時', '学生ID', '氏名', 'ページ', '種類', 'コメント', 'そのときの画面', '端末', '対応メモ'];
-const FEEDBACK_KINDS = ['答えがおかしい', '選択肢がおかしい', '訳・解説がおかしい', '音声・表示の不具合', 'その他'];
+const FEEDBACK_KINDS = ['感想', '改善のアイデア', 'うまく動かない', '答えがおかしい', '選択肢がおかしい', '訳・解説がおかしい', '音声・表示の不具合', 'その他'];
+const ANON_FEEDBACK = { perHour: 30, perDay: 150 };   // ログイン前のひとことは、全員合わせてこの回数まで
 const ID_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';   // 0/O/1/I/L など紛らわしい文字を除く
 const ID_LEN = 4;             // 名字のあとにつける英数字の数
 const ID_RE = /^[A-Z0-9_-]{3,20}$/;   // 受け付けるIDの形（手入力のIDも使えるよう、3〜20文字の英数字と - _）
@@ -137,6 +138,12 @@ function handle_(req) {
   const cache = CacheService.getScriptCache();
   if (failCount_(cache) >= MAX_FAILS) return { ok: false, error: 'locked' };
 
+  // ログイン画面の「ひとことポスト」（IDなし）
+  if (req.action === 'feedback' && !normId_(req.id)) {
+    if (!rateOk_(cache, 'f:anon:h', ANON_FEEDBACK.perHour, 3600) || !rateOk_(cache, 'f:anon:d', ANON_FEEDBACK.perDay, 86400)) return { ok: false, error: 'rate' };
+    return saveFeedback_(ss, { id: '（ログイン前）', name: '' }, req.feedback);
+  }
+
   const pass = password_();
   if (!pass) return { ok: false, error: 'nopass' };   // 共通パスワードが未設定
   const id = normId_(req.id);
@@ -176,15 +183,19 @@ function handle_(req) {
   }
   if (req.action === 'feedback') {
     if (!rateOk_(cache, 'f:h:' + id, LIMIT.feedbackPerHour, 3600) || !rateOk_(cache, 'f:d:' + id, LIMIT.feedbackPerDay, 86400)) return { ok: false, error: 'rate' };
-    const f = req.feedback || {};
-    const kind = FEEDBACK_KINDS.indexOf(f.kind) >= 0 ? f.kind : 'その他';
-    const text = safe_(f.text, 500), ctx = safe_(f.context, 800);
-    if (!text && !ctx) return { ok: false, error: 'bad_request' };
-    const sh = ensureSheet_(ss, SHEET.feedback, FEEDBACK_HEADERS);
-    sh.appendRow([new Date(), id, safe_(user.name, 40), safe_(f.page, 80), kind, text, ctx, safe_(f.device, 120), '']);
-    return { ok: true };
+    return saveFeedback_(ss, user, req.feedback);
   }
   return { ok: false, error: 'bad_request' };
+}
+function saveFeedback_(ss, user, f) {
+  f = f || {};
+  const known = FEEDBACK_KINDS.indexOf(f.kind) >= 0;
+  const kind = known ? f.kind : 'その他';
+  const text = safe_(f.text, 500), ctx = safe_(f.context, 800);
+  if (!text && !ctx && !known) return { ok: false, error: 'bad_request' };
+  const sh = ensureSheet_(ss, SHEET.feedback, FEEDBACK_HEADERS);
+  sh.appendRow([new Date(), user.id, safe_(user.name, 40), safe_(f.page, 80), kind, text, ctx, safe_(f.device, 120), '']);
+  return { ok: true };
 }
 
 // ===== 送信回数の制限 =====

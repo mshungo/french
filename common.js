@@ -143,7 +143,7 @@
   }
 
   /* ---- 進み具合（問題ごとの習得・バッジなど）のバックアップ ----
-     端末に保存している記録を、変わったものだけ先生のスプレッドシート（シート「進み具合」）に控える。
+     端末に保存している記録を、変わったものだけサーバー（シート「進み具合」）に控える。
      ログインしたとき、端末にない・端末より進んでいる控えがあれば戻す（自分の控えだけ）。 */
   var PROG_KEYS = ["conjQuizStats_v4", "talkQuiz_v1", "gramQuiz_L1_v1", "gramQuiz_L2_v1", "gramQuiz_L3_v1",
     "gramQuiz_L4_v1", "gramQuiz_L5_v1", "gramQuiz_L6_v1", "conjQuizDays"];
@@ -191,9 +191,9 @@
 
   /* 問題の報告（練習用IDからも送れる）。戻り値: "ok" | "rate" | "auth" | "error" | "noauth" */
   async function feedback(fb) {
-    if (!SYNC_ON || !user) return "noauth";
+    if (!SYNC_ON) return "noauth";
     try {
-      var res = await call(user, "feedback", { feedback: fb });
+      var res = await call(user || { id: "", pw: "" }, "feedback", { feedback: fb });   // ログイン前はIDなしで送る
       if (res.ok) return "ok";
       return res.error === "rate" ? "rate" : (res.error === "auth" || res.error === "locked") ? "auth" : "error";
     } catch (e) { return "error"; }

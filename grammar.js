@@ -134,8 +134,9 @@ function shell(){
 '      <div class="stat"><div class="n" id="hTime">0分</div><div class="l">勉強時間</div></div>'+
 '    </div>'+
 '    <div id="goal"></div>'+
-'    <div class="mode-row"><span class="mode-label">出題形式</span><div class="mode-toggle">'+
-'      <button class="mode-btn" data-mode="choice">選択式</button><button class="mode-btn" data-mode="write">記述式</button></div></div>'+
+'    <div class="mode-pick"><div class="mp-h">答え方をえらぶ</div><div class="mp-row">'+
+'      <button class="mode-btn mp" data-mode="choice"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"4\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"10\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"16\" width=\"17\" height=\"4.5\" rx=\"2\"/><path d=\"M6.5 12.2l1.3 1.2 2.4-2.6\"/></svg></span><b>選択式</b><small>選んで答える</small></button>'+
+'      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z\"/><path d=\"M14.5 7.5l3 3\"/><path d=\"M12 20h8\"/></svg></span><b>記述式</b><small>自分で書いて答える</small></button></div></div>'+
 '    <div class="guide"><b>選択式</b>は選択肢から選び、<b>記述式</b>は同じ問題を自分で書いて答えます。書きかえ・並べかえの問題はどちらでも出ます。<br>2回続けて正解すると「習得」（記述で<b>5秒以内</b>に正解なら一発で習得）。間違えた問題は「苦手」になり、2回続けて正解するまで残ります。<br>累計'+CLEAR_ANS+'問（約1時間）で<b>クリア</b>、全問習得で<b>勲章</b>。</div>'+
 '    <div class="section-label">項目を選択</div>'+
 '    <div class="sections">'+secBtns+'</div>'+
@@ -165,6 +166,7 @@ function shell(){
 '    <div><span class="pct-pill" id="rPct">0%</span></div>'+
 '    <div class="msg" id="rMsg"></div><div class="rtime" id="rTime"></div><div class="mastery" id="rMastery"></div>'+
 '    <div class="review" id="review"></div>'+
+'    <button class="play retry hidden" id="retryBtn">間違えたところだけを練習</button>'+
 '    <button class="play again" id="againBtn">もう一度</button>'+
 '    <button class="home-link" id="toHomeBtn">ホームにもどる</button>'+
 '  </div>'+
@@ -173,6 +175,7 @@ function shell(){
 
 /* ---------- 状態 ---------- */
 let questions=[],idx=0,roundCorrect=0,locked=false,curSec="mix",curMode="choice";
+let retry=false;   // 間違えたところだけの練習中（成績・習得・記録には入れない）
 let roundStart=0,timerHandle=null,autoNext=null;
 let homeScreen,quizScreen,resultScreen;
 function show(el){[homeScreen,quizScreen,resultScreen].forEach(s=>s.classList.add("hidden"));el.classList.remove("hidden");try{window.scrollTo(0,0);}catch(e){}}
@@ -245,11 +248,23 @@ function makeQ(it){
 const KIND_LABEL={c:"選んで答える",w:"書いて答える",t:"書きかえ",b:"並べかえ（仏作文）"};
 
 function startRound(sec){
-  curSec=sec;setAccent(sec);
+  retry=false;curSec=sec;setAccent(sec);
   if(typeof ensureAudio==="function"){ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();}
   questions=buildRound(sec);if(!questions.length)return;
   idx=0;roundCorrect=0;
   $("roundLabel").textContent=secInfo(sec).t+" ／ "+(curMode==="choice"?"選択式":"記述式");
+  show(quizScreen);
+  roundStart=performance.now();clearInterval(timerHandle);
+  timerHandle=setInterval(()=>{$("liveTimer").textContent=fmtTime(performance.now()-roundStart);},200);
+  render();
+}
+/* 間違えたところだけを、もう一度（成績・習得・記録には入らない） */
+function startRetry(){
+  const miss=questions.filter(q=>!q.ok).map(q=>q.it);if(!miss.length)return;
+  retry=true;
+  if(typeof ensureAudio==="function"){ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();}
+  questions=shuffle(miss.map(makeQ));idx=0;roundCorrect=0;
+  $("roundLabel").textContent="間違えたところだけ（記録には入りません）";
   show(quizScreen);
   roundStart=performance.now();clearInterval(timerHandle);
   timerHandle=setInterval(()=>{$("liveTimer").textContent=fmtTime(performance.now()-roundStart);},200);
@@ -344,13 +359,17 @@ function grade(r,chosen){
   locked=true;q.rt=performance.now()-q.t0;
   q.ok=r>0;q.accent=(r===1);q.chosen=chosen;
   const s=st(q.it);
-  q.fast=false;s.t=Date.now();
-  if(q.ok){
-    s.c++;s.last=1;s.run=(s.run||0)+1;roundCorrect++;
-    if(s.wk&&s.run>=2)s.wk=false;                       // 苦手は2回連続正解で解除
-    if(!s.wk&&(q.kind==="w"||q.kind==="t")&&q.rt<=FAST_MS){if(!s.m)q.fast=true;s.m=true;}  // 記述で5秒以内 → 即習得
-  }else{s.w++;s.last=0;s.run=0;s.wk=true;s.m=false;}
-  store.it[q.it.id]=s;save();
+  q.fast=false;
+  if(q.ok)roundCorrect++;
+  if(!retry){   // 間違えたところだけの練習では、習得・苦手を動かさない
+    s.t=Date.now();
+    if(q.ok){
+      s.c++;s.last=1;s.run=(s.run||0)+1;
+      if(s.wk&&s.run>=2)s.wk=false;                       // 苦手は2回連続正解で解除
+      if(!s.wk&&(q.kind==="w"||q.kind==="t")&&q.rt<=FAST_MS){if(!s.m)q.fast=true;s.m=true;}  // 記述で5秒以内 → 即習得
+    }else{s.w++;s.last=0;s.run=0;s.wk=true;s.m=false;}
+    store.it[q.it.id]=s;save();
+  }
   const fb=$("fb");
   if(q.ok){fb.className="fb show ok";fb.textContent=pick(["Bien !","Très bien !","Parfait !","Exact !","Bravo !"]);if(typeof playCorrect==="function")playCorrect();}
   else{fb.className="fb show no";fb.textContent=pick(["Pas tout à fait…","Presque !","Attention…"]);if(typeof playWrong==="function")playWrong();}
@@ -365,7 +384,7 @@ function showAfter(q){
   const it=q.it,a=$("after");a.classList.remove("hidden");
   let extra="";
   if(q.fast)extra+='<div class="heard fast">5秒以内に正解 → 習得！</div>';
-  else if(q.ok&&weak(it))extra+='<div class="heard">苦手を解除するには、もう1回続けて正解しよう</div>';
+  else if(q.ok&&weak(it)&&!retry)extra+='<div class="heard">苦手を解除するには、もう1回続けて正解しよう</div>';
   if(q.accent)extra+='<div class="heard">正解。ただしつづりは <b>'+esc(it.a[0])+'</b>（アクセント記号に注意）</div>';
   if(!q.ok&&q.chosen!=null)extra+='<div class="heard">あなたの答え：<s>'+esc(q.chosen)+'</s></div>';
   const alts=it.a.slice(1);
@@ -386,10 +405,12 @@ function finishRound(){
   clearInterval(timerHandle);
   const N=questions.length,time=performance.now()-roundStart;
   const wasClear=store.answered>=CLEAR_ANS,wasAll=ITEMS.every(mastered)&&false;
-  store.tries++;store.answered+=N;store.correct+=roundCorrect;
-  store.timeMs=(store.timeMs||0)+Math.min(time,N*90000);   // 放置した時間は数えすぎないよう1問90秒まで
-  if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
-  save();if(window.Quiz)Quiz.markToday();
+  if(!retry){
+    store.tries++;store.answered+=N;store.correct+=roundCorrect;
+    store.timeMs=(store.timeMs||0)+Math.min(time,N*90000);   // 放置した時間は数えすぎないよう1問90秒まで
+    if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
+    save();if(window.Quiz)Quiz.markToday();
+  }
   const pct=Math.round(roundCorrect/N*100);
   $("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
   $("rPct").textContent=pct+"%";
@@ -399,7 +420,8 @@ function finishRound(){
   const list=itemsOf(curSec==="weak"?"mix":curSec);
   let mt=(curSec==="mix"||curSec==="weak"?"Leçon "+L.no+" 全体":"この項目")+"の習得："+list.filter(mastered).length+" / "+list.length+"　／　通算 "+fmtDur(store.timeMs);
   if(!wasClear&&store.answered>=CLEAR_ANS)mt+="　★ Leçon "+L.no+" クリア！";
-  const newB=awardBadges();
+  if(retry)mt="間違えたところだけの練習なので、成績・習得・記録には入りません。";
+  const newB=retry?[]:awardBadges();
   $("rMastery").textContent=mt;
   const miss=questions.filter(q=>!q.ok);
   let h='<div class="ttl">'+(miss.length?"間違えた問題":"全問正解")+'</div>';
@@ -410,9 +432,12 @@ function finishRound(){
       (q.it.ex?'<span class="rja">'+esc(q.it.ex)+'</span>':'')+'</span></div>';
   });
   $("review").innerHTML=h;
+  $("retryBtn").classList.toggle("hidden",!miss.length);
+  $("retryBtn").textContent=retry?"まだ間違えたところを、もう一度":"間違えたところだけを練習";
   show(resultScreen);
   if(roundCorrect===N&&typeof playFanfare==="function")setTimeout(playFanfare,280);
   if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),roundCorrect===N?1900:500);
+  if(retry)return;
   if(window.Quiz)Quiz.submit("grammar",{section:"L"+L.no+"-"+curSec,mode:curMode,durMs:Math.round(time),score:roundCorrect,total:N,timeAttack:false,timeMs:null,
     misses:miss.map(q=>({full:q.it.t==="b"?q.it.ja:(q.it.q||q.it.src||""),verb:"L"+L.no,chosen:q.chosen||"",answer:q.it.a[0]}))});
 }
@@ -444,6 +469,7 @@ function init(){
   $("mixBtn").onclick=()=>startRound("mix");
   $("weakBtn").onclick=()=>startRound("weak");
   document.querySelectorAll(".mode-btn[data-mode]").forEach(b=>b.onclick=()=>{curMode=b.dataset.mode;store.mode=curMode;save();renderHome();});
+  $("retryBtn").onclick=startRetry;
   $("againBtn").onclick=()=>{if(curSec==="weak"&&!itemsOf("weak").length){goHome();return;}startRound(curSec);};
   $("backBtn").onclick=goHome;$("toHomeBtn").onclick=goHome;
   let armed=0;

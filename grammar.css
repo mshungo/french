@@ -394,3 +394,25 @@
 
   .crest{display:flex;justify-content:center;color:var(--gold);margin-bottom:6px;opacity:.9;}
   .crest svg{display:block;}
+
+  /* 答え方の選択（大きく、わかりやすく） */
+  .mode-pick{margin:24px 0 6px;}
+  .mp-h{font-size:12.5px;font-weight:500;color:var(--ink);margin-bottom:8px;letter-spacing:1px;}
+  .mp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .mode-btn.mp{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:14px 8px 12px;border:2px solid var(--rule);
+    border-radius:16px;background:#fff;color:var(--ink-soft);font-family:"Noto Sans JP";cursor:pointer;transition:all .2s;box-shadow:none;}
+  .mode-btn.mp:hover{border-color:var(--accent);}
+  .mode-btn.mp b{font-size:16px;font-weight:700;color:var(--ink);}
+  .mode-btn.mp small{font-size:11px;color:var(--ink-soft);}
+  .mode-btn.mp .mp-ic{color:var(--ink-faint);line-height:0;}
+  .mode-btn.mp.on{border-color:var(--accent-ink);background:var(--accent-wash,#f6eef3);box-shadow:0 8px 18px -12px var(--accent-ink);}
+  .mode-btn.mp.on .mp-ic,.mode-btn.mp.on b{color:var(--accent-ink);}
+  .mode-btn.mp.on::after{content:"✓";position:absolute;top:7px;right:9px;width:18px;height:18px;border-radius:50%;background:var(--accent-ink);
+    color:#fff;font-size:11px;line-height:18px;text-align:center;}
+  /* 記述欄：解答ボタンは入力欄の下に（横にはみ出さない） */
+  .write-box{flex-direction:column;}
+  .write-input{min-width:0;width:100%;box-sizing:border-box;}
+  .write-box .write-btn{padding:12px;}
+  /* 間違えたところだけを練習 */
+  .play.retry{background:#fff;color:var(--accent-ink);border:2px solid var(--accent-ink);box-shadow:none;margin-bottom:10px;}
+  .play.retry:hover{background:var(--accent-wash,#f6eef3);}

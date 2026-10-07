@@ -1,9 +1,11 @@
 /* 問題の報告コーナー（各ページの一番下）。common.js のあとに読み込む。
-   ログイン中だけ表示し、種類をタップ →（ひとこと）→ 送る、で先生のスプレッドシート「フィードバック」に1行追加される。
+   種類をタップ →（ひとこと）→ 送る、でスプレッドシート「フィードバック」に1行追加される。ログイン画面ではIDなしで送る。
    そのとき画面に出ていた問題の文も自動で添える。 */
 (function () {
   "use strict";
-  var KINDS = ["答えがおかしい", "選択肢がおかしい", "訳・解説がおかしい", "音声・表示の不具合", "その他"];
+  var KINDS = ["感想", "改善のアイデア", "答えがおかしい", "選択肢がおかしい", "訳・解説がおかしい", "音声・表示の不具合", "その他"];
+  var KINDS_ANON = ["感想", "改善のアイデア", "うまく動かない", "その他"];   // ログイン画面用
+  var anon = false;
   var Q = window.Quiz;
 
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -64,7 +66,7 @@
   var root, kind = "", ctxText = "", qs = [], qSel = -1;
 
   function closed() {
-    root.innerHTML = '<button class="nlfb-open" type="button">' + ICON + '問題や表示がおかしいときは、ここから先生に知らせる</button>';
+    root.innerHTML = '<button class="nlfb-open" type="button">' + ICON + 'ひとことポスト　感想・アイデア・不具合など、気軽にどうぞ</button>';
     root.querySelector(".nlfb-open").onclick = openBox;
   }
   function openBox() {
@@ -73,15 +75,15 @@
     qs = []; try { if (typeof window.FB_QUESTIONS === "function") qs = (window.FB_QUESTIONS() || []).slice(0, 12); } catch (e) { qs = []; }
     qSel = qs.length ? 0 : -1;
     root.innerHTML = '<div class="nlfb-box">' +
-      '<div class="nlfb-h"><span class="nlfb-t">先生に知らせる</span><button class="nlfb-x" type="button" aria-label="閉じる">×</button></div>' +
-      '<div class="nlfb-sub">どれに近いかタップして送ってください。ひとことは書かなくても大丈夫です。</div>' +
-      '<div class="nlfb-kinds">' + KINDS.map(function (k) { return '<button class="nlfb-k" type="button" aria-pressed="false">' + esc(k) + '</button>'; }).join("") + '</div>' +
+      '<div class="nlfb-h"><span class="nlfb-t">ひとことポスト</span><button class="nlfb-x" type="button" aria-label="閉じる">×</button></div>' +
+      '<div class="nlfb-sub">感想、「こうなったらいいな」というアイデア、おかしなところの報告、なんでも気軽にどうぞ。タップだけでも送れます。</div>' +
+      '<div class="nlfb-kinds">' + (anon ? KINDS_ANON : KINDS).map(function (k) { return '<button class="nlfb-k" type="button" aria-pressed="false">' + esc(k) + '</button>'; }).join("") + '</div>' +
       (qs.length ?
         '<div class="nlfb-qh">どの問題？<small>（このラウンドで出た問題・新しい順）</small></div><div class="nlfb-qs">' +
         qs.map(function (q, i) { return '<button class="nlfb-q" type="button" data-i="' + i + '" aria-pressed="' + (i === 0) + '">' + esc(q.label) + '</button>'; }).join("") +
         '<button class="nlfb-q nlfb-q0" type="button" data-i="-1" aria-pressed="false">特定の問題ではない</button></div>'
       : (ctxText ? '<div class="nlfb-ctx"><b>いまの画面も添えて送ります：</b>\n' + esc(ctxText.slice(0, 160)) + (ctxText.length > 160 ? "…" : "") + '</div>' : '')) +
-      '<textarea class="nlfb-txt" maxlength="500" rows="2" placeholder="ひとこと（例：正解が２つあると思う）"></textarea>' +
+      '<textarea class="nlfb-txt" maxlength="500" rows="2" placeholder="ひとこと（例：会話練習がたのしい！／もっと問題がほしい／正解が２つあると思う）"></textarea>' +
       '<button class="nlfb-send" type="button" disabled>送る</button><div class="nlfb-msg"></div></div>';
     var btns = root.querySelectorAll(".nlfb-k"), send = root.querySelector(".nlfb-send"), txt = root.querySelector(".nlfb-txt");
     function upd() { send.disabled = !(kind || txt.value.trim()); }
@@ -109,7 +111,7 @@
     var page = (document.title || "").replace(/\s*—\s*Naralingo$/, "") + "（" + (location.pathname.split("/").pop() || "index.html") + "）";
     var st = await Q.feedback({ kind: kind || "その他", text: txt.value.trim(), context: (qs.length ? (qSel >= 0 ? qs[qSel].detail : "（特定の問題ではない）\n" + ctxText) : ctxText).slice(0, 790), page: page, device: device() });
     if (st === "ok") {
-      root.innerHTML = '<div class="nlfb-done">送りました。ありがとう！ 先生が確認します。<br><button type="button">もうひとつ送る</button></div>';
+      root.innerHTML = '<div class="nlfb-done">届きました。ありがとう！<br><button type="button">もうひとつ送る</button></div>';
       root.querySelector(".nlfb-done button").onclick = openBox;
       return;
     }
@@ -120,9 +122,11 @@
   }
 
   function mount() {
-    if (!Q || !Q.SYNC_ON || !Q.user() || document.getElementById("fbCorner")) return;
+    if (!Q || !Q.SYNC_ON || document.getElementById("fbCorner")) return;
+    anon = !Q.user();
+    if (anon && !document.getElementById("loginPanel")) return;   // ログインしていなければ、トップ（ログイン画面）だけに出す
     var wrap = document.querySelector(".wrap"); if (!wrap) return;
-    var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
+    if (!document.getElementById("nlfbCss")) { var st = document.createElement("style"); st.id = "nlfbCss"; st.textContent = css; document.head.appendChild(st); }
     root = document.createElement("div"); root.className = "nlfb"; root.id = "fbCorner";
     wrap.appendChild(root); closed();
   }

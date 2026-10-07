@@ -394,6 +394,14 @@
   .recog{margin:12px auto 4px;max-width:440px;background:#fff;border:1.5px solid var(--accent);border-radius:14px;padding:10px 14px;text-align:center;}
   .recog-l{display:block;font-size:11px;letter-spacing:1px;color:var(--accent-ink);margin-bottom:2px;}
   .recog-t{display:block;font-family:"Cormorant Garamond",serif;font-size:24px;font-weight:600;color:var(--ink);line-height:1.35;word-break:break-word;}
+
+  /* 記述欄：解答ボタンは入力欄の下に（横にはみ出さない） */
+  .write-box{flex-direction:column;}
+  .write-input{min-width:0;width:100%;box-sizing:border-box;}
+  .write-box .write-btn{padding:12px;}
+  /* 間違えたところだけを練習 */
+  .play.retry{background:#fff;color:var(--accent-ink);border:2px solid var(--accent-ink);box-shadow:none;margin-bottom:10px;}
+  .play.retry:hover{background:var(--accent-wash,#f6eef3);}
 </style>
 </head>
 <body>
@@ -483,6 +491,7 @@
     <div class="rtime" id="rTime"></div>
     <div class="mastery" id="rMastery"></div>
     <div class="review" id="review"></div>
+    <button class="play retry hidden" id="retryBtn">間違えたところだけを練習</button>
     <button class="play again" id="againBtn">もう一度</button>
     <button class="home-link" id="toHomeBtn">ホームにもどる</button>
   </div>
@@ -966,6 +975,7 @@ function buildRound(sec){
 const homeScreen=$("homeScreen"),quizScreen=$("quizScreen"),resultScreen=$("resultScreen");
 function show(el){[homeScreen,quizScreen,resultScreen].forEach(s=>s.classList.add("hidden"));el.classList.remove("hidden");window.scrollTo(0,0);}
 let questions=[],idx=0,roundCorrect=0,locked=false,curSec="s1",curMode=store.mode||"auto";
+let retry=false;   // 間違えたところだけの練習中（覚え具合・成績・記録には入れない）
 let roundStart=0,timerHandle=null,autoNext=null;
 
 function setAccent(sec){
@@ -1015,7 +1025,7 @@ function fmtDur(ms){const m=Math.round((ms||0)/60000);return m<60?m+"分":Math.f
 function fmtTime(ms){const s=ms/1000,m=Math.floor(s/60);return m>0?(m+"分"+(s-m*60).toFixed(0)+"秒"):(s.toFixed(1)+"秒");}
 
 function startRound(sec){
-  curSec=sec;setAccent(sec);
+  retry=false;curSec=sec;setAccent(sec);
   ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();
   questions=buildRound(sec);
   if(!questions.length)return;
@@ -1293,7 +1303,7 @@ function grade(ok,info){
   q.prevLv=lvOf(q.p.n);q.prevWrong=store.wrong[q.p.n]||0;
   q.ok=ok;q._wrong=!ok;q.chosen=info&&info.chosen;
   if(ok)roundCorrect++;
-  applyLevel(q,ok);
+  if(!retry)applyLevel(q,ok);
   $("lvdots").textContent=lvDots(lvOf(q.p.n));
   const fb=$("fb");
   if(ok){fb.className="fb show ok";fb.textContent=pick(["Bien !","Très bien !","Parfait !","Bravo !","Exact !"]);playCorrect();}
@@ -1344,14 +1354,27 @@ function next(){
 }
 
 /* ----- 結果 ----- */
+function startRetry(){
+  const miss=questions.filter(q=>!q.ok);if(!miss.length)return;
+  retry=true;
+  ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();
+  questions=shuffle(miss.map(q=>makeQ(q.p,q.type)));idx=0;roundCorrect=0;locked=false;
+  $("roundLabel").textContent="間違えたところだけ（記録には入りません）";
+  show(quizScreen);
+  roundStart=performance.now();clearInterval(timerHandle);
+  timerHandle=setInterval(()=>{$("liveTimer").textContent=fmtTime(performance.now()-roundStart);},200);
+  render();
+}
 function finishRound(){
   clearInterval(timerHandle);stopSpeak();
   const N=questions.length,time=performance.now()-roundStart;
-  store.tries++;store.answered+=N;store.correct+=roundCorrect;
-  store.timeMs=(store.timeMs||0)+Math.min(time,N*90000);   // 勉強時間（放置分は1問90秒まで）
-  if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
-  save();
-  if(Q)Q.markToday();
+  if(!retry){
+    store.tries++;store.answered+=N;store.correct+=roundCorrect;
+    store.timeMs=(store.timeMs||0)+Math.min(time,N*90000);   // 勉強時間（放置分は1問90秒まで）
+    if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
+    save();
+    if(Q)Q.markToday();
+  }
   const pct=Math.round(roundCorrect/N*100);
   $("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
   $("rPct").textContent=pct+"%";
@@ -1369,8 +1392,12 @@ function finishRound(){
   });
   $("review").innerHTML=h;
   $("review").querySelectorAll(".round-btn").forEach(b=>b.onclick=()=>speak(questions[+b.dataset.i].v.fr));
+  if(retry)$("rMastery").textContent="間違えたところだけの練習なので、覚え具合・成績・記録には入りません。";
+  const nMiss=questions.filter(q=>!q.ok).length;
+  $("retryBtn").classList.toggle("hidden",!nMiss);$("retryBtn").textContent=retry?"まだ間違えたところを、もう一度":"間違えたところだけを練習";
   show(resultScreen);
   if(roundCorrect===N)setTimeout(playFanfare,280);
+  if(retry)return;
   const newB=awardBadges();
   if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),roundCorrect===N?1900:500);
   if(Q)Q.submit("talk",{section:curSec,mode:curMode,durMs:Math.round(time),score:roundCorrect,total:N,timeAttack:false,timeMs:null,
@@ -1407,6 +1434,7 @@ document.querySelectorAll(".mode-btn[data-voice]").forEach(b=>b.addEventListener
 document.querySelectorAll(".mode-btn[data-slow]").forEach(b=>b.addEventListener("click",()=>{store.slow=b.dataset.slow==="1";save();renderHome();speak("Bonjour ! Comment allez-vous ?");}));
 $("mixBtn").addEventListener("click",()=>startRound("mix"));
 $("weakBtn").addEventListener("click",()=>startRound("weak"));
+$("retryBtn").addEventListener("click",startRetry);
 $("againBtn").addEventListener("click",()=>{if(curSec==="weak"&&weakList().length<3){goHome();return;}startRound(curSec);});
 $("backBtn").addEventListener("click",goHome);
 $("toHomeBtn").addEventListener("click",goHome);
