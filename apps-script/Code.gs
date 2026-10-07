@@ -22,7 +22,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-07a';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-07c';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
@@ -59,7 +59,40 @@ const ROW_FORMATS = ['yyyy-mm-dd hh:mm:ss', '@', '@', '@', '@', '@', '@', '0', '
 
 // ===== Webアプリの入口 =====
 function doGet() {
-  return json_({ ok: true, service: 'conjugation-quiz', version: VERSION, password: password_() ? '設定済み' : '未設定' });   // 動作確認用（URLをブラウザで開くと表示）
+  // 動作確認用（URLをブラウザで開くと表示）。ログイン画面はここから「お知らせ」も受け取る
+  let notices = [];
+  try { notices = notices_(); } catch (e) {}
+  return json_({ ok: true, service: 'conjugation-quiz', version: VERSION, password: password_() ? '設定済み' : '未設定', notices: notices });
+}
+
+// ===== お知らせ（シート「お知らせ」でA列にチェックを入れた行を、ログイン画面とメニューの上に出す）=====
+const NOTICE_SHEET = 'お知らせ';
+const NOTICE_HEADERS = ['表示する', '種類（お知らせ／注意／障害）', '本文', 'メモ（表示されない）'];
+function noticeSheet_(ss) {
+  let sh = ss.getSheetByName(NOTICE_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(NOTICE_SHEET);
+    sh.getRange(1, 1, 1, NOTICE_HEADERS.length).setValues([NOTICE_HEADERS]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+    try { sh.getRange(2, 1, 20, 1).insertCheckboxes(); } catch (e) {}
+    sh.getRange(2, 2, 1, 3).setValues([['お知らせ', '（例）Naralingo はベータ版です。気づいたことは各ページ下の「先生に知らせる」から送ってください。', 'A列にチェックを入れると表示されます']]);
+    try { sh.setColumnWidth(3, 520); } catch (e) {}
+  }
+  return sh;
+}
+function notices_() {
+  const cache = CacheService.getScriptCache(), c = cache.get('notices');
+  if (c) return JSON.parse(c);
+  const sh = ss_().getSheetByName(NOTICE_SHEET), out = [];
+  if (sh && sh.getLastRow() >= 2) {
+    sh.getRange(2, 1, Math.min(sh.getLastRow() - 1, 30), 3).getValues().forEach(function (r) {
+      const on = r[0] === true || String(r[0]).toUpperCase() === 'TRUE' || r[0] === '○';
+      const text = String(r[2] || '').replace(/[\u0000-\u0009\u000b-\u001f]/g, ' ').trim().slice(0, 400);
+      if (on && text && out.length < 3) out.push({ kind: ['注意', '障害'].indexOf(String(r[1]).trim()) >= 0 ? String(r[1]).trim() : 'お知らせ', text: text });
+    });
+  }
+  cache.put('notices', JSON.stringify(out), 60);   // 1分間は読み直さない（書き換えると1分以内に反映）
+  return out;
 }
 
 function doPost(e) {
@@ -486,7 +519,7 @@ function statsOut_(d) {
   const apps = {};
   Object.keys(d.apps).forEach(function (k) {
     const s = d.apps[k];
-    apps[k] = { tries: s.tries, answered: s.answered, correct: s.correct, best: s.best, bestTimes: s.bestTimes };
+    apps[k] = { tries: s.tries, answered: s.answered, correct: s.correct, best: s.best, bestTimes: s.bestTimes, timeMs: (s.dur || 0) * 1000 };
   });
   return { days: Object.keys(d.dayCount).sort().slice(-400), apps: apps };
 }
@@ -541,6 +574,7 @@ function recordResult_(ss, user, v) {
 // =====================================================================
 const SUMMARY_HEADERS = ['学生ID', '氏名', 'ラウンド数', '学習時間(分)', '学習日数', '直近7日の学習日数', '最終学習日', '累計解答数', '正答率',
   '動詞活用(回)', '文法練習(回)', '会話練習(回)', '最速 être(秒)', '最速 aller(秒)', '最速 avoir(秒)', '最速 faire(秒)', '最速 総まとめ(秒)'];
+const SUMMARY_FORMATS = ['@', '@', '0', '0', '0', '0', '@', '0', '0%', '0', '0', '0', '0.0', '0.0', '0.0', '0.0', '0.0'];
 function summaryValues_(id, name, d) {
   const a = d.apps, tries = a.conj.tries + a.grammar.tries + a.talk.tries;
   const q = a.conj.answered + a.grammar.answered + a.talk.answered, c = a.conj.correct + a.grammar.correct + a.talk.correct;
@@ -568,8 +602,8 @@ function summaryRow_(ss, id, d) {
   }
   if (!row) row = last + 1;
   const rng = sh.getRange(row, 1, 1, SUMMARY_HEADERS.length);
+  rng.setNumberFormats([SUMMARY_FORMATS]);
   rng.setValues([summaryValues_(id, lookupRoster_(ss, id) || d.name, d)]);
-  sh.getRange(row, 9).setNumberFormat('0%');
 }
 // 全員分を書き直す（毎日の保守と、メニューから）。名簿の順に並べ、名簿にない人は後ろに
 function refreshSummary_(ss) {
@@ -595,8 +629,7 @@ function refreshSummary_(ss) {
   if (last >= 2) sh.getRange(2, 1, last - 1, Math.max(sh.getLastColumn(), SUMMARY_HEADERS.length)).clearContent();
   if (rows.length) {
     sh.getRange(2, 1, rows.length, SUMMARY_HEADERS.length).setValues(rows);
-    sh.getRange(2, 9, rows.length, 1).setNumberFormat('0%');
-    sh.getRange(2, 13, rows.length, 5).setNumberFormat('0.0');
+    sh.getRange(2, 1, rows.length, SUMMARY_HEADERS.length).setNumberFormats(rows.map(function () { return SUMMARY_FORMATS; }));
   }
 }
 // 生徒データを結果シート（とアーカイブ）から全員分作り直す。初回の切り替えと、メニューから
@@ -713,6 +746,7 @@ function setup() {
   resultsSheet_(ss);
   ensureSheet_(ss, SHEET.feedback, FEEDBACK_HEADERS);
   progSheet_(ss);
+  noticeSheet_(ss);
   rebuildAll_(ss);   // 生徒データと集計を作る（すでにあれば作り直す）
   ss.toast('シートを用意しました。名簿のB列に氏名、C列に名字のローマ字を入れて、メニューからIDを発行してください。');
 }

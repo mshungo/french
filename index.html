@@ -6,11 +6,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=6">
+<link rel="stylesheet" href="base.css?v=7">
 <title>Naralingo — フランス語練習</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=12"></script>
+<script src="common.js?v=13"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=2"></script>
 </head>
@@ -21,6 +21,8 @@
     <h1 class="brand">Naralingo</h1>
     <div class="eyebrow" style="margin-top:10px">Français · フランス語練習</div>
   </div>
+
+  <div id="notices" aria-live="polite"></div>
 
   <!-- ログイン -->
   <div class="panel hidden" id="loginPanel">
@@ -46,6 +48,7 @@
       <ul>
         <li>IDは自分だけのものです。他の人に教えないでください。</li>
         <li>残るのは自主学習の記録だけで、それ以外の情報は残りません。</li>
+        <li>このサイトはまだ<b>ベータ版</b>です。うまく動かないところや、おかしな問題があれば、ログイン後に各ページの一番下にある「先生に知らせる」から教えてください。</li>
         <li>もし他の人に知られたら、すぐに先生に伝えてください。新しいIDを再発行します。</li>
       </ul>
     </div>
@@ -118,19 +121,22 @@
     var who=u?u.id:"guest";
     function J(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
     var tot={time:0,tries:0,ans:0,cor:0};
+    var SV=(Q.cached()||{}).apps||{};
+    function best(loc,k){var s=SV[k];if(s&&s.tries&&(!loc||!loc.tries||s.tries>loc.tries))return {tries:s.tries,answered:s.answered,correct:s.correct,timeMs:s.timeMs||0,lv:loc&&loc.lv};return loc;}
     function addTot(x){if(!x||!x.tries)return;tot.time+=x.timeMs||0;tot.tries+=x.tries;tot.ans+=x.answered||0;tot.cor+=x.correct||0;}
     // 動詞活用
-    var cj=u?J("conjQuizStats_v4_"+u.id):J("conjQuizStats_v4");addTot(cj);
+    var cj=u?J("conjQuizStats_v4_"+u.id):J("conjQuizStats_v4");if(u)cj=best(cj,"conj");addTot(cj);
     function bN(x){return x&&x.badges?Object.keys(x.badges).length:0;}
     function bTag(k){return k&&window.Badge?'<span class="bdg-mini" style="display:flex;justify-content:flex-end;margin-top:3px">'+Badge.seal({kind:"sec",on:true,color:"#c0a06a",size:13})+'バッジ '+k+'</span>':"";}
     $("stConj").innerHTML=(cj&&cj.tries)?(cj.tries+"回<small>正答率 "+Math.round(cj.correct/cj.answered*100)+"%"+(cj.timeMs?" ・ "+fmtDur(cj.timeMs):"")+"</small>"):"";
     // 会話練習
-    var t=J("talkQuiz_v1_"+who);addTot(t);
+    var t=J("talkQuiz_v1_"+who);if(u)t=best(t,"talk");addTot(t);
     if(t&&t.tries){var m=0;for(var k in (t.lv||{}))if(t.lv[k]>=4)m++;
       $("stTalk").innerHTML=t.tries+"回<small>習得 "+m+"/100"+(t.timeMs?" ・ "+fmtDur(t.timeMs):"")+bTag(bN(t))+"</small>";}else{$("stTalk").innerHTML="";}
     // 文法練習（Leçon 1〜6）
-    var gT=0,clr=0,gt=0,gb=0;
-    for(var n=1;n<=6;n++){var g=J("gramQuiz_L"+n+"_v1_"+who);addTot(g);gb+=bN(g);if(g&&g.tries){gT+=g.tries;gt+=g.timeMs||0;if(g.answered>=300)clr++;}}
+    var gT=0,clr=0,gt=0,gb=0,gA=0,gC=0;
+    for(var n=1;n<=6;n++){var g=J("gramQuiz_L"+n+"_v1_"+who);addTot(g);gb+=bN(g);if(g&&g.tries){gT+=g.tries;gt+=g.timeMs||0;gA+=g.answered||0;gC+=g.correct||0;if(g.answered>=300)clr++;}}
+    var sg=SV.grammar;if(u&&sg&&sg.tries>gT){tot.time+=(sg.timeMs||0)-gt;tot.tries+=sg.tries-gT;tot.ans+=sg.answered-gA;tot.cor+=sg.correct-gC;gT=sg.tries;gt=sg.timeMs||0;}
     $("stGram").innerHTML=gT?(gT+"回<small>クリア "+clr+"/6"+(gt?" ・ "+fmtDur(gt):"")+bTag(gb)+"</small>"):"";
     $("sTime").textContent=fmtDur(tot.time);$("sTries").textContent=tot.tries;$("sAns").textContent=tot.ans;
     $("sAcc").textContent=tot.ans?Math.round(tot.cor/tot.ans*100)+"%":"—";
@@ -164,6 +170,27 @@
          r.error==="server"?"サーバー側でエラーが出ました（"+(r.detail||"")+"）。"+v:
          "IDかパスワードが違います。入力を確認してください。");
   }
+  /* お知らせ（先生がスプレッドシート「お知らせ」で出したもの）。× で閉じると、同じ文はこの端末では出さない */
+  function nHash(s){var h=5381;for(var i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return h.toString(36);}
+  function nEsc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}).replace(/\n/g,"<br>");}
+  function renderNotices(list){
+    var box=$("notices"),h="";
+    (list||[]).forEach(function(n){
+      var k="nlNoticeHide_"+nHash(n.kind+n.text),hid=false;try{hid=!!localStorage.getItem(k);}catch(e){}
+      if(hid)return;
+      var cls=n.kind==="障害"?"ng":n.kind==="注意"?"warn":"info";
+      h+='<div class="notice '+cls+'" data-k="'+k+'"><span class="nk">'+nEsc(n.kind)+'</span><div class="nt">'+nEsc(n.text)+'</div>'+
+        '<button class="nx" type="button" aria-label="閉じる">×</button></div>';
+    });
+    box.innerHTML=h;
+    box.querySelectorAll(".nx").forEach(function(b){b.onclick=function(){var el=b.parentNode;try{localStorage.setItem(el.dataset.k,"1");}catch(e){}el.remove();};});
+  }
+  (function(){
+    var url=(window.QUIZ_CONFIG||{}).SCRIPT_URL;if(!url||!window.fetch)return;
+    var ctl=window.AbortController?new AbortController():null;if(ctl)setTimeout(function(){ctl.abort();},15000);
+    fetch(url+(url.indexOf("?")<0?"?":"&")+"n=1",ctl?{signal:ctl.signal}:{}).then(function(r){return r.json();}).then(function(j){renderNotices(j.notices);}).catch(function(){});
+  })();
+
   $("idBtn").addEventListener("click",doLogin);
   $("idInput").addEventListener("keydown",function(e){if(e.key==="Enter")$("pwInput").focus();});
   $("pwInput").addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});
