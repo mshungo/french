@@ -120,7 +120,7 @@
       var by={},days={};
       if(G){Object.keys(G.apps||{}).forEach(function(k){var a=G.apps[k];by[k]={n:a.n,q:a.q,c:a.c,d:a.dur};});days=G.dayCount||{};}
       else H.forEach(function(x){var a=by[x.app]=by[x.app]||{n:0,q:0,c:0,d:0};a.n++;a.q+=x.total;a.c+=x.score;a.d+=x.dur||0;days[x.t.slice(0,10)]=1;});
-      var sum=[["氏名",u.name],["学生ID",u.id],["保存した日",Q.todayJST()],["学習した日数",Object.keys(days).length],[],["教材","回数","解答数","正答率","学習時間（分）"]];
+      var sum=[["名前",u.name],["学生ID",u.id],["保存した日",Q.todayJST()],["学習した日数",Object.keys(days).length],[],["教材","回数","解答数","正答率","学習時間（分）"]];
       var foot=["（「学習記録」シートは最近の "+H.length+" ラウンド。まとめは全期間）"];
       ["conj","grammar","talk"].forEach(function(k){var a=by[k]||{n:0,q:0,c:0,d:0};sum.push([APP[k],a.n,a.q,a.q?Math.round(a.c/a.q*100)/100:"",Math.round(a.d/6)/10]);});
       sum.push([]);sum.push(foot);

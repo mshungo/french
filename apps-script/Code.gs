@@ -12,7 +12,12 @@
  *     メニューが出ないときは、Apps Script の「プロジェクトの設定 > スクリプト プロパティ」に PASSWORD を直接追加してもよい。
  *     大文字・小文字と全角・半角は区別しない。変えると、全員がログインし直しになる。
  *     練習用ID（NARAF26）はサイト側だけで動き、ここには何も送られない。
- *  5. 学生を追加するとき: シート「名簿」のB列に氏名、C列に名字のローマ字（例：MORITA）を書き、
+ *  5. 登録フォームを使うとき: フォームの回答先をこのスプレッドシートの「フォーム回答」シート（タイムスタンプ／氏名／希望ID／ニックネーム）にして、
+ *     メニュー「活用クイズ > フォーム回答を名簿に反映（以後は自動）」を一度実行する。
+ *     希望ID→名簿A、ニックネーム→名簿B（アプリに出る名前）、氏名→名簿F（先生用。アプリには出ない）に写る。
+ *     IDの形が使えない・ほかの人と重複などで写せなかった行は、「フォーム回答」の「名簿への反映」列に理由が出る。
+ *     同じ氏名・同じIDで出し直すと、ニックネームだけ更新される。
+ *     手で追加するとき: シート「名簿」のB列に名前、C列に名字のローマ字（例：MORITA）を書き、
  *     メニュー「活用クイズ > 名簿の空欄にIDを発行」を実行する → A列に「名字＋英数字4文字」のID（例：MORITA7K3Q）が入る。
  *     IDが漏れたときは、A列のIDを消して再発行すれば、古いIDは使えなくなる（記録は古いIDのまま残る）。
  *     そのIDを学生に伝える。いつでも追加できる。
@@ -22,7 +27,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-07f';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-07g';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
@@ -734,6 +739,7 @@ function onOpen() {
     .addItem('初期設定（シート作成）', 'setup')
     .addItem('名簿の空欄にIDを発行', 'issueIds')
     .addItem('共通パスワードを設定', 'setPassword')
+    .addItem('フォーム回答を名簿に反映（以後は自動）', 'syncFormFromMenu')
     .addSeparator()
     .addItem('毎日の自動バックアップを有効にする', 'enableDailyBackup')
     .addItem('今すぐバックアップ', 'backupFromMenu')
@@ -751,7 +757,7 @@ function setup() {
   ss.setSpreadsheetTimeZone(TZ);
 
   const roster = ensureSheet_(ss, SHEET.roster, null);
-  roster.getRange(1, 1, 1, 5).setValues([['学生ID', '氏名', '名字（ローマ字）', 'メモ(任意)', '最終ログイン']]).setFontWeight('bold');
+  roster.getRange(1, 1, 1, 6).setValues([['学生ID', NICK_HEADER, '名字（ローマ字）', 'メモ(任意)', '最終ログイン', REAL_HEADER]]).setFontWeight('bold');
   roster.setFrozenRows(1);
   roster.getRange(2, 1, 500, 1).setNumberFormat('@');
   resultsSheet_(ss);
@@ -816,6 +822,114 @@ function issueIds() {
   ss.toast(n + '人分のIDを発行しました。' + (skipped ? '（C列の名字ローマ字が空の ' + skipped + ' 行は発行していません）' : ''));
 }
 
+
+// ===== 登録フォームの回答 → 名簿 =====
+// 先生が作ったGoogleフォームの回答シート（タイムスタンプ／氏名／希望ID／ニックネーム）を名簿に写す。
+//   希望ID → 名簿A「学生ID」
+//   ニックネーム → 名簿B（アプリに出る名前。空欄ならIDを表示）
+//   氏名 → 名簿F「氏名（本名）」（先生用。アプリには出さない）
+// 回答シートの右端「名簿への反映」に結果を書く。ここが空の行だけを処理するので、何度実行しても二重にはならない。
+const FORM_SHEET = 'フォーム回答';
+const FORM_STATUS = '名簿への反映';
+const REAL_NAME_COL = 6;
+const NICK_HEADER = 'ニックネーム（アプリに表示）';
+const REAL_HEADER = '氏名（本名・アプリには出ない）';
+
+function formCols_(head) {
+  const h = head.map(function (x) { return String(x).replace(/\s/g, ''); });
+  const has = function (k) { return h.findIndex(function (x) { return x.indexOf(k) >= 0; }); };
+  return {
+    real: h.findIndex(function (x) { return x.indexOf('氏名') >= 0 && x.indexOf('ニックネーム') < 0; }),
+    id: has('希望ID'), nick: has('ニックネーム'),
+    status: h.indexOf(FORM_STATUS)
+  };
+}
+function formSheet_(ss) {
+  const s0 = ss.getSheetByName(FORM_SHEET);
+  if (s0) return s0;
+  return ss.getSheets().find(function (sh) {
+    if (sh.getLastRow() < 1 || sh.getLastColumn() < 1) return false;
+    const c = formCols_(sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0]);
+    return c.id >= 0 && c.nick >= 0;
+  }) || null;
+}
+function cleanNick_(s) {
+  return safe_(String(s == null ? '' : s).normalize('NFKC').replace(/[<>]/g, '').replace(/\s+/g, ' '), 20);
+}
+
+// 回答のうち未処理の行を名簿に写す。戻り値 { added, updated, ng, msgs }
+function syncFormToRoster_(ss) {
+  return withLock_(30000, function () {
+    const out = { added: 0, updated: 0, ng: 0 };
+    const fs = formSheet_(ss);
+    if (!fs || fs.getLastRow() < 2) return out;
+    let head = fs.getRange(1, 1, 1, fs.getLastColumn()).getValues()[0];
+    let c = formCols_(head);
+    if (c.id < 0) return out;
+    if (c.status < 0) { c.status = head.length; fs.getRange(1, c.status + 1).setValue(FORM_STATUS).setFontWeight('bold'); }
+    const n = fs.getLastRow() - 1;
+    const rows = fs.getRange(2, 1, n, Math.max(head.length, c.status + 1)).getValues();
+
+    const rs = ss.getSheetByName(SHEET.roster) || ensureSheet_(ss, SHEET.roster, null);
+    if (String(rs.getRange(1, 2).getValue()).trim() === '氏名' || !String(rs.getRange(1, 2).getValue()).trim()) rs.getRange(1, 2).setValue(NICK_HEADER).setFontWeight('bold');
+    if (!String(rs.getRange(1, REAL_NAME_COL).getValue()).trim()) rs.getRange(1, REAL_NAME_COL).setValue(REAL_HEADER).setFontWeight('bold');
+    let last = rs.getLastRow();
+    const roster = last >= 2 ? rs.getRange(2, 1, last - 1, REAL_NAME_COL).getValues() : [];
+    const byId = {};
+    roster.forEach(function (r, i) { const x = normId_(r[0]); if (x) byId[x] = i; });
+    const nk = function (s) { return String(s || '').normalize('NFKC').replace(/\s+/g, ''); };
+    const stamp = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd');
+    const status = [];
+    let touched = false;
+
+    rows.forEach(function (r) {
+      const done = String(r[c.status] || '').trim();
+      if (done) { status.push([done]); return; }
+      const raw = String(r[c.id] == null ? '' : r[c.id]).trim();
+      const real = safe_(c.real >= 0 ? String(r[c.real] || '').normalize('NFKC').replace(/\s+/g, ' ') : '', 40);
+      const nick = c.nick >= 0 ? cleanNick_(r[c.nick]) : '';
+      if (!raw && !real) { status.push(['']); return; }
+      touched = true;
+      const id = normId_(raw);
+      if (!ID_RE.test(id)) { out.ng++; status.push(['未反映：IDの形が使えない（半角英数字3〜20文字）']); return; }
+      if (id === PRACTICE_ID) { out.ng++; status.push(['未反映：練習用IDと同じ']); return; }
+      if (byId[id] != null) {
+        const i = byId[id], row = roster[i];
+        if (real && nk(row[REAL_NAME_COL - 1]) === nk(real)) {   // 同じ人の出し直し → ニックネームだけ更新
+          if (String(row[1]) !== nick) { rs.getRange(i + 2, 2).setValue(nick); row[1] = nick; out.updated++; status.push(['反映済み：ニックネームを更新']); }
+          else status.push(['反映済み（同じ内容）']);
+          return;
+        }
+        out.ng++; status.push(['未反映：このIDはほかの人が使用中']); return;
+      }
+      last = Math.max(last, 1) + 1;
+      rs.getRange(last, 1).setNumberFormat('@');
+      rs.getRange(last, 1, 1, REAL_NAME_COL).setValues([[id, nick, '', 'フォーム登録 ' + stamp, '', real]]);
+      roster.push([id, nick, '', '', '', real]); byId[id] = roster.length - 1;
+      out.added++;
+      status.push(['反映済み' + (nick ? '' : '（ニックネーム空欄：アプリではIDを表示）')]);
+    });
+    if (touched) fs.getRange(2, c.status + 1, status.length, 1).setValues(status);
+    return out;
+  });
+}
+
+// フォームが送られたとき（インストール型トリガー）
+function onFormToRoster(e) {
+  syncFormToRoster_(SpreadsheetApp.getActiveSpreadsheet());
+}
+
+// メニューから：いまある回答を名簿に写し、以後は送信のたびに自動で写す
+function syncFormFromMenu() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!formSheet_(ss)) { ss.toast('「' + FORM_SHEET + '」シート（希望ID・ニックネームの列）が見つかりません。', '名簿への反映', 8); return; }
+  const has = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === 'onFormToRoster'; });
+  if (!has) ScriptApp.newTrigger('onFormToRoster').forSpreadsheet(ss).onFormSubmit().create();
+  const r = syncFormToRoster_(ss);
+  ss.toast('追加 ' + r.added + ' 件、ニックネーム更新 ' + r.updated + ' 件' +
+    (r.ng ? '、未反映 ' + r.ng + ' 件（「' + FORM_SHEET + '」の「' + FORM_STATUS + '」列を見てください）' : '') +
+    '。以後はフォームが送られるたびに自動で反映します。', '名簿への反映', 10);
+}
 
 // ===== 名簿の入力補助・点検 =====
 // 名簿のA列にIDを手入力したら、自動で半角・大文字にそろえる
