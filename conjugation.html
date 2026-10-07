@@ -6,7 +6,7 @@
 <title>動詞活用 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=17"></script>
+<script src="common.js?v=18"></script>
 <script src="feedback.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -356,7 +356,6 @@
     </div>
     <button class="start-btn summary" data-verb=""><i>★</i><span class="sb-name">総まとめ（4動詞ミックス）</span><span class="sb-time" data-sec="mix"></span></button>
 
-    <button class="mini-reset" id="resetBtn">記録をリセット</button>
   </div>
 
   <!-- ===== QUIZ ===== -->
@@ -473,15 +472,20 @@ const SUBJ={
 const SENT={
   "être":[
     {pred:" étudiant.",          jp:"学生です。",            subs:["je","tu","il"]},
-    {pred:" très fatigué.",      jp:"とても疲れている。",     subs:["je","tu","il","elle"]},
+    {pred:" étudiante.",         jp:"学生です。",            subs:["je","tu","elle"]},
+    {pred:" très fatigué.",      jp:"とても疲れている。",     subs:["je","tu","il"]},
+    {pred:" très fatiguée.",     jp:"とても疲れている。",     subs:["je","tu","elle"]},              /* 女性主語は形容詞も女性形 */
     {pred:" en retard.",         jp:"遅刻している。",         subs:["je","tu","il","elle","nous","vous","ils","elles"]},
     {pred:" très gentil.",       jp:"とても親切だ。",         subs:["tu","il","vous"]},
     {pred:" médecin.",           jp:"医者だ。",               subs:["je","tu","il","elle","vous"]},
     {pred:" prêt.",              jp:"準備ができている。",     subs:["je","tu","il"]},
-    {pred:" prêts.",             jp:"準備ができている。",     subs:["nous","ils","elles","vous"]},
+    {pred:" prête.",             jp:"準備ができている。",     subs:["je","tu","elle"]},
+    {pred:" prêts.",             jp:"準備ができている。",     subs:["nous","ils"]},
+    {pred:" prêtes.",            jp:"準備ができている。",     subs:["elles"]},
     {pred:" français.",          jp:"フランス人だ。",         subs:["je","tu","il","vous"]},
     {pred:" en avance.",         jp:"早く着いている。",       subs:["je","tu","il","elle","nous","vous","ils","elles"]},
     {pred:" content.",           jp:"満足している。",         subs:["je","tu","il"]},
+    {pred:" contente.",          jp:"満足している。",         subs:["je","tu","elle"]},
     {pred:" contents.",          jp:"満足している。",         subs:["nous","ils"]},
     {pred:" dans le jardin.",    jp:"庭にいる。",             subs:["il","elle","nous","ils","elles"]},
     {pred:" à Nara.",            jp:"奈良にいる。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
@@ -494,7 +498,7 @@ const SENT={
     {pred:" à l'école à pied.",  jp:"歩いて学校へ行く。",     subs:["je","tu","il","elle","nous","ils","elles"]},
     {pred:" au travail.",        jp:"仕事に行く。",           subs:["je","tu","il","elle","nous","vous","ils","elles"]},
     {pred:" chez le médecin.",   jp:"医者へ行く。",           subs:["je","tu","il","elle","nous","vous"]},
-    {pred:" ensemble.",          jp:"一緒に行く。",           subs:["nous","ils","elles","vous"]},
+    {pred:" ensemble.",          jp:"一緒に行く。",           subs:["nous","ils","elles"]},
     {pred:" au cinéma ce soir.", jp:"今夜映画に行く。",       subs:["je","tu","il","elle","nous","ils","elles"]},
     {pred:" où ?",               jp:"どこへ行くの？",         subs:["tu","il","vous","ils"]},
     {pred:" à la gare ?",        jp:"駅へ行くの？",           subs:["tu","il","vous"]},
@@ -1008,11 +1012,7 @@ document.getElementById("againBtn").addEventListener("click",()=>startRound(curV
 document.getElementById("retryBtn").addEventListener("click",startRetry);
 document.getElementById("backBtn").addEventListener("click",goHome);
 document.getElementById("toHomeBtn").addEventListener("click",goHome);
-document.getElementById("resetBtn").addEventListener("click",()=>{
-  const keepTA=store.timeAttack;   // 設定は保持
-  store={tries:0,answered:0,correct:0,best:null,bestTimes:{},timeAttack:keepTA,days:[]};
-  SECTIONS.forEach(s=>store.bestTimes[s]=null);save();renderHome();
-});
+/* 記録のリセットは学生側ではできない（必要なときは先生がサーバー側で対応する） */
 
 /* ============================================================
    共通ログイン（common.js）との連携

@@ -20,9 +20,9 @@
         { n: "②", p: "Je m'appelle Camille. Comment tu t'appelles ?", pj: "私はカミーユ。お名前は？", task: "名前を言おう", ex: "Je m'appelle Sakura.", tp: ["(Moi,) je m'appelle {name}."] },
         { n: "③", p: { f: "Enchantée ! Ça va ?", m: "Enchanté ! Ça va ?" }, pj: "はじめまして！元気？", task: "「元気だよ、ありがとう。君は？」と返そう", ex: "Oui, ça va bien, merci. Et toi ?", tp: CAVA },
         { n: "④", p: "Moi, ça va, merci ! D'où viens-tu ?", pj: "私は元気だよ、ありがとう！どこから来たの？", task: "出身地を言おう", ex: "Je viens de Nara.", tp: ["(Moi,) je viens de {place}."] },
-        { n: "⑤", p: "Ah bon ? Moi, je viens de Lyon. C'est quoi, la spécialité là-bas ?", pj: "へえ、そうなの？私はリヨンから来たよ。そこの名物は何？", task: "出身地の名物を言おう", ex: "La spécialité, c'est les kakis.", tp: ["(La) spécialité, c'est {x}.", "C'est {x}."] },
+        { n: "⑤", p: "Ah bon ? Moi, je viens de Lyon. C'est quoi, la spécialité là-bas ?", pj: "へえ、そうなの？私はリヨンから来たよ。そこの名物は何？", task: "出身地の名物を言おう", ex: "La spécialité, c'est les kakis.", tp: ["(La spécialité,) c'est {x}."] },
         { n: "⑥", p: "C'est génial ! À Lyon, la spécialité, c'est la quenelle. Et là-bas, il y a quelque chose à voir ?", pj: "すごいね！リヨンの名物はクネル（魚のすり身料理）だよ。そこには見るところある？", task: "見どころを言おう", ex: "Oui, il y a des cerfs.", tp: ["(Oui,) il y a {x}.", "(Oui,) à {place}, il y a {x}."] },
-        { n: "⑦", p: "Super ! C'est quand ton anniversaire ?", pj: "いいね！誕生日はいつ？", task: "誕生日を言おう", ex: "Mon anniversaire, c'est le 5 mars.", tp: ["(Mon) (anniversaire,) c'est le {day} {month}."] },
+        { n: "⑦", p: "Super ! C'est quand ton anniversaire ?", pj: "いいね！誕生日はいつ？", task: "誕生日を言おう", ex: "Mon anniversaire, c'est le 5 mars.", tp: ["(Mon anniversaire,) c'est le {day} {month}."] },
         { n: "⑧", p: "Moi, c'est le 14 juillet ! Tu as quel âge ?", pj: "私は7月14日（フランスの革命記念日）！何歳？", task: "年齢を言おう", ex: "J'ai 19 ans.", tp: ["(Moi,) j'ai {num} ans."] },
         { n: "⑨", p: "Moi, j'ai vingt ans. Qu'est-ce que tu aimes ?", pj: "私は20歳。何が好き？", task: "好きなものを言おう（嫌いなものも言えたら◎）", ex: "J'aime les chats. Je n'aime pas les insectes.", tp: ["(Moi,) j'aime {x}.", "(Moi,) j'aime {x}. (Mais) je n'aime pas {y}."] },
         { n: "⑩", p: "Ah bon ? Moi, j'aime la musique. Tu es japonaise ?", pj: "へえ、そうなの？私は音楽が好き。日本人？", task: "「はい」か「いいえ」で答えよう", ex: "Oui, je suis japonaise.", tp: ["Oui, je suis japonaise.", "Non, je ne suis pas japonaise."] },
@@ -45,8 +45,8 @@
       turns: [
         { n: "③", p: "Salut ! Ça va ?", pj: "やあ！元気？", task: "「元気だよ、ありがとう。君は？」と返そう", ex: "Oui, ça va bien, merci. Et toi ?", tp: CAVA },
         { n: "⑮", p: "Moi, ça va ! Quelle heure est-il ?", pj: "私は元気！いま何時？", task: "時刻を言おう（いまの時刻でも、好きな時刻でもOK）", ex: "Il est neuf heures et demie.", tp: ["Il est {num} heure|heures {opt}.", "Il est midi|minuit {opt}."] },
-        { n: "⑯", p: "Merci ! Qu'est-ce que tu vas faire ce week-end ?", pj: "ありがとう！今週末、何をするの？", task: "週末の予定を言おう（Je vais ＋ 動詞）", ex: "Je vais travailler au café.", tp: ["(Ce) (week-end,) je vais {long}."] },
-        { n: "⑰", p: "Ah bon ? Moi, je vais aller au cinéma. Où es-tu allée pendant les vacances ?", pj: "へえ、そうなの？私は映画館に行くよ。夏休みはどこへ行ったの？", task: "夏休みに行った場所を言おう", ex: "Je suis allée à Kyoto.", tp: ["(Pendant) (les) (vacances,) je suis allée {prep} {place}."] },
+        { n: "⑯", p: "Merci ! Qu'est-ce que tu vas faire ce week-end ?", pj: "ありがとう！今週末、何をするの？", task: "週末の予定を言おう（Je vais ＋ 動詞）", ex: "Je vais travailler au café.", tp: ["(Ce week-end,) je vais {long}."] },
+        { n: "⑰", p: "Ah bon ? Moi, je vais aller au cinéma. Où es-tu allée pendant les vacances ?", pj: "へえ、そうなの？私は映画館に行くよ。夏休みはどこへ行ったの？", task: "夏休みに行った場所を言おう", ex: "Je suis allée à Kyoto.", tp: ["(Pendant les vacances,) je suis allée {prep} {place}."] },
         { n: "⑱", p: "C'est génial ! Qu'est-ce que tu as fait ?", pj: "すごいね！何をしたの？", task: "そこで何をしたか言おう（J'ai ＋ 過去分詞）", ex: "J'ai visité un temple.", tp: ["J'ai {long}."] },
         { n: "⑲", p: "Ah, super ! C'était comment ?", pj: "わあ、いいね！どうだった？", task: "どうだったか言おう", ex: "C'était super !", tp: ["C'était {adj}."] },
         { n: "", p: { f: "Génial ! Moi, je suis allée à Paris. C'était super ! Bon, à bientôt !", m: "Génial ! Moi, je suis allé à Paris. C'était super ! Bon, à bientôt !" }, pj: "いいね！私はパリに行ったよ。最高だった！じゃあ、またね！", task: "あいさつして終わろう", ex: "À bientôt !", tp: CLOSE }
@@ -62,16 +62,16 @@
       turns: [
         { n: "①", task: "あいさつしよう", ex: "Bonjour !", tp: ["Bonjour {opt}.", "Salut {opt}."], ans: "Bonjour !", aj: "あいさつを返した", noQuiz: true },
         { n: "②", task: "名前をたずねよう", ex: "Comment tu t'appelles ?", tp: ["Comment tu t'appelles ?", "Comment t'appelles-tu ?", "Tu t'appelles comment ?"], ans: "Je m'appelle Camille.", aj: "名前はカミーユ" },
-        { n: "③", task: "「元気？」とたずねよう", ex: "Ça va ?", tp: ["(Et) (toi,) ça va ?", "Tu vas bien ?"], ans: "Oui, ça va bien, merci !", aj: "元気だと答えた", noQuiz: true },
+        { n: "③", task: "「元気？」とたずねよう", ex: "Ça va ?", tp: ["(Et toi,) ça va ?", "Tu vas bien ?"], ans: "Oui, ça va bien, merci !", aj: "元気だと答えた", noQuiz: true },
         { n: "④", task: "どこから来たのかたずねよう", ex: "D'où viens-tu ?", tp: ["D'où viens-tu ?", "Tu viens d'où ?", "D'où tu viens ?"], ans: "Je viens de Lyon.", aj: "リヨン出身" },
         { n: "⑤", task: "その町の名物をたずねよう", ex: "C'est quoi, la spécialité là-bas ?", tp: ["C'est quoi, la spécialité (là-bas) ?", "Quelle est la spécialité (là-bas) ?"], ans: "La spécialité, c'est la quenelle.", aj: "名物はクネル" },
-        { n: "⑥", task: "「リヨンには見るところある？」とたずねよう", ex: "À Lyon, il y a quelque chose à voir ?", tp: ["(À) (Lyon,) il y a quelque chose à voir {opt} ?", "Qu'est-ce qu'il y a à voir {opt} ?"], ans: "Oui, il y a la basilique de Fourvière.", aj: "大きな教会（フルヴィエール大聖堂）がある" },
+        { n: "⑥", task: "「リヨンには見るところある？」とたずねよう", ex: "À Lyon, il y a quelque chose à voir ?", tp: ["(À Lyon,) il y a quelque chose à voir {opt} ?", "Qu'est-ce qu'il y a à voir {opt} ?"], ans: "Oui, il y a la basilique de Fourvière.", aj: "大きな教会（フルヴィエールのバジリカ聖堂）がある" },
         { n: "⑦", task: "誕生日をたずねよう", ex: "C'est quand ton anniversaire ?", tp: ["C'est quand, ton anniversaire ?", "Ton anniversaire, c'est quand ?", "Quand est ton anniversaire ?"], ans: "Mon anniversaire, c'est le 14 juillet.", aj: "誕生日は7月14日" },
         { n: "⑧", task: "年齢をたずねよう", ex: "Tu as quel âge ?", tp: ["Tu as quel âge ?", "Quel âge as-tu ?"], ans: "J'ai vingt ans.", aj: "20歳" },
         { n: "⑨", task: "何が好きかたずねよう", ex: "Qu'est-ce que tu aimes ?", tp: ["Qu'est-ce que tu aimes {opt} ?", "Tu aimes quoi ?"], ans: "J'aime la musique. Je n'aime pas les insectes.", aj: "音楽が好きで、虫はきらい" },
-        { n: "⑩", task: "「フランス人？」とたずねよう", ex: { f: "Tu es française ?", m: "Tu es français ?" }, tp: ["Tu es française ?", "Est-ce que tu es française ?"], ans: { f: "Oui, je suis française.", m: "Oui, je suis français." }, aj: "フランス人だ" },
+        { n: "⑩", task: "「フランス人？」とたずねよう", ex: { f: "Tu es française ?", m: "Tu es français ?" }, tp: ["Tu es française ?", "Est-ce que tu es française ?", "Tu es français ?", "Est-ce que tu es français ?"], ans: { f: "Oui, je suis française.", m: "Oui, je suis français." }, aj: "フランス人だ" },
         { n: "⑪", task: "どんな性格かたずねよう", ex: "Quel est ton caractère ?", tp: ["Quel est ton caractère ?", "Tu es comment ?"], ans: { f: "Je suis bavarde.", m: "Je suis bavard." }, aj: "おしゃべりな性格" },
-        { n: "⑫", task: "「君は優しいと思う」と言おう", ex: { f: "Je pense que tu es gentille.", m: "Je pense que tu es gentil." }, tp: ["Je pense que tu es gentille."], ans: "Merci, c'est gentil !", aj: "ありがとう、と喜んだ", noQuiz: true },
+        { n: "⑫", task: "「君は優しいと思う」と言おう", ex: { f: "Je pense que tu es gentille.", m: "Je pense que tu es gentil." }, tp: ["Je pense que tu es gentille.", "Je pense que tu es gentil."], ans: "Merci, c'est gentil !", aj: "ありがとう、と喜んだ", noQuiz: true },
         { n: "⑬", task: "兄弟姉妹がいるかたずねよう", ex: "Tu as des frères et sœurs ?", tp: ["(Est-ce que) tu as des frères et sœurs ?"], ans: "Oui, j'ai un frère.", aj: "兄か弟が一人いる" },
         { n: "⑬", task: "その人の性格をたずねよう", ex: "Quel est son caractère ?", tp: ["Quel est son caractère ?", "Il est comment ?"], ans: "Il est très sérieux.", aj: "その人はとてもまじめ" },
         { n: "⑭", task: "何に興味があるかたずねよう", ex: "À quoi t'intéresses-tu ?", tp: ["À quoi t'intéresses-tu ?", "Tu t'intéresses à quoi ?"], ans: "Je m'intéresse au Japon.", aj: "日本に興味がある" }
@@ -149,6 +149,19 @@
     });
     return (parsed[raw] = toks);
   }
+  /* ( ) のまとまりは「全部言う」か「全部言わない」かのどちらか。組み合わせごとの型に広げる（最大 2^4 通り） */
+  const expanded = {};
+  function expandTp(raw) {
+    if (expanded[raw]) return expanded[raw];
+    const groups = raw.match(/\([^()]*\)/g) || [];
+    let out = [raw];
+    groups.slice(0, 4).forEach(g => {
+      const next = [];
+      out.forEach(r => { next.push(r.replace(g, g.slice(1, -1))); next.push(r.replace(g, "")); });
+      out = next;
+    });
+    return (expanded[raw] = out.map(r => r.replace(/\s+/g, " ").replace(/^\s*[,.]\s*/, "").trim()));
+  }
   const INS = 0.5, BAD = 9;
   /* 1つの型と、聞き取った語の列を照合。cost が小さいほど良い。path で語ごとの判定を返す */
   function matchTp(tp, A) {
@@ -185,10 +198,12 @@
     alts.forEach(said => {
       const tk = tokenize(said), A = tk.A;
       tps.forEach(tp => {
-        const raw = typeof tp === "string" ? tp : tp.t, tag = typeof tp === "string" ? "" : tp.tag;
-        const r = matchTp(raw, A);
-        const score = r.cost / Math.max(1, allowed(r.fixed));
-        if (!best || score < best.score) best = Object.assign(r, { score, said, A, raw, tag, orig: tk.orig, src: tk.src });
+        const raw0 = typeof tp === "string" ? tp : tp.t, tag = typeof tp === "string" ? "" : tp.tag;
+        expandTp(raw0).forEach(raw => {
+          const r = matchTp(raw, A);
+          const score = r.cost / Math.max(1, allowed(r.fixed));
+          if (!best || score < best.score) best = Object.assign(r, { score, said, A, raw: raw0, tag, orig: tk.orig, src: tk.src });
+        });
       });
     });
     best.ok = best.cost <= allowed(best.fixed) + 1e-9;

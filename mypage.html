@@ -6,14 +6,14 @@
 <title>学習記録 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=17"></script>
+<script src="common.js?v=18"></script>
 <script src="feedback.js?v=2"></script>
-<script src="coach.js?v=2"></script>
-<script src="card.js?v=3"></script>
+<script src="coach.js?v=4"></script>
+<script src="card.js?v=5"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=11">
+<link rel="stylesheet" href="base.css?v=12">
 <style>
   /* 読み込み中 */
   .sync-note{margin:0 0 10px;font-size:11.5px;color:var(--ink-soft);text-align:center;}
@@ -58,7 +58,35 @@
   .recent .d{flex:none;width:96px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
   .recent .a{flex:1;min-width:0;}
   .recent .s{flex:none;font-variant-numeric:tabular-nums;color:var(--ink);}
+  .nick{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-2px 0 6px;font-size:12.5px;color:var(--ink-soft);}
+  .nick b{color:var(--ink);font-weight:500;}
+  .nick button{border:1px solid var(--card-edge);background:#fff;border-radius:14px;padding:4px 11px;font:inherit;font-size:12px;color:var(--accent-ink);cursor:pointer;}
+  .nick input{flex:1 1 140px;min-width:0;padding:7px 10px;border:1px solid var(--card-edge);border-radius:10px;font:inherit;font-size:16px;}
+  .nick .nk-msg{flex-basis:100%;font-size:11.5px;}
   .msg-box{font-size:13px;color:var(--ink-soft);line-height:1.8;}
+  .pg{font-size:12.5px;}
+  .pg-h{display:flex;align-items:baseline;gap:8px;margin:14px 0 6px;color:var(--ink);font-weight:500;}
+  .pg-h b{font-size:18px;color:var(--accent-ink);font-variant-numeric:tabular-nums;}
+  .pg-h small{color:var(--ink-soft);font-weight:400;font-size:11.5px;}
+  .pg-row{display:flex;align-items:center;gap:10px;padding:4px 0;}
+  .pg-l{flex:none;width:76px;color:var(--ink-soft);font-size:12px;}
+  .pg-bar{flex:1;display:flex;height:10px;border-radius:6px;background:#efe6df;overflow:hidden;}
+  .pg-bar span{display:block;height:100%;}
+  .pg-m{background:#6f9d80;} .pg-c{background:rgba(111,157,128,.5);} .pg-o{background:rgba(111,157,128,.22);}
+  .pg-v{flex:none;width:86px;text-align:right;line-height:1.2;}
+  .pg-v b{display:block;font-size:13.5px;font-variant-numeric:tabular-nums;}
+  .pg-v small{color:var(--ink-faint);font-size:10.5px;}
+  .pg-leg{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:10.5px;color:var(--ink-soft);margin:6px 0 2px;}
+  .pg-leg i{display:inline-block;width:12px;height:8px;border-radius:2px;margin-left:6px;}
+  .pg-dl{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .pg-d{display:flex;justify-content:space-between;gap:6px;padding:7px 10px;border:1px solid var(--card-edge);border-radius:10px;background:#fff;font-size:12px;}
+  .pg-d b{font-variant-numeric:tabular-nums;} .pg-d em{font-style:normal;color:var(--ink-faint);font-weight:400;}
+  .pg-rk{display:flex;gap:6px;}
+  .pg-rk div{flex:1;text-align:center;padding:6px 2px;border:1px solid var(--card-edge);border-radius:10px;background:#fff;}
+  .pg-rk span{display:block;font-size:11px;color:var(--ink-soft);font-style:italic;}
+  .pg-rk b{font-size:17px;color:var(--ink-faint);}
+  .pg-rk .on b{color:#c97f9b;}
+  .pg-note{margin-top:10px;font-size:11px;color:var(--ink-faint);line-height:1.6;}
   .card-box{margin-top:6px;}
   .card-img{border-radius:18px;overflow:hidden;border:1px solid var(--card-edge);background:#f8f1ea;min-height:120px;box-shadow:0 18px 40px -28px rgba(90,60,70,.55);}
   .card-img img{display:block;width:100%;height:auto;}
@@ -84,6 +112,7 @@
   <div class="panel">
     <div class="bar"><a class="link" href="index.html">← メニュー</a><div class="streak" id="streak"></div></div>
     <p class="hello" id="hello" style="margin-top:14px">読み込み中…</p>
+    <div class="nick" id="nickRow"></div>
     <div id="body"></div>
   </div>
 </div>
@@ -106,6 +135,27 @@
   if(!Q.SYNC_ON||!u){$("hello").textContent="学習記録";$("body").innerHTML='<p class="msg-box">記録の送信が有効になっていないため、ここには表示できません。</p>';return;}
   if(u.practice){$("hello").textContent="学習記録";$("body").innerHTML='<p class="msg-box">練習用IDでは、学習記録は残りません。自分のIDでログインすると、ここに記録が表示されます。</p>';return;}
   $("hello").innerHTML=esc(u.name&&u.name!==u.id?u.name:"学習記録")+'<small>ID: '+esc(u.id)+'　（学習記録はログインした本人だけが見られます）</small>';
+  /* ニックネーム（画面と成果カードに出る名前）。本名は入れないでね */
+  function nickView(){
+    var has=u.name&&u.name!==u.id;
+    $("nickRow").innerHTML='ニックネーム：'+(has?'<b>'+esc(u.name)+'</b>':'<span>まだありません</span>')+'<button type="button" id="nkEdit">'+(has?'変える':'決める')+'</button>';
+    $("nkEdit").onclick=nickEdit;
+  }
+  function nickEdit(){
+    $("nickRow").innerHTML='<input id="nkIn" maxlength="20" placeholder="ニックネーム（20文字まで・本名はさけてね）" value="'+esc(u.name&&u.name!==u.id?u.name:"")+'">'+
+      '<button type="button" id="nkSave">保存</button><button type="button" id="nkCancel">やめる</button><span class="nk-msg" id="nkMsg"></span>';
+    $("nkIn").focus();$("nkCancel").onclick=nickView;
+    $("nkSave").onclick=function(){
+      var v=$("nkIn").value.trim();if(!v){$("nkMsg").textContent="ニックネームを入れてください。";return;}
+      this.disabled=true;$("nkMsg").textContent="保存しています…";
+      Q.setNick(v).then(function(st){
+        if(st==="ok"){u=Q.user();cardSig="";nickView();$("hello").firstChild&&($("hello").firstChild.nodeValue=u.name);return;}
+        $("nkMsg").textContent=st==="rate"?"変更が多すぎます。しばらくしてからにしてください。":st==="bad"?"使えない文字が入っています。":"保存できませんでした。通信を確かめてください。";
+        $("nkSave").disabled=false;
+      });
+    };
+  }
+  nickView();
   /* 前回の記録があれば、まずそれをすぐ出して、うしろで最新に入れかえる */
   var hc=Q.cachedHistory(),shown=false;
   function syncNote(t,warn){var b=$("body"),n=b.querySelector(".sync-note");if(!t){if(n)n.remove();return;}
@@ -171,25 +221,64 @@
   /* 成果カード：端末に残っている進み具合（文法の達成・会話の習得・ランク・バッジ）と、サーバーの集計から描く */
   function J(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
   var LN={1:108,2:105,3:97,4:124,5:105,6:115};   // 各 Leçon の問題数（grammar.html と同じ）
+  /* 文法1問の達成ポイント（0〜4）。grammar.js と同じ数え方 */
+  function ptOf(x){if(x.pt!=null)return Math.min(4,x.pt);var run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);
+    return (!x.wk&&(((x.wrun||0)>=1&&run>=2)||x.m))?4:(!x.wk&&run>=2)?2:((x.c||0)>0&&x.last===1)?1:0;}
   function rankOf(ms){if(ms==null)return null;var s=ms/1000;return s<=20?"SSS":s<=30?"SS":s<=45?"S":s<=60?"A":s<=120?"B":"C";}
-  function cardData(d){
+  /* 達成度：端末に残っている進み具合から数える（成果カードと「達成度」の欄で使う）
+     文法：1問4点の達成ポイント（選択式の正解＋1点・2点まで、記述式の正解＋2点、4点で習得）
+     会話：覚え具合 ●1〜3＝練習中、●4以上＝習得 */
+  var DLGT={d1:"はじめまして",d2:"週末と夏休み",d3:"インタビュー①〜⑭",d4:"インタビュー⑮〜⑲"};
+  function progress(){
     var id=u.id,badges=0,gram=[];
     for(var n=1;n<=6;n++){
-      var g=J("gramQuiz_L"+n+"_v1_"+id)||{},m=0,ch=0;
-      for(var k in (g.it||{})){var x=g.it[k];if(x.wk)continue;var run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);if((x.wrun||0)>=2||x.m)m++;else if(run>=2)ch++;}
-      var N=(g.sum&&g.sum.n)||LN[n];gram.push({no:n,n:N,m:Math.min(m,N),ch:Math.min(ch,N-Math.min(m,N))});
+      var g=J("gramQuiz_L"+n+"_v1_"+id)||{},m=0,ch=0,once=0,tried=0,pts=0;
+      for(var k in (g.it||{})){var x=g.it[k];if(!((x.c||0)+(x.w||0)))continue;tried++;
+        var pt=ptOf(x);pts+=pt;
+        if(pt>=4&&!x.wk)m++;else if(pt>=2)ch++;else if(pt>=1)once++;}
+      var N=(g.sum&&g.sum.n)||LN[n];
+      gram.push({no:n,n:N,tried:Math.min(tried,N),m:m,ch:ch,once:once,pts:pts,pct:Math.floor(pts/(N*4)*100),rounds:g.tries||0});
       badges+=Object.keys(g.badges||{}).length;
     }
-    var t=J("talkQuiz_v1_"+id)||{},tm=0;for(var k2 in (t.lv||{}))if(t.lv[k2]>=4)tm++;
+    var t=J("talkQuiz_v1_"+id)||{},tm=0,tmid=0,tlow=0,tseen=0,tpts=0;
+    for(var k2 in (t.lv||{})){var lv=t.lv[k2];tpts+=Math.min(4,lv);if(lv>=4)tm++;else if(lv>=2)tmid++;else if(lv>=1)tlow++;}
+    tseen=Object.keys(t.seen||{}).length;
     badges+=Object.keys(t.badges||{}).length;
+    var dl=[];Object.keys(DLGT).forEach(function(k){var r=(t.dlg||{})[k];dl.push({k:k,t:DLGT[k],best:r?r.best:null,total:r?r.total:null,tries:r?r.tries:0});});
     var cj=J("conjQuizStats_v4_"+id)||{},ranks={};
-    ["être","aller","avoir","faire"].forEach(function(v){ranks[v]=rankOf((cj.bestTimes||{})[v]);});
-    var ca=d.byApp.conj;
+    ["être","aller","avoir","faire","mix"].forEach(function(v){ranks[v]=rankOf((cj.bestTimes||{})[v]);});
+    return {gram:gram,talk:{n:100,m:tm,mid:tmid,low:tlow,pct:Math.floor(tpts/400*100),seen:Math.min(tseen,100),rounds:t.tries||0},dlg:dl,conj:{ranks:ranks,rounds:cj.tries||0},badges:badges};
+  }
+  function cardData(d){
+    var P=progress(),ca=d.byApp.conj;
     var st=Q.streak(),q=window.Coach?Coach.pickStory(Math.floor(Date.now()/86400000)):null;
     while(q&&!q.fr)q=Coach.pickStory(Math.floor(Math.random()*1000));
     var now=new Date(),hm=now.toLocaleTimeString("ja-JP",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit",hour12:false});
     return {id:u.id,nick:(u.name&&u.name!==u.id)?u.name:"",stamp:Q.todayJST().replace(/-/g,".")+" "+hm,durSec:d.dur,days:Object.keys(d.days).length,streak:st.n,acc:d.q?Math.round(d.c/d.q*100):null,
-      gram:gram,talk:{m:tm,n:100},conj:{acc:ca&&ca.q?Math.round(ca.c/ca.q*100):null,ranks:ranks},badges:badges,quote:q};
+      gram:P.gram,talk:P.talk,dlg:P.dlg,conj:{acc:ca&&ca.q?Math.round(ca.c/ca.q*100):null,rounds:ca?ca.n:P.conj.rounds,ranks:P.conj.ranks},badges:P.badges,quote:q};
+  }
+  /* 「達成度」の欄（画面） */
+  function bar3(m,ch,once,N){
+    return '<span class="pg-bar"><span class="pg-m" style="width:'+(m/N*100)+'%"></span><span class="pg-c" style="width:'+(ch/N*100)+'%"></span><span class="pg-o" style="width:'+(once/N*100)+'%"></span></span>';
+  }
+  function progressHTML(){
+    var P=progress(),h='<div class="sec-h">達成度</div><div class="pg">';
+    var gN=0,gS=0,gT=0;P.gram.forEach(function(l){gN+=l.n;gS+=l.pts/4;gT+=l.tried;});
+    h+='<div class="pg-h"><span>文法練習</span><b>'+Math.floor(gS/gN*100)+'%</b><small>挑戦 '+gT+' / '+gN+' 問</small></div>';
+    P.gram.forEach(function(l){
+      h+='<div class="pg-row"><span class="pg-l">Leçon '+l.no+'</span>'+bar3(l.m,l.ch,l.once,l.n)+
+        '<span class="pg-v"><b>'+l.pct+'%</b><small>'+(l.tried?'挑戦 '+l.tried+'/'+l.n:'まだ')+'</small></span></div>';
+    });
+    h+='<div class="pg-leg"><i class="pg-m"></i>習得（4点）<i class="pg-c"></i>もう少し（2〜3点）<i class="pg-o"></i>1点</div>';
+    var T=P.talk;
+    h+='<div class="pg-h"><span>会話フレーズ</span><b>'+T.pct+'%</b><small>習得 '+T.m+' / 100（練習中 '+(T.mid+T.low)+'）</small></div>'+
+      '<div class="pg-row"><span class="pg-l">100 フレーズ</span>'+bar3(T.m,T.mid,T.low,100)+'<span class="pg-v"><b>'+T.pct+'%</b><small>挑戦 '+T.seen+'/100</small></span></div>';
+    h+='<div class="pg-h"><span>対話</span></div><div class="pg-dl">';
+    P.dlg.forEach(function(x){h+='<div class="pg-d"><span>'+esc(x.t)+'</span><b>'+(x.best==null?'<em>まだ</em>':x.best+' / '+x.total)+'</b></div>';});
+    h+='</div><div class="pg-h"><span>動詞活用ランク</span><small>記述式・全問正解のクリアタイム</small></div><div class="pg-rk">';
+    ["être","aller","avoir","faire","mix"].forEach(function(v){var r=P.conj.ranks[v];h+='<div class="'+(r?'on':'')+'"><span>'+(v==="mix"?"総まとめ":v)+'</span><b>'+(r||'—')+'</b></div>';});
+    h+='</div><div class="pg-note">文法の達成率：1問4点で、選択式の正解は＋1点（2点まで）、記述式の正解は＋2点。会話の達成率：●4つで100%として数えています。バッジ '+P.badges+' 個。進み具合はこの端末とバックアップから読んでいます。</div></div>';
+    return h;
   }
   /* 成果カードは、ボタンを押したときだけ端末の中で描く（サーバーは使わない）。
      中身が前回と同じなら描き直さず、前の画像をそのまま使う。 */
@@ -205,7 +294,7 @@
     var data=cardData(d),sig=JSON.stringify([data.id,data.nick,data.stamp,data.durSec,data.days,data.streak,data.acc,data.gram,data.talk,data.conj,data.badges]);   // 作成時刻（分）が変われば描き直す
     if(cardURL&&sig===cardSig){showCard(btn);return;}
     btn.disabled=true;btn.textContent="作成中…";
-    var sample="0123456789%分時間日連続学習のきろく通算正答率動詞活用文法練習会話練習達成率フレーズバッジ個ランク記述式で習得選択できたLeçon"+(data.quote?data.quote.ja:"");
+    var sample="0123456789%/分時間日連続学習のきろく通算正答率動詞活用文法練習会話フレーズ達成度挑戦問習得選択でできた回正解練習中ラウンド対話最高点総合記述式全問正解バッジ個ニックネーム未登録作成まだはじめまして週末と夏休みインタビュー①〜⑭⑮⑲Leçon"+(data.nick||"");
     NLCard.ready(sample).then(function(){
       var cv=NLCard.draw(data);
       cv.toBlob(function(b){
@@ -217,6 +306,7 @@
     });
   }
   function render(H,G){
+    u=Q.user();if(!$("nkIn"))nickView();   // サーバーから届いた最新のニックネームを反映
     var pend=Q.pendingCount();
     if(!H.length&&!(G&&G.dur)){$("body").innerHTML=deerTalk({rounds:0,dur:0,days:{},hours:[],byApp:{},q:0,c:0})+'<p class="msg-box">まだ記録がありません。練習すると、ここに回数や時間帯が表示されます。'+(pend?'<br>（未送信の結果が '+pend+' 件あります）':'')+'</p>';mountDeer();return;}
     var totDur=0,totQ=0,totC=0,days={},hours=[],byApp={},rounds=0;
@@ -238,6 +328,7 @@
       '<div class="sum"><div class="n">'+Object.keys(days).length+'</div><div class="l">学習した日</div></div>'+
       '<div class="sum"><div class="n">'+rounds+'</div><div class="l">ラウンド</div></div>'+
       '<div class="sum"><div class="n">'+(totQ?Math.round(totC/totQ*100)+'%':'—')+'</div><div class="l">正答率</div></div></div>';
+    html+=progressHTML();
     // 教材別
     html+='<div class="sec-h">教材ごと</div><table class="apps"><tr><th>教材</th><th>回数</th><th>解答数</th><th>正答率</th><th>時間</th></tr>';
     ["conj","grammar","talk"].forEach(function(k){var a=byApp[k];

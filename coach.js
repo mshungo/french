@@ -12,7 +12,7 @@
       "vous の形はふつう -ez。でも vous êtes・vous faites・vous dites の3つだけは -tes で終わる、特別な形なんだ。",
       "ils の形は、ils sont・ils ont・ils vont・ils font と「-ont」がそろう4兄弟。まとめて覚えると忘れにくいよ。",
       "活用は、文ごと覚えると強い。« Je vais à Nara. » « J'ai un chat. » みたいに自分のことで短い文を作ると、そのまま会話でも使えるよ。",
-      "j'ai・j'aime のように、母音で始まる動詞の前では je が j' になる（エリジオン）。書き取りで落としやすいところだから、ここだけ意識するだけでも点数が変わるよ。"
+      "j'ai・j'aime・j'habite のように、母音や無音の h で始まる動詞の前では je が j' になる（エリジオン）。書き取りで落としやすいところだから、ここだけ意識するだけでも点数が変わるよ。"
     ],
     grammar: [
       "名詞は冠詞とセットで覚えるのがおすすめ。« livre » より « un livre »。男性か女性かが、いっしょに頭に入るよ。",
@@ -21,7 +21,7 @@
       "疑問文の作り方は3つ。語尾を上げる（Tu viens ?）／Est-ce que をつける／主語と動詞を入れかえる（Viens-tu ?）。会話でいちばんよく使うのは、語尾を上げるやり方。",
       "近い未来は aller ＋ 動詞の原形（Je vais partir.）、ついさっきのことは venir de ＋ 原形（Je viens de manger.）。「行く」と「来る」が、時間の矢印になっているんだ。",
       "à ＋ le は au、à ＋ les は aux、de ＋ le は du、de ＋ les は des にまとまる（縮約）。au Japon の au も、じつはこれ。",
-      "目的語の代名詞（le, la, lui…）は動詞の前に置く。Je le vois.（それが見える）。日本語とも英語とも順番が違うから、声に出して慣れるのがいちばんの近道。",
+      "目的語の代名詞（le, la, lui…）は動詞の前に置く。Je le vois.（それが見える）。英語とは順番がちがうけれど、日本語の「それを・見る」と同じ順番なんだ。声に出して慣れるのがいちばんの近道。",
       "記述式は「見てわかる」を「自分で書ける」に変える練習。少し時間がかかっても、自分の手で書いた答えは記憶に残りやすいよ。"
     ],
     talk: [
@@ -83,6 +83,22 @@
     { t: "フランスのこぼれ話", n: "« Bon appétit ! » は「めしあがれ」。食事の前に、みんなで言い合うことが多いよ。" }
   ];
 
+  /* 先生がスプレッドシート「鹿コーチ」で書いたセリフ（ログイン画面が受け取って端末に置いてある）。
+     あれば、その種類はシートの内容に置きかえる。なければ、このファイルの内容を使う */
+  function sheetData() {
+    try { const c = JSON.parse(localStorage.getItem("nlCoach") || "null"); return c && c.d ? c.d : null; } catch (e) { return null; }
+  }
+  function useSheet() {
+    const d = sheetData(); if (!d) return;
+    ["general", "conj", "grammar", "talk"].forEach(k => {
+      const a = (d.tips || {})[k];
+      if (Array.isArray(a) && a.length) TIPS[k] = a.filter(x => typeof x === "string" && x);
+    });
+    if (Array.isArray(d.stories) && d.stories.length) {
+      const st = d.stories.filter(x => x && (x.n || x.fr)).map(x => ({ t: String(x.t || "フランスのこぼれ話"), fr: x.fr || "", ja: x.ja || "", n: x.n || "" }));
+      if (st.length) { STORIES.length = 0; st.forEach(x => STORIES.push(x)); }
+    }
+  }
   function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 
   /* d = {rounds, dur, days:{}, hours:[], byApp:{conj:{n,q,c}}, q, c, id, today, streak:{n,doneToday}} */
@@ -140,7 +156,7 @@
     '.deer-bub .dc-more{margin-top:8px;border:none;background:none;color:#b08a3e;font:inherit;font-size:12px;text-decoration:underline;cursor:pointer;padding:0;}';
   let cssDone = false;
   function mount(el, d) {
-    if (!cssDone) { const s = document.createElement("style"); s.textContent = CSS; document.head.appendChild(s); cssDone = true; }
+    if (!cssDone) { const s = document.createElement("style"); s.textContent = CSS; document.head.appendChild(s); cssDone = true; useSheet(); }
     turn = 0;
     const box = el.querySelector(".dc-body");
     const draw = () => {

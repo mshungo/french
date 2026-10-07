@@ -150,7 +150,7 @@
      端末に保存している記録を、変わったものだけサーバー（シート「進み具合」）に控える。
      ログインしたとき、端末にない・端末より進んでいる控えがあれば戻す（自分の控えだけ）。 */
   var PROG_KEYS = ["conjQuizStats_v4", "talkQuiz_v1", "gramQuiz_L1_v1", "gramQuiz_L2_v1", "gramQuiz_L3_v1",
-    "gramQuiz_L4_v1", "gramQuiz_L5_v1", "gramQuiz_L6_v1", "conjQuizDays"];
+    "gramQuiz_L4_v1", "gramQuiz_L5_v1", "gramQuiz_L6_v1", "conjQuizDays", "nlWelcome_v1"];
   function hashStr(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return s.length + ":" + h.toString(36); }
   function bkKey(k) { return "conjQuizBk_" + k + "_" + user.id; }
   var backingUp = false;
@@ -215,6 +215,7 @@
     if (!online()) return { ok: false, error: "noauth" };
     var r;
     try { r = await call(user, "history"); } catch (e) { return { ok: false, error: "network" }; }
+    if (r && r.ok) updName(r);   // 学習記録を開いたときも、表示名（ニックネーム）を最新にする
     if (r && r.ok) lsSet("nlHist_" + user.id, JSON.stringify({ at: Date.now(), history: r.history || [], agg: r.agg || null }));
     return r;
   }
@@ -224,6 +225,15 @@
     try { return JSON.parse(lsGet("nlHist_" + user.id) || "null"); } catch (e) { return null; }
   }
 
+  /* ニックネームを自分で決める。戻り値 "ok" | "rate" | "bad" | "error" */
+  async function setNick(nick) {
+    if (!online()) return "error";
+    try {
+      var res = await call(user, "setnick", { nick: String(nick || "").slice(0, 20) });
+      if (res.ok) { updName(res); return "ok"; }
+      return res.error === "rate" ? "rate" : res.error === "bad_request" ? "bad" : "error";
+    } catch (e) { return "error"; }
+  }
   /* サーバーが返す表示名（ニックネーム。なければID）で、端末の控えを更新する */
   function updName(res) {
     if (!user || user.practice || !res || !res.user) return;
@@ -350,7 +360,7 @@
     todayJST: todayJST, days: days, markToday: markToday, streak: streak,
     cached: cached, onStats: onStats,
     pendingCount: function () { return getPending().length; },
-    submit: submit, flush: flush, refresh: refresh, history: history, cachedHistory: cachedHistory, feedback: feedback, backup: backup,
+    submit: submit, flush: flush, refresh: refresh, history: history, cachedHistory: cachedHistory, feedback: feedback, backup: backup, setNick: setNick,
     login: login, logout: logout, requireLogin: requireLogin
   };
 })();

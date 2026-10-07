@@ -393,6 +393,7 @@
   .badge.on{border:1px solid #c0a06a;color:#9a7b45;background:linear-gradient(135deg,#fff4cf,#ffe9a8);font-weight:600;}
   .badge.medal.on{border-color:#b8860b;color:#8a6200;}
   .heard.fast{color:var(--good-ink);font-weight:600;}
+  .heard.pt{color:var(--accent-ink);font-weight:500;}
   .sb-prog b.clr{color:#9a7b45;font-weight:700;letter-spacing:.5px;}
 
   .crest{display:flex;justify-content:center;color:var(--gold);margin-bottom:6px;opacity:.9;}

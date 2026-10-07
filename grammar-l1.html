@@ -6,15 +6,15 @@
 <title>Leçon 1 名詞と冠詞 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=17"></script>
+<script src="common.js?v=18"></script>
 <script src="feedback.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=6">
+<link rel="stylesheet" href="grammar.css?v=7">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=10"></script>
+<script src="grammar.js?v=12"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -26,7 +26,7 @@ window.LESSON={no:1,title:"名詞と冠詞",sub:"genre · nombre · articles",
   {k:"n",t:"名詞の性と数",d:"Grammaire 1・2 ／ En plus 1・2",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
    memo:'<p>すべての名詞は男性か女性。女性形はふつう<b>男性形＋e</b>、複数形はふつう<b>単数形＋s</b>（s は読まない）。</p>'+
    '<p>-s, -x, -z で終わる名詞は複数でも同じ形：<span class="fr">le prix → les prix</span></p>'+
-   '<p>En plus：<span class="fr">-eau → -eaux</span>、<span class="fr">-eu → -eux</span>、<span class="fr">-al → -aux</span>、<span class="fr">-ail → -aux</span>（festival, détail などは例外）、<span class="fr">œil → yeux</span></p>'+
+   '<p>En plus：<span class="fr">-eau → -eaux</span>、<span class="fr">-eu → -eux</span>、<span class="fr">-al → -aux</span>（festival → festivals などは例外）、一部の <span class="fr">-ail → -aux</span>（travail → travaux など。ふつうは détail → détails のように -s）、<span class="fr">œil → yeux</span></p>'+
    '<p>女性形の例外：<span class="fr">musicien → musicienne</span>、<span class="fr">-er → -ère</span>、<span class="fr">-eur → -euse</span>、<span class="fr">-teur → -trice</span></p>'},
   {k:"ind",t:"不定冠詞",d:"un / une / des（Grammaire 3）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
    memo:'<table><tr><th>男性単数</th><th>女性単数</th><th>複数</th></tr><tr><td class="fr">un</td><td class="fr">une</td><td class="fr">des</td></tr></table>'+
@@ -58,7 +58,7 @@ W("n","le jeu → les ___","jeux","-eu で終わる名詞は -eux（En plus 2）
 W("n","le journal → les ___","journaux","-al で終わる名詞は -aux（En plus 2）。");
 W("n","l'hôpital → les ___","hôpitaux","-al → -aux。");
 C("n","le festival → les ___","festivals",["festivals","festivaux","festivales"],"-al で終わっても festival は例外で、ふつうに -s をつける。");
-W("n","le travail → les ___","travaux","-ail → -aux（détail → détails などの例外もある）。");
+W("n","le travail → les ___","travaux","travail は -ail → -aux になる少数の名詞のひとつ（ふつうは détail → détails のように -s）。");
 C("n","l'œil → les ___","yeux",["yeux","œils","œux"],"œil（目）の複数形は yeux。特殊な形なのでそのまま覚える。");
 W("n","un étudiant → une ___","étudiante","女性形は原則として男性形＋e。");
 W("n","un ami → une ___","amie","女性形は男性形＋e。発音は同じ。");
@@ -81,7 +81,7 @@ C("ind","___ idée","une",IND,"idée は女性名詞。不定冠詞は母音の�
 C("ind","___ hôtel","un",IND,"hôtel は男性名詞。無音の h の前でも un のまま。",{ja:"1軒のホテル"});
 C("ind","___ musée","un",IND,"musée は -ée で終わるが男性名詞。語尾だけで判断しないこと。",{ja:"ひとつの美術館"});
 C("ind","___ problème","un",IND,"problème は -e で終わるが男性名詞。",{ja:"ひとつの問題"});
-C("ind","___ chanson","une",IND,"chanson は女性名詞（-son, -tion で終わる名詞は女性が多い）。",{ja:"1曲の歌"});
+C("ind","___ chanson","une",IND,"chanson は女性名詞（maison なども女性。ただし poisson は男性）。",{ja:"1曲の歌"});
 C("ind","___ pays","un",IND,"pays（国）は単数でも -s で終わる男性名詞。",{ja:"ひとつの国"});
 C("ind","___ lunettes","des",IND,"lunettes（めがね）はいつも複数形で使う → des。",{ja:"めがね"});
 C("ind","___ plage","une",IND,"plage（浜辺）は女性名詞。",{ja:"ひとつの浜辺"});

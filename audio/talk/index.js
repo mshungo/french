@@ -152,11 +152,9 @@ window.TALK_AUDIO={
 "T'as deux minutes ?": "p147.mp3",
 "On peut parler un peu ?": "p148.mp3",
 "On se parle plus tard.": "p149.mp3",
-"Merci de m'avoir invité.": "p150.mp3",
 "Au revoir ! Merci d'être venue !": "p151.mp3",
 "Je te tiens au courant.": "p152.mp3",
 "Tu me dis si tu peux venir ?": "p153.mp3",
-"Prenez bien le temps.": "p154.mp3",
 "Ne vous inquiétez pas.": "p155.mp3",
 "Pas de problème.": "p156.mp3",
 "Je peux emprunter votre stylo ?": "p157.mp3",
@@ -254,5 +252,7 @@ window.TALK_AUDIO={
 "Qu'est-ce que tu as fait ?": "d087.mp3",
 "J'ai visité le musée du Louvre.": "d088.mp3",
 "C'était comment ?": "d089.mp3",
-"C'était génial !": "d090.mp3"
+"C'était génial !": "d090.mp3",
+"Merci de m'avoir invitée.": "e000.mp3",
+"Prenez votre temps.": "e001.mp3"
 };

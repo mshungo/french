@@ -27,11 +27,11 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-07h';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-07k';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
-const PROG_KEY_RE = /^(conjQuizStats_v4|talkQuiz_v1|gramQuiz_L[1-9]_v1|conjQuizDays)$/;   // 端末の記録のうち、バックアップするもの
+const PROG_KEY_RE = /^(conjQuizStats_v4|talkQuiz_v1|gramQuiz_L[1-9]_v1|conjQuizDays|nlWelcome_v1)$/;   // 端末の記録のうち、バックアップするもの
 const PROG_MAX = 45000;      // 1件あたりの最大文字数（セルの上限は5万字）
 const BACKUP_FOLDER = 'Naralingo バックアップ';
 const BACKUP_KEEP = 30;   // 自動バックアップを何日分残すか
@@ -64,11 +64,71 @@ const N_COLS = 15;
 const ROW_FORMATS = ['yyyy-mm-dd hh:mm:ss', '@', '@', '@', '@', '@', '@', '0', '0', '0.0', '@', '@', '@', '@', '0'];
 
 // ===== Webアプリの入口 =====
-function doGet() {
-  // 動作確認用（URLをブラウザで開くと表示）。ログイン画面はここから「お知らせ」も受け取る
-  let notices = [];
-  try { notices = notices_(); } catch (e) {}
-  return json_({ ok: true, service: 'conjugation-quiz', version: VERSION, password: password_() ? '設定済み' : '未設定', notices: notices });
+function doGet(e) {
+  // 動作確認用（URLをブラウザで開くと表示）。ログイン画面はここから「お知らせ」と鹿コーチの版番号も受け取る
+  if (e && e.parameter && e.parameter.coach) {   // 鹿コーチのセリフ本体（版番号が変わったときだけ取りに来る）
+    let c = { v: '', d: null };
+    try { c = coachData_(); } catch (err) {}
+    return json_({ ok: true, coachV: c.v, coach: c.d });
+  }
+  let notices = [], coachV = '';
+  try { notices = notices_(); } catch (err) {}
+  try { coachV = coachData_().v; } catch (err) {}
+  return json_({ ok: true, service: 'conjugation-quiz', version: VERSION, password: password_() ? '設定済み' : '未設定', notices: notices, coachV: coachV });
+}
+
+// ===== 鹿コーチのセリフ（シート「鹿コーチ」で、いつでも足したり直したりできる）=====
+// A列：使う（チェック） B列：種類 C列：フランス語（任意） D列：日本語訳（任意） E列：本文 F列：メモ（表示されない）
+// 種類：勉強のコツ／動詞のコツ／文法のコツ／会話のコツ（E列の文が「勉強のコツ」として出る）
+//       ことわざ／名言／フランス語の表現／フランスのこぼれ話（C・D列があれば « » つきで出し、E列は説明）
+// サイトは「版番号」だけを毎回受け取り、変わったときだけ中身を取りに行く（ふだんの読み込みは増えない）。
+const COACH_SHEET = '鹿コーチ';
+const COACH_HEADERS = ['使う', '種類', 'フランス語（任意）', '日本語訳（任意）', '本文', 'メモ（表示されない）'];
+const COACH_TIP_KINDS = { '勉強のコツ': 'general', '動詞のコツ': 'conj', '文法のコツ': 'grammar', '会話のコツ': 'talk' };
+const COACH_STORY_KINDS = ['ことわざ', '名言', 'フランス語の表現', 'フランスのこぼれ話'];
+const COACH_SEED = [["勉強のコツ", "", "", "一度にまとめて勉強するより、日をあけて何回か復習したほうが記憶に残りやすい（分散学習と呼ばれる方法）。1日10分でも、何日か続けるのが近道。"], ["勉強のコツ", "", "", "眠っている間に、その日に覚えたことが整理されると言われているよ。寝る前の5分の復習は、とてもお得な時間。"], ["勉強のコツ", "", "", "やる気は、始めてから出てくることが多いんだって。« L'appétit vient en mangeant. »（食欲は食べているうちに湧いてくる）ということわざもあるよ。"], ["勉強のコツ", "", "", "間違えた問題は「伸びしろ」。一度まちがえて正しい答えを見た問題は、はじめから当たった問題よりよく覚えていることも多いんだ。"], ["勉強のコツ", "", "", "声に出すと、目・口・耳を全部使うから覚えやすい。電車の中なら、口の中でつぶやくだけでも効果があるよ。"], ["勉強のコツ", "", "", "時間を計ると集中できる人もいれば、焦ってしまう人もいる。解いている画面の時間表示はタップでかくせるから、自分に合うほうでどうぞ。"], ["勉強のコツ", "", "", "「自分のこと」で文を作ると覚えやすい。好きな食べもの、出身地、週末の予定……教科書の文を、自分バージョンに書きかえてみると楽しいよ。"], ["動詞のコツ", "", "", "-er 動詞は、je parle／tu parles／il parle／ils parlent が全部同じ発音。変わるのはつづりだけだから、耳で覚えて、目でつづりを確かめるのがコツだよ。"], ["動詞のコツ", "", "", "être・avoir・aller・faire は形がばらばらだけど、いちばんよく使う動詞たち。je suis, tu es, il est… とリズムに乗せて唱えると、口が先に覚えてくれるよ。"], ["動詞のコツ", "", "", "nous の形は -ons で終わることが多い（nous avons, nous allons）。例外は nous sommes（être）。nous faisons は「フゾン」と読むのも、ちょっとしたひっかけポイント。"], ["動詞のコツ", "", "", "vous の形はふつう -ez。でも vous êtes・vous faites・vous dites の3つだけは -tes で終わる、特別な形なんだ。"], ["動詞のコツ", "", "", "ils の形は、ils sont・ils ont・ils vont・ils font と「-ont」がそろう4兄弟。まとめて覚えると忘れにくいよ。"], ["動詞のコツ", "", "", "活用は、文ごと覚えると強い。« Je vais à Nara. » « J'ai un chat. » みたいに自分のことで短い文を作ると、そのまま会話でも使えるよ。"], ["動詞のコツ", "", "", "j'ai・j'aime・j'habite のように、母音や無音の h で始まる動詞の前では je が j' になる（エリジオン）。書き取りで落としやすいところだから、ここだけ意識するだけでも点数が変わるよ。"], ["文法のコツ", "", "", "名詞は冠詞とセットで覚えるのがおすすめ。« livre » より « un livre »。男性か女性かが、いっしょに頭に入るよ。"], ["文法のコツ", "", "", "形容詞の女性形は、基本は -e を足すだけ（petit → petite）。-eux → -euse（curieux → curieuse）、-if → -ive（actif → active）のパターンを知っておくと楽になるよ。"], ["文法のコツ", "", "", "否定は ne … pas で動詞をはさむ。会話では ne が落ちて « Je sais pas. » と言うことも多いけれど、書くときは ne を忘れずにね。"], ["文法のコツ", "", "", "疑問文の作り方は3つ。語尾を上げる（Tu viens ?）／Est-ce que をつける／主語と動詞を入れかえる（Viens-tu ?）。会話でいちばんよく使うのは、語尾を上げるやり方。"], ["文法のコツ", "", "", "近い未来は aller ＋ 動詞の原形（Je vais partir.）、ついさっきのことは venir de ＋ 原形（Je viens de manger.）。「行く」と「来る」が、時間の矢印になっているんだ。"], ["文法のコツ", "", "", "à ＋ le は au、à ＋ les は aux、de ＋ le は du、de ＋ les は des にまとまる（縮約）。au Japon の au も、じつはこれ。"], ["文法のコツ", "", "", "目的語の代名詞（le, la, lui…）は動詞の前に置く。Je le vois.（それが見える）。英語とは順番がちがうけれど、日本語の「それを・見る」と同じ順番なんだ。声に出して慣れるのがいちばんの近道。"], ["文法のコツ", "", "", "記述式は「見てわかる」を「自分で書ける」に変える練習。少し時間がかかっても、自分の手で書いた答えは記憶に残りやすいよ。"], ["会話のコツ", "", "", "会話は完璧じゃなくて大丈夫。« Vous pouvez répéter ? »（もう一度言ってもらえますか？）が言えれば、会話はちゃんと続けられるよ。"], ["会話のコツ", "", "", "« Et toi ? » をつけると、質問が相手に返って会話が続く。« Ça va, merci. Et toi ? » だけで、立派な会話なんだ。"], ["会話のコツ", "", "", "相づちの « Ah bon ? »（へえ、そうなの？）や « C'est génial ! »（すごいね！）が言えると、ぐっと自然に聞こえるよ。"], ["会話のコツ", "", "", "聞き取りは、全部わからなくて当たり前。知っている単語を2つ3つ拾えたら、それで十分なスタートだよ。"], ["会話のコツ", "", "", "お手本の音声に、少し遅れて重ねるように声を出す「シャドーイング」は、発音とリズムをいっしょに鍛えられる練習法。"], ["会話のコツ", "", "", "フランス語は単語どうしがつながって聞こえる（リエゾン）。vous avez は「ヴザヴェ」。つながりに慣れると、聞き取りがぐっと楽になるよ。"], ["ことわざ", "Petit à petit, l'oiseau fait son nid.", "少しずつ、鳥は巣を作る。", "コツコツ続ければ、大きなことができるという意味。"], ["ことわざ", "Paris ne s'est pas fait en un jour.", "パリは一日にして成らず。", "日本では「ローマは一日にして成らず」が有名だけど、フランス語にはパリ版もあるんだ。"], ["ことわざ", "C'est en forgeant qu'on devient forgeron.", "鉄を打つことで、鍛冶屋になる。", "日本語の「習うより慣れろ」に近いね。"], ["ことわざ", "Les petits ruisseaux font les grandes rivières.", "小さな小川が、大きな川になる。", "「塵も積もれば山となる」。1日1ラウンドも、こうやって大きくなっていくよ。"], ["ことわざ", "La nuit porte conseil.", "夜は助言を運んでくる。", "迷ったら、一晩寝てから考えよう、という意味。"], ["ことわざ", "Une hirondelle ne fait pas le printemps.", "ツバメ一羽で、春にはならない。", "一度の結果だけで決めつけない、ということ。点数がふるわない日にも思い出してね。"], ["ことわざ", "Après la pluie, le beau temps.", "雨のあとは、晴れ。", "つらいことのあとには、いいことが来るよ。"], ["ことわざ", "Vouloir, c'est pouvoir.", "望むことは、できること。", "「意志あるところに道あり」。"], ["ことわざ", "Mieux vaut tard que jamais.", "遅くても、しないよりはまし。", "久しぶりの日にぴったりの言葉。"], ["ことわざ", "Qui ne risque rien n'a rien.", "何も賭けない人は、何も得られない。", "記述式にはじめて挑戦するときに、そっと思い出してみて。"], ["ことわざ", "Ce n'est pas la mer à boire.", "海を飲み干すほどのことじゃない。", "「たいしたことないよ、だいじょうぶ」という励まし。"], ["ことわざ", "Il faut tourner sept fois sa langue dans sa bouche avant de parler.", "話す前に、舌を口の中で7回まわせ。", "よく考えてから話そう、という意味。"], ["ことわざ", "Tout vient à point à qui sait attendre.", "待つことを知る人には、すべてがちょうどよく訪れる。", "「待てば海路の日和あり」。"], ["ことわざ", "Rien ne sert de courir ; il faut partir à point.", "走っても意味はない。ちょうどいいときに出発することだ。", "ラ・フォンテーヌの寓話「ウサギとカメ」の一節。"], ["名言", "Je pense, donc je suis.", "われ思う、ゆえにわれあり。", "デカルト『方法序説』（1637年）の有名な言葉。je suis は être の活用だね。"], ["名言", "On ne voit bien qu'avec le cœur. L'essentiel est invisible pour les yeux.", "心で見なくちゃ、よく見えない。大切なものは目に見えない。", "サン＝テグジュペリ『星の王子さま』（1943年）で、キツネが王子さまに教える言葉。"], ["名言", "Il faut cultiver notre jardin.", "わたしたちの畑を耕さなければならない。", "ヴォルテール『カンディード』（1759年）の最後の一文。目の前のことをこつこつと、という読み方もあるよ。"], ["名言", "L'homme n'est qu'un roseau, le plus faible de la nature ; mais c'est un roseau pensant.", "人間は自然のなかでいちばん弱い一本の葦にすぎない。だが、それは考える葦である。", "パスカル『パンセ』の言葉。"], ["名言", "Impossible n'est pas français.", "「不可能」はフランス語ではない。", "ナポレオンの言葉として知られているよ。"], ["フランス語の表現", "Il pleut des cordes.", "ロープが降っている。", "「どしゃ降り」のこと。雨がロープみたいに太く見える、というイメージ。"], ["フランス語の表現", "Être dans la lune.", "月の中にいる。", "「ぼんやりしている」という意味。授業中は気をつけて？"], ["フランス語の表現", "Coûter les yeux de la tête.", "頭の目玉ほどの値段がする。", "「ものすごく高い」という意味。"], ["フランス語の表現", "Poser un lapin à quelqu'un.", "だれかにウサギを置く。", "「約束をすっぽかす」という意味。なぜウサギなのかは、はっきりしないんだって。"], ["フランス語の表現", "Avoir un chat dans la gorge.", "のどに猫がいる。", "「声がかすれる」という意味。発音練習のしすぎに注意？"], ["フランスのこぼれ話", "", "", "70 は soixante-dix（60＋10）、80 は quatre-vingts（4×20）、90 は quatre-vingt-dix（4×20＋10）。ベルギーやスイスでは、70 を septante、90 を nonante と言うよ。"], ["フランスのこぼれ話", "", "", "7月14日はフランスの「革命記念日」（le 14 Juillet）。1789年のバスティーユ襲撃にちなむ祝日で、パリでは軍事パレードや花火があるんだ。"], ["フランスのこぼれ話", "", "", "フランスでは、お店に入るとき « Bonjour ! » とあいさつするのが大切なマナー。言わないと、ちょっと失礼に思われることもあるよ。"], ["フランスのこぼれ話", "", "", "頬を寄せるあいさつ « la bise » の回数は、地域によってちがう。2回が多いけれど、3回や4回の地域もあるんだ。"], ["フランスのこぼれ話", "", "", "バゲットを作る職人の技と文化は、2022年にユネスコの無形文化遺産に登録されたよ。"], ["フランスのこぼれ話", "", "", "エッフェル塔は、1889年のパリ万国博覧会のために建てられた。建てる前には「醜い」と反対する芸術家たちもいたんだって。"], ["フランスのこぼれ話", "", "", "フランス語を話す人は、世界に3億人以上いるとされているよ（フランス語圏国際機関 OIF の推計）。アフリカにも話す人がたくさんいるんだ。"], ["フランスのこぼれ話", "", "", "日本語になったフランス語：アンケート（enquête）、アトリエ（atelier）、クレヨン（crayon）、シュークリーム（chou à la crème）、デジャヴ（déjà-vu）。意外と身近でしょう？"], ["フランスのこぼれ話", "", "", "1635年にできたアカデミー・フランセーズは、フランス語の辞書を作り続けている機関。会員は40人で、「不滅の人々（les Immortels）」と呼ばれているよ。"], ["フランスのこぼれ話", "", "", "太陽は le soleil（男性名詞）、月は la lune（女性名詞）。ドイツ語では逆で、太陽が女性、月が男性なんだ。名詞の性は言語によってさまざま。"], ["フランスのこぼれ話", "", "", "フランスの学校の成績は、20点満点がふつう。10点が合格ライン、16点以上ならとても優秀。20点はめったに出ないんだって。"], ["フランスのこぼれ話", "", "", "« Bon appétit ! » は「めしあがれ」。食事の前に、みんなで言い合うことが多いよ。"]];
+
+// シートを作り、今サイトに入っているセリフを書き出す（すでにあれば何もしない）
+function createCoachSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(COACH_SHEET);
+  if (sh && sh.getLastRow() > 1) { ss.toast('「' + COACH_SHEET + '」シートはもうあります。行を足したり直したりすると、数分以内にサイトに反映されます。', '鹿コーチ', 8); return; }
+  if (!sh) sh = ss.insertSheet(COACH_SHEET);
+  sh.getRange(1, 1, 1, COACH_HEADERS.length).setValues([COACH_HEADERS]).setFontWeight('bold');
+  sh.setFrozenRows(1);
+  const rows = COACH_SEED.map(function (r) { return [true, r[0], r[1], r[2], r[3], '']; });
+  sh.getRange(2, 1, rows.length, COACH_HEADERS.length).setValues(rows);
+  try {
+    sh.getRange(2, 1, 400, 1).insertCheckboxes();
+    const kinds = Object.keys(COACH_TIP_KINDS).concat(COACH_STORY_KINDS);
+    sh.getRange(2, 2, 400, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(kinds, true).setAllowInvalid(false).build());
+    sh.setColumnWidth(2, 130); sh.setColumnWidth(3, 260); sh.setColumnWidth(4, 220); sh.setColumnWidth(5, 420);
+    sh.getRange(2, 3, 400, 3).setWrap(true);
+  } catch (e) {}
+  CacheService.getScriptCache().remove('coach');
+  ss.toast('「' + COACH_SHEET + '」シートを作りました（' + rows.length + '件）。A列のチェックを外すと、そのセリフは出なくなります。', '鹿コーチ', 10);
+}
+// シートの中身。シートがなければ { v:'', d:null }
+function coachData_() {
+  const cache = CacheService.getScriptCache();
+  const c = cache.get('coach');
+  if (c) { try { return JSON.parse(c); } catch (e) {} }
+  const sh = ss_().getSheetByName(COACH_SHEET);
+  let out = { v: '', d: null };
+  if (sh && sh.getLastRow() >= 2) {
+    const d = { tips: { general: [], conj: [], grammar: [], talk: [] }, stories: [] };
+    sh.getRange(2, 1, Math.min(sh.getLastRow() - 1, 400), 5).getValues().forEach(function (r) {
+      if (r[0] !== true) return;
+      const kind = String(r[1] || '').trim(), fr = safe_(r[2], 200), ja = safe_(r[3], 200), body = safe_(r[4], 400);
+      if (COACH_TIP_KINDS[kind]) { if (body) d.tips[COACH_TIP_KINDS[kind]].push(body); return; }
+      if (COACH_STORY_KINDS.indexOf(kind) >= 0 && (body || fr)) d.stories.push({ t: kind, fr: fr, ja: ja, n: body });
+    });
+    const json = JSON.stringify(d);
+    const dig = Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, json, Utilities.Charset.UTF_8);
+    out = { v: dig.slice(0, 6).map(function (b) { return ('0' + (b & 255).toString(16)).slice(-2); }).join(''), d: d };
+  }
+  try { cache.put('coach', JSON.stringify(out), 1800); } catch (e) {}   // 30分。シートを書きかえたときは onEdit ですぐ消す
+  return out;
 }
 
 // ===== お知らせ（シート「お知らせ」でA列にチェックを入れた行を、ログイン画面とメニューの上に出す）=====
@@ -188,6 +248,13 @@ function handle_(req) {
     if (!v) return { ok: false, error: 'bad_request' };
     return { ok: true, user: pub, stats: recordResult_(ss, user, v) };
   }
+  if (req.action === 'setnick') {   // 学生が自分でニックネームを決める（名簿のG列に書く）
+    if (!rateOk_(cache, 'n:' + id, 6, 3600)) return { ok: false, error: 'rate' };
+    const nick = cleanNick_(req.nick);
+    if (!nick) return { ok: false, error: 'bad_request' };
+    const done = withLock_(15000, function () { return setNick_(ss, id, nick); });
+    return done ? { ok: true, user: { id: id, name: nick } } : { ok: false, error: 'auth' };
+  }
   if (req.action === 'feedback') {
     if (!rateOk_(cache, 'f:h:' + id, LIMIT.feedbackPerHour, 3600) || !rateOk_(cache, 'f:d:' + id, LIMIT.feedbackPerDay, 86400)) return { ok: false, error: 'rate' };
     return saveFeedback_(ss, user, req.feedback);
@@ -267,14 +334,53 @@ function lookupRoster_(ss, id) {
 function rosterRow_(ss, id) {
   const sh = ss.getSheetByName(SHEET.roster);
   if (!sh || sh.getLastRow() < 2) return null;
-  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues();
+  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, NICK_COL).getValues();
   for (const r of vals) {
     if (normId_(r[0]) === id) {
       const name = String(r[1] || '').trim();
-      return { name: name, pub: String(r[5] || '').trim() ? safe_(name, 20) : '' };
+      let pub = String(r[NICK_COL - 1] || '').trim();                       // G列：本人が決めたニックネーム（いちばん優先）
+      if (!pub) pub = String(r[5] || '').trim() ? safe_(name, 20) : '';   // F列（本名）がある行は、B列がニックネーム
+      if (!pub) { try { pub = formNick_(ss, id); } catch (e) { pub = ''; } }   // 名簿にF列がなくても、フォームで登録したニックネームがあれば使う
+      return { name: name, pub: pub };
     }
   }
   return null;
+}
+// 名簿のG列「ニックネーム（本人が設定）」に書く
+const NICK_COL = 7;
+function setNick_(ss, id, nick) {
+  const sh = ss.getSheetByName(SHEET.roster);
+  if (!sh || sh.getLastRow() < 2) return false;
+  if (!String(sh.getRange(1, NICK_COL).getValue()).trim()) sh.getRange(1, NICK_COL).setValue('ニックネーム（本人が設定）').setFontWeight('bold');
+  const ids = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) {
+    if (normId_(ids[i][0]) === id) { sh.getRange(i + 2, NICK_COL).setValue(nick); return true; }
+  }
+  return false;
+}
+// 登録フォームの回答から「ID → ニックネーム」（名簿に反映済みの行だけ。同じIDは新しい回答を優先）。5分キャッシュ
+function formNick_(ss, id) {
+  const cache = CacheService.getScriptCache();
+  let map = null;
+  const c = cache.get('formnick');
+  if (c) { try { map = JSON.parse(c); } catch (e) { map = null; } }
+  if (!map) {
+    map = {};
+    const fs = formSheet_(ss);
+    if (fs && fs.getLastRow() >= 2) {
+      const head = fs.getRange(1, 1, 1, fs.getLastColumn()).getValues()[0];
+      const fc = formCols_(head);
+      if (fc.id >= 0 && fc.nick >= 0) {
+        fs.getRange(2, 1, fs.getLastRow() - 1, head.length).getValues().forEach(function (r) {
+          if (fc.status >= 0 && String(r[fc.status] || '').indexOf('反映済み') !== 0) return;
+          const k = normId_(r[fc.id]), v = cleanNick_(r[fc.nick]);
+          if (k && v) map[k] = v;
+        });
+      }
+    }
+    try { cache.put('formnick', JSON.stringify(map), 300); } catch (e) {}
+  }
+  return map[id] || '';
 }
 
 // 名簿のE列「最終ログイン」に日時を書く。書き込みは1つのIDにつき1時間に1回まで（負荷を抑えるため）
@@ -758,6 +864,7 @@ function onOpen() {
     .addItem('名簿の空欄にIDを発行', 'issueIds')
     .addItem('共通パスワードを設定', 'setPassword')
     .addItem('フォーム回答を名簿に反映（以後は自動）', 'syncFormFromMenu')
+    .addItem('鹿コーチのシートを作る（今のセリフを書き出す）', 'createCoachSheet')
     .addSeparator()
     .addItem('毎日の自動バックアップを有効にする', 'enableDailyBackup')
     .addItem('今すぐバックアップ', 'backupFromMenu')
@@ -928,6 +1035,7 @@ function syncFormToRoster_(ss) {
       status.push(['反映済み' + (nick ? '' : '（ニックネーム空欄：アプリではIDを表示）')]);
     });
     if (touched) fs.getRange(2, c.status + 1, status.length, 1).setValues(status);
+    if (touched) { try { CacheService.getScriptCache().remove('formnick'); } catch (e) {} }
     return out;
   });
 }
@@ -954,6 +1062,7 @@ function syncFormFromMenu() {
 function onEdit(e) {
   try {
     const rng = e && e.range;
+    if (rng && rng.getSheet().getName() === COACH_SHEET) { CacheService.getScriptCache().remove('coach'); return; }   // 鹿コーチを直したら、すぐ反映
     if (!rng || rng.getSheet().getName() !== SHEET.roster || rng.getColumn() !== 1 || rng.getRow() < 2) return;
     if (rng.getNumRows() !== 1 || rng.getNumColumns() !== 1) return;
     const v = rng.getValue();
