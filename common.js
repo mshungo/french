@@ -139,7 +139,42 @@
     if (!online()) return Promise.resolve("noauth");
     result.app = app; result.rid = newRid();
     var q = getPending(); q.push(result); setPending(q);
-    return flush();
+    return flush().then(function (st) { if (st === "ok") backup(); return st; });   // 結果を送れたら、進み具合も控えておく
+  }
+
+  /* ---- 進み具合（問題ごとの習得・バッジなど）のバックアップ ----
+     端末に保存している記録を、変わったものだけ先生のスプレッドシート（シート「進み具合」）に控える。
+     ログインしたとき、端末にない・端末より進んでいる控えがあれば戻す（自分の控えだけ）。 */
+  var PROG_KEYS = ["conjQuizStats_v4", "talkQuiz_v1", "gramQuiz_L1_v1", "gramQuiz_L2_v1", "gramQuiz_L3_v1",
+    "gramQuiz_L4_v1", "gramQuiz_L5_v1", "gramQuiz_L6_v1", "conjQuizDays"];
+  function hashStr(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return s.length + ":" + h.toString(36); }
+  function bkKey(k) { return "conjQuizBk_" + k + "_" + user.id; }
+  var backingUp = false;
+  async function backup() {
+    if (!online() || backingUp) return "skip";
+    var items = [];
+    PROG_KEYS.forEach(function (k) {
+      var v = lsGet(k + "_" + user.id);
+      if (v && v.length < 45000 && lsGet(bkKey(k)) !== hashStr(v)) items.push({ k: k, d: v });
+    });
+    if (!items.length) return "ok";
+    backingUp = true;
+    try {
+      var res = await call(user, "saveprog", { items: items });
+      if (res.ok) items.forEach(function (it) { lsSet(bkKey(it.k), hashStr(it.d)); });
+      return res.ok ? "ok" : (res.error || "error");
+    } catch (e) { return "error"; } finally { backingUp = false; }
+  }
+  function score(v) { try { var o = JSON.parse(v); return Array.isArray(o) ? o.length : (Number(o.answered) || 0) * 1000 + (Number(o.tries) || 0); } catch (e) { return -1; } }
+  function restore(prog) {
+    var n = 0;
+    Object.keys(prog || {}).forEach(function (k) {
+      if (PROG_KEYS.indexOf(k) < 0) return;
+      var key = k + "_" + user.id, local = lsGet(key), srv = prog[k];
+      if (k === "conjQuizDays") { try { mergeDays(JSON.parse(srv)); } catch (e) {} return; }
+      if (!local || score(srv) > score(local)) { lsSet(key, srv); lsSet(bkKey(k), hashStr(srv)); n++; }
+    });
+    return n;
   }
 
   /* 開いたときの再同期。戻り値: "ok" | "auth" | "error" | "skip" */
@@ -190,7 +225,7 @@
       return { ok: true, user: user };
     }
     var res;
-    try { res = await call({ id: id, pw: pw }, "sync", null, 35000); }   // サーバーが眠っていると最初の応答に時間がかかるので長めに待つ
+    try { res = await call({ id: id, pw: pw }, "sync", { prog: true }, 35000); }   // サーバーが眠っていると最初の応答に時間がかかるので長めに待つ
     catch (e) { return { ok: false, error: (e && e.name === "AbortError") ? "timeout" : "network", id: id, detail: String(e && e.message || e) }; }
     if (!res.ok) return { ok: false, id: id, version: res.version || "旧版",
       error: (res.error === "locked" || res.error === "rate" || res.error === "auth" || res.error === "nopass") ? res.error : "server",
@@ -198,8 +233,10 @@
     user = { id: id, name: (res.user && res.user.name) || id, pw: pw, practice: false };
     keep(user, remember);
     setCached(res.stats);
-    if (getPending().length) flush();   // 未送信の結果は裏で送る（ログインは待たせない）
-    return { ok: true, user: user };
+    var restored = 0; try { restored = restore(res.prog); } catch (e) {}
+    if (getPending().length) flush().then(function (st) { if (st === "ok") backup(); });   // 未送信の結果は裏で送る（ログインは待たせない）
+    else backup();
+    return { ok: true, user: user, restored: restored };
   }
   function logout() { if (user && user.practice) clearPractice(); user = null; lsDel(LOGIN_KEY); ssDel(LOGIN_KEY); }
 
@@ -216,7 +253,7 @@
     todayJST: todayJST, days: days, markToday: markToday, streak: streak,
     cached: cached, onStats: onStats,
     pendingCount: function () { return getPending().length; },
-    submit: submit, flush: flush, refresh: refresh, history: history, feedback: feedback,
+    submit: submit, flush: flush, refresh: refresh, history: history, feedback: feedback, backup: backup,
     login: login, logout: logout, requireLogin: requireLogin
   };
 })();

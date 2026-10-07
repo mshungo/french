@@ -22,9 +22,14 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-05d';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-05e';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
-const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック' };
+const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合' };
+const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
+const PROG_KEY_RE = /^(conjQuizStats_v4|talkQuiz_v1|gramQuiz_L[1-9]_v1|conjQuizDays)$/;   // 端末の記録のうち、バックアップするもの
+const PROG_MAX = 45000;      // 1件あたりの最大文字数（セルの上限は5万字）
+const BACKUP_FOLDER = 'Naralingo バックアップ';
+const BACKUP_KEEP = 30;   // 自動バックアップを何日分残すか
 const PRACTICE_ID = 'NARAF26';   // 練習用ID（名簿には載せない）。フィードバックの送信だけ受け付ける
 const FEEDBACK_HEADERS = ['日時', '学生ID', '氏名', 'ページ', '種類', 'コメント', 'そのときの画面', '端末', '対応メモ'];
 const FEEDBACK_KINDS = ['答えがおかしい', '選択肢がおかしい', '訳・解説がおかしい', '音声・表示の不具合', 'その他'];
@@ -39,7 +44,8 @@ const LIMIT = {
   submitPerDay: 300,     // 1日に300回まで
   readPerMin: 20,        // 記録の読み込み（ログイン・学習記録の表示）は1分に20回まで
   feedbackPerHour: 20,   // 問題の報告は1つのIDにつき1時間20件まで
-  feedbackPerDay: 60     // 1日60件まで
+  feedbackPerDay: 60,    // 1日60件まで
+  progPerHour: 120       // 進み具合のバックアップは1時間120回まで
 };
 const SECTION_LABEL = { 'être': 'être', aller: 'aller', avoir: 'avoir', faire: 'faire', mix: '総まとめ' };
 const MODE_LABEL = { choice: '選択式', write: '記述式' };
@@ -115,7 +121,20 @@ function handle_(req) {
     if (!rateOk_(cache, 'r:' + id, LIMIT.readPerMin, 60)) return { ok: false, error: 'rate' };
     try { touchLogin_(ss, cache, id); } catch (e) {}   // 失敗してもログインは止めない
     if (req.action === 'history') return { ok: true, user: user, history: historyFor_(ss, id) };
-    return { ok: true, user: user, stats: statsFor_(ss, id) };
+    const res = { ok: true, user: user, stats: statsFor_(ss, id) };
+    if (req.prog === true) res.prog = loadProg_(ss, id);   // ログイン時：端末にない進み具合を戻すため
+    return res;
+  }
+  if (req.action === 'saveprog') {
+    if (!rateOk_(cache, 'p:' + id, LIMIT.progPerHour, 3600)) return { ok: false, error: 'rate' };
+    const items = Array.isArray(req.items) ? req.items.slice(0, 12) : [];
+    const ok = items.filter(function (it) {
+      if (!it || !PROG_KEY_RE.test(String(it.k)) || typeof it.d !== 'string' || it.d.length > PROG_MAX) return false;
+      try { JSON.parse(it.d); return true; } catch (e) { return false; }
+    });
+    if (!ok.length) return { ok: false, error: 'bad_request' };
+    saveProg_(ss, id, ok);
+    return { ok: true, saved: ok.map(function (it) { return it.k; }) };
   }
   if (req.action === 'submit') {
     if (!submitAllowed_(cache, id)) return { ok: false, error: 'rate' };
@@ -208,6 +227,72 @@ function touchLogin_(ss, cache, id) {
       return;
     }
   }
+}
+
+// ===== 進み具合（端末の記録）のバックアップ =====
+function progSheet_(ss) {
+  const sh = ensureSheet_(ss, SHEET.progress, PROG_HEADERS);
+  return sh;
+}
+function saveProg_(ss, id, items) {
+  const lock = LockService.getScriptLock();
+  try { lock.waitLock(8000); } catch (e) {}
+  try {
+    const sh = progSheet_(ss), last = sh.getLastRow();
+    const vals = last >= 2 ? sh.getRange(2, 1, last - 1, 2).getValues() : [];
+    const row = {};
+    vals.forEach(function (r, i) { row[normId_(r[0]) + '|' + r[1]] = i + 2; });
+    items.forEach(function (it) {
+      let ans = '';
+      try { const o = JSON.parse(it.d); ans = Array.isArray(o) ? o.length : (Number(o.answered) || ''); } catch (e) {}
+      const rec = [id, String(it.k), new Date(), ans, it.d];
+      const r = row[id + '|' + it.k];
+      if (r) sh.getRange(r, 1, 1, 5).setValues([rec]);
+      else { sh.appendRow(rec); row[id + '|' + it.k] = sh.getLastRow(); }
+    });
+  } finally { try { lock.releaseLock(); } catch (e) {} }
+}
+function loadProg_(ss, id) {
+  const sh = ss.getSheetByName(SHEET.progress), out = {};
+  if (!sh || sh.getLastRow() < 2) return out;
+  sh.getRange(2, 1, sh.getLastRow() - 1, 5).getValues().forEach(function (r) {
+    if (normId_(r[0]) === id && PROG_KEY_RE.test(String(r[1])) && r[4]) out[String(r[1])] = String(r[4]);
+  });
+  return out;
+}
+
+// ===== スプレッドシート全体の自動バックアップ（毎日、Excel形式でドライブに保存） =====
+function backupFolder_() {
+  const it = DriveApp.getFoldersByName(BACKUP_FOLDER);
+  return it.hasNext() ? it.next() : DriveApp.createFolder(BACKUP_FOLDER);
+}
+function backupNow() {
+  const ss = ss_(), folder = backupFolder_();
+  const name = ss.getName() + ' ' + Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd HHmm');
+  try {
+    const url = 'https://docs.google.com/spreadsheets/d/' + ss.getId() + '/export?format=xlsx';
+    const blob = UrlFetchApp.fetch(url, { headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() } }).getBlob().setName(name + '.xlsx');
+    folder.createFile(blob);
+  } catch (e) {
+    DriveApp.getFileById(ss.getId()).makeCopy(name, folder);   // Excel 形式で保存できないときは、スプレッドシートのコピーを残す
+  }
+  // 古いものから削除して BACKUP_KEEP 件だけ残す
+  const files = [], it = folder.getFiles();
+  while (it.hasNext()) files.push(it.next());
+  files.sort(function (a, b) { return b.getDateCreated() - a.getDateCreated(); });
+  files.slice(BACKUP_KEEP).forEach(function (f) { f.setTrashed(true); });
+  return name;
+}
+// メニューから：毎日午前3時ごろの自動バックアップを有効にする（すぐに1回目も作る）
+function enableDailyBackup() {
+  ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === 'backupNow') ScriptApp.deleteTrigger(t); });
+  ScriptApp.newTrigger('backupNow').timeBased().everyDays(1).atHour(3).inTimezone(TZ).create();
+  const name = backupNow();
+  SpreadsheetApp.getActiveSpreadsheet().toast('毎日の自動バックアップを有効にしました。ドライブのフォルダ「' + BACKUP_FOLDER + '」に「' + name + '」を作りました（' + BACKUP_KEEP + '日分を残します）。', 'バックアップ', 10);
+}
+function backupFromMenu() {
+  const name = backupNow();
+  SpreadsheetApp.getActiveSpreadsheet().toast('ドライブのフォルダ「' + BACKUP_FOLDER + '」に「' + name + '」を保存しました。', 'バックアップ', 8);
 }
 
 // ===== 結果の検証と追記 =====
@@ -368,6 +453,9 @@ function onOpen() {
     .addItem('名簿の空欄にIDを発行', 'issueIds')
     .addItem('共通パスワードを設定', 'setPassword')
     .addSeparator()
+    .addItem('毎日の自動バックアップを有効にする', 'enableDailyBackup')
+    .addItem('今すぐバックアップ', 'backupFromMenu')
+    .addSeparator()
     .addItem('ログインテスト（IDを確かめる）', 'testLogin')
     .addItem('ログイン制限を解除', 'clearLock')
     .addToUi();
@@ -384,6 +472,7 @@ function setup() {
   roster.getRange(2, 1, 500, 1).setNumberFormat('@');
   resultsSheet_(ss);
   ensureSheet_(ss, SHEET.feedback, FEEDBACK_HEADERS);
+  progSheet_(ss);
   buildSummary_(ss);
   ss.toast('シートを用意しました。名簿のB列に氏名、C列に名字のローマ字を入れて、メニューからIDを発行してください。');
 }
