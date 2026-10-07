@@ -6,7 +6,7 @@
 <title>学習記録 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=15"></script>
+<script src="common.js?v=16"></script>
 <script src="feedback.js?v=2"></script>
 <script src="coach.js?v=1"></script>
 <script src="card.js?v=1"></script>
@@ -190,19 +190,28 @@
     return {date:Q.todayJST().replace(/-/g,"."),durSec:d.dur,days:Object.keys(d.days).length,streak:st.n,acc:d.q?Math.round(d.c/d.q*100):null,
       gram:gram,talk:{m:tm,n:100},conj:{acc:ca&&ca.q?Math.round(ca.c/ca.q*100):null,ranks:ranks},badges:badges,quote:q};
   }
-  var cardURL=null;
-  function makeCard(d){
-    if(!window.NLCard)return;
-    var data=cardData(d);
-    var sample="0123456789%分時間日連続学習のきろく通算正答率動詞活用文法練習会話練習達成率フレーズバッジ個ランク記述式で習得選択Leçon"+(data.quote?data.quote.ja:"");
+  /* 成果カードは、ボタンを押したときだけ端末の中で描く（サーバーは使わない）。
+     中身が前回と同じなら描き直さず、前の画像をそのまま使う。 */
+  var cardURL=null,cardSig="",cardSrc=null;
+  function showCard(btn){
+    var box=$("cardImg");box.classList.remove("hidden");
+    box.innerHTML='<img alt="成果カード：学習時間・学習した日・正答率・各教材の達成のグラフ" src="'+cardURL+'">';
+    btn.disabled=false;btn.textContent="画像で保存";
+    btn.onclick=function(){var a=document.createElement("a");a.href=cardURL;a.download="Naralingo_"+Q.todayJST()+".png";document.body.appendChild(a);a.click();a.remove();};
+  }
+  function makeCard(d,btn){
+    if(!window.NLCard||!d)return;
+    var data=cardData(d),sig=JSON.stringify([data.durSec,data.days,data.streak,data.acc,data.gram,data.talk,data.conj,data.badges,data.date]);
+    if(cardURL&&sig===cardSig){showCard(btn);return;}
+    btn.disabled=true;btn.textContent="作成中…";
+    var sample="0123456789%分時間日連続学習のきろく通算正答率動詞活用文法練習会話練習達成率フレーズバッジ個ランク記述式で習得選択できたLeçon"+(data.quote?data.quote.ja:"");
     NLCard.ready(sample).then(function(){
       var cv=NLCard.draw(data);
       cv.toBlob(function(b){
-        if(!b)return;if(cardURL)URL.revokeObjectURL(cardURL);cardURL=URL.createObjectURL(b);
-        var box=$("cardImg");if(!box)return;
-        box.innerHTML='<img alt="成果カード：学習時間・学習した日・正答率・各教材の達成のグラフ" src="'+cardURL+'">';
-        var btn=$("pngBtn");btn.disabled=false;
-        btn.onclick=function(){var a=document.createElement("a");a.href=cardURL;a.download="Naralingo_"+Q.todayJST()+".png";document.body.appendChild(a);a.click();a.remove();};
+        if(!b){btn.disabled=false;btn.textContent="成果カードを作る";return;}
+        if(cardURL)URL.revokeObjectURL(cardURL);cardURL=URL.createObjectURL(b);cardSig=sig;
+        cv.width=cv.height=0;   // 描いたキャンバスのメモリを手放す
+        showCard(btn);
       },"image/png");
     });
   }
@@ -265,13 +274,14 @@
     html+='</div>';
     if(pend)html+='<p class="note">未送信の結果が '+pend+' 件あります（次に練習ページを開いたときに送られます）。</p>';
     html+='<div class="sec-h">成果カード</div>'+
-      '<div class="card-box"><div class="card-img" id="cardImg"><div class="card-wait">カードを作っています…</div></div>'+
-      '<div class="card-btns"><button type="button" class="cb-main" id="pngBtn" disabled>画像で保存</button><button type="button" id="xlsxBtn">Excel で保存（くわしい記録）</button></div>'+
+      '<div class="card-box"><div class="card-img hidden" id="cardImg"></div>'+
+      '<div class="card-btns"><button type="button" class="cb-main" id="pngBtn">成果カードを作る</button><button type="button" id="xlsxBtn">Excel で保存（くわしい記録）</button></div>'+
       '<p class="card-note">記録は自動で保存されています。成果カードには名前もIDも入らないので、友だちに見せても大丈夫。スマホでは、画像を長押しして保存することもできます。</p></div>';
     $("body").innerHTML=html;
     mountDeer();
     $("xlsxBtn").onclick=function(){exportXlsx(H,this,G);};
-    makeCard({rounds:rounds,dur:totDur,days:days,byApp:byApp,q:totQ,c:totC});
+    cardSrc={rounds:rounds,dur:totDur,days:days,byApp:byApp,q:totQ,c:totC};
+    $("pngBtn").onclick=function(){makeCard(cardSrc,this);};
   }
 })();
 </script>

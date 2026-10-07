@@ -128,7 +128,7 @@
       var q = getPending();
       while (q.length) {
         var res = await call(user, "submit", { result: q[0] });
-        if (res.ok) { q.shift(); setPending(q); if (!q.length) setCached(res.stats); else await sleep(5500); }
+        if (res.ok) { q.shift(); setPending(q); if (!q.length) { setCached(res.stats); markSynced(); } else await sleep(5500); }
         else if (res.error === "auth" || res.error === "locked") { status = "auth"; break; }
         else if (res.error === "rate") { status = "rate"; break; }
         else if (res.error === "bad_request") { q.shift(); setPending(q); }
@@ -182,12 +182,17 @@
   }
 
   /* 開いたときの再同期。戻り値: "ok" | "auth" | "error" | "skip" */
+  /* ページを開くたびにサーバーへ問い合わせないよう、90秒以内に同期したばかりなら省く（このタブの中だけ） */
+  var SYNC_GAP = 90000;
+  function syncKey() { return "nlSyncAt_" + (user ? user.id : ""); }
+  function markSynced() { ssSet(syncKey(), String(Date.now())); }
   async function refresh() {
     if (!online()) return "skip";
     if (getPending().length) return flush();
+    if (Date.now() - Number(ssGet(syncKey()) || 0) < SYNC_GAP) return "skip";
     try {
       var res = await call(user, "sync");
-      if (res.ok) { setCached(res.stats); updName(res); return "ok"; }
+      if (res.ok) { setCached(res.stats); updName(res); markSynced(); return "ok"; }
       if (res.error === "auth") return "auth";
       return "error";
     } catch (e) { return "error"; }
@@ -252,7 +257,7 @@
       detail: (res.error || "") + (res.message ? ": " + res.message : "") };
     user = { id: id, name: (res.user && res.user.name) || id, pw: pw, practice: false };
     keep(user, remember);
-    setCached(res.stats);
+    setCached(res.stats); markSynced();
     var restored = 0; try { restored = restore(res.prog); } catch (e) {}
     if (getPending().length) flush().then(function (st) { if (st === "ok") backup(); });   // 未送信の結果は裏で送る（ログインは待たせない）
     else backup();
@@ -268,7 +273,8 @@
 
   /* ---- 表示の設定（この端末だけ）：解いているときの時間を隠す／書体をゴシックにする ---- */
   var PREF_KEY = "nlPrefs";
-  function prefs() { return jget(PREF_KEY, {}) || {}; }
+  var prefCache = null;   // 毎回 localStorage を読まないよう、メモリに持っておく
+  function prefs() { if (!prefCache) prefCache = jget(PREF_KEY, {}) || {}; return prefCache; }
   function setPref(k, v) { var p = prefs(); p[k] = v; lsSet(PREF_KEY, JSON.stringify(p)); applyPrefs(); }
   var SANS = '-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",Meiryo,sans-serif';
   function eachRule(list, fn) {
@@ -313,21 +319,24 @@
     applyPrefs();
     document.addEventListener("DOMContentLoaded", function () { applyPrefs(); });
     window.addEventListener("load", function () { applyPrefs(); });
-    try {   // あとから足される CSS（バッジ・対話練習など）にも当てる
-      new MutationObserver(function (ms) {
-        if (prefs().font !== "gothic") return;
-        if (ms.some(function (m) { return Array.prototype.some.call(m.addedNodes, function (n) { return n.nodeName === "STYLE" || n.nodeName === "LINK"; }); }))
-          setTimeout(function () { applyFont(true); }, 0);
-      }).observe(document.documentElement, { childList: true, subtree: true });
-    } catch (e) {}
+    /* あとから足される CSS（バッジ・対話練習など）にも当てる。見張るのは <head> の直下だけ（問題の描きかえには反応しない） */
+    var fontTimer = 0;
+    function watchHead() {
+      try {
+        new MutationObserver(function () {
+          if (prefs().font !== "gothic" || fontTimer) return;
+          fontTimer = setTimeout(function () { fontTimer = 0; applyFont(true); }, 30);
+        }).observe(document.head, { childList: true });
+      } catch (e) {}
+    }
+    if (document.head) watchHead(); else document.addEventListener("DOMContentLoaded", watchHead);
     /* 解いている画面の時間表示は、タップで隠す／出す */
     document.addEventListener("click", function (e) {
       var t = e.target && e.target.closest && e.target.closest(".live-timer,#dlgTimer");
       if (t) setPref("hideTimer", !prefs().hideTimer);
     });
-    document.addEventListener("mouseover", function (e) {
-      var t = e.target && e.target.closest && e.target.closest(".live-timer,#dlgTimer");
-      if (t) t.title = prefs().hideTimer ? "タップで時間を表示" : "タップで時間をかくす";
+    window.addEventListener("load", function () {
+      Array.prototype.forEach.call(document.querySelectorAll(".live-timer,#dlgTimer"), function (t) { t.title = "タップで時間をかくす／表示する"; });
     });
   })();
 
