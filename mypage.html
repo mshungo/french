@@ -80,7 +80,7 @@
   Q.history().then(function(res){
     if(!res.ok){
       $("body").innerHTML='<p class="msg-box warn">'+(res.error==="rate"?"読み込みが多すぎます。少し待ってから開き直してください。":res.error==="auth"?"このIDは無効になっています。先生に確認してください。":"記録を読み込めませんでした。通信環境を確認してください。")+'</p>';return;}
-    render(res.history||[]);
+    render(res.history||[],res.agg||null);
   });
 
   /* Excel で保存（読み込み機能はつけない） */
@@ -91,7 +91,7 @@
       s.onload=function(){ok();};s.onerror=function(){ng(new Error("load"));};document.head.appendChild(s);
     });
   }
-  function exportXlsx(H,btn){
+  function exportXlsx(H,btn,G){
     btn.disabled=true;var label=btn.textContent;btn.textContent="作成中…";
     loadXlsx().then(function(){
       var rows=[["日時","教材","項目","正解数","問題数","正答率","学習時間（分）"]];
@@ -100,9 +100,12 @@
       ws["!cols"]=[{wch:17},{wch:10},{wch:18},{wch:8},{wch:8},{wch:8},{wch:14}];
       for(var i=2;i<=rows.length;i++){var c=ws["F"+i];if(c&&c.t==="n")c.z="0%";}
       var by={},days={};
-      H.forEach(function(x){var a=by[x.app]=by[x.app]||{n:0,q:0,c:0,d:0};a.n++;a.q+=x.total;a.c+=x.score;a.d+=x.dur||0;days[x.t.slice(0,10)]=1;});
+      if(G){Object.keys(G.apps||{}).forEach(function(k){var a=G.apps[k];by[k]={n:a.n,q:a.q,c:a.c,d:a.dur};});days=G.dayCount||{};}
+      else H.forEach(function(x){var a=by[x.app]=by[x.app]||{n:0,q:0,c:0,d:0};a.n++;a.q+=x.total;a.c+=x.score;a.d+=x.dur||0;days[x.t.slice(0,10)]=1;});
       var sum=[["氏名",u.name],["学生ID",u.id],["保存した日",Q.todayJST()],["学習した日数",Object.keys(days).length],[],["教材","回数","解答数","正答率","学習時間（分）"]];
+      var foot=["（「学習記録」シートは最近の "+H.length+" ラウンド。まとめは全期間）"];
       ["conj","grammar","talk"].forEach(function(k){var a=by[k]||{n:0,q:0,c:0,d:0};sum.push([APP[k],a.n,a.q,a.q?Math.round(a.c/a.q*100)/100:"",Math.round(a.d/6)/10]);});
+      sum.push([]);sum.push(foot);
       var ws2=XLSX.utils.aoa_to_sheet(sum);
       ws2["!cols"]=[{wch:12},{wch:20},{wch:10},{wch:10},{wch:14}];
       for(var j=7;j<=9;j++){var c2=ws2["D"+j];if(c2&&c2.t==="n")c2.z="0%";}
@@ -115,22 +118,27 @@
       btn.textContent=label;btn.disabled=false;
     }).catch(function(){btn.textContent="保存できませんでした（もう一度押す）";btn.disabled=false;});
   }
-  function render(H){
+  function render(H,G){
     var pend=Q.pendingCount();
-    if(!H.length){$("body").innerHTML='<p class="msg-box">まだ記録がありません。練習すると、ここに回数や時間帯が表示されます。'+(pend?'<br>（未送信の結果が '+pend+' 件あります）':'')+'</p>';return;}
-    var totDur=0,totQ=0,totC=0,days={},hours=[],byApp={};
-    for(var h=0;h<24;h++)hours.push(0);
-    H.forEach(function(x){
-      totDur+=x.dur||0;totQ+=x.total;totC+=x.score;
-      var d=x.t.slice(0,10);days[d]=(days[d]||0)+1;
-      var hr=+x.t.slice(11,13);if(hr>=0&&hr<24)hours[hr]++;
-      var a=byApp[x.app]=byApp[x.app]||{n:0,q:0,c:0,dur:0};a.n++;a.q+=x.total;a.c+=x.score;a.dur+=x.dur||0;
-    });
+    if(!H.length&&!(G&&G.dur)){$("body").innerHTML='<p class="msg-box">まだ記録がありません。練習すると、ここに回数や時間帯が表示されます。'+(pend?'<br>（未送信の結果が '+pend+' 件あります）':'')+'</p>';return;}
+    var totDur=0,totQ=0,totC=0,days={},hours=[],byApp={},rounds=0;
+    if(G){   // サーバーが持っている全期間の集計（新しい版）
+      totDur=G.dur||0;days=G.dayCount||{};hours=(G.hours||[]).slice(0,24);while(hours.length<24)hours.push(0);
+      Object.keys(G.apps||{}).forEach(function(k){var a=G.apps[k];byApp[k]={n:a.n,q:a.q,c:a.c,dur:a.dur};totQ+=a.q;totC+=a.c;rounds+=a.n;});
+    }else{   // 旧版サーバー：最近の記録から数える
+      for(var h=0;h<24;h++)hours.push(0);
+      H.forEach(function(x){
+        totDur+=x.dur||0;totQ+=x.total;totC+=x.score;rounds++;
+        var d=x.t.slice(0,10);days[d]=(days[d]||0)+1;
+        var hr=+x.t.slice(11,13);if(hr>=0&&hr<24)hours[hr]++;
+        var a=byApp[x.app]=byApp[x.app]||{n:0,q:0,c:0,dur:0};a.n++;a.q+=x.total;a.c+=x.score;a.dur+=x.dur||0;
+      });
+    }
     var html='';
     html+='<div class="sumgrid">'+
       '<div class="sum"><div class="n">'+dur(totDur)+'</div><div class="l">学習時間</div></div>'+
       '<div class="sum"><div class="n">'+Object.keys(days).length+'</div><div class="l">学習した日</div></div>'+
-      '<div class="sum"><div class="n">'+H.length+'</div><div class="l">ラウンド</div></div>'+
+      '<div class="sum"><div class="n">'+rounds+'</div><div class="l">ラウンド</div></div>'+
       '<div class="sum"><div class="n">'+(totQ?Math.round(totC/totQ*100)+'%':'—')+'</div><div class="l">正答率</div></div></div>';
     // 教材別
     html+='<div class="sec-h">教材ごと</div><table class="apps"><tr><th>教材</th><th>回数</th><th>解答数</th><th>正答率</th><th>時間</th></tr>';
@@ -171,7 +179,7 @@
     html+='<div class="export"><p>記録はすべて先生のスプレッドシートに保存されています。自分用の控えとして、Excel ファイルで保存することもできます。</p>'+
       '<button type="button" id="xlsxBtn">Excel で保存</button></div>';
     $("body").innerHTML=html;
-    $("xlsxBtn").onclick=function(){exportXlsx(H,this);};
+    $("xlsxBtn").onclick=function(){exportXlsx(H,this,G);};
   }
 })();
 </script>

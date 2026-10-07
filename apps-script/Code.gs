@@ -22,9 +22,9 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-05e';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-07a';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
-const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合' };
+const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
 const PROG_KEY_RE = /^(conjQuizStats_v4|talkQuiz_v1|gramQuiz_L[1-9]_v1|conjQuizDays)$/;   // 端末の記録のうち、バックアップするもの
 const PROG_MAX = 45000;      // 1件あたりの最大文字数（セルの上限は5万字）
@@ -56,7 +56,6 @@ const COL = { time: 1, date: 2, id: 3, name: 4, app: 5, section: 6, mode: 7, sco
   sec: 10, ta: 11, rank: 12, misses: 13, rid: 14, dur: 15 };
 const N_COLS = 15;
 const ROW_FORMATS = ['yyyy-mm-dd hh:mm:ss', '@', '@', '@', '@', '@', '@', '0', '0', '0.0', '@', '@', '@', '@', '0'];
-const SUMMARY_ROWS = 60;   // 集計の対象人数（名簿の2〜61行目）
 
 // ===== Webアプリの入口 =====
 function doGet() {
@@ -120,7 +119,7 @@ function handle_(req) {
   if (req.action === 'sync' || req.action === 'history') {
     if (!rateOk_(cache, 'r:' + id, LIMIT.readPerMin, 60)) return { ok: false, error: 'rate' };
     try { touchLogin_(ss, cache, id); } catch (e) {}   // 失敗してもログインは止めない
-    if (req.action === 'history') return { ok: true, user: user, history: historyFor_(ss, id) };
+    if (req.action === 'history') { const h = historyFor_(ss, id); return { ok: true, user: user, history: h.history, agg: h.agg }; }
     const res = { ok: true, user: user, stats: statsFor_(ss, id) };
     if (req.prog === true) res.prog = loadProg_(ss, id);   // ログイン時：端末にない進み具合を戻すため
     return res;
@@ -140,8 +139,7 @@ function handle_(req) {
     if (!submitAllowed_(cache, id)) return { ok: false, error: 'rate' };
     const v = validateResult_(req.result);
     if (!v) return { ok: false, error: 'bad_request' };
-    appendResult_(ss, user, v);
-    return { ok: true, user: user, stats: statsFor_(ss, id) };
+    return { ok: true, user: user, stats: recordResult_(ss, user, v) };
   }
   if (req.action === 'feedback') {
     if (!rateOk_(cache, 'f:h:' + id, LIMIT.feedbackPerHour, 3600) || !rateOk_(cache, 'f:d:' + id, LIMIT.feedbackPerDay, 86400)) return { ok: false, error: 'rate' };
@@ -279,16 +277,18 @@ function backupNow() {
   // 古いものから削除して BACKUP_KEEP 件だけ残す
   const files = [], it = folder.getFiles();
   while (it.hasNext()) files.push(it.next());
+  const keepId = PropertiesService.getScriptProperties().getProperty('ARCHIVE_ID');
+  for (let i = files.length - 1; i >= 0; i--) if (files[i].getId() === keepId || files[i].getName().indexOf(ss.getName() + ' ') !== 0) files.splice(i, 1);   // バックアップ以外は消さない
   files.sort(function (a, b) { return b.getDateCreated() - a.getDateCreated(); });
   files.slice(BACKUP_KEEP).forEach(function (f) { f.setTrashed(true); });
   return name;
 }
-// メニューから：毎日午前3時ごろの自動バックアップを有効にする（すぐに1回目も作る）
+// メニューから：毎日午前3時ごろの保守（バックアップ・古い結果のアーカイブ・集計の更新）を有効にする（すぐに1回目のバックアップも作る）
 function enableDailyBackup() {
-  ScriptApp.getProjectTriggers().forEach(function (t) { if (t.getHandlerFunction() === 'backupNow') ScriptApp.deleteTrigger(t); });
-  ScriptApp.newTrigger('backupNow').timeBased().everyDays(1).atHour(3).inTimezone(TZ).create();
+  ScriptApp.getProjectTriggers().forEach(function (t) { const f = t.getHandlerFunction(); if (f === 'backupNow' || f === 'dailyJob') ScriptApp.deleteTrigger(t); });
+  ScriptApp.newTrigger('dailyJob').timeBased().everyDays(1).atHour(3).inTimezone(TZ).create();   // バックアップ・アーカイブ・集計の更新
   const name = backupNow();
-  SpreadsheetApp.getActiveSpreadsheet().toast('毎日の自動バックアップを有効にしました。ドライブのフォルダ「' + BACKUP_FOLDER + '」に「' + name + '」を作りました（' + BACKUP_KEEP + '日分を残します）。', 'バックアップ', 10);
+  SpreadsheetApp.getActiveSpreadsheet().toast('毎日の自動バックアップ（と古い結果のアーカイブ・集計の更新）を有効にしました。ドライブのフォルダ「' + BACKUP_FOLDER + '」に「' + name + '」を作りました（' + BACKUP_KEEP + '日分を残します）。', 'バックアップ', 10);
 }
 function backupFromMenu() {
   const name = backupNow();
@@ -356,94 +356,332 @@ function validateResult_(r) {
     timeAttack: timeAttack, timeSec: timeSec, rank: rank, misses: safe_(misses, 4000), dur: dur };
 }
 
-function appendResult_(ss, user, v) {
-  const sh = resultsSheet_(ss);
+
+// ===== その学生の記録を集計して返す（画面の復元用）=====
+function emptyStats_() {
+  return { tries: 0, answered: 0, correct: 0, best: null, dur: 0,
+    bestTimes: { 'être': null, aller: null, avoir: null, faire: null, mix: null } };
+}
+
+// =====================================================================
+//  生徒ごとの集計（シート「生徒データ」に1人1行）
+//  結果が届くたびにその人の行だけ更新するので、結果シートが何行になっても速さは変わらない。
+// =====================================================================
+const SD_HEADERS = ['学生ID', '氏名', '更新日時', 'データ（自動・編集しない）'];
+const SD_RECENT = 400;          // 学習記録ページに出す「最近の記録」の件数
+const SD_RIDS = 80;             // 再送の重複チェックに使う、最近の送信番号の数
+const SD_MAX = 45000;           // 1セルに入れる最大文字数
+
+// ロック：1回の処理の中で二重に取らないよう、取っているかどうかを覚えておく
+let LOCKED_ = false;
+function withLock_(ms, fn) {
+  if (LOCKED_) return fn();
   const lock = LockService.getScriptLock();
-  lock.waitLock(20000);
-  try {
-    const last = sh.getLastRow();
-    if (last >= 2) {
-      const rids = sh.getRange(2, COL.rid, last - 1, 1).getValues();
-      for (const x of rids) if (String(x[0]) === v.rid) return false;   // 再送による重複は無視
+  lock.waitLock(ms);
+  LOCKED_ = true;
+  try { return fn(); } finally { LOCKED_ = false; lock.releaseLock(); }
+}
+function newData_(name) {
+  return { v: 2, name: name || '', apps: { conj: emptyStats_(), grammar: emptyStats_(), talk: emptyStats_() },
+    dayCount: {}, hours: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    dur: 0, recent: [], rids: [], last: '' };
+}
+function sdSheet_(ss) {
+  let sh = ss.getSheetByName(SHEET.studentData);
+  if (!sh) {
+    sh = ss.insertSheet(SHEET.studentData);
+    sh.getRange(1, 1, 1, SD_HEADERS.length).setValues([SD_HEADERS]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+    sh.getRange('A:A').setNumberFormat('@');
+    try { sh.hideSheet(); } catch (e) {}
+  }
+  return sh;
+}
+// 1件の結果を集計に足す。e = {t:Date, app, section(結果シートの表記), score, total, timeSec, rank, dur, rid}
+const LABEL_TO_SEC_ = (function () { const o = {}; Object.keys(SECTION_LABEL).forEach(function (k) { o[SECTION_LABEL[k]] = k; }); return o; })();
+const LABEL_TO_APP_ = (function () { const o = {}; Object.keys(APP_LABEL).forEach(function (k) { o[APP_LABEL[k]] = k; }); return o; })();
+function sdApply_(d, e) {
+  const st = d.apps[e.app];
+  if (!st) return;
+  const day = Utilities.formatDate(e.t, TZ, 'yyyy-MM-dd');
+  d.dayCount[day] = (d.dayCount[day] || 0) + 1;
+  const hr = Number(Utilities.formatDate(e.t, TZ, 'H'));
+  if (hr >= 0 && hr < 24) d.hours[hr]++;
+  const dur = Number(e.dur) || 0;
+  st.tries++; st.answered += e.total; st.correct += e.score; st.dur = (st.dur || 0) + dur;
+  if (st.best === null || e.score > st.best) st.best = e.score;
+  if (e.app === 'conj' && e.rank && Number(e.timeSec) > 0) {
+    const key = LABEL_TO_SEC_[e.section];
+    if (key) {
+      const ms = Math.round(Number(e.timeSec) * 1000);
+      if (st.bestTimes[key] === null || ms < st.bestTimes[key]) st.bestTimes[key] = ms;
     }
+  }
+  d.dur += dur;
+  const t = Utilities.formatDate(e.t, TZ, "yyyy-MM-dd'T'HH:mm");
+  d.last = t;
+  d.recent.push({ t: t, app: e.app, sec: String(e.section || ''), score: e.score, total: e.total, dur: dur });
+  if (d.recent.length > SD_RECENT) d.recent = d.recent.slice(-SD_RECENT);
+  if (e.rid) { d.rids.push(String(e.rid)); if (d.rids.length > SD_RIDS) d.rids = d.rids.slice(-SD_RIDS); }
+}
+// 結果シート（またはアーカイブ）の1行 → sdApply_ に渡す形
+function rowToEntry_(r) {
+  const t = r[COL.time - 1] instanceof Date ? r[COL.time - 1] : new Date(r[COL.time - 1]);
+  if (isNaN(t)) return null;
+  const app = LABEL_TO_APP_[r[COL.app - 1]];
+  if (!app) return null;
+  return { t: t, app: app, section: String(r[COL.section - 1] || ''), score: Number(r[COL.score - 1]) || 0,
+    total: Number(r[COL.total - 1]) || 0, timeSec: r[COL.sec - 1], rank: r[COL.rank - 1], dur: Number(r[COL.dur - 1]) || 0,
+    rid: String(r[COL.rid - 1] || '') };
+}
+// 生徒データの行番号（キャッシュつき）
+function sdFind_(sh, cache, id) {
+  const c = Number(cache.get('sd:' + id) || 0);
+  if (c >= 2 && c <= sh.getLastRow() && normId_(sh.getRange(c, 1).getValue()) === id) return c;
+  const last = sh.getLastRow();
+  if (last < 2) return 0;
+  const ids = sh.getRange(2, 1, last - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) {
+    if (normId_(ids[i][0]) === id) { cache.put('sd:' + id, String(i + 2), 21600); return i + 2; }
+  }
+  return 0;
+}
+// その人のデータを読む。まだ無ければ、結果シートとアーカイブから一度だけ作る
+function sdLoad_(ss, id, name) {
+  const sh = sdSheet_(ss), cache = CacheService.getScriptCache();
+  const row = sdFind_(sh, cache, id);
+  if (row) {
+    try {
+      const d = JSON.parse(String(sh.getRange(row, 4).getValue()));
+      if (d && d.v === 2) { if (name) d.name = name; return { row: row, data: d }; }
+    } catch (e) {}
+  }
+  // まだ無い（新しい学生、または初回）：ほかの処理と重ならないようにして、結果から一度だけ作る
+  return withLock_(15000, function () {
+    const again = sdFind_(sh, cache, id);
+    if (again && again !== row) {
+      try { const d0 = JSON.parse(String(sh.getRange(again, 4).getValue())); if (d0 && d0.v === 2) return { row: again, data: d0 }; } catch (e) {}
+    }
+    const d = newData_(name);
+    eachResultRow_(ss, function (r) { if (normId_(r[COL.id - 1]) === id) { const e = rowToEntry_(r); if (e) sdApply_(d, e); } });
+    const out = { row: again || row, data: d };
+    sdSave_(ss, id, out);
+    return out;
+  });
+}
+function sdSave_(ss, id, sd) {
+  const sh = sdSheet_(ss), d = sd.data;
+  let json = JSON.stringify(d);
+  while (json.length > SD_MAX && d.recent.length > 50) { d.recent = d.recent.slice(Math.floor(d.recent.length / 4)); json = JSON.stringify(d); }
+  const rec = [id, safe_(d.name, 60), new Date(), json];
+  if (sd.row) sh.getRange(sd.row, 1, 1, 4).setValues([rec]);
+  else {
+    sh.appendRow(rec);
+    sd.row = sh.getLastRow();
+    CacheService.getScriptCache().put('sd:' + id, String(sd.row), 21600);
+  }
+}
+// クイズ画面が使う形（以前の statsFor_ と同じ）
+function statsOut_(d) {
+  const apps = {};
+  Object.keys(d.apps).forEach(function (k) {
+    const s = d.apps[k];
+    apps[k] = { tries: s.tries, answered: s.answered, correct: s.correct, best: s.best, bestTimes: s.bestTimes };
+  });
+  return { days: Object.keys(d.dayCount).sort().slice(-400), apps: apps };
+}
+function statsFor_(ss, id) { return statsOut_(sdLoad_(ss, id).data); }
+// 学習記録ページ用：全期間の集計と、最近の記録
+function historyFor_(ss, id) {
+  const d = sdLoad_(ss, id).data;
+  const apps = {};
+  Object.keys(d.apps).forEach(function (k) { const s = d.apps[k]; apps[k] = { n: s.tries, q: s.answered, c: s.correct, dur: s.dur || 0 }; });
+  return { history: d.recent, agg: { dayCount: d.dayCount, hours: d.hours, apps: apps, dur: d.dur } };
+}
+
+// 結果シート → アーカイブの順に、全行を古い順にたどる（作り直し用）
+function eachResultRow_(ss, fn) {
+  const sources = [];
+  const aid = PropertiesService.getScriptProperties().getProperty('ARCHIVE_ID');
+  if (aid) { try { const a = SpreadsheetApp.openById(aid).getSheetByName(SHEET.results); if (a) sources.push(a); } catch (e) {} }
+  const r = ss.getSheetByName(SHEET.results);
+  if (r) sources.push(r);
+  sources.forEach(function (sh) {
+    const last = sh.getLastRow();
+    for (let s = 2; s <= last; s += 5000) {
+      const n = Math.min(5000, last - s + 1);
+      sh.getRange(s, 1, n, N_COLS).getValues().forEach(fn);
+    }
+  });
+}
+
+// 結果を記録する（重複は生徒データの送信番号で判定し、結果シート全体は読まない）
+function recordResult_(ss, user, v) {
+  return withLock_(20000, function () {
+    ensureSummaryV2_(ss);
+    const sd = sdLoad_(ss, user.id, user.name);
+    if (sd.data.rids.indexOf(v.rid) >= 0) return statsOut_(sd.data);   // 再送による重複は無視
     const now = new Date();
+    const sh = resultsSheet_(ss), last = sh.getLastRow();
     const row = [now, Utilities.formatDate(now, TZ, 'yyyy-MM-dd'), user.id, safe_(user.name, 60),
       APP_LABEL[v.app], v.section, v.mode, v.score, v.total, v.timeSec, v.timeAttack ? '○' : '', v.rank, v.misses, v.rid, v.dur];
     const rng = sh.getRange(last + 1, 1, 1, N_COLS);
     rng.setNumberFormats([ROW_FORMATS]);
     rng.setValues([row]);
-    return true;
-  } finally {
-    lock.releaseLock();
+    sdApply_(sd.data, { t: now, app: v.app, section: v.section, score: v.score, total: v.total,
+      timeSec: v.timeSec, rank: v.rank, dur: v.dur, rid: v.rid });
+    sdSave_(ss, user.id, sd);
+    summaryRow_(ss, user.id, sd.data);
+    return statsOut_(sd.data);
+  });
+}
+
+// =====================================================================
+//  集計表（先生が見る「集計」シート）：計算式を使わず、値で書く
+// =====================================================================
+const SUMMARY_HEADERS = ['学生ID', '氏名', 'ラウンド数', '学習時間(分)', '学習日数', '直近7日の学習日数', '最終学習日', '累計解答数', '正答率',
+  '動詞活用(回)', '文法練習(回)', '会話練習(回)', '最速 être(秒)', '最速 aller(秒)', '最速 avoir(秒)', '最速 faire(秒)', '最速 総まとめ(秒)'];
+function summaryValues_(id, name, d) {
+  const a = d.apps, tries = a.conj.tries + a.grammar.tries + a.talk.tries;
+  const q = a.conj.answered + a.grammar.answered + a.talk.answered, c = a.conj.correct + a.grammar.correct + a.talk.correct;
+  const today = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd');
+  const from = Utilities.formatDate(new Date(Date.now() - 6 * 86400000), TZ, 'yyyy-MM-dd');
+  const days = Object.keys(d.dayCount);
+  const bt = function (k) { const ms = a.conj.bestTimes[k]; return ms == null ? '' : Math.round(ms / 100) / 10; };
+  return [id, name || d.name || '', tries, Math.round(d.dur / 60), days.length,
+    days.filter(function (x) { return x >= from && x <= today; }).length,
+    d.last ? d.last.slice(0, 10) : '', q, q ? c / q : '',
+    a.conj.tries, a.grammar.tries, a.talk.tries, bt('être'), bt('aller'), bt('avoir'), bt('faire'), bt('mix')];
+}
+function summarySheet_(ss) {
+  const sh = ensureSheet_(ss, SHEET.summary, null);
+  sh.getRange(1, 1, 1, SUMMARY_HEADERS.length).setValues([SUMMARY_HEADERS]).setFontWeight('bold');
+  sh.setFrozenRows(1);
+  return sh;
+}
+function summaryRow_(ss, id, d) {
+  const sh = summarySheet_(ss), last = sh.getLastRow();
+  let row = 0;
+  if (last >= 2) {
+    const ids = sh.getRange(2, 1, last - 1, 1).getValues();
+    for (let i = 0; i < ids.length; i++) if (normId_(ids[i][0]) === id) { row = i + 2; break; }
   }
+  if (!row) row = last + 1;
+  const rng = sh.getRange(row, 1, 1, SUMMARY_HEADERS.length);
+  rng.setValues([summaryValues_(id, lookupRoster_(ss, id) || d.name, d)]);
+  sh.getRange(row, 9).setNumberFormat('0%');
 }
-
-// ===== その学生の記録を集計して返す（画面の復元用）=====
-function emptyStats_() {
-  return { tries: 0, answered: 0, correct: 0, best: null,
-    bestTimes: { 'être': null, aller: null, avoir: null, faire: null, mix: null } };
-}
-
-function statsFor_(ss, id) {
-  const out = { days: [], apps: { conj: emptyStats_(), grammar: emptyStats_(), talk: emptyStats_() } };
-  const sh = ss.getSheetByName(SHEET.results);
-  if (!sh || sh.getLastRow() < 2) return out;
-
-  const labelToKey = {}, appToKey = {};
-  Object.keys(SECTION_LABEL).forEach(function (k) { labelToKey[SECTION_LABEL[k]] = k; });
-  Object.keys(APP_LABEL).forEach(function (k) { appToKey[APP_LABEL[k]] = k; });
-
-  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, N_COLS).getValues();
-  const days = {};
-  for (const r of vals) {
-    if (normId_(r[COL.id - 1]) !== id) continue;
-    const d = r[COL.date - 1];
-    const dayStr = d instanceof Date ? Utilities.formatDate(d, TZ, 'yyyy-MM-dd') : String(d);
-    if (dayStr) days[dayStr] = true;
-
-    const app = appToKey[r[COL.app - 1]];
-    if (!app) continue;
-    const st = out.apps[app];
-    const score = Number(r[COL.score - 1]) || 0;
-    st.tries++;
-    st.answered += Number(r[COL.total - 1]) || 0;
-    st.correct += score;
-    if (st.best === null || score > st.best) st.best = score;
-
-    const sec = Number(r[COL.sec - 1]);
-    if (app === 'conj' && r[COL.rank - 1] && sec > 0) {
-      const key = labelToKey[r[COL.section - 1]];
-      if (key) {
-        const ms = Math.round(sec * 1000);
-        if (st.bestTimes[key] === null || ms < st.bestTimes[key]) st.bestTimes[key] = ms;
-      }
-    }
-  }
-  out.days = Object.keys(days).sort();
-  return out;
-}
-
-// ===== 学習記録（本人の分だけ）=====
-function historyFor_(ss, id) {
-  const sh = ss.getSheetByName(SHEET.results);
-  const out = [];
-  if (!sh || sh.getLastRow() < 2) return out;
-  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, N_COLS).getValues();
-  const appToKey = {};
-  Object.keys(APP_LABEL).forEach(function (k) { appToKey[APP_LABEL[k]] = k; });
-  for (const r of vals) {
-    if (normId_(r[COL.id - 1]) !== id) continue;
-    const t = r[COL.time - 1];
-    out.push({
-      t: t instanceof Date ? Utilities.formatDate(t, TZ, "yyyy-MM-dd'T'HH:mm") : String(t),
-      app: appToKey[r[COL.app - 1]] || '',
-      sec: String(r[COL.section - 1] || ''),
-      score: Number(r[COL.score - 1]) || 0,
-      total: Number(r[COL.total - 1]) || 0,
-      dur: Number(r[COL.dur - 1]) || 0
+// 全員分を書き直す（毎日の保守と、メニューから）。名簿の順に並べ、名簿にない人は後ろに
+function refreshSummary_(ss) {
+  const sh = summarySheet_(ss), sd = sdSheet_(ss);
+  const data = {};
+  if (sd.getLastRow() >= 2) {
+    sd.getRange(2, 1, sd.getLastRow() - 1, 4).getValues().forEach(function (r) {
+      try { const d = JSON.parse(String(r[3])); if (d && d.v === 2) data[normId_(r[0])] = d; } catch (e) {}
     });
   }
-  return out.slice(-1000);   // 最新の1000件まで（古い順）
+  const rows = [], seen = {};
+  const roster = ss.getSheetByName(SHEET.roster);
+  if (roster && roster.getLastRow() >= 2) {
+    roster.getRange(2, 1, roster.getLastRow() - 1, 2).getValues().forEach(function (r) {
+      const id = normId_(r[0]);
+      if (!id || seen[id]) return;
+      seen[id] = 1;
+      rows.push(summaryValues_(id, String(r[1] || ''), data[id] || newData_(String(r[1] || ''))));
+    });
+  }
+  Object.keys(data).forEach(function (id) { if (!seen[id]) rows.push(summaryValues_(id, data[id].name, data[id])); });
+  const last = sh.getLastRow();
+  if (last >= 2) sh.getRange(2, 1, last - 1, Math.max(sh.getLastColumn(), SUMMARY_HEADERS.length)).clearContent();
+  if (rows.length) {
+    sh.getRange(2, 1, rows.length, SUMMARY_HEADERS.length).setValues(rows);
+    sh.getRange(2, 9, rows.length, 1).setNumberFormat('0%');
+    sh.getRange(2, 13, rows.length, 5).setNumberFormat('0.0');
+  }
+}
+// 生徒データを結果シート（とアーカイブ）から全員分作り直す。初回の切り替えと、メニューから
+function rebuildAll_(ss) {
+  const map = {}, names = {};
+  eachResultRow_(ss, function (r) {
+    const id = normId_(r[COL.id - 1]); if (!id) return;
+    const e = rowToEntry_(r); if (!e) return;
+    if (!map[id]) map[id] = newData_(String(r[COL.name - 1] || ''));
+    sdApply_(map[id], e);
+  });
+  const sh = sdSheet_(ss), last = sh.getLastRow();
+  if (last >= 2) sh.getRange(2, 1, last - 1, 4).clearContent();
+  const rows = Object.keys(map).map(function (id) {
+    const d = map[id];
+    let json = JSON.stringify(d);
+    while (json.length > SD_MAX && d.recent.length > 50) { d.recent = d.recent.slice(Math.floor(d.recent.length / 4)); json = JSON.stringify(d); }
+    return [id, safe_(d.name, 60), new Date(), json];
+  });
+  if (rows.length) sh.getRange(2, 1, rows.length, 4).setValues(rows);
+  const cache = CacheService.getScriptCache();
+  rows.forEach(function (r, i) { cache.put('sd:' + r[0], String(i + 2), 21600); });
+  refreshSummary_(ss);
+  PropertiesService.getScriptProperties().setProperty('SUMMARY_V', '2');
+  return rows.length;
+}
+// 新しい方式に切り替わっていなければ、一度だけ作り直す
+function ensureSummaryV2_(ss) {
+  if (PropertiesService.getScriptProperties().getProperty('SUMMARY_V') === '2') return;
+  withLock_(30000, function () {
+    if (PropertiesService.getScriptProperties().getProperty('SUMMARY_V') !== '2') rebuildAll_(ss);
+  });
+}
+
+// =====================================================================
+//  古い結果のアーカイブ：結果シートが ARCHIVE_AT 行を超えたら、新しい ARCHIVE_KEEP 行を残して
+//  古い行を別ファイル「Naralingo 結果アーカイブ」に移す（毎日の保守で実行）
+// =====================================================================
+const ARCHIVE_AT = 3000, ARCHIVE_KEEP = 1000;
+function archiveBook_() {
+  const props = PropertiesService.getScriptProperties();
+  const id = props.getProperty('ARCHIVE_ID');
+  if (id) { try { return SpreadsheetApp.openById(id); } catch (e) {} }
+  const book = SpreadsheetApp.create('Naralingo 結果アーカイブ');
+  const sh = book.getSheets()[0];
+  sh.setName(SHEET.results);
+  sh.getRange(1, 1, 1, N_COLS).setValues([RESULT_HEADERS]).setFontWeight('bold');
+  sh.setFrozenRows(1);
+  props.setProperty('ARCHIVE_ID', book.getId());
+  try { const it = DriveApp.getFoldersByName('Naralingo 結果アーカイブ'); DriveApp.getFileById(book.getId()).moveTo(it.hasNext() ? it.next() : DriveApp.createFolder('Naralingo 結果アーカイブ')); } catch (e) {}
+  return book;
+}
+function archiveOld_(ss) {
+  const sh = ss.getSheetByName(SHEET.results);
+  if (!sh) return 0;
+  const n = sh.getLastRow() - 1;
+  if (n <= ARCHIVE_AT) return 0;
+  return withLock_(30000, function () {
+    ensureSummaryV2_(ss);   // 移す前に、生徒データがそろっていることを確かめる
+    const move = sh.getLastRow() - 1 - ARCHIVE_KEEP;
+    if (move <= 0) return 0;
+    const vals = sh.getRange(2, 1, move, N_COLS).getValues();
+    const a = archiveBook_().getSheetByName(SHEET.results);
+    const al = a.getLastRow();
+    a.getRange(al + 1, 1, move, N_COLS).setValues(vals);
+    SpreadsheetApp.flush();
+    if (a.getLastRow() !== al + move) throw new Error('アーカイブへの書き込みを確認できませんでした');   // 写せたのを確かめてから消す
+    sh.deleteRows(2, move);
+    return move;
+  });
+}
+// 毎日の保守：バックアップ → 古い結果のアーカイブ → 集計表の更新（直近7日など）
+function dailyJob() {
+  const ss = ss_();
+  try { backupNow(); } catch (e) { console.error('backup', e); }
+  try { archiveOld_(ss); } catch (e) { console.error('archive', e); }
+  try { ensureSummaryV2_(ss); refreshSummary_(ss); } catch (e) { console.error('summary', e); }
+}
+function rebuildFromMenu() {
+  const n = withLock_(60000, function () { return rebuildAll_(SpreadsheetApp.getActiveSpreadsheet()); });
+  SpreadsheetApp.getActiveSpreadsheet().toast(n + '人分の生徒データと集計を、結果シートとアーカイブから作り直しました。', '作り直し', 8);
+}
+function refreshSummaryFromMenu() {
+  refreshSummary_(SpreadsheetApp.getActiveSpreadsheet());
+  SpreadsheetApp.getActiveSpreadsheet().toast('集計を更新しました。', '集計', 5);
 }
 
 // ===== 初期設定・ID発行 =====
@@ -455,6 +693,8 @@ function onOpen() {
     .addSeparator()
     .addItem('毎日の自動バックアップを有効にする', 'enableDailyBackup')
     .addItem('今すぐバックアップ', 'backupFromMenu')
+    .addItem('集計を今すぐ更新', 'refreshSummaryFromMenu')
+    .addItem('生徒データを作り直す（結果とアーカイブから）', 'rebuildFromMenu')
     .addSeparator()
     .addItem('ログインテスト（IDを確かめる）', 'testLogin')
     .addItem('ログイン制限を解除', 'clearLock')
@@ -473,7 +713,7 @@ function setup() {
   resultsSheet_(ss);
   ensureSheet_(ss, SHEET.feedback, FEEDBACK_HEADERS);
   progSheet_(ss);
-  buildSummary_(ss);
+  rebuildAll_(ss);   // 生徒データと集計を作る（すでにあれば作り直す）
   ss.toast('シートを用意しました。名簿のB列に氏名、C列に名字のローマ字を入れて、メニューからIDを発行してください。');
 }
 
@@ -531,42 +771,6 @@ function issueIds() {
   ss.toast(n + '人分のIDを発行しました。' + (skipped ? '（C列の名字ローマ字が空の ' + skipped + ' 行は発行していません）' : ''));
 }
 
-function buildSummary_(ss) {
-  const sh = ensureSheet_(ss, SHEET.summary, null);
-  const headers = ['学生ID', '氏名', 'ラウンド数', '学習日数', '直近7日の学習日数', '最終学習日', '累計解答数', '正答率',
-    '動詞活用(回)', '文法練習(回)', '会話練習(回)',
-    '最速 être(秒)', '最速 aller(秒)', '最速 avoir(秒)', '最速 faire(秒)', '最速 総まとめ(秒)'];
-  sh.getRange(1, 1, 1, headers.length).setValues([headers]).setFontWeight('bold');
-  sh.setFrozenRows(1);
-
-  // 結果シートの列: A日時 B日付 C学生ID D氏名 E教材 F セクション G形式 H正解数 I問題数 J所要秒 Kタイムアタック Lランク
-  const R = "'結果'!";
-  const rows = [];
-  for (let r = 2; r < 2 + SUMMARY_ROWS; r++) {
-    const a = '$A' + r;
-    const guard = function (f) { return '=IF(' + a + '="","",' + f + ')'; };
-    const appCount = function (label) { return guard('COUNTIFS(' + R + 'C:C,' + a + ',' + R + 'E:E,"' + label + '")'); };
-    const best = function (label) {
-      const cond = R + 'C:C,' + a + ',' + R + 'E:E,"動詞活用",' + R + 'F:F,"' + label + '",' + R + 'L:L,"<>"';
-      return guard('IF(COUNTIFS(' + cond + ')=0,"",MINIFS(' + R + 'J:J,' + cond + '))');
-    };
-    rows.push([
-      "=IF('名簿'!A" + r + '="","",UPPER(SUBSTITUTE(ASC(TRIM(\'名簿\'!A' + r + '))," ","")))',
-      guard("IF('名簿'!B" + r + "<>\"\",'名簿'!B" + r + ',IFERROR(INDEX(' + R + 'D:D,MATCH(' + a + ',' + R + 'C:C,0)),""))'),
-      guard('COUNTIF(' + R + 'C:C,' + a + ')'),
-      guard('IFERROR(COUNTUNIQUE(FILTER(' + R + 'B:B,' + R + 'C:C=' + a + ')),0)'),
-      guard('IFERROR(COUNTUNIQUE(FILTER(' + R + 'B:B,' + R + 'C:C=' + a + ',' + R + 'A:A>=TODAY()-6)),0)'),
-      guard('IF(COUNTIF(' + R + 'C:C,' + a + ')=0,"",TEXT(MAXIFS(' + R + 'A:A,' + R + 'C:C,' + a + '),"yyyy-mm-dd"))'),
-      guard('SUMIFS(' + R + 'I:I,' + R + 'C:C,' + a + ')'),
-      guard('IF(SUMIFS(' + R + 'I:I,' + R + 'C:C,' + a + ')=0,"",SUMIFS(' + R + 'H:H,' + R + 'C:C,' + a + ')/SUMIFS(' + R + 'I:I,' + R + 'C:C,' + a + '))'),
-      appCount('動詞活用'), appCount('文法練習'), appCount('会話練習'),
-      best('être'), best('aller'), best('avoir'), best('faire'), best('総まとめ')
-    ]);
-  }
-  sh.getRange(2, 1, SUMMARY_ROWS, headers.length).setFormulas(rows);
-  sh.getRange(2, 8, SUMMARY_ROWS, 1).setNumberFormat('0%');
-  sh.getRange(2, 12, SUMMARY_ROWS, 5).setNumberFormat('0.0');
-}
 
 // ===== 名簿の入力補助・点検 =====
 // 名簿のA列にIDを手入力したら、自動で半角・大文字にそろえる
