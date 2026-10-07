@@ -134,7 +134,7 @@
     '.deer-bub .dc-tip{margin-top:8px;}' +
     '.deer-bub .dc-story{margin-top:9px;padding:9px 11px;border-radius:12px;background:#fff;border:1px dashed #efe0c2;}' +
     '.deer-bub .dc-story .dc-lb{background:#b48aa8;}' +
-    '.deer-bub .dc-fr{display:block;font-family:"Cormorant Garamond",serif;font-size:17px;font-weight:600;line-height:1.4;color:var(--ink);margin:2px 0 1px;}' +
+    '.deer-bub .dc-fr{display:block;font-family:var(--serif);font-size:17px;font-weight:600;line-height:1.4;color:var(--ink);margin:2px 0 1px;}' +
     '.deer-bub .dc-ja{display:block;font-size:12.5px;color:var(--ink);}' +
     '.deer-bub .dc-n{display:block;font-size:12px;color:var(--ink-soft);margin-top:2px;}' +
     '.deer-bub .dc-more{margin-top:8px;border:none;background:none;color:#b08a3e;font:inherit;font-size:12px;text-decoration:underline;cursor:pointer;padding:0;}';

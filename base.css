@@ -20,10 +20,10 @@ body{
 .wrap{width:100%;max-width:530px;}
 .crown{margin-bottom:24px;text-align:center;}
 .eyebrow{font-size:10.5px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
-.crown h1{font-family:"Cormorant Garamond",serif;font-weight:600;margin:0;font-size:42px;line-height:1.04;letter-spacing:.5px;color:#5a4e57;}
+.crown h1{font-family:var(--serif);font-weight:600;margin:0;font-size:42px;line-height:1.04;letter-spacing:.5px;color:#5a4e57;}
 .panel{background:var(--card);border:1px solid var(--card-edge);border-radius:26px;
   box-shadow:0 30px 70px -34px var(--shadow), 0 1px 0 rgba(255,255,255,.8) inset;padding:34px 30px;position:relative;}
-.hello{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:600;margin:0 0 4px;color:var(--ink);}
+.hello{font-family:var(--serif);font-size:26px;font-weight:600;margin:0 0 4px;color:var(--ink);}
 .hello small{display:block;font-family:"Noto Sans JP";font-size:12.5px;color:var(--ink-soft);margin-top:8px;letter-spacing:.3px;font-weight:400;}
 .hidden{display:none!important;}
 .note{margin-top:10px;color:var(--ink-faint);font-size:12px;line-height:1.7;}
@@ -35,7 +35,7 @@ body{
 /* ログイン */
 .idrow{display:flex;gap:8px;margin-top:22px;}
 .idin{flex:1;min-width:0;padding:12px 14px;border:1px solid rgba(60,40,40,.2);border-radius:12px;background:#fff;
-  font-family:"Cormorant Garamond",serif;font-size:26px;letter-spacing:6px;text-transform:uppercase;color:var(--ink);}
+  font-family:var(--serif);font-size:26px;letter-spacing:6px;text-transform:uppercase;color:var(--ink);}
 .idin::placeholder{letter-spacing:1px;font-size:13px;font-family:"Noto Sans JP";text-transform:none;color:var(--ink-faint);}
 .idbtn{padding:0 22px;border:1px solid var(--accent-ink);border-radius:12px;background:var(--accent-ink);color:#fff;
   font-family:"Noto Sans JP";font-size:14px;cursor:pointer;}
@@ -101,11 +101,11 @@ body{
   border:1px solid var(--rule);border-radius:18px;background:#fdf9f6;transition:transform .15s,box-shadow .15s,border-color .15s;}
 .card:hover{transform:translateY(-1px);border-color:var(--accent);box-shadow:0 12px 26px -18px var(--shadow);}
 .card .ico{flex:none;width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;
-  font-family:"Cormorant Garamond",serif;font-style:italic;font-size:22px;font-weight:600;color:var(--c);background:var(--w);}
+  font-family:var(--serif);font-style:italic;font-size:22px;font-weight:600;color:var(--c);background:var(--w);}
 .card .tx{flex:1;min-width:0;}
 .card .ti{font-size:15.5px;font-weight:500;color:var(--ink);}
 .card .de{font-size:11.5px;color:var(--ink-soft);margin-top:3px;line-height:1.5;}
-.card .st{flex:none;text-align:right;font-family:"Cormorant Garamond",serif;font-size:15px;color:var(--ink-soft);}
+.card .st{flex:none;text-align:right;font-family:var(--serif);font-size:15px;color:var(--ink-soft);}
 .card .st small{display:block;font-family:"Noto Sans JP";font-size:10px;color:var(--ink-faint);}
 .card .soon{flex:none;font-size:10.5px;color:var(--ink-faint);border:1px solid var(--rule);border-radius:20px;padding:3px 10px;letter-spacing:1px;}
 .card.conj{--c:#b16880;--w:#faeef2;}
@@ -115,7 +115,7 @@ body{
 .sumgrid{display:grid;grid-template-columns:repeat(4,1fr);margin:16px 0 4px;border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#fdf9f6;}
 .sum{padding:12px 6px;text-align:center;}
 .sum+.sum{border-left:1px solid var(--rule);}
-.sum .n{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:24px;line-height:1.1;color:var(--ink);}
+.sum .n{font-family:var(--serif);font-weight:600;font-size:24px;line-height:1.1;color:var(--ink);}
 .sum .l{font-size:9.5px;color:var(--ink-faint);letter-spacing:1px;margin-top:4px;}
 @media(max-width:430px){.sum .n{font-size:19px;}}
 

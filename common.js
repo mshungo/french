@@ -284,23 +284,23 @@
       if (r.cssRules) { try { eachRule(r.cssRules, fn); } catch (e) {} }
     }
   }
-  /* 欧文の飾り書体（Cormorant Garamond）を使っている規則を、ゴシック体に置きかえる（元に戻せるよう控えておく） */
-  function applyFont(gothic) {
+  /* 欧文の書体は CSS 変数 --serif で指定している（ふだんは Times New Roman 系、ゴシックのときは下の SANS）。
+     書体ごとに字の大きさの見え方がちがうので、--serif を使う規則の文字サイズだけ少し整える（元に戻せるよう控えておく） */
+  var SCALE = { serif: 0.94, gothic: 0.86 };
+  function applyFont(mode) {
+    var k = SCALE[mode] || 1;
     for (var i = 0; i < document.styleSheets.length; i++) {
       var rules; try { rules = document.styleSheets[i].cssRules; } catch (e) { continue; }   // 別のサイトの CSS は読めないので飛ばす
       if (!rules) continue;
       eachRule(rules, function (r) {
         var st = r.style;
         if (!r.__nlFont) {
-          if (!/Cormorant/i.test(st.fontFamily || "")) return;
-          r.__nlFont = { ff: st.fontFamily, fs: st.fontSize, fi: st.fontStyle, ls: st.letterSpacing };
+          if (!/--serif/.test(st.fontFamily || "")) return;
+          r.__nlFont = { fs: st.fontSize, fi: st.fontStyle };
         }
-        var o = r.__nlFont;
-        if (gothic) {
-          st.fontFamily = SANS;
-          var m = /^([\d.]+)px$/.exec(o.fs || ""); if (m) st.fontSize = Math.round(parseFloat(m[1]) * 0.86 * 10) / 10 + "px";
-          if (o.fi === "italic") st.fontStyle = "normal";
-        } else { st.fontFamily = o.ff; st.fontSize = o.fs; st.fontStyle = o.fi; }
+        var o = r.__nlFont, m = /^([\d.]+)px$/.exec(o.fs || "");
+        st.fontSize = m ? Math.round(parseFloat(m[1]) * k * 10) / 10 + "px" : o.fs;
+        st.fontStyle = (mode === "gothic" && o.fi === "italic") ? "normal" : o.fi;
       });
     }
   }
@@ -308,11 +308,13 @@
     var p = prefs(), h = document.documentElement;
     h.classList.toggle("nl-notimer", !!p.hideTimer);
     h.classList.toggle("nl-gothic", p.font === "gothic");
-    if (document.readyState !== "loading") applyFont(p.font === "gothic");
+    if (document.readyState !== "loading") applyFont(p.font === "gothic" ? "gothic" : "serif");
   }
   (function () {
     var css = document.createElement("style");
-    css.textContent = '.live-timer,#dlgTimer{cursor:pointer;-webkit-user-select:none;user-select:none;}' +
+    css.textContent = ':root{--serif:"Times New Roman",Tinos,"Noto Serif",Georgia,serif;}' +
+      'html.nl-gothic{--serif:' + SANS + ';}' +
+      '.live-timer,#dlgTimer{cursor:pointer;-webkit-user-select:none;user-select:none;}' +
       'html.nl-notimer .live-timer,html.nl-notimer #dlgTimer{font-size:0!important;}' +
       'html.nl-notimer .live-timer::after,html.nl-notimer #dlgTimer::after{content:"⏱";font-size:17px;font-style:normal;opacity:.4;}';
     (document.head || document.documentElement).appendChild(css);
@@ -324,8 +326,8 @@
     function watchHead() {
       try {
         new MutationObserver(function () {
-          if (prefs().font !== "gothic" || fontTimer) return;
-          fontTimer = setTimeout(function () { fontTimer = 0; applyFont(true); }, 30);
+          if (fontTimer) return;
+          fontTimer = setTimeout(function () { fontTimer = 0; applyFont(prefs().font === "gothic" ? "gothic" : "serif"); }, 30);
         }).observe(document.head, { childList: true });
       } catch (e) {}
     }

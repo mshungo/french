@@ -67,7 +67,7 @@
         (pct > 0 ? '<circle cx="24" cy="22" r="17" fill="none" stroke="' + (kind === "sec" ? col : kind === "clear" ? "#b48aa8" : "#c0a06a") +
           '" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="' + (C * pct).toFixed(1) + ' ' + C.toFixed(1) + '" transform="rotate(-90 24 22)"/>' : '') +
         '<circle cx="24" cy="22" r="13" fill="#fff"/>' +
-        '<text x="24" y="' + (o.label && String(o.label).length > 2 ? 25 : 26.5) + '" text-anchor="middle" font-family="Cormorant Garamond,serif" font-weight="600" font-size="' +
+        '<text x="24" y="' + (o.label && String(o.label).length > 2 ? 25 : 26.5) + '" text-anchor="middle" font-family="Times New Roman,Tinos,Georgia,serif" font-weight="600" font-size="' +
         (o.label && String(o.label).length > 2 ? 9 : 13) + '" fill="#b6acb1">' + esc(o.label == null ? "" : o.label) + '</text>';
     }
     return s + "</svg>";
@@ -133,7 +133,7 @@
     'background:linear-gradient(180deg,#fffaf0,#fdf7f2);}' +
     '.bdg-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;}' +
     '.bdg-t{font-size:11.5px;letter-spacing:2px;color:#9a7b45;font-weight:500;}' +
-    '.bdg-n{font-family:"Cormorant Garamond",serif;font-size:15px;color:#b6acb1;}' +
+    '.bdg-n{font-family:var(--serif);font-size:15px;color:#b6acb1;}' +
     '.bdg-n b{font-size:20px;color:#9a7b45;font-weight:600;}' +
     '.bdg-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));align-items:end;justify-items:center;gap:8px 4px;}' +
     '.bdg-cell{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:44px;}' +
@@ -160,7 +160,7 @@
     '.start-btn.mastered .sb-prog{flex-direction:row;align-items:center;gap:6px;color:#9a7b45;font-weight:500;}' +
     '.start-btn.mastered .sb-prog .bdg-svg{margin:-6px 0 -8px;filter:drop-shadow(0 2px 3px rgba(150,100,20,.25));}' +
     '.sb-done{display:flex;flex-direction:column;align-items:flex-end;line-height:1.3;}' +
-    '.sb-done small{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:12px;letter-spacing:1px;color:#c0a06a;font-weight:500;}' +
+    '.sb-done small{font-family:var(--serif);font-style:italic;font-size:12px;letter-spacing:1px;color:#c0a06a;font-weight:500;}' +
     /* お祝い */
     '.bdg-ov{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;' +
     'background:rgba(60,45,50,.38);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:bdgFade .25s both;}' +

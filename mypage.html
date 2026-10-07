@@ -6,14 +6,14 @@
 <title>学習記録 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=16"></script>
+<script src="common.js?v=17"></script>
 <script src="feedback.js?v=2"></script>
-<script src="coach.js?v=1"></script>
-<script src="card.js?v=1"></script>
+<script src="coach.js?v=2"></script>
+<script src="card.js?v=3"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=10">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="base.css?v=11">
 <style>
   /* 読み込み中 */
   .sync-note{margin:0 0 10px;font-size:11.5px;color:var(--ink-soft);text-align:center;}
@@ -187,7 +187,8 @@
     var ca=d.byApp.conj;
     var st=Q.streak(),q=window.Coach?Coach.pickStory(Math.floor(Date.now()/86400000)):null;
     while(q&&!q.fr)q=Coach.pickStory(Math.floor(Math.random()*1000));
-    return {date:Q.todayJST().replace(/-/g,"."),durSec:d.dur,days:Object.keys(d.days).length,streak:st.n,acc:d.q?Math.round(d.c/d.q*100):null,
+    var now=new Date(),hm=now.toLocaleTimeString("ja-JP",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit",hour12:false});
+    return {id:u.id,nick:(u.name&&u.name!==u.id)?u.name:"",stamp:Q.todayJST().replace(/-/g,".")+" "+hm,durSec:d.dur,days:Object.keys(d.days).length,streak:st.n,acc:d.q?Math.round(d.c/d.q*100):null,
       gram:gram,talk:{m:tm,n:100},conj:{acc:ca&&ca.q?Math.round(ca.c/ca.q*100):null,ranks:ranks},badges:badges,quote:q};
   }
   /* 成果カードは、ボタンを押したときだけ端末の中で描く（サーバーは使わない）。
@@ -201,7 +202,7 @@
   }
   function makeCard(d,btn){
     if(!window.NLCard||!d)return;
-    var data=cardData(d),sig=JSON.stringify([data.durSec,data.days,data.streak,data.acc,data.gram,data.talk,data.conj,data.badges,data.date]);
+    var data=cardData(d),sig=JSON.stringify([data.id,data.nick,data.stamp,data.durSec,data.days,data.streak,data.acc,data.gram,data.talk,data.conj,data.badges]);   // 作成時刻（分）が変われば描き直す
     if(cardURL&&sig===cardSig){showCard(btn);return;}
     btn.disabled=true;btn.textContent="作成中…";
     var sample="0123456789%分時間日連続学習のきろく通算正答率動詞活用文法練習会話練習達成率フレーズバッジ個ランク記述式で習得選択できたLeçon"+(data.quote?data.quote.ja:"");
@@ -276,7 +277,7 @@
     html+='<div class="sec-h">成果カード</div>'+
       '<div class="card-box"><div class="card-img hidden" id="cardImg"></div>'+
       '<div class="card-btns"><button type="button" class="cb-main" id="pngBtn">成果カードを作る</button><button type="button" id="xlsxBtn">Excel で保存（くわしい記録）</button></div>'+
-      '<p class="card-note">記録は自動で保存されています。成果カードには名前もIDも入らないので、友だちに見せても大丈夫。スマホでは、画像を長押しして保存することもできます。</p></div>';
+      '<p class="card-note">記録は自動で保存されています。成果カードには、ID・ニックネーム・作成した日時が入ります（本名は入りません）。人に見せるときは、IDが写っていることに気をつけてね。スマホでは、画像を長押しして保存することもできます。</p></div>';
     $("body").innerHTML=html;
     mountDeer();
     $("xlsxBtn").onclick=function(){exportXlsx(H,this,G);};

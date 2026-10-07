@@ -6,11 +6,11 @@
 <title>動詞活用 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=16"></script>
+<script src="common.js?v=17"></script>
 <script src="feedback.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
     /* 淡く温かな紙とインク。彩度をおさえた上品なトーン */
@@ -54,11 +54,11 @@
   .crown{margin-bottom:24px;text-align:center;}
   .eyebrow{font-size:10.5px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
   .crown h1{
-    font-family:"Cormorant Garamond",serif;font-weight:600;margin:0;
+    font-family:var(--serif);font-weight:600;margin:0;
     font-size:42px;line-height:1.04;letter-spacing:.5px;color:#5a4e57;
   }
   .crown .verbs{display:inline-block;font-size:12px;color:var(--ink-soft);margin-top:12px;letter-spacing:1.5px;}
-  .crown .verbs i{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--accent-ink);}
+  .crown .verbs i{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--accent-ink);}
   .crown .verbs::before,.crown .verbs::after{content:"❦";color:var(--gold);opacity:.55;margin:0 12px;font-size:11px;vertical-align:middle;}
 
   /* ===== card ===== */
@@ -70,14 +70,14 @@
   }
 
   /* ===== HOME ===== */
-  .hello{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:600;margin:0 0 4px;color:var(--ink);}
+  .hello{font-family:var(--serif);font-size:26px;font-weight:600;margin:0 0 4px;color:var(--ink);}
   .hello small{display:block;font-family:"Noto Sans JP";font-size:12.5px;color:var(--ink-soft);margin-top:8px;letter-spacing:.3px;}
 
   .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:24px 0 6px;
     border:1px solid var(--rule);border-radius:18px;overflow:hidden;background:#fdf9f6;}
   .stat{padding:16px 8px;text-align:center;position:relative;}
   .stat+.stat{border-left:1px solid var(--rule);}
-  .stat .n{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:29px;line-height:1;color:var(--ink);}
+  .stat .n{font-family:var(--serif);font-weight:600;font-size:29px;line-height:1;color:var(--ink);}
   .stat.acc .n{color:var(--gold);}
   .stat .l{font-size:9.5px;color:var(--ink-faint);letter-spacing:1px;margin-top:6px;}
   .stat .ico{display:none;}
@@ -94,9 +94,9 @@
 
   /* セクションボタン内のクリアタイム＋ランク */
   .sb-time{margin-left:auto;display:flex;align-items:center;gap:8px;flex:none;}
-  .sb-time .sb-t{font-family:"Cormorant Garamond",serif;font-size:15px;color:var(--ink-soft);
+  .sb-time .sb-t{font-family:var(--serif);font-size:15px;color:var(--ink-soft);
     font-variant-numeric:tabular-nums;}
-  .sb-time .sb-rank{min-width:34px;text-align:center;font-family:"Cormorant Garamond",serif;font-weight:700;
+  .sb-time .sb-rank{min-width:34px;text-align:center;font-family:var(--serif);font-weight:700;
     font-size:14px;padding:2px 0;border-radius:7px;color:var(--rk-c);background:var(--rk-bg);letter-spacing:.5px;}
   .sb-time .sb-none{font-size:11px;color:var(--ink-faint);letter-spacing:.5px;}
 
@@ -112,7 +112,7 @@
   .rank-badge.show{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
     width:96px;height:96px;border-radius:50%;margin:8px auto 4px;color:var(--rk-c);background:var(--rk-bg);
     box-shadow:0 8px 22px -12px var(--shadow), 0 0 0 1px rgba(0,0,0,.04) inset;}
-  .rank-badge .rk{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:38px;line-height:1;}
+  .rank-badge .rk{font-family:var(--serif);font-weight:700;font-size:38px;line-height:1;}
   .rank-badge .rk-sub{font-size:9px;letter-spacing:3px;margin-top:3px;opacity:.7;}
 
   .mode-row{display:flex;align-items:center;justify-content:space-between;margin:26px 0 4px;}
@@ -149,7 +149,7 @@
   .start-btn[data-verb="avoir"]{--vc:#8db79b;--vcw:#eef5f0;}
   .start-btn[data-verb="faire"]{--vc:#92a6cf;--vcw:#eef1f8;}
   /* 動詞色の小さな円バッジ */
-  .start-btn i{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:22px;
+  .start-btn i{font-family:var(--serif);font-style:italic;font-size:22px;
     color:var(--vc,var(--gold));line-height:1;width:44px;height:44px;border-radius:50%;
     background:var(--vcw,#f4ede6);display:flex;align-items:center;justify-content:center;flex:none;transition:transform .18s;}
   .start-btn:hover{transform:translateY(-2px);box-shadow:0 14px 26px -16px var(--shadow);border-color:var(--vc,var(--gold));background:#fff;}
@@ -175,8 +175,8 @@
   .pdot.d-ok{background:var(--good);}
   .pdot.d-no{background:var(--bad);}
   .pdot.d-now{background:var(--accent);transform:scale(1.5);box-shadow:0 0 0 4px var(--accent-wash);}
-  .qcount{font-family:"Cormorant Garamond",serif;font-size:19px;color:var(--ink-soft);font-style:italic;}
-  .live-timer{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:19px;color:var(--accent-ink);
+  .qcount{font-family:var(--serif);font-size:19px;color:var(--ink-soft);font-style:italic;}
+  .live-timer{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--accent-ink);
     font-variant-numeric:tabular-nums;min-width:80px;text-align:center;}
 
   .round-label{font-size:10.5px;color:var(--accent-ink);letter-spacing:2.5px;text-transform:uppercase;
@@ -184,9 +184,9 @@
   .bar{height:5px;background:var(--rule);border-radius:5px;overflow:hidden;margin-bottom:28px;}
   .bar .fill{height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--gold));transition:width .4s cubic-bezier(.4,1.2,.5,1);}
 
-  .verb-chip{display:inline-block;font-family:"Cormorant Garamond",serif;font-style:italic;font-weight:600;
+  .verb-chip{display:inline-block;font-family:var(--serif);font-style:italic;font-weight:600;
     color:var(--accent-ink);background:var(--accent-wash);padding:5px 20px;border-radius:30px;font-size:19px;}
-  .prompt{font-family:"Cormorant Garamond",serif;font-size:32px;font-weight:500;line-height:1.45;margin:18px 0 4px;color:var(--ink);}
+  .prompt{font-family:var(--serif);font-size:32px;font-weight:500;line-height:1.45;margin:18px 0 4px;color:var(--ink);}
   .blank{display:inline-block;min-width:50px;text-align:center;color:var(--accent-ink);font-weight:600;
     border-bottom:2px dotted var(--accent);}
   .jp{font-size:13px;color:var(--ink-soft);margin:4px 0 28px;letter-spacing:.3px;}
@@ -194,7 +194,7 @@
   .opts{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
   @media(max-width:430px){.opts{grid-template-columns:1fr;}}
   .opt{
-    font-family:"Cormorant Garamond",serif;font-size:24px;font-weight:600;cursor:pointer;
+    font-family:var(--serif);font-size:24px;font-weight:600;cursor:pointer;
     padding:16px 10px;border-radius:16px;text-align:center;color:var(--ink);
     background:#fdfaf8;border:1px solid var(--rule);position:relative;
     transition:background .14s,border-color .14s,transform .08s,box-shadow .14s;}
@@ -207,7 +207,7 @@
   .opt[disabled]{cursor:default;}
 
   .write-box{display:flex;gap:12px;}
-  .write-input{flex:1;font-family:"Cormorant Garamond",serif;font-size:25px;font-weight:600;padding:14px 18px;
+  .write-input{flex:1;font-family:var(--serif);font-size:25px;font-weight:600;padding:14px 18px;
     border:1px solid var(--rule);border-radius:16px;color:var(--ink);background:#fdfaf8;outline:none;transition:border-color .15s,box-shadow .15s,background .15s;}
   .write-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-wash);background:#fff;}
   .write-input.ok{border-color:var(--good);background:var(--good-wash);color:var(--good-ink);}
@@ -217,7 +217,7 @@
   .write-btn:hover{background:var(--accent);}
   .write-btn:disabled{opacity:.5;cursor:default;}
 
-  .fb{text-align:center;min-height:24px;margin-top:22px;font-family:"Cormorant Garamond",serif;
+  .fb{text-align:center;min-height:24px;margin-top:22px;font-family:var(--serif);
     font-style:italic;font-size:19px;opacity:0;transition:opacity .15s;}
   .fb.show{opacity:1;}
   .fb.ok{color:var(--good-ink);}
@@ -227,13 +227,13 @@
 
   /* ===== RESULT ===== */
   .result{text-align:center;}
-  .result .face{font-family:"Cormorant Garamond",serif;font-size:42px;line-height:1;margin-bottom:8px;color:var(--gold);}
+  .result .face{font-family:var(--serif);font-size:42px;line-height:1;margin-bottom:8px;color:var(--gold);}
   .result h2{font-size:10.5px;letter-spacing:3px;color:var(--ink-faint);margin:0 0 16px;font-weight:500;text-transform:uppercase;}
-  .ring{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:60px;line-height:1;color:var(--ink);}
+  .ring{font-family:var(--serif);font-weight:600;font-size:60px;line-height:1;color:var(--ink);}
   .ring small{font-size:26px;color:var(--ink-faint);font-style:italic;}
   .pct-pill{display:inline-block;margin-top:14px;background:var(--accent-wash);color:var(--accent-ink);
     padding:7px 24px;border-radius:30px;font-size:15px;font-weight:500;}
-  .msg{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:20px;margin:22px 0 8px;color:var(--ink);}
+  .msg{font-family:var(--serif);font-style:italic;font-size:20px;margin:22px 0 8px;color:var(--ink);}
   .rtime{font-size:13.5px;color:var(--ink-soft);margin:2px 0 4px;letter-spacing:.3px;}
   .rtime .rec{color:var(--accent-ink);font-weight:700;letter-spacing:.5px;}
   .rtime .best{color:var(--ink-faint);font-size:12px;}
@@ -243,8 +243,8 @@
   .rrow{font-size:13.5px;padding:9px 0;border-bottom:1px solid var(--rule);display:flex;
     justify-content:space-between;gap:10px;align-items:center;}
   .rrow:last-child{border-bottom:none;}
-  .rrow .miss{color:var(--bad-ink);text-decoration:line-through;font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:600;}
-  .rrow .got{color:var(--good-ink);font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:600;}
+  .rrow .miss{color:var(--bad-ink);text-decoration:line-through;font-family:var(--serif);font-size:18px;font-weight:600;}
+  .rrow .got{color:var(--good-ink);font-family:var(--serif);font-size:18px;font-weight:600;}
   .rrow .ar{color:var(--ink-faint);}
   .again{margin-top:24px;}
   .play{display:block;width:100%;cursor:pointer;border:none;font-family:"Noto Sans JP";font-weight:500;
@@ -269,7 +269,7 @@
   .acct .warn{color:#a2453f;}
   .acct .idrow{display:flex;gap:8px;margin-top:8px;}
   .acct .idin{flex:1;min-width:0;padding:9px 12px;border:1px solid rgba(60,40,40,.2);border-radius:10px;background:#fff;
-    font-family:"Cormorant Garamond",serif;font-size:20px;letter-spacing:4px;text-transform:uppercase;color:var(--ink);}
+    font-family:var(--serif);font-size:20px;letter-spacing:4px;text-transform:uppercase;color:var(--ink);}
   .acct .idin::placeholder{letter-spacing:1px;font-size:13px;font-family:"Noto Sans JP";text-transform:none;color:var(--ink-faint);}
   .acct .idbtn{padding:9px 16px;border:1px solid var(--accent-ink);border-radius:10px;background:var(--accent-ink);color:#fff;
     font-family:"Noto Sans JP";font-size:13px;cursor:pointer;}

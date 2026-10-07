@@ -239,7 +239,7 @@
   .bub.p{align-self:flex-start;background:#fff;border:1px solid var(--card-edge);border-bottom-left-radius:5px;}
   .bub.s{align-self:flex-end;background:var(--accent-wash);border:1px solid transparent;border-bottom-right-radius:5px;}
   .bub .who{display:block;font-size:10.5px;letter-spacing:1px;color:var(--ink-faint);margin-bottom:2px;}
-  .bub .fr{font-family:"Cormorant Garamond",serif;font-size:19px;font-weight:600;color:var(--ink);}
+  .bub .fr{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink);}
   .bub .ja{display:block;font-size:12px;color:var(--ink-soft);margin-top:2px;}
   .bub .veil{display:inline-flex;gap:6px;align-items:center;color:var(--ink-soft);font-size:13px;}
   .bub .bb{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
@@ -254,7 +254,7 @@
   .dlg-ctl{border:1px solid var(--card-edge);border-radius:18px;background:#fff;padding:14px 14px 12px;text-align:center;}
   .dlg-task{font-size:14.5px;font-weight:500;color:var(--ink);margin-bottom:4px;}
   .dlg-task .nm{display:inline-block;min-width:22px;margin-right:6px;color:var(--accent-ink);}
-  .dlg-pat{font-family:"Cormorant Garamond",serif;font-size:18px;color:var(--ink);margin:6px 0 2px;line-height:1.6;}
+  .dlg-pat{font-family:var(--serif);font-size:18px;color:var(--ink);margin:6px 0 2px;line-height:1.6;}
   .pt-fix{color:var(--ink);font-weight:600;} .pt-opt{color:var(--ink-faint);}
   .pt-slot{display:inline-block;font-family:"Noto Sans JP";font-size:11.5px;font-weight:500;color:#5a77a8;background:#eef3fb;border:1px dashed #9db3d8;border-radius:8px;padding:0 8px;margin:0 2px;vertical-align:2px;}
   .dlg-legend{font-size:11px;color:var(--ink-soft);margin:2px 0 10px;}
@@ -264,7 +264,7 @@
   .dlg-msg{font-size:12.5px;margin-top:8px;min-height:1.2em;line-height:1.6;}
   .dlg-msg.ng{color:var(--bad-ink);} .dlg-msg.ok{color:var(--good-ink);}
   .dlg-ex{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--accent-wash);text-align:left;font-size:12.5px;line-height:1.7;}
-  .dlg-ex .fr{font-family:"Cormorant Garamond",serif;font-size:19px;font-weight:600;color:var(--ink);}
+  .dlg-ex .fr{font-family:var(--serif);font-size:19px;font-weight:600;color:var(--ink);}
   .dlg-q .opts{margin-top:8px;}
   .dlg-q .opt{font-family:"Noto Sans JP";font-size:14.5px;font-weight:500;padding:12px 14px;}
   .dlg-switch{display:flex;justify-content:flex-end;gap:6px;margin:-4px 0 6px;}

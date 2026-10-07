@@ -1,11 +1,11 @@
 /* 成果カード（学習記録ページ）。端末の記録とサーバーの集計から、円グラフ入りの画像（1080×1350）を描く。
-   名前もIDも描かない（画像を人に見せても、だれのものか分からないように）。 */
+   右上にニックネーム・ID・作成日時を入れる。本名は入れない（サーバーから届くのはニックネームだけ）。 */
 (function () {
   "use strict";
   const W = 1080, H = 1350;
   const C = { bg1: "#f8f1ea", bg2: "#f1e4ea", card: "#fffdfb", edge: "#efe3da", ink: "#4a4048", soft: "#8c8088", faint: "#b6acb1",
     gold: "#c0a06a", conj: "#c97f9b", gram: "#6f9d80", talk: "#7d92c4", track: "#efe6df" };
-  const SERIF = '"Cormorant Garamond", serif', SANS = '"Noto Sans JP", "Hiragino Sans", sans-serif';
+  const BRAND = '"Cormorant Garamond", serif', SERIF = '"Times New Roman", Tinos, Georgia, serif', SANS = '"Noto Sans JP", "Hiragino Sans", sans-serif';
   const DEER = ["M11.5 9.5C9.6 7.3 9.2 5.1 10 2.8M10.2 5.9 7.4 4.6M12.6 9.2c-.6-1.8-.1-3.4 1-4.6", "M20.5 9.5c1.9-2.2 2.3-4.4 1.5-6.7M21.8 5.9l2.8-1.3M19.4 9.2c.6-1.8.1-3.4-1-4.6",
     "M11.4 11.6 6.6 10.4c.9 1.9 2.6 3 4.9 3.1", "M20.6 11.6l4.8-1.2c-.9 1.9-2.6 3-4.9 3.1",
     "M11.3 11.2c.3-1.4 2.2-2.1 4.7-2.1s4.4.7 4.7 2.1l-1.1 8.2c-.5 3.6-1.9 6.4-3.6 6.4s-3.1-2.8-3.6-6.4z", "M15 24.3h2"];
@@ -31,7 +31,7 @@
   }
   function fade(hex, a) { const n = parseInt(hex.slice(1), 16); return "rgba(" + (n >> 16) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")"; }
 
-  /* s = { date, durSec, days, streak, acc, rounds, gram:[{no,n,m,ch}], talk:{m,n,dlg:{best,total}|null}, conj:{acc, ranks:{être:"S",…}}, badges, quote:{fr,ja} } */
+  /* s = { id, nick, stamp, durSec, days, streak, acc, rounds, gram:[{no,n,m,ch}], talk:{m,n,dlg:{best,total}|null}, conj:{acc, ranks:{être:"S",…}}, badges, quote:{fr,ja} } */
   function draw(s) {
     const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
     const ctx = cv.getContext("2d");
@@ -43,9 +43,12 @@
 
     // 見出し
     deer(ctx, 74, 54, 3.4, C.gold);
-    text(ctx, "Naralingo", 190, 128, "italic 600 84px " + SERIF, "#5a4e57");
+    text(ctx, "Naralingo", 190, 128, "italic 600 84px " + BRAND, "#5a4e57");
     text(ctx, "MES PROGRÈS · 学習のきろく", 194, 172, "500 24px " + SANS, C.gold);
-    text(ctx, s.date, W - 70, 172, "500 26px " + SANS, C.soft, "right");
+    // 右上：ニックネーム・ID・作成日時（長いときは幅に合わせて小さくする）
+    fit(ctx, s.nick || "ニックネームなし", W - 70, 104, 700, 34, 380, s.nick ? C.ink : C.faint);
+    fit(ctx, "ID  " + s.id, W - 70, 142, 500, 24, 380, C.soft);
+    fit(ctx, "作成 " + s.stamp, W - 70, 176, 400, 22, 380, C.soft);
 
     // 数字の4枚
     const tiles = [[fmtMin(s.durSec), "学習時間"], [s.days + "日", "学習した日"], [s.streak + "日", "連続"], [s.acc == null ? "—" : s.acc + "%", "通算正答率"]];
@@ -114,13 +117,19 @@
     }
     return cv;
   }
+  function fit(ctx, str, x, y, weight, size, maxW, col) {
+    let f = size; ctx.font = weight + " " + f + "px " + SANS;
+    while (ctx.measureText(str).width > maxW && f > 12) { f--; ctx.font = weight + " " + f + "px " + SANS; }
+    ctx.fillStyle = col; ctx.textAlign = "right"; ctx.textBaseline = "alphabetic"; ctx.fillText(str, x, y);
+  }
   function fmtMin(sec) { const m = Math.round((sec || 0) / 60); return m < 60 ? m + "分" : Math.floor(m / 60) + "時間" + (m % 60 ? (m % 60) + "分" : ""); }
   /* 描く前に、使う字形のフォントを読み込んでおく */
   function ready(sample) {
     if (!document.fonts || !document.fonts.load) return Promise.resolve();
     return Promise.all([
       document.fonts.load('italic 600 84px "Cormorant Garamond"', "Naralingo Leçon être aller avoir faire SSS"),
-      document.fonts.load('600 40px "Cormorant Garamond"', "SSS ABC"),
+      document.fonts.load('italic 400 26px Tinos', "Leçon être aller avoir faire « »"),
+      document.fonts.load('700 30px Tinos', "SSS ABC"),
       document.fonts.load('400 22px "Noto Sans JP"', sample),
       document.fonts.load('500 26px "Noto Sans JP"', sample),
       document.fonts.load('700 46px "Noto Sans JP"', sample)
