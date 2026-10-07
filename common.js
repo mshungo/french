@@ -204,7 +204,15 @@
   async function history() {
     if (user && user.practice) return { ok: false, error: "practice" };
     if (!online()) return { ok: false, error: "noauth" };
-    try { return await call(user, "history"); } catch (e) { return { ok: false, error: "network" }; }
+    var r;
+    try { r = await call(user, "history"); } catch (e) { return { ok: false, error: "network" }; }
+    if (r && r.ok) lsSet("nlHist_" + user.id, JSON.stringify({ at: Date.now(), history: r.history || [], agg: r.agg || null }));
+    return r;
+  }
+  /* 前回読み込んだ学習記録（すぐ表示するため）。なければ null */
+  function cachedHistory() {
+    if (!user || user.practice) return null;
+    try { return JSON.parse(lsGet("nlHist_" + user.id) || "null"); } catch (e) { return null; }
   }
 
   function keep(u, remember) {
@@ -238,7 +246,7 @@
     else backup();
     return { ok: true, user: user, restored: restored };
   }
-  function logout() { if (user && user.practice) clearPractice(); user = null; lsDel(LOGIN_KEY); ssDel(LOGIN_KEY); }
+  function logout() { if (user && user.practice) clearPractice(); if (user) lsDel("nlHist_" + user.id); user = null; lsDel(LOGIN_KEY); ssDel(LOGIN_KEY); }
 
   /* 教材ページの入口：ログインが必要な設定で未ログインなら、メニューへ戻す */
   function requireLogin() {
@@ -253,7 +261,7 @@
     todayJST: todayJST, days: days, markToday: markToday, streak: streak,
     cached: cached, onStats: onStats,
     pendingCount: function () { return getPending().length; },
-    submit: submit, flush: flush, refresh: refresh, history: history, feedback: feedback, backup: backup,
+    submit: submit, flush: flush, refresh: refresh, history: history, cachedHistory: cachedHistory, feedback: feedback, backup: backup,
     login: login, logout: logout, requireLogin: requireLogin
   };
 })();

@@ -6,14 +6,16 @@
 <title>学習記録 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=13"></script>
+<script src="common.js?v=14"></script>
 <script src="feedback.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=8">
+<link rel="stylesheet" href="base.css?v=9">
 <style>
   /* 読み込み中 */
+  .sync-note{margin:0 0 10px;font-size:11.5px;color:var(--ink-soft);text-align:center;}
+  .sync-note.warn{color:#a2453f;}
   .loading{display:flex;flex-direction:column;align-items:center;gap:12px;padding:34px 0 26px;color:var(--ink-soft);font-size:12.5px;}
   .loading .ld-deer{color:#c0a06a;animation:ldHop 1.1s ease-in-out infinite;}
   .loading .ld-bar{width:160px;height:5px;border-radius:5px;background:var(--accent-wash);overflow:hidden;position:relative;}
@@ -93,10 +95,18 @@
   if(!Q.SYNC_ON||!u){$("hello").textContent="学習記録";$("body").innerHTML='<p class="msg-box">記録の送信が有効になっていないため、ここには表示できません。</p>';return;}
   if(u.practice){$("hello").textContent="学習記録";$("body").innerHTML='<p class="msg-box">練習用IDでは、学習記録は残りません。自分のIDでログインすると、ここに記録が表示されます。</p>';return;}
   $("hello").innerHTML=esc(u.name)+'<small>ID: '+esc(u.id)+'　（学習記録はログインした本人だけが見られます）</small>';
-  $("body").innerHTML='<div class="loading" role="status"><span class="ld-deer"><svg width="34" height="34" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 9.5C9.6 7.3 9.2 5.1 10 2.8M10.2 5.9 7.4 4.6M12.6 9.2c-.6-1.8-.1-3.4 1-4.6"/><path d="M20.5 9.5c1.9-2.2 2.3-4.4 1.5-6.7M21.8 5.9l2.8-1.3M19.4 9.2c.6-1.8.1-3.4-1-4.6"/><path d="M11.4 11.6 6.6 10.4c.9 1.9 2.6 3 4.9 3.1"/><path d="M20.6 11.6l4.8-1.2c-.9 1.9-2.6 3-4.9 3.1"/><path d="M11.3 11.2c.3-1.4 2.2-2.1 4.7-2.1s4.4.7 4.7 2.1l-1.1 8.2c-.5 3.6-1.9 6.4-3.6 6.4s-3.1-2.8-3.6-6.4z"/><circle cx="13.9" cy="14.8" r=".8" fill="currentColor" stroke="none"/><circle cx="18.1" cy="14.8" r=".8" fill="currentColor" stroke="none"/><path d="M15 24.3h2"/></svg></span>'+
-    '<div class="ld-bar"><span></span></div><div>記録を読み込んでいます…</div></div>';
+  /* 前回の記録があれば、まずそれをすぐ出して、うしろで最新に入れかえる */
+  var hc=Q.cachedHistory(),shown=false;
+  function syncNote(t,warn){var b=$("body"),n=b.querySelector(".sync-note");if(!t){if(n)n.remove();return;}
+    if(!n){n=document.createElement("p");n.className="sync-note";b.insertBefore(n,b.firstChild);}n.textContent=t;n.classList.toggle("warn",!!warn);}
+  if(hc&&hc.history){render(hc.history,hc.agg||null);shown=true;syncNote("最新の記録を確認しています…");}
+  else{
+    $("body").innerHTML='<div class="loading" role="status"><span class="ld-deer"><svg width="34" height="34" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 9.5C9.6 7.3 9.2 5.1 10 2.8M10.2 5.9 7.4 4.6M12.6 9.2c-.6-1.8-.1-3.4 1-4.6"/><path d="M20.5 9.5c1.9-2.2 2.3-4.4 1.5-6.7M21.8 5.9l2.8-1.3M19.4 9.2c.6-1.8.1-3.4-1-4.6"/><path d="M11.4 11.6 6.6 10.4c.9 1.9 2.6 3 4.9 3.1"/><path d="M20.6 11.6l4.8-1.2c-.9 1.9-2.6 3-4.9 3.1"/><path d="M11.3 11.2c.3-1.4 2.2-2.1 4.7-2.1s4.4.7 4.7 2.1l-1.1 8.2c-.5 3.6-1.9 6.4-3.6 6.4s-3.1-2.8-3.6-6.4z"/><circle cx="13.9" cy="14.8" r=".8" fill="currentColor" stroke="none"/><circle cx="18.1" cy="14.8" r=".8" fill="currentColor" stroke="none"/><path d="M15 24.3h2"/></svg></span>'+
+      '<div class="ld-bar"><span></span></div><div>記録を読み込んでいます…</div></div>';
+  }
   Q.history().then(function(res){
     if(!res.ok){
+      if(shown){syncNote("最新の記録を読み込めなかったため、前回の記録を表示しています。",true);return;}
       $("body").innerHTML='<p class="msg-box warn">'+(res.error==="rate"?"読み込みが多すぎます。少し待ってから開き直してください。":res.error==="auth"?"このIDは無効になっています。先生に確認してください。":"記録を読み込めませんでした。通信環境を確認してください。")+'</p>';return;}
     render(res.history||[],res.agg||null);
   });

@@ -6,11 +6,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=8">
+<link rel="stylesheet" href="base.css?v=9">
 <title>Naralingo — フランス語練習</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=13"></script>
+<script src="common.js?v=14"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=2"></script>
 </head>
@@ -173,29 +173,55 @@
   /* お知らせ（先生がスプレッドシート「お知らせ」で出したもの）。× で閉じると、同じ文はこの端末では出さない */
   function nHash(s){var h=5381;for(var i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return h.toString(36);}
   function nEsc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}).replace(/\n/g,"<br>");}
-  /* 見出しの「隠す／表示する」で、お知らせ欄をすぐたたんだり開いたりできる。
-     たたんだ状態はこの端末に残す。新しいお知らせが出たときは、自動でまた開く。 */
+  /* お知らせ：1件ずつ「既読」にすると消える（この端末に記憶）。見出しで、まとめてたたむ／開くもできる。
+     前回受け取ったお知らせを端末に残しておき、開いたらすぐ出す。最新はうしろで取りに行き、変わっていれば入れかえる。 */
+  var NREAD="nlNoticeRead",NCACHE="nlNoticeCache",NFOLD="nlNoticeFold",nList=[],showRead=false;
+  function lsJ(k,d){try{var v=JSON.parse(localStorage.getItem(k)||"null");return v==null?d:v;}catch(e){return d;}}
+  function lsP(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+  function nKey(n){return nHash(n.kind+"\u0001"+n.text);}
   function renderNotices(list){
-    var box=$("notices");list=(list||[]).filter(function(n){return n&&n.text;});
-    if(!list.length){box.innerHTML="";return;}
-    var sig=nHash(list.map(function(n){return n.kind+n.text;}).join("|")),fold=false;
-    try{fold=localStorage.getItem("nlNoticeFold")===sig;}catch(e){}
-    var h='<div class="nhead"><span class="nh-t">お知らせ<span class="nh-n">'+list.length+'</span></span>'+
-      '<button class="nh-btn" type="button" aria-controls="noticeList"></button></div><div class="nlist" id="noticeList">';
-    list.forEach(function(n){
-      var cls=n.kind==="障害"?"ng":n.kind==="注意"?"warn":"info";
-      h+='<div class="notice '+cls+'"><span class="nk">'+nEsc(n.kind)+'</span><div class="nt">'+nEsc(n.text)+'</div></div>';
-    });
-    box.innerHTML=h+'</div>';
-    var btn=box.querySelector(".nh-btn"),lst=$("noticeList");
-    function apply(){lst.classList.toggle("hidden",fold);box.classList.toggle("folded",fold);btn.textContent=fold?"表示する ▾":"隠す ▴";btn.setAttribute("aria-expanded",String(!fold));}
-    btn.onclick=function(){fold=!fold;try{if(fold)localStorage.setItem("nlNoticeFold",sig);else localStorage.removeItem("nlNoticeFold");}catch(e){}apply();};
-    apply();
+    if(list)nList=list.filter(function(n){return n&&n.text;});
+    var box=$("notices"),read=lsJ(NREAD,[]);
+    var unread=nList.filter(function(n){return read.indexOf(nKey(n))<0;}),done=nList.length-unread.length;
+    if(!nList.length){box.innerHTML="";box.className="";return;}
+    var shownList=showRead?nList:unread;
+    var sig=nHash(unread.map(nKey).join("|")),fold=unread.length>0&&lsJ(NFOLD,"")===sig;
+    var h="";
+    if(unread.length||showRead){
+      h+='<div class="nhead"><span class="nh-t">お知らせ<span class="nh-n">'+unread.length+'</span></span><span class="nh-btns">'+
+        (unread.length>1&&!fold?'<button class="nh-btn" type="button" data-a="all">すべて既読</button>':'')+
+        (unread.length?'<button class="nh-btn" type="button" data-a="fold">'+(fold?'表示する ▾':'隠す ▴')+'</button>':'')+'</span></div>';
+      if(!fold){
+        h+='<div class="nlist">';
+        shownList.forEach(function(n){
+          var k=nKey(n),isRead=read.indexOf(k)>=0,cls=n.kind==="障害"?"ng":n.kind==="注意"?"warn":"info";
+          h+='<div class="notice '+cls+(isRead?' read':'')+'"><span class="nk">'+nEsc(n.kind)+'</span><div class="nt">'+nEsc(n.text)+'</div>'+
+            (isRead?'<span class="nr-done">既読</span>':'<button class="nr" type="button" data-k="'+k+'">既読</button>')+'</div>';
+        });
+        h+='</div>';
+      }
+    }
+    if(done)h+='<button class="nh-past" type="button" data-a="past">'+(showRead?'既読のお知らせをしまう':'既読のお知らせ（'+done+'）を見る')+'</button>';
+    box.innerHTML=h;box.className=fold?"folded":"";
+    box.querySelectorAll(".nr").forEach(function(btn){btn.onclick=function(){
+      var r=lsJ(NREAD,[]);if(r.indexOf(btn.dataset.k)<0)r.push(btn.dataset.k);lsP(NREAD,r.slice(-80));renderNotices();};});
+    box.querySelectorAll("[data-a]").forEach(function(btn){btn.onclick=function(){
+      var a=btn.dataset.a;
+      if(a==="all"){var r=lsJ(NREAD,[]);unread.forEach(function(n){var k=nKey(n);if(r.indexOf(k)<0)r.push(k);});lsP(NREAD,r.slice(-80));}
+      else if(a==="fold"){if(fold)lsP(NFOLD,"");else lsP(NFOLD,sig);}
+      else if(a==="past")showRead=!showRead;
+      renderNotices();};});
   }
   (function(){
+    var c=lsJ(NCACHE,null);
+    if(c&&c.list)renderNotices(c.list);                      /* 前回の分をすぐ表示 */
+    if(c&&Date.now()-c.at<60000)return;                       /* 1分以内に取ったばかりなら、取りに行かない */
     var url=(window.QUIZ_CONFIG||{}).SCRIPT_URL;if(!url||!window.fetch)return;
     var ctl=window.AbortController?new AbortController():null;if(ctl)setTimeout(function(){ctl.abort();},15000);
-    fetch(url+(url.indexOf("?")<0?"?":"&")+"n=1",ctl?{signal:ctl.signal}:{}).then(function(r){return r.json();}).then(function(j){renderNotices(j.notices);}).catch(function(){});
+    fetch(url+(url.indexOf("?")<0?"?":"&")+"n=1",ctl?{signal:ctl.signal}:{}).then(function(r){return r.json();}).then(function(j){
+      var list=j.notices||[];lsP(NCACHE,{at:Date.now(),list:list});
+      if(!c||JSON.stringify(c.list)!==JSON.stringify(list))renderNotices(list);
+    }).catch(function(){});
   })();
 
   $("idBtn").addEventListener("click",doLogin);
