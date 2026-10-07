@@ -51,7 +51,11 @@
   try {
     var c = JSON.parse(lsGet(LOGIN_KEY) || ssGet(LOGIN_KEY));
     if (c && RE_ID.test(c.id) && (c.practice ? c.id === PRACTICE.id : (c.pw || !SYNC_ON)))   // パスワードのない古いログイン情報は無効
-      user = { id: c.id, name: c.name || c.id, pw: c.pw || "", practice: !!c.practice };
+      user = { id: c.id, name: (c.nm === 2 || c.practice) ? (c.name || c.id) : c.id, pw: c.pw || "", practice: !!c.practice };   // 旧版で端末に残った名前は使わない
+    if (user && !user.practice && c.nm !== 2) {   // 旧版の控え（本名が入っているかもしれない）は、その場で書きかえる
+      var rec0 = JSON.stringify({ id: user.id, name: user.name, pw: user.pw, practice: false, nm: 2 });
+      if (lsGet(LOGIN_KEY)) lsSet(LOGIN_KEY, rec0); else ssSet(LOGIN_KEY, rec0);
+    }
   } catch (e) {}
 
   function who() { return user ? user.id : "guest"; }
@@ -183,7 +187,7 @@
     if (getPending().length) return flush();
     try {
       var res = await call(user, "sync");
-      if (res.ok) { setCached(res.stats); return "ok"; }
+      if (res.ok) { setCached(res.stats); updName(res); return "ok"; }
       if (res.error === "auth") return "auth";
       return "error";
     } catch (e) { return "error"; }
@@ -215,8 +219,16 @@
     try { return JSON.parse(lsGet("nlHist_" + user.id) || "null"); } catch (e) { return null; }
   }
 
+  /* サーバーが返す表示名（ニックネーム。なければID）で、端末の控えを更新する */
+  function updName(res) {
+    if (!user || user.practice || !res || !res.user) return;
+    var nm = res.user.name || user.id;
+    if (nm === user.name) return;
+    user.name = nm;
+    keep(user, !ssGet(LOGIN_KEY));
+  }
   function keep(u, remember) {
-    var rec = JSON.stringify(u);
+    var rec = JSON.stringify({ id: u.id, name: u.name, pw: u.pw, practice: u.practice, nm: 2 });
     if (remember === false) { ssSet(LOGIN_KEY, rec); lsDel(LOGIN_KEY); }
     else { lsSet(LOGIN_KEY, rec); ssDel(LOGIN_KEY); }
   }
@@ -254,7 +266,73 @@
     return true;
   }
 
+  /* ---- 表示の設定（この端末だけ）：解いているときの時間を隠す／書体をゴシックにする ---- */
+  var PREF_KEY = "nlPrefs";
+  function prefs() { return jget(PREF_KEY, {}) || {}; }
+  function setPref(k, v) { var p = prefs(); p[k] = v; lsSet(PREF_KEY, JSON.stringify(p)); applyPrefs(); }
+  var SANS = '-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",Meiryo,sans-serif';
+  function eachRule(list, fn) {
+    for (var i = 0; i < list.length; i++) {
+      var r = list[i];
+      if (r.style) fn(r);
+      if (r.cssRules) { try { eachRule(r.cssRules, fn); } catch (e) {} }
+    }
+  }
+  /* 欧文の飾り書体（Cormorant Garamond）を使っている規則を、ゴシック体に置きかえる（元に戻せるよう控えておく） */
+  function applyFont(gothic) {
+    for (var i = 0; i < document.styleSheets.length; i++) {
+      var rules; try { rules = document.styleSheets[i].cssRules; } catch (e) { continue; }   // 別のサイトの CSS は読めないので飛ばす
+      if (!rules) continue;
+      eachRule(rules, function (r) {
+        var st = r.style;
+        if (!r.__nlFont) {
+          if (!/Cormorant/i.test(st.fontFamily || "")) return;
+          r.__nlFont = { ff: st.fontFamily, fs: st.fontSize, fi: st.fontStyle, ls: st.letterSpacing };
+        }
+        var o = r.__nlFont;
+        if (gothic) {
+          st.fontFamily = SANS;
+          var m = /^([\d.]+)px$/.exec(o.fs || ""); if (m) st.fontSize = Math.round(parseFloat(m[1]) * 0.86 * 10) / 10 + "px";
+          if (o.fi === "italic") st.fontStyle = "normal";
+        } else { st.fontFamily = o.ff; st.fontSize = o.fs; st.fontStyle = o.fi; }
+      });
+    }
+  }
+  function applyPrefs() {
+    var p = prefs(), h = document.documentElement;
+    h.classList.toggle("nl-notimer", !!p.hideTimer);
+    h.classList.toggle("nl-gothic", p.font === "gothic");
+    if (document.readyState !== "loading") applyFont(p.font === "gothic");
+  }
+  (function () {
+    var css = document.createElement("style");
+    css.textContent = '.live-timer,#dlgTimer{cursor:pointer;-webkit-user-select:none;user-select:none;}' +
+      'html.nl-notimer .live-timer,html.nl-notimer #dlgTimer{font-size:0!important;}' +
+      'html.nl-notimer .live-timer::after,html.nl-notimer #dlgTimer::after{content:"⏱";font-size:17px;font-style:normal;opacity:.4;}';
+    (document.head || document.documentElement).appendChild(css);
+    applyPrefs();
+    document.addEventListener("DOMContentLoaded", function () { applyPrefs(); });
+    window.addEventListener("load", function () { applyPrefs(); });
+    try {   // あとから足される CSS（バッジ・対話練習など）にも当てる
+      new MutationObserver(function (ms) {
+        if (prefs().font !== "gothic") return;
+        if (ms.some(function (m) { return Array.prototype.some.call(m.addedNodes, function (n) { return n.nodeName === "STYLE" || n.nodeName === "LINK"; }); }))
+          setTimeout(function () { applyFont(true); }, 0);
+      }).observe(document.documentElement, { childList: true, subtree: true });
+    } catch (e) {}
+    /* 解いている画面の時間表示は、タップで隠す／出す */
+    document.addEventListener("click", function (e) {
+      var t = e.target && e.target.closest && e.target.closest(".live-timer,#dlgTimer");
+      if (t) setPref("hideTimer", !prefs().hideTimer);
+    });
+    document.addEventListener("mouseover", function (e) {
+      var t = e.target && e.target.closest && e.target.closest(".live-timer,#dlgTimer");
+      if (t) t.title = prefs().hideTimer ? "タップで時間を表示" : "タップで時間をかくす";
+    });
+  })();
+
   window.Quiz = {
+    prefs: prefs, setPref: setPref,
     SYNC_ON: SYNC_ON, APPS: APPS,
     user: function () { return user; },
     isPractice: function () { return !!(user && user.practice); },

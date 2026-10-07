@@ -66,13 +66,22 @@ function load(){
   return {tries:0,answered:0,correct:0,best:null,it:{},mode:"choice",timeMs:0};
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
-function st(it){const s=store.it[it.id]||{c:0,w:0,last:null};if(s.run==null)s.run=(s.last===1?Math.min(s.c,1):0);return s;}
-/* 習得：2回連続正解、または記述で5秒以内に正解（苦手が付いていない問題のみ） */
-function mastered(it){const s=st(it);return !s.wk&&(s.run>=2||s.m===true);}
+function st(it){const s=store.it[it.id]||{c:0,w:0,last:null};if(s.run==null)s.run=(s.last===1?Math.min(s.c,1):0);if(s.wrun==null)s.wrun=0;return s;}
+/* 達成の2段階（苦手が付いていない問題のみ）
+   ・選択でできた：2回続けて正解（選択式でも記述式でも）→ 達成率に半分（50%）だけ入る
+   ・習得：記述式で2回続けて正解、または記述で5秒以内に正解 → 達成率に全部（100%）入る
+   選択式だけでは達成率は50%まで。100%にするには記述式で書けることが必要。 */
+const CHOICE_PART=0.5;
+function mastered(it){const s=st(it);return !s.wk&&(s.wrun>=2||s.m===true);}
+function choiceDone(it){const s=st(it);return !s.wk&&s.run>=2;}
+function partOf(it){return mastered(it)?1:choiceDone(it)?CHOICE_PART:0;}
 /* 苦手：間違えたら付き、2回連続で正解するまで消えない */
 function weak(it){return !!st(it).wk;}
 function fmtDur(ms){const m=Math.round((ms||0)/60000);if(m<60)return m+"分";return Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
-function pctMastered(){return ITEMS.length?Math.round(ITEMS.filter(mastered).length/ITEMS.length*100):0;}
+function pctOf(list){return list.length?Math.floor(list.reduce((a,it)=>a+partOf(it),0)/list.length*100):0;}
+function pctMastered(){return pctOf(ITEMS);}
+/* 学習記録ページ（成果カード）用に、達成の数を控えておく */
+function saveSum(){store.sum={n:ITEMS.length,m:ITEMS.filter(mastered).length,c:ITEMS.filter(it=>choiceDone(it)&&!mastered(it)).length,p:pctMastered()};save();}
 /* ---------- バッジ ----------
    項目（セクション）の問題をすべて習得 → 項目バッジ ／ 累計300問 → クリア ／ 全問習得 → 勲章
    一度もらったバッジは、あとで苦手が付いても消えない */
@@ -130,14 +139,17 @@ function shell(){
 '    <div class="stat-grid">'+
 '      <div class="stat"><div class="n" id="hTries">0</div><div class="l">挑戦回数</div></div>'+
 '      <div class="stat acc"><div class="n" id="hAcc">—</div><div class="l">通算正答率</div></div>'+
-'      <div class="stat"><div class="n" id="hMaster">0</div><div class="l">習得率</div></div>'+
+'      <div class="stat"><div class="n" id="hMaster">0</div><div class="l">達成率</div></div>'+
 '      <div class="stat"><div class="n" id="hTime">0分</div><div class="l">勉強時間</div></div>'+
 '    </div>'+
 '    <div id="goal"></div>'+
 '    <div class="mode-pick"><div class="mp-h">答え方をえらぶ</div><div class="mp-row">'+
-'      <button class="mode-btn mp" data-mode="choice"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"4\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"10\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"16\" width=\"17\" height=\"4.5\" rx=\"2\"/><path d=\"M6.5 12.2l1.3 1.2 2.4-2.6\"/></svg></span><b>選択式</b><small>選んで答える</small></button>'+
-'      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z\"/><path d=\"M14.5 7.5l3 3\"/><path d=\"M12 20h8\"/></svg></span><b>記述式</b><small>自分で書いて答える</small></button></div></div>'+
-'    <div class="guide"><b>選択式</b>はすべてタップで答え（書きかえは札を並べる）、<b>記述式</b>は自分で書いて答えます。並べかえ（仏作文）の問題はどちらでも出ます。<br>2回続けて正解すると「習得」（記述で<b>5秒以内</b>に正解なら一発で習得）。間違えた問題は「苦手」になり、2回続けて正解するまで残ります。<br>累計'+CLEAR_ANS+'問（約1時間）で<b>クリア</b>、全問習得で<b>勲章</b>。</div>'+
+'      <button class="mode-btn mp" data-mode="choice"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"4\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"10\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"16\" width=\"17\" height=\"4.5\" rx=\"2\"/><path d=\"M6.5 12.2l1.3 1.2 2.4-2.6\"/></svg></span><b>選択式</b><small>選んで答える</small><em class="mp-lv">はじめの一歩・達成率50%まで</em></button>'+
+'      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z\"/><path d=\"M14.5 7.5l3 3\"/><path d=\"M12 20h8\"/></svg></span><b>記述式</b><small>自分で書いて答える</small><em class="mp-lv mp-goal">本番・100%をめざす</em></button></div></div>'+
+'    <div class="guide"><b>選択式</b>はタップで答える入門用（書きかえは札を並べる）、<b>記述式</b>は自分で書いて答える本番用です。並べかえ（仏作文）はどちらでも出ます。<br>'+
+'      2回続けて正解すると、選択式なら「<b>選択でできた</b>」（達成率に半分だけ入る）、記述式なら「<b>習得</b>」（記述で<b>5秒以内</b>に正解なら一発で習得）。'+
+'      <b>選択式だけでは達成率は50%まで</b>。100%と勲章は、記述式で書けるようになってから。<br>'+
+'      間違えた問題は「苦手」になり、2回続けて正解するまで残ります。累計'+CLEAR_ANS+'問（約1時間）で<b>クリア</b>。</div>'+
 '    <div class="section-label">項目を選択</div>'+
 '    <div class="sections">'+secBtns+'</div>'+
 '    <div class="extra-row">'+
@@ -164,7 +176,7 @@ function shell(){
 '    <div class="face" id="rFace">◎</div><h2>結果</h2>'+
 '    <div class="ring" id="rScore">0<small> / 10</small></div>'+
 '    <div><span class="pct-pill" id="rPct">0%</span></div>'+
-'    <div class="msg" id="rMsg"></div><div class="rtime" id="rTime"></div><div class="mastery" id="rMastery"></div>'+
+'    <div class="msg" id="rMsg"></div><div class="rtime" id="rTime"></div><div class="mastery" id="rMastery"></div><div id="nudge"></div>'+
 '    <div class="review" id="review"></div>'+
 '    <button class="play retry hidden" id="retryBtn">間違えたところだけを練習</button>'+
 '    <button class="play again" id="againBtn">もう一度</button>'+
@@ -198,11 +210,14 @@ function renderHome(){
     const list=itemsOf(s.k),mm=list.filter(mastered).length,done=!!B["s:"+s.k];
     const el=document.querySelector('[data-prog="'+s.k+'"]');if(!el)return;
     el.parentNode.classList.toggle("mastered",done);
+    const cc=list.filter(it=>choiceDone(it)&&!mastered(it)).length,N=list.length||1;
     el.innerHTML=done&&window.Badge?
       Badge.seal({kind:"sec",on:true,color:s.c,size:30})+'<span class="sb-done">習得 '+mm+'/'+list.length+'<small>Maîtrise</small></span>':
-      '<span>習得 '+mm+'/'+list.length+'</span><span class="pbar"><span style="width:'+(list.length?Math.round(mm/list.length*100):0)+'%"></span></span>';
+      '<span>達成 '+pctOf(list)+'%</span><span class="pbar two" title="濃い色＝記述で習得 '+mm+'問／薄い色＝選択でできた '+cc+'問">'+
+      '<span style="width:'+(mm/N*100)+'%"></span><span class="pc" style="width:'+(cc/N*100)+'%"></span></span>';
   });
   $("goal").innerHTML=renderShelf();
+  saveSum();
   $("mixProg").textContent="全"+ITEMS.length+"問から出題";
   const wk=itemsOf("weak").length;
   $("weakCount").textContent=wk?wk+"問":"なし";$("weakBtn").disabled=wk<1;
@@ -229,6 +244,8 @@ function buildRound(sec){
   take(wk,sec==="weak"?ROUND:3);
   take(shuffle(pool.filter(it=>attempts(it)===0)),ROUND);
   take(pool.filter(it=>attempts(it)===1&&!mastered(it)&&!weak(it)&&!recent(it)).sort(older),ROUND);
+  // 記述式では「まだ書いて習得していない」問題を、選択式では「まだ選択でできていない」問題を先に
+  take(pool.filter(it=>!(curMode==="write"?mastered(it):choiceDone(it))&&!weak(it)&&!recent(it)).sort(older),ROUND);
   take(pool.filter(it=>!recent(it)).sort(older),ROUND);           // お休み中の問題（古い順）
   take(pool.slice().sort(older),ROUND);                            // それでも足りなければ直近の問題も
   return shuffle(out.map(makeQ));
@@ -442,10 +459,10 @@ function grade(r,chosen){
   if(!retry){   // 間違えたところだけの練習では、習得・苦手を動かさない
     s.t=Date.now();
     if(q.ok){
-      s.c++;s.last=1;s.run=(s.run||0)+1;
+      s.c++;s.last=1;s.run=(s.run||0)+1;if(curMode==="write")s.wrun=(s.wrun||0)+1;
       if(s.wk&&s.run>=2)s.wk=false;                       // 苦手は2回連続正解で解除
       if(!s.wk&&(q.kind==="w"||q.kind==="t")&&q.rt<=FAST_MS){if(!s.m)q.fast=true;s.m=true;}  // 記述で5秒以内 → 即習得
-    }else{s.w++;s.last=0;s.run=0;s.wk=true;s.m=false;}
+    }else{s.w++;s.last=0;s.run=0;s.wrun=0;s.wk=true;s.m=false;}
     store.it[q.it.id]=s;save();
   }
   const fb=$("fb");
@@ -501,6 +518,16 @@ function finishRound(){
   if(retry)mt="間違えたところだけの練習なので、成績・習得・記録には入りません。";
   const newB=retry?[]:awardBadges();
   $("rMastery").textContent=mt;
+  /* 選択式でよくできたら、記述式へさそう */
+  const nd=$("nudge");nd.innerHTML="";
+  if(!retry&&curMode==="choice"&&pct>=80){
+    const lst=itemsOf(curSec==="weak"?"mix":curSec),ready=lst.filter(it=>choiceDone(it)&&!mastered(it)).length;
+    nd.innerHTML='<div class="nudge"><div class="nd-t">選択式はもうばっちり！</div>'+
+      '<div class="nd-d">「見て選べる」の次は「自分で書ける」。記述式で2回続けて正解すると「習得」になり、達成率が100%まで伸びます。'+
+      (ready?'いま記述式で習得を待っている問題が <b>'+ready+'問</b>。':'')+'</div>'+
+      '<button class="play nd-go" id="ndGo">記述式でこの項目に挑戦 →</button></div>';
+    $("ndGo").onclick=()=>{curMode="write";store.mode="write";save();startRound(curSec);};
+  }
   const miss=questions.filter(q=>!q.ok);
   let h='<div class="ttl">'+(miss.length?"間違えた問題":"全問正解")+'</div>';
   miss.forEach(q=>{

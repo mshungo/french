@@ -27,7 +27,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-07g';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-07h';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
@@ -153,19 +153,21 @@ function handle_(req) {
   if (!pass) return { ok: false, error: 'nopass' };   // 共通パスワードが未設定
   const id = normId_(req.id);
   const pwOk = normPw_(req.pw) === pass;
-  let name = (pwOk && ID_RE.test(id)) ? lookupRoster_(ss, id) : null;   // パスワード違い・名簿にいなければ null
+  const row = (pwOk && ID_RE.test(id)) ? rosterRow_(ss, id) : null;   // パスワード違い・名簿にいなければ null
+  let name = row ? row.name : null;
   if (name === null && pwOk && id === PRACTICE_ID && req.action === 'feedback') name = '練習用';
   if (name === null) {
     addFail_(cache);
     return { ok: false, error: 'auth' };
   }
-  const user = { id: id, name: name || id };
+  const user = { id: id, name: name || id };            // 先生のシートに書く名前（サーバーの中だけで使う）
+  const pub = { id: id, name: row ? row.pub : '' };      // 学生の画面に返す名前：ニックネームだけ。本名は決して返さない
 
   if (req.action === 'sync' || req.action === 'history') {
     if (!rateOk_(cache, 'r:' + id, LIMIT.readPerMin, 60)) return { ok: false, error: 'rate' };
     try { touchLogin_(ss, cache, id); } catch (e) {}   // 失敗してもログインは止めない
-    if (req.action === 'history') { const h = historyFor_(ss, id); return { ok: true, user: user, history: h.history, agg: h.agg }; }
-    const res = { ok: true, user: user, stats: statsFor_(ss, id) };
+    if (req.action === 'history') { const h = historyFor_(ss, id); return { ok: true, user: pub, history: h.history, agg: h.agg }; }
+    const res = { ok: true, user: pub, stats: statsFor_(ss, id) };
     if (req.prog === true) res.prog = loadProg_(ss, id);   // ログイン時：端末にない進み具合を戻すため
     return res;
   }
@@ -184,7 +186,7 @@ function handle_(req) {
     if (!submitAllowed_(cache, id)) return { ok: false, error: 'rate' };
     const v = validateResult_(req.result);
     if (!v) return { ok: false, error: 'bad_request' };
-    return { ok: true, user: user, stats: recordResult_(ss, user, v) };
+    return { ok: true, user: pub, stats: recordResult_(ss, user, v) };
   }
   if (req.action === 'feedback') {
     if (!rateOk_(cache, 'f:h:' + id, LIMIT.feedbackPerHour, 3600) || !rateOk_(cache, 'f:d:' + id, LIMIT.feedbackPerDay, 86400)) return { ok: false, error: 'rate' };
@@ -255,6 +257,22 @@ function lookupRoster_(ss, id) {
   const vals = sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues();
   for (const row of vals) {
     if (normId_(row[0]) === id) return String(row[1] || '').trim();
+  }
+  return null;
+}
+
+// 名簿の1行：name＝B列（先生のシート用）、pub＝学生の画面に出してよい名前。
+// F列「氏名（本名）」が入っている行（フォームで登録した行）だけ、B列はニックネームなので画面に返す。
+// F列が空の行（以前の名簿）はB列が本名かもしれないので、画面には何も返さない（IDを表示）。
+function rosterRow_(ss, id) {
+  const sh = ss.getSheetByName(SHEET.roster);
+  if (!sh || sh.getLastRow() < 2) return null;
+  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues();
+  for (const r of vals) {
+    if (normId_(r[0]) === id) {
+      const name = String(r[1] || '').trim();
+      return { name: name, pub: String(r[5] || '').trim() ? safe_(name, 20) : '' };
+    }
   }
   return null;
 }
