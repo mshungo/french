@@ -46,7 +46,6 @@
     <div class="idrules">
       <div class="idrules-h">IDについて</div>
       <ul>
-        <li id="regLi" class="hidden">IDがまだない・忘れたときは、<a id="regA" href="#" target="_blank" rel="noopener">利用登録フォーム</a>から登録してください。IDがメールで届きます（同じメールアドレスで送ると、同じIDがもう一度届きます）。</li>
         <li>IDは自分だけのものです。他の人に教えないでください。</li>
         <li>残るのは自主学習の記録だけで、それ以外の情報は残りません。</li>
         <li>このサイトはまだ<b>ベータ版</b>です。うまく動かないところやおかしな問題、感想やアイデアがあれば、ページの一番下の「ひとことポスト」から気軽に教えてください。</li>
@@ -189,7 +188,7 @@
   (function(){
     var url=(window.QUIZ_CONFIG||{}).SCRIPT_URL;if(!url||!window.fetch)return;
     var ctl=window.AbortController?new AbortController():null;if(ctl)setTimeout(function(){ctl.abort();},15000);
-    fetch(url+(url.indexOf("?")<0?"?":"&")+"n=1",ctl?{signal:ctl.signal}:{}).then(function(r){return r.json();}).then(function(j){renderNotices(j.notices);if(j.reg&&/^https:\/\/(docs\.google\.com|forms\.gle)\//.test(j.reg)){$("regA").href=j.reg;$("regLi").classList.remove("hidden");}}).catch(function(){});
+    fetch(url+(url.indexOf("?")<0?"?":"&")+"n=1",ctl?{signal:ctl.signal}:{}).then(function(r){return r.json();}).then(function(j){renderNotices(j.notices);}).catch(function(){});
   })();
 
   $("idBtn").addEventListener("click",doLogin);
