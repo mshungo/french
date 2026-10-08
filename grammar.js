@@ -196,8 +196,8 @@ function shell(){
 '    <div class="msg" id="rMsg"></div><div class="rtime" id="rTime"></div><div class="mastery" id="rMastery"></div><div id="nudge"></div>'+
 '    <div class="review" id="review"></div>'+
 '    <button class="play retry hidden" id="retryBtn"></button>'+
-'    <button class="play again" id="againBtn" aria-label="もう一度" title="もう一度">'+NLI.svg("again",26)+'</button>'+
-'    <button class="home-link ic" id="toHomeBtn" aria-label="もどる" title="もどる">'+NLI.svg("back",22)+'</button>'+
+'    <button class="play again" id="againBtn" aria-label="もう一度" title="もう一度">'+NLI.svg("again",26)+'<span class="btn-t">もう一度</span></button>'+
+'    <button class="home-link ic wide" id="toHomeBtn" aria-label="もどる" title="もどる">'+NLI.svg("back",22)+'<span class="btn-t">もどる</span></button>'+
 '  </div>'+
 '</div>';
 }
@@ -510,7 +510,7 @@ function showAfter(q){
   if(!q.ok&&q.chosen!=null)extra+='<div class="heard nl-badge"><span style="color:var(--bad-ink)">'+NLI.svg("x",15)+'</span><s>'+esc(q.chosen)+'</s></div>';
   const alts=it.a.slice(1);
   if(alts.length&&(it.t==="t"||it.t==="w"))extra+='<div class="ans-alt">＝ '+alts.map(esc).join(" ／ ")+'</div>';
-  a.innerHTML='<div class="ans-fr">'+answerLine(q)+'</div>'+(it.ja&&it.t!=="b"?'':'')+extra+
+  a.innerHTML='<div class="ans-fr">'+answerLine(q)+'</div>'+(it.ja&&it.t!=="b"?'<div class="ans-ja">'+jaHTML(it.ja)+'</div>':'')+extra+
     (it.ex?'<div class="ex"><span class="ex-h">ポイント</span>'+esc(it.ex)+'</div>':'')+
     '<div class="btns nx"><button class="next-btn" id="nextBtn" aria-label="'+(idx+1<questions.length?"次へ":"結果を見る")+'">'+NLI.svg(idx+1<questions.length?"next":"flag",28)+'</button></div>';
   $("nextBtn").onclick=next;
@@ -544,7 +544,7 @@ function finishRound(){
   /* 選択式でよくできたら、記述式へさそう */
   const nd=$("nudge");nd.innerHTML="";
   if(!retry&&curMode==="choice"&&pct>=80){   // 選択式でよくできたら、記述式へ（鉛筆のボタンだけ）
-    nd.innerHTML='<button class="play nd-go" id="ndGo" aria-label="記述式で挑戦" title="記述式で挑戦"><span class="nl-badge">'+NLI.svg("pencil",22)+NLI.svg("next",22)+'</span></button>';
+    nd.innerHTML='<button class="play nd-go" id="ndGo" aria-label="記述式で挑戦" title="記述式で挑戦"><span class="nl-badge">'+NLI.svg("pencil",22)+'<span class="btn-t">記述式で挑戦</span>'+NLI.svg("next",20)+'</span></button>';
     $("ndGo").onclick=()=>{curMode="write";store.mode="write";save();startRound(curSec);};
   }
   const miss=questions.filter(q=>!q.ok);
@@ -560,7 +560,7 @@ function finishRound(){
   });
   $("review").innerHTML=h;
   $("retryBtn").classList.toggle("hidden",!miss.length);
-  $("retryBtn").innerHTML='<span class="nl-badge">'+NLI.svg("again",20)+NLI.svg("x",18)+'<b>'+miss.length+'</b></span>';$("retryBtn").setAttribute("aria-label","間違えたところだけ練習");$("retryBtn").title="間違えたところだけ練習";
+  $("retryBtn").innerHTML='<span class="nl-badge">'+NLI.svg("again",20)+'<span class="btn-t">間違えた <b>'+miss.length+'</b> 問だけ練習</span></span>';$("retryBtn").setAttribute("aria-label","間違えたところだけ練習");$("retryBtn").title="間違えたところだけ練習";
   show(resultScreen);
   if(pct>=80&&typeof playFanfare==="function")setTimeout(playFanfare,280);   // 8割以上でクリア
   if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),pct>=80?1900:500);

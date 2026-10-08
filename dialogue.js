@@ -555,7 +555,7 @@
         '<button class="round-btn" data-i="' + i + '" aria-label="音声">▶</button></div>';
     });
     if (quizItems.length) h += '<div class="rrow"><span class="mk ' + (quizItems.every(x => x.ok) ? "ok" : "no") + '">' + quizItems.filter(x => x.ok).length + '</span><span class="rtx"><span class="rja">聞き取りクイズ ' + quizItems.filter(x => x.ok).length + ' / ' + quizItems.length + '</span></span></div>';
-    h += '</div><button class="play again" id="dlgAgain" aria-label="もう一度この会話" title="もう一度この会話">' + NLI.svg("again", 26) + '</button><button class="home-link ic" id="dlgHome" aria-label="もどる" title="もどる">' + NLI.svg("back", 22) + '</button></div>';
+    h += '</div><button class="play again" id="dlgAgain" aria-label="もう一度この会話" title="もう一度この会話">' + NLI.svg("again", 26) + '<span class="btn-t">もう一度この会話</span></button><button class="home-link ic wide" id="dlgHome" aria-label="もどる" title="もどる">' + NLI.svg("back", 22) + '<span class="btn-t">もどる</span></button></div>';
     $("dlgCtl").classList.add("hidden");
     const end = $("dlgEnd"); end.innerHTML = h; end.classList.remove("hidden");
     end.querySelectorAll(".round-btn").forEach(b => b.onclick = () => speak(G(live[+b.dataset.i].t.ex)));
