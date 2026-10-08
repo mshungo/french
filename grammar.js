@@ -87,6 +87,16 @@ function weak(it){return !!st(it).wk;}
 function fmtDur(ms){const m=Math.round((ms||0)/60000);if(m<60)return m+"分";return Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
 function pctOf(list){return list.length?Math.floor(list.reduce((a,it)=>a+partOf(it),0)/list.length*100):0;}
 function pctMastered(){return pctOf(ITEMS);}
+/* 日本語ヒントの **〜** を太字に。問題データの h:[…] は「考える手がかり」の札として出す（例：人／目的語（だれを）） */
+function jaHTML(s){return esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");}
+function plain(s){return String(s||"").replace(/\*\*/g,"");}
+function tagsHTML(it){return it.h&&it.h.length?'<div class="q-tags"><span class="q-tl">ヒント</span>'+it.h.map(t=>'<span class="q-tag">'+jaHTML(t)+'</span>').join("")+'</div>':'';}
+/* 達成メーター（10マス）：濃い色＝習得した問題、薄い色＝それ以外で取った点 */
+function meterHTML(list){
+  const N=list.length||1,p=pctOf(list),m=list.filter(mastered).length/N*100;
+  return '<span class="gm-bar" role="img" aria-label="達成 '+p+'%"><span class="gm-m" style="width:'+m+'%"></span><span class="gm-p" style="width:'+Math.max(0,p-m)+'%"></span></span>'+
+    '<span class="gm-v'+(p>=100?' full':'')+'">'+p+'<small>%</small></span>';
+}
 /* 学習記録ページ（成果カード）用に、達成の数を控えておく */
 function saveSum(){store.sum={n:ITEMS.length,m:ITEMS.filter(mastered).length,c:ITEMS.filter(it=>choiceDone(it)&&!mastered(it)).length,pts:ITEMS.reduce((a,it)=>a+Math.min(PT_MAX,st(it).pt),0),p:pctMastered()};save();}
 /* ---------- バッジ ----------
@@ -132,7 +142,7 @@ function itemsOf(sec){
 function shell(){
   const secBtns=L.sections.map((s,i)=>
     '<button class="start-btn" data-sec="'+s.k+'" style="--vc:'+s.c+';--vcw:'+s.cw+'"><i class="wk">'+(i+1)+'</i>'+
-    '<span class="sb-name">'+esc(s.t)+'<span class="sb-desc">'+esc(s.d||"")+'</span></span>'+
+    '<span class="sb-name">'+esc(s.t)+'<span class="sb-desc">'+esc(s.d||"")+'</span><span class="gm" data-gm="'+s.k+'"></span></span>'+
     '<span class="sb-prog" data-prog="'+s.k+'"></span></button>').join("");
   const memos=L.sections.filter(s=>s.memo).map(s=>
     '<details class="memo"><summary>'+esc(s.t)+'</summary><div class="memo-body">'+s.memo+'</div></details>').join("");
@@ -160,7 +170,7 @@ function shell(){
 '    <div class="section-label">項目を選択</div>'+
 '    <div class="sections">'+secBtns+'</div>'+
 '    <div class="extra-row">'+
-'      <button class="start-btn summary" id="mixBtn"><i>★</i><span class="sb-name">総まとめ<span class="sb-desc" id="mixProg"></span></span></button>'+
+'      <button class="start-btn summary" id="mixBtn"><i>★</i><span class="sb-name">総まとめ<span class="sb-desc" id="mixProg"></span><span class="gm" data-gm="mix"></span></span></button>'+
 '      <button class="start-btn weak" id="weakBtn"><i>!</i><span class="sb-name">苦手を復習<span class="sb-desc" id="weakCount">なし</span></span></button>'+
 '    </div>'+
 (memos?'    <div class="section-label">文法のポイント</div><div class="memos">'+memos+'</div>':'')+
@@ -216,12 +226,12 @@ function renderHome(){
     const list=itemsOf(s.k),mm=list.filter(mastered).length,done=!!B["s:"+s.k];
     const el=document.querySelector('[data-prog="'+s.k+'"]');if(!el)return;
     el.parentNode.classList.toggle("mastered",done);
-    const N=list.length||1,light=Math.max(0,pctOf(list)-mm/N*100);
     el.innerHTML=done&&window.Badge?
       Badge.seal({kind:"sec",on:true,color:s.c,size:30})+'<span class="sb-done">習得 '+mm+'/'+list.length+'<small>Maîtrise</small></span>':
-      '<span>達成 '+pctOf(list)+'%</span><span class="pbar two" title="濃い色＝習得した問題　薄い色＝練習中の点数">'+
-      '<span style="width:'+(mm/N*100)+'%"></span><span class="pc" style="width:'+light+'%"></span></span>';
+      '<span>習得 '+mm+'/'+list.length+'</span>';
+    const g=document.querySelector('[data-gm="'+s.k+'"]');if(g)g.innerHTML=meterHTML(list);
   });
+  const gx=document.querySelector('[data-gm="mix"]');if(gx)gx.innerHTML=meterHTML(ITEMS);
   $("goal").innerHTML=renderShelf();
   saveSum();
   $("mixProg").textContent="全"+ITEMS.length+"問から出題";
@@ -388,7 +398,7 @@ function render(){
   $("fb").className="fb";$("fb").textContent="";
   const a=$("after");a.classList.add("hidden");a.innerHTML="";
   const stg=$("stage"),hint=$("hintLine");
-  const ja=it.ja?'<div class="jp-hint">'+esc(it.ja)+'</div>':'';
+  const ja=tagsHTML(it)+(it.ja?'<div class="jp-hint">'+jaHTML(it.ja)+'</div>':'');
   if(q.kind==="c"){
     const long=q.options.some(o=>o.length>14);
     stg.innerHTML='<div class="prompt gq">'+promptHTML(q)+'</div>'+ja+'<div class="opts'+(long?' long':'')+'" id="opts"></div>';
@@ -415,7 +425,7 @@ function render(){
     bindWrite(q);hint.textContent="文全体を入力して Enter（文末の . ? は省略可）";
   }else if(q.kind==="b"){
     stg.innerHTML=(it.t==="t"?'<div class="inst">'+esc(it.inst)+'</div><div class="src">'+esc(it.src)+'</div><div class="qtext">札を並べて、書きかえた文を作ろう</div>':
-      '<div class="prompt-ja">'+esc(it.ja)+'</div><div class="qtext">単語を並べてフランス語の文にしよう</div>')+
+      tagsHTML(it)+'<div class="prompt-ja">'+jaHTML(it.ja)+'</div><div class="qtext">単語を並べてフランス語の文にしよう</div>')+
       '<div class="tray" id="tray"></div><div class="bank" id="bank"></div>'+
       '<div class="build-ctl"><button class="mini" id="undoBtn">1つ戻す</button><button class="mini" id="clearBtn">やり直す</button></div>';
     q.picked=[];drawTiles(q);
@@ -542,7 +552,7 @@ function finishRound(){
   let h='<div class="ttl">'+(miss.length?"間違えた問題":"全問正解")+'</div>';
   miss.forEach(q=>{
     h+='<div class="rrow"><span class="mk no">✕</span><span class="rtx">'+
-      (q.it.t==="t"?'<span class="rja">'+esc(q.it.inst)+'：'+esc(q.it.src)+'</span>':q.it.t==="b"?'<span class="rja">'+esc(q.it.ja)+'</span>':'')+
+      (q.it.t==="t"?'<span class="rja">'+esc(q.it.inst)+'：'+esc(q.it.src)+'</span>':q.it.t==="b"?'<span class="rja">'+jaHTML(q.it.ja)+'</span>':'')+
       '<span class="rfr">'+answerLine(q)+'</span>'+
       (q.it.ex?'<span class="rja">'+esc(q.it.ex)+'</span>':'')+'</span></div>';
   });
@@ -554,7 +564,7 @@ function finishRound(){
   if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),roundCorrect===N?1900:500);
   if(retry)return;
   if(window.Quiz)Quiz.submit("grammar",{section:"L"+L.no+"-"+curSec,mode:curMode,durMs:Math.round(time),score:roundCorrect,total:N,timeAttack:false,timeMs:null,
-    misses:miss.map(q=>({full:q.it.t==="b"?q.it.ja:(q.it.q||q.it.src||""),verb:"L"+L.no,chosen:q.chosen||"",answer:q.it.a[0]}))});
+    misses:miss.map(q=>({full:q.it.t==="b"?plain(q.it.ja):(q.it.q||q.it.src||""),verb:"L"+L.no,chosen:q.chosen||"",answer:q.it.a[0]}))});
 }
 /* 問題の報告用：このラウンドで出た問題（新しい順）。feedback.js が使う */
 window.FB_QUESTIONS=function(){
@@ -563,7 +573,7 @@ window.FB_QUESTIONS=function(){
   for(let i=n-1;i>=0;i--){
     const q=questions[i],it=q.it,body=it.t==="t"?it.inst+"："+it.src:it.t==="b"?it.ja:(it.q||"");
     out.push({label:(i+1)+". "+body,
-      detail:"文法練習 Leçon "+L.no+"／"+secInfo(it.sec).t+"／ラウンドの第"+(i+1)+"問（問題ID "+it.id+"）\n問題："+body+(it.ja&&it.t!=="b"?"（"+it.ja+"）":"")+
+      detail:"文法練習 Leçon "+L.no+"／"+secInfo(it.sec).t+"／ラウンドの第"+(i+1)+"問（問題ID "+it.id+"）\n問題："+plain(body)+(it.ja&&it.t!=="b"?"（"+plain(it.ja)+"）":"")+
         "\n正解："+it.a.join(" / ")+"\n自分の答え："+(q.ok==null?"（まだ答えていない）":(q.chosen||"")+(q.ok?"　○":"　✕"))});
   }
   return out;

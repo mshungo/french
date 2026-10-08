@@ -11,10 +11,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=7">
+<link rel="stylesheet" href="grammar.css?v=8">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=12"></script>
+<script src="grammar.js?v=13"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -106,30 +106,30 @@ B("proche","彼女はたった今、家に帰ってきたところだ。","Elle 
 B("proche","今夜、映画を見に行くよ。","Je vais voir un film ce soir.",["viens","de"],"aller＋原形「～しに行く」。");
 
 /* ---------- 疑問代名詞 ---------- */
-C("pron","___ vient ce soir ?","Qui",["Qui","Que","Qu'est-ce qui"],"人について「だれが」→ qui（＝qui est-ce qui）。",{ja:"今夜だれが来るの？",cw:false});
-C("pron","___ tu cherches ?","Qui est-ce que",["Qui est-ce que","Qui est-ce qui","Qu'est-ce que"],"「だれを」は qui est-ce que。est-ce que のあとは倒置しない。",{ja:"だれを探しているの？"});
-C("pron","___ cherches-tu ?","Qui",["Qui","Que","Quoi"],"「だれを」を倒置で聞くときは qui＋動詞-主語。",{ja:"だれを探しているの？"});
-C("pron","___ vous faites le dimanche ?","Qu'est-ce que",["Qu'est-ce que","Qu'est-ce qui","Qui est-ce que"],"「何を」→ qu'est-ce que＋主語＋動詞。",{ja:"日曜日は何をしていますか？"});
-C("pron","___ faites-vous le dimanche ?","Que",["Que","Qu'est-ce que","Quoi"],"「何を」を倒置で聞くときは que＋動詞-主語。",{ja:"日曜日は何をしていますか？"});
-C("pron","___ ne va pas ?","Qu'est-ce qui",["Qu'est-ce qui","Qu'est-ce que","Que"],"人以外が主語「何が」→ qu'est-ce qui。",{ja:"どうしたの（何がうまくいかないの）？"});
-C("pron","___ est sur la table ?","Qu'est-ce qui",["Qu'est-ce qui","Qui est-ce que","Que"],"「何が」→ qu'est-ce qui。",{ja:"テーブルの上に何があるの？"});
-C("pron","___ est-ce ? ― C'est mon frère.","Qui",["Qui","Que","Quoi"],"人について属詞「だれ」→ qui。",{ja:"あれはだれ？ ― 私の兄です。"});
-C("pron","Avec ___ vas-tu au cinéma ?","qui",["qui","quoi","que"],"前置詞のあと、人なら qui。",{ja:"だれと映画に行くの？"});
-C("pron","À ___ penses-tu ?","quoi",["quoi","que","qui"],"前置詞のあと、人以外なら quoi。",{ja:"何を考えているの？"});
-C("pron","De ___ parlez-vous ?","quoi",["quoi","que","qu'"],"前置詞のあと、人以外なら quoi。parler de ～「～について話す」。",{ja:"何の話をしているのですか？"});
-C("pron","De ___ parle-t-il ?","qui",["qui","quoi","que"],"前置詞のあと、人なら qui。",{ja:"彼はだれのことを話しているの？"});
-C("pron","Tu fais ___ ce soir ?","quoi",["quoi","que","qu'est-ce que"],"口語では文末に quoi を置いて「何を」とたずねる。",{ja:"今夜は何するの？（くだけた言い方）"});
-W("pron","___ êtes-vous ? ― Je suis le père de Léa.","Qui","人について属詞「だれ」→ qui。",{ja:"どなたですか？ ― レアの父です。"});
-W("pron","___ regardes-tu ? ― Je regarde la télé.","Que","「何を」を倒置で → que。",{ja:"何を見ているの？ ― テレビを見ているよ。"});
-W("pron","___ c'est ? ― C'est un dictionnaire.","Qu'est-ce que","「これは何ですか」＝ Qu'est-ce que c'est ?",{ja:"これは何ですか？ ― 辞書です。"});
+C("pron","___ vient ce soir ?","Qui",["Qui","Que","Qu'est-ce qui"],"人について「だれが」→ qui（＝qui est-ce qui）。",{ja:"今夜**だれが**来るの？",h:["**人**のこと","**主語**（だれが）"],cw:false});
+C("pron","___ tu cherches ?","Qui est-ce que",["Qui est-ce que","Qui est-ce qui","Qu'est-ce que"],"「だれを」は qui est-ce que。est-ce que のあとは倒置しない。",{ja:"**だれを**探しているの？",h:["**人**のこと","**目的語**（だれを）","語順：tu cherches（倒置なし）"]});
+C("pron","___ cherches-tu ?","Qui",["Qui","Que","Quoi"],"「だれを」を倒置で聞くときは qui＋動詞-主語。",{ja:"**だれを**探しているの？",h:["**人**のこと","**目的語**（だれを）","語順：cherches-tu（倒置）"]});
+C("pron","___ vous faites le dimanche ?","Qu'est-ce que",["Qu'est-ce que","Qu'est-ce qui","Qui est-ce que"],"「何を」→ qu'est-ce que＋主語＋動詞。",{ja:"日曜日は**何を**していますか？",h:["**もの・こと**","**目的語**（何を）","語順：vous faites（倒置なし）"]});
+C("pron","___ faites-vous le dimanche ?","Que",["Que","Qu'est-ce que","Quoi"],"「何を」を倒置で聞くときは que＋動詞-主語。",{ja:"日曜日は**何を**していますか？",h:["**もの・こと**","**目的語**（何を）","語順：faites-vous（倒置）"]});
+C("pron","___ ne va pas ?","Qu'est-ce qui",["Qu'est-ce qui","Qu'est-ce que","Que"],"人以外が主語「何が」→ qu'est-ce qui。",{ja:"どうしたの（**何が**うまくいかないの）？",h:["**もの・こと**","**主語**（何が）"]});
+C("pron","___ est sur la table ?","Qu'est-ce qui",["Qu'est-ce qui","Qui est-ce que","Que"],"「何が」→ qu'est-ce qui。",{ja:"テーブルの上に**何が**あるの？",h:["**もの・こと**","**主語**（何が）"]});
+C("pron","___ est-ce ? ― C'est mon frère.","Qui",["Qui","Que","Quoi"],"人について属詞「だれ」→ qui。",{ja:"あれは**だれ**？ ― 私の兄です。",h:["**人**のこと","「〜は**だれ**？」（属詞）"]});
+C("pron","Avec ___ vas-tu au cinéma ?","qui",["qui","quoi","que"],"前置詞のあと、人なら qui。",{ja:"**だれと**映画に行くの？",h:["**人**のこと","**前置詞**（avec）のあと"]});
+C("pron","À ___ penses-tu ?","quoi",["quoi","que","qui"],"前置詞のあと、人以外なら quoi。",{ja:"**何を**考えているの？",h:["**もの・こと**","**前置詞**（à）のあと"]});
+C("pron","De ___ parlez-vous ?","quoi",["quoi","que","qu'"],"前置詞のあと、人以外なら quoi。parler de ～「～について話す」。",{ja:"**何の**話をしているのですか？",h:["**もの・こと**","**前置詞**（de）のあと"]});
+C("pron","De ___ parle-t-il ?","qui",["qui","quoi","que"],"前置詞のあと、人なら qui。",{ja:"彼は**だれの**ことを話しているの？",h:["**人**のこと","**前置詞**（de）のあと"]});
+C("pron","Tu fais ___ ce soir ?","quoi",["quoi","que","qu'est-ce que"],"口語では文末に quoi を置いて「何を」とたずねる。",{ja:"今夜は**何**するの？（くだけた言い方）",h:["**もの・こと**","**文の最後**に置く形"]});
+W("pron","___ êtes-vous ? ― Je suis le père de Léa.","Qui","人について属詞「だれ」→ qui。",{ja:"**どなた**ですか？ ― レアの父です。",h:["**人**のこと","「〜は**だれ**？」（属詞）"]});
+W("pron","___ regardes-tu ? ― Je regarde la télé.","Que","「何を」を倒置で → que。",{ja:"**何を**見ているの？ ― テレビを見ているよ。",h:["**もの・こと**","**目的語**（何を）","語順：regardes-tu（倒置）"]});
+W("pron","___ c'est ? ― C'est un dictionnaire.","Qu'est-ce que","「これは何ですか」＝ Qu'est-ce que c'est ?",{ja:"これは**何**ですか？ ― 辞書です。",h:["**もの・こと**","語順：c'est（倒置なし）"]});
 C("pron","De ces deux robes, ___ préfères-tu ?","laquelle",["laquelle","lequel","lesquelles"],"「どれ」は受ける名詞に性数一致。robe は女性単数 → laquelle。",{ja:"この2着のドレスのうち、どちらが好き？"});
 C("pron","Voici trois livres. ___ choisis-tu ?","Lequel",["Lequel","Laquelle","Lesquels"],"livre は男性。「どれを（1冊）」→ lequel。",{ja:"本が3冊あるよ。どれを（1冊）選ぶ？"});
 C("pron","Parmi ces chaussures, ___ achètes-tu ?","lesquelles",["lesquelles","lesquels","laquelle"],"chaussures は女性複数 → lesquelles。",{ja:"この靴の中で、どれを買うの？"});
 C("pron","J'ai deux frères. ― ___ habite à Tokyo ?","Lequel",["Lequel","Laquelle","Lesquels"],"frère は男性。「どちらが（ひとり）」→ lequel。",{ja:"兄弟が2人いるんだ。 ― どちらが東京に住んでいるの？"});
 C("pron","Il parle d'un de ses romans. ― ___ parle-t-il ?","Duquel",["Duquel","Desquels","Auquel"],"de＋lequel → duquel。roman は男性単数。",{ja:"彼は自分の小説のひとつについて話している。 ― どの小説のこと？"});
-B("pron","だれが明日来るの？（est-ce を使って）","Qui est-ce qui vient demain ?",["que","viens"],"人が主語「だれが」→ qui est-ce qui。");
-B("pron","何を探しているの？（est-ce que で）","Qu'est-ce que tu cherches ?",["qui","cherche"],"「何を」→ qu'est-ce que＋主語＋動詞。");
-B("pron","だれのことを考えているの？","À qui penses-tu ?",["quoi","que"],"penser à ～。前置詞のあと、人なら qui。");
+B("pron","**だれが**明日来るの？（est-ce を使って）","Qui est-ce qui vient demain ?",["que","viens"],"人が主語「だれが」→ qui est-ce qui。");
+B("pron","**何を**探しているの？（est-ce que で）","Qu'est-ce que tu cherches ?",["qui","cherche"],"「何を」→ qu'est-ce que＋主語＋動詞。");
+B("pron","**だれの**ことを考えているの？","À qui penses-tu ?",["quoi","que"],"penser à ～。前置詞のあと、人なら qui。");
 
 /* ---------- 疑問副詞・疑問形容詞 ---------- */
 C("adv","___ partez-vous ? ― Demain matin.","Quand",["Quand","Où","Comment"],"「いつ」→ quand。",{ja:"いつ出発しますか？ ― 明日の朝です。"});

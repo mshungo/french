@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=7">
+<link rel="stylesheet" href="grammar.css?v=8">
 </head>
 <body>
 <div class="wrap">
@@ -43,16 +43,19 @@ function ptOf(x){if(x.pt!=null)return Math.min(4,x.pt);var run=x.run!=null?x.run
   var who=(window.Quiz&&Quiz.user())?Quiz.user().id:"guest";
   var h="";
   L.forEach(function(l){
-    var prog="";
+    var prog="",pct=0,mf=0;
     if(!l.soon){try{var s=JSON.parse(localStorage.getItem("gramQuiz_L"+l.no+"_v1_"+who));
       if(s&&s.tries){var m=0,pts=0;for(var k in s.it){var x=s.it[k],pt=ptOf(x);pts+=pt;if(pt>=4&&!x.wk)m++;}   // 達成ポイント（1問4点）
-        var pct=l.n?Math.floor(pts/(l.n*4)*100):0;
+        pct=l.n?Math.floor(pts/(l.n*4)*100):0;mf=l.n?m/l.n*100:0;
         var B=s.badges||{},nb=Object.keys(B).filter(function(k){return k.indexOf("s:")===0;}).length,W=window.Badge;
         var seals=W?(nb?'<span class="bdg-mini">'+W.seal({kind:"sec",on:true,color:l.c,size:14})+'×'+nb+'</span>':'')+
           (B.clear||s.answered>=300?' '+W.seal({kind:"clear",on:true,size:14}):'')+(B.medal||m>=l.n?' '+W.seal({kind:"medal",on:true,size:17}):''):'';
-        prog='<span class="sb-prog"><span>'+s.tries+'回 ・ '+fmtDur(s.timeMs)+'</span><span>達成 '+pct+'%'+(seals?' '+seals:'')+'</span></span>';}}catch(e){}}
+        prog='<span class="sb-prog"><span>'+s.tries+'回 ・ '+fmtDur(s.timeMs)+'</span>'+(seals?'<span>'+seals+'</span>':'')+'</span>';}}catch(e){}}
+    /* 達成メーター（10マス）：濃い色＝習得した問題、薄い色＝それ以外で取った点 */
+    var meter='<span class="gm"><span class="gm-bar" role="img" aria-label="達成 '+pct+'%"><span class="gm-m" style="width:'+mf+'%"></span><span class="gm-p" style="width:'+Math.max(0,pct-mf)+'%"></span></span>'+
+      '<span class="gm-v'+(pct>=100?' full':'')+'">'+pct+'<small>%</small></span></span>';
     h+=(l.soon?'<div class="start-btn soon"':'<a class="start-btn" href="grammar-l'+l.no+'.html"')+' style="--vc:'+l.c+';--vcw:'+l.cw+'">'+
-      '<i class="wk">L'+l.no+'</i><span class="sb-name">'+(l.soon?l.t:"Leçon "+l.no+"　"+l.t)+'<span class="sb-desc">'+l.d+'</span></span>'+prog+
+      '<i class="wk">L'+l.no+'</i><span class="sb-name">'+(l.soon?l.t:"Leçon "+l.no+"　"+l.t)+'<span class="sb-desc">'+l.d+'</span>'+(l.soon?'':meter)+'</span>'+prog+
       (l.soon?'</div>':'</a>');
   });
   document.getElementById("list").innerHTML=h;

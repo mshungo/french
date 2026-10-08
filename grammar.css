@@ -427,3 +427,20 @@
   /* 間違えたところだけを練習 */
   .play.retry{background:#fff;color:var(--accent-ink);border:2px solid var(--accent-ink);box-shadow:none;margin-bottom:10px;}
   .play.retry:hover{background:var(--accent-wash,#f6eef3);}
+
+  /* 達成メーター（10マス） */
+  .gm{display:flex;align-items:center;gap:8px;margin-top:7px;}
+  .gm-bar{position:relative;flex:1;display:flex;height:10px;border-radius:6px;background:var(--rule);overflow:hidden;min-width:90px;}
+  .gm-bar::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 2px),rgba(255,253,251,.95) calc(10% - 2px),rgba(255,253,251,.95) 10%);pointer-events:none;}
+  .gm-m{display:block;height:100%;background:var(--vc,var(--accent));flex:none;}
+  .gm-p{display:block;height:100%;background:var(--vc,var(--accent));opacity:.4;flex:none;}
+  .gm-v{flex:none;min-width:40px;text-align:right;font-family:var(--serif);font-weight:700;font-size:16px;color:var(--ink);line-height:1;}
+  .gm-v small{font-size:11px;font-weight:400;color:var(--ink-soft);margin-left:1px;}
+  .gm-v.full{color:var(--vc,var(--accent-ink));}
+  .start-btn .sb-name{flex:1;min-width:0;}
+  .start-btn.summary .gm-m,.start-btn.summary .gm-p{background:var(--gold);}
+  /* 考える手がかりの札（例：人／目的語（だれを）） */
+  .q-tags{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;margin:4px 0 6px;}
+  .q-tl{font-size:10.5px;letter-spacing:1px;color:var(--ink-faint);}
+  .q-tag{font-size:12px;padding:3px 10px;border-radius:12px;background:var(--accent-wash);color:var(--accent-ink);border:1px solid rgba(0,0,0,.04);}
+  .q-tag b,.jp-hint b,.prompt-ja b{color:var(--accent-ink);font-weight:700;}
