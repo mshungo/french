@@ -359,7 +359,15 @@
   /* ---- 表示の設定（この端末だけ）：解いているときの時間を隠す／書体をゴシックにする ---- */
   var PREF_KEY = "nlPrefs";
   var prefCache = null;   // 毎回 localStorage を読まないよう、メモリに持っておく
-  function prefs() { if (!prefCache) prefCache = jget(PREF_KEY, {}) || {}; return prefCache; }
+  /* はじめの設定：次の問題へ＝手動（押す）、解答中の時間＝かくす、文字の書体＝ゴシック */
+  function prefs() {
+    if (!prefCache) {
+      prefCache = jget(PREF_KEY, {}) || {};
+      if (prefCache.hideTimer === undefined) prefCache.hideTimer = true;
+      if (!prefCache.font) prefCache.font = "gothic";
+    }
+    return prefCache;
+  }
   function setPref(k, v) { var p = prefs(); p[k] = v; lsSet(PREF_KEY, JSON.stringify(p)); applyPrefs(); }
   var SANS = '-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans JP",Meiryo,sans-serif';
   function eachRule(list, fn) {
@@ -429,7 +437,7 @@
 
   try { migrateVerbs(false); } catch (e) {}   // いろいろな動詞の記録の引っ越し（一度だけ）
 
-  function nextSpeed() { var p = prefs(); return p.nextSpeed || "slow"; }   // はじめは「おそい」
+  function nextSpeed() { var p = prefs(); var v = p.nextSpeed || "manual"; return v === "fast" ? "normal" : v; }   // はじめは「手動」。速い＝normal（約1秒）、遅い＝slow
   /* アイコン（文字のかわりに使う）。NLI.svg("home", 22) で SVG の文字列 */
   var ICON = {clock:"<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M12 7.5V12l3 2\"/>",pencil:"<path d=\"M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z\"/><path d=\"M14.5 7.5l3 3\"/>",bolt:"<path d=\"M13 2.5 5 13.5h6l-1 8 8-11h-6z\" fill=\"currentColor\"/>",star:"<path d=\"M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z\" fill=\"currentColor\"/>",x:"<path d=\"M7 7l10 10M17 7 7 17\"/>",home:"<path d=\"M3.5 11 12 4l8.5 7\"/><path d=\"M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5\"/>",back:"<path d=\"M15 5l-7 7 7 7\"/>",next:"<path d=\"M5 12h13\"/><path d=\"M13 6l6 6-6 6\"/>",flag:"<path d=\"M6 21V4\"/><path d=\"M6 4.5h10.5l-2.2 4 2.2 4H6\"/>",again:"<path d=\"M4.5 12a7.5 7.5 0 1 0 2.2-5.3\"/><path d=\"M4.5 4.5v4.5H9\"/>",speaker:"<path d=\"M4 9.5h3.5L12 6v12l-4.5-3.5H4z\"/><path d=\"M15.5 9.5a3.5 3.5 0 0 1 0 5\"/><path d=\"M18 7.5a6.5 6.5 0 0 1 0 9\"/>",slow:"<path d=\"M3 18.5h12.5a4 4 0 0 0 4-4V12\"/><circle cx=\"10\" cy=\"12.5\" r=\"5\"/><path d=\"M10 12.5a1.6 1.6 0 1 1 1.6-1.6\"/><path d=\"M19.5 12 18 7.5M19.5 12l2.5-3.5\"/>",undo:"<path d=\"M9 7 4.5 11.5 9 16\"/><path d=\"M4.5 11.5H15a4.5 4.5 0 0 1 0 9h-2\"/>",clear:"<path d=\"M6 6l12 12M18 6 6 18\"/>",help:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.6 9.3a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2 1-1.2 1.9\"/><circle cx=\"12\" cy=\"16.8\" r=\".6\" fill=\"currentColor\"/>",logout:"<path d=\"M14 4h4.5a1.5 1.5 0 0 1 1.5 1.5v13a1.5 1.5 0 0 1-1.5 1.5H14\"/><path d=\"M10 8l-4 4 4 4\"/><path d=\"M6 12h10\"/>"};
   window.NLI = {

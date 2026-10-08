@@ -6,11 +6,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=16">
+<link rel="stylesheet" href="base.css?v=17">
 <title>Naralingo — フランス語練習</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=31"></script>
+<script src="common.js?v=32"></script>
 <script src="streak.js?v=4"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=3"></script>
@@ -23,7 +23,12 @@
     <div class="eyebrow" style="margin-top:10px">Français · フランス語練習</div>
   </div>
 
-  <div id="notices" aria-live="polite"></div>
+  <!-- お知らせ：ページには出さず、右上のベルから開く -->
+  <button type="button" class="nbell hidden" id="nBell" aria-label="お知らせ" title="お知らせ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2H4.5z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="nb-n hidden" id="nBellN"></span></button>
+  <div class="nmodal hidden" id="nModal" role="dialog" aria-modal="true" aria-label="お知らせ">
+    <div class="nm-box"><div class="nm-h">お知らせ<button type="button" class="nm-x" id="nClose" aria-label="閉じる">×</button></div>
+      <div id="notices" aria-live="polite"></div></div>
+  </div>
 
   <!-- ログイン -->
   <div class="panel hidden" id="loginPanel">
@@ -101,7 +106,7 @@
     <details class="prefs">
       <summary class="prefs-h">設定</summary>
       <div class="pref-row"><span class="pref-l">次の問題へ</span>
-        <span class="pref-t four"><button type="button" data-pref="nextSpeed" data-v="fast">はやい</button><button type="button" data-pref="nextSpeed" data-v="normal">ふつう</button><button type="button" data-pref="nextSpeed" data-v="slow">おそい</button><button type="button" data-pref="nextSpeed" data-v="manual">押す</button></span></div>
+        <span class="pref-t four"><button type="button" data-pref="nextSpeed" data-v="normal">自動（速い）</button><button type="button" data-pref="nextSpeed" data-v="slow">自動（遅い）</button><button type="button" data-pref="nextSpeed" data-v="manual">手動</button></span></div>
       <div class="pref-row"><span class="pref-l">解答中の時間</span>
         <span class="pref-t"><button type="button" data-pref="hideTimer" data-v="0">表示する</button><button type="button" data-pref="hideTimer" data-v="1">かくす</button></span></div>
       <div class="pref-row"><span class="pref-l">文字の書体</span>
@@ -246,20 +251,30 @@
     }).join("");
   }
   var NCLS={"障害":"ng","注意":"warn","期間限定":"ltd","イベント":"evt"};   /* 種類ごとの色 */
+  /* ベル：未読の数を出す。障害・注意の未読があれば赤くしてゆらす */
+  function updBell(unread){
+    var b=$("nBell"),n=$("nBellN");if(!b)return;
+    b.classList.toggle("hidden",!nList.length);
+    n.textContent=unread.length;n.classList.toggle("hidden",!unread.length);
+    b.classList.toggle("urgent",unread.some(function(x){return x.kind==="障害"||x.kind==="注意";}));
+  }
+  function openNotices(){$("nModal").classList.remove("hidden");}
+  function closeNotices(){$("nModal").classList.add("hidden");}
   function renderNotices(list){
     if(list)nList=list.filter(function(n){return n&&n.text;});
     var box=$("notices"),read=lsJ(NREAD,[]);
     /* 「期間限定」は既読にできない（先生が表示を外すまで出しつづける） */
     var unread=nList.filter(function(n){return n.kind==="期間限定"||read.indexOf(nKey(n))<0;}),done=nList.length-unread.length;
     var canRead=unread.filter(function(n){return n.kind!=="期間限定";});
-    if(!nList.length){box.innerHTML="";box.className="";return;}
+    if(!nList.length){box.innerHTML="";box.className="";closeNotices();return;}
     var shownList=showRead?nList:unread;
-    var sig=nHash(unread.map(nKey).join("|")),fold=unread.length>0&&lsJ(NFOLD,"")===sig;
+    var sig=nHash(unread.map(nKey).join("|")),fold=false;   /* ベルの中に出すので、たたむ機能は使わない */
+    updBell(unread);
     var h="";
     if(unread.length||showRead){
       h+='<div class="nhead"><span class="nh-t">お知らせ<span class="nh-n">'+unread.length+'</span></span><span class="nh-btns">'+
         (canRead.length>1&&!fold?'<button class="nh-btn" type="button" data-a="all">すべて既読</button>':'')+
-        (unread.length?'<button class="nh-btn" type="button" data-a="fold">'+(fold?'表示する ▾':'隠す ▴')+'</button>':'')+'</span></div>';
+        '</span></div>';
       if(!fold){
         h+='<div class="nlist">';
         shownList.forEach(function(n){
@@ -300,6 +315,8 @@
   })();
 
   $("guideBtn").addEventListener("click",openWelcome);
+  $("nBell").addEventListener("click",openNotices);$("nClose").addEventListener("click",closeNotices);
+  $("nModal").addEventListener("click",function(e){if(e.target===this)closeNotices();});
   /* 今日の学習をはじめる！：動詞活用・いろいろな動詞・文法練習から、ランダムに1つ選んですぐ始める */
   $("goBtn").addEventListener("click",function(){
     var b=this;if(b.classList.contains("rolling"))return;
@@ -313,7 +330,7 @@
   function renderPrefs(){
     var p=Q.prefs();
     document.querySelectorAll("[data-pref]").forEach(function(b){
-      var k=b.dataset.pref,v=b.dataset.v,on=k==="font"?(v==="gothic")===(p.font==="gothic"):k==="nextSpeed"?v===(p.nextSpeed||"slow"):(v==="1")===!!p[k];
+      var k=b.dataset.pref,v=b.dataset.v,on=k==="font"?(v==="gothic")===(p.font==="gothic"):k==="nextSpeed"?v===({fast:"normal"}[p.nextSpeed]||p.nextSpeed||"manual"):(v==="1")===!!p[k];
       b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on));
     });
   }

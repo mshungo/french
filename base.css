@@ -195,3 +195,21 @@ details.prefs[open] summary.prefs-h::after{transform:rotate(180deg);}
   border:1px solid var(--rule);background:#fdfaf8;color:var(--accent-ink);text-decoration:none;font-size:11px;transition:transform .15s,border-color .15s;}
 .rec-btn:hover{transform:translateY(-2px);border-color:var(--accent);}
 @media(prefers-reduced-motion:reduce){.go-btn::after,.go-die,.go-spark{animation:none}}
+
+/* お知らせのベル（右上）と、開いたときの窓 */
+.wrap{position:relative;}
+.nbell{position:absolute;top:-26px;right:0;width:42px;height:42px;border-radius:50%;border:1px solid var(--card-edge);background:#fffdfb;color:var(--accent-ink);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 14px -8px var(--shadow);transition:transform .15s;}
+.nbell:hover{transform:translateY(-1px);}
+.nbell .nb-n{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent-ink);color:#fff;font-size:10.5px;line-height:18px;text-align:center;}
+.nbell.urgent{color:#b5524c;animation:nbRing 2.4s ease-in-out infinite;}
+.nbell.urgent .nb-n{background:#b5524c;}
+@keyframes nbRing{0%,80%,100%{transform:rotate(0)}84%{transform:rotate(14deg)}88%{transform:rotate(-12deg)}92%{transform:rotate(8deg)}96%{transform:rotate(-4deg)}}
+.nmodal{position:fixed;inset:0;z-index:900;background:rgba(74,64,72,.38);display:flex;align-items:flex-start;justify-content:center;padding:60px 14px 20px;overflow:auto;}
+.nm-box{width:min(500px,100%);background:#fffdfb;border-radius:20px;padding:14px 14px 16px;box-shadow:0 30px 60px -20px rgba(80,50,60,.45);}
+.nm-h{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600;color:var(--accent-ink);letter-spacing:1px;margin:0 4px 10px;}
+.nm-x{border:none;background:none;font-size:22px;line-height:1;color:var(--ink-soft);cursor:pointer;padding:2px 6px;}
+.nm-box #notices{margin:0;}
+@media(prefers-reduced-motion:reduce){.nbell.urgent{animation:none}}
+.nm-box .nh-t{visibility:hidden;}
+.nm-box .nhead:not(:has(.nh-btn)){display:none;}
