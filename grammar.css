@@ -445,3 +445,12 @@
   .q-tl{font-size:10.5px;letter-spacing:1px;color:var(--ink-faint);}
   .q-tag{font-size:12px;padding:3px 10px;border-radius:12px;background:var(--accent-wash);color:var(--accent-ink);border:1px solid rgba(0,0,0,.04);}
   .q-tag b,.jp-hint b,.prompt-ja b{color:var(--accent-ink);font-weight:700;}
+  /* 文字を減らした表示 */
+  .mode-btn.mp .mp-dots{display:block;margin-top:7px;}
+  .mode-btn.mp .pt-dots i{width:9px;height:9px;}
+  #nudge .nd-go{display:block;width:min(260px,100%);margin:14px auto 0;}
+  #nudge .nl-badge{gap:4px;}
+  .r-gm{justify-content:center;max-width:280px;margin:10px auto 0;}
+  .play.retry .nl-badge b{font-family:var(--serif);font-size:18px;margin-left:2px;}
+  .heard.nl-badge{display:flex;gap:8px;}
+  .face.nl-pop{display:inline-block;}

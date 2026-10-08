@@ -6,7 +6,7 @@
 <title>動詞活用 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=23"></script>
+<script src="common.js?v=24"></script>
 <script src="streak.js?v=3"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=3"></script>
@@ -111,6 +111,10 @@ window.VDATA={ids:{}};
 
   /* 結果画面のランクバッジ */
   .rank-badge{display:none;}
+  .mode-btn.mp .mp-rk{display:block;margin-top:5px;font-style:normal;font-family:var(--serif);font-weight:700;font-size:12px;letter-spacing:1px;color:#a06a2c;}
+  #nudge .nd-go{display:block;width:min(260px,100%);margin:14px auto 0;}
+  .play.retry .nl-badge b{font-family:var(--serif);font-size:18px;margin-left:2px;}
+  .face.nl-pop{display:inline-block;}
   .mode-btn.mp .mp-lv{display:block;margin-top:3px;font-style:normal;font-size:10.5px;color:var(--ink-faint);letter-spacing:.3px;}
   .mode-btn.mp .mp-goal{color:var(--accent-ink);font-weight:500;}
   .nudge{margin:14px auto 4px;max-width:440px;padding:14px 16px;border-radius:16px;background:linear-gradient(135deg,#fff8ec,#fdf0f4);border:1px solid #f0dcc0;text-align:left;}
@@ -349,7 +353,6 @@ window.VDATA={ids:{}};
 
   <!-- ===== HOME ===== -->
   <div class="panel" id="homeScreen">
-    <p class="hello">10問チャレンジ<small>例文に合う正しい活用を答えてください。</small></p>
 
     <div class="acct" id="acct">
       <div class="row">
@@ -368,8 +371,8 @@ window.VDATA={ids:{}};
     <div id="shelf"></div>
 
     <div class="mode-pick"><div class="mp-h">答え方をえらぶ</div><div class="mp-row">
-      <button class="mode-btn mp on" data-mode="choice"><span class="mp-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="4.5" rx="2"/><rect x="3.5" y="10" width="17" height="4.5" rx="2"/><rect x="3.5" y="16" width="17" height="4.5" rx="2"/><path d="M6.5 12.2l1.3 1.2 2.4-2.6"/></svg></span><b>選択式</b><small>選んで答える</small><em class="mp-lv">はじめの一歩</em></button>
-      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 7.5l3 3"/><path d="M12 20h8"/></svg></span><b>記述式</b><small>自分で書いて答える</small><em class="mp-lv mp-goal">本番・ランクがつく</em></button>
+      <button class="mode-btn mp on" data-mode="choice"><span class="mp-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="4.5" rx="2"/><rect x="3.5" y="10" width="17" height="4.5" rx="2"/><rect x="3.5" y="16" width="17" height="4.5" rx="2"/><path d="M6.5 12.2l1.3 1.2 2.4-2.6"/></svg></span><b>選択式</b></button>
+      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 7.5l3 3"/><path d="M12 20h8"/></svg></span><b>記述式</b><em class="mp-rk">SSS</em></button>
     </div></div>
 
     <div class="mode-row">
@@ -381,7 +384,6 @@ window.VDATA={ids:{}};
       </label>
     </div>
 
-    <div class="section-label">セクションを選択</div>
     <div class="sections">
       <button class="start-btn" data-verb="être"><i>être</i><span class="sb-name">être（〜である）</span><span class="sb-time" data-sec="être"></span></button>
       <button class="start-btn" data-verb="aller"><i>aller</i><span class="sb-name">aller（行く）</span><span class="sb-time" data-sec="aller"></span></button>
@@ -423,7 +425,6 @@ window.VDATA={ids:{}};
   <!-- ===== RESULT ===== -->
   <div class="panel hidden result" id="resultScreen">
     <div class="face" id="rFace">◎</div>
-    <h2>結果</h2>
     <div class="ring" id="rScore">0<small> / 10</small></div>
     <div><span class="pct-pill" id="rPct">0%</span></div>
     <div class="msg" id="rMsg"></div>
@@ -432,7 +433,7 @@ window.VDATA={ids:{}};
     <div id="nudge"></div>
     <div class="rsync" id="rSync"></div>
     <div class="review" id="review"></div>
-    <button class="play retry hidden" id="retryBtn">間違えたところだけを練習</button>
+    <button class="play retry hidden" id="retryBtn"></button>
     <button class="play again" id="againBtn" aria-label="もう一度" title="もう一度"><svg class="nli" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4.5H9"/></svg></button>
     <button class="home-link ic" id="toHomeBtn" aria-label="もどる" title="もどる"><svg class="nli" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
   </div>
@@ -661,7 +662,7 @@ function renderShelf(){
     {kind:"medal",on:!!B.medal,fresh:!!fresh.medal,pct:ss/SECTIONS.length,cap:"勲章",
      status:B.medal?"全セクション SS 以上":"SS以上 "+ss+" / "+SECTIONS.length}];
   fresh={};
-  el.innerHTML=Badge.shelf({title:"バッジ",items,big})+'<div class="shelf-note">記述式・タイムアタックで全問正解したときのランクで、バッジがもらえます（S以上）。</div>';
+  el.innerHTML=Badge.shelf({title:"バッジ",items,big});
 }
 
 /* ===== util ===== */
@@ -915,17 +916,18 @@ function render(){
       b.addEventListener("click",()=>resolve(opt,b));
       optsBox.appendChild(b);
     });
-    document.getElementById("hintLine").textContent="1〜4キー または クリックで解答";
+    document.getElementById("hintLine").textContent="";
   }else{
     optsBox.classList.add("hidden");writeBox.classList.remove("hidden");
     const inp=document.getElementById("writeInput");
     inp.value="";inp.disabled=false;inp.className="write-input";
     document.getElementById("writeBtn").disabled=false;
-    document.getElementById("hintLine").textContent="活用を入力して Enter（アクセント記号は任意）";
+    document.getElementById("hintLine").textContent="";
     setTimeout(()=>inp.focus(),30);
   }
   const fb=document.getElementById("fb");fb.className="fb";fb.textContent="";
   document.getElementById("nxBox").innerHTML="";
+  ["prompt","jp","opts","writeBox"].forEach(id=>NLI.slide(document.getElementById(id)));   // 次の問題は横からすべりこむ
   locked=false;
 }
 
@@ -961,13 +963,13 @@ function resolve(val, btn){
     playCorrect();
   }else{
     fb.className="fb show no";
-    fb.innerHTML='正解は <span class="full">'+q.answer+'</span>';
+    fb.innerHTML='<span class="full">'+q.answer+'</span>';
     misses.push({sentence:q.sentence,full:q.full,answer:q.answer,chosen:(val||"（無回答）"),verb:q.verb});
     playWrong();
   }
   document.getElementById("fill").style.width=((idx+1)/questions.length*100)+"%";
   // 正解なら自動で次へ（設定で「自分で押す」にできる）。間違えたときは自動では進まない
-  if(correct&&(!window.Quiz||!Quiz.autoNext||Quiz.autoNext()))setTimeout(next,750);
+  if(correct&&(!window.Quiz||!Quiz.autoNext||Quiz.autoNext()))setTimeout(next,Quiz.nextDelay?Quiz.nextDelay(650):650);
   else showNext();
 }
 let nxAt=0;
@@ -977,18 +979,20 @@ function showNext(){
   box.innerHTML='<button class="next-btn" id="nextBtn" aria-label="'+(idx+1<questions.length?"次へ":"結果を見る")+'">'+NLI.svg(idx+1<questions.length?"next":"flag",28)+'</button>';
   const b=document.getElementById("nextBtn");b.onclick=()=>{box.innerHTML="";next();};
   setTimeout(()=>{try{b.focus({preventScroll:true});}catch(e){}},50);
-  document.getElementById("hintLine").textContent="Enter でも次へ";
+  document.getElementById("hintLine").textContent="";
 }
 
 function next(){idx++;if(idx<questions.length)render();else finishRound();}
 /* 間違えたところだけを、もう一度（成績・記録には入らない） */
+/* 「間違えたところだけ練習」ボタン：↻ ✕ 数 */
+function retryLabel(rb,n){rb.innerHTML='<span class="nl-badge">'+NLI.svg("again",20)+NLI.svg("x",18)+'<b>'+n+'</b></span>';rb.title="間違えたところだけ練習";rb.setAttribute("aria-label",rb.title);}
 function startRetry(){
   const miss=questions.filter(q=>q._wrong);if(!miss.length)return;
   retry=true;
   ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();
   questions=shuffle(miss.map(q=>Object.assign({},q,{_wrong:undefined,_chosen:undefined})));
   idx=0;roundCorrect=0;misses=[];locked=false;
-  document.getElementById("roundLabel").textContent="間違えたところだけ（記録には入りません）";
+  document.getElementById("roundLabel").innerHTML=NLI.svg("again",14)+' '+NLI.svg("x",14);
   clearInterval(timerHandle);const liveEl=document.getElementById("liveTimer");if(liveEl)liveEl.style.display="none";roundStart=0;
   show(quizScreen);render();
 }
@@ -997,13 +1001,13 @@ function finishRetry(){
   document.getElementById("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
   document.getElementById("rPct").textContent=pct+"%";
   document.getElementById("rFace").textContent=pct===100?"◎":pct>=80?"○":pct>=50?"△":"✕";
-  document.getElementById("rMsg").textContent=pct===100?"全部できました。この調子！":"あと少し。もう一度ためしてみよう。";
+  document.getElementById("rMsg").textContent="";
   const nd0=document.getElementById("nudge");if(nd0)nd0.innerHTML="";
   const rankEl=document.getElementById("rRank");rankEl.className="rank-badge";rankEl.innerHTML="";
-  document.getElementById("rTime").innerHTML='<span class="best">間違えたところだけの練習なので、成績・記録には入りません。</span>';
+  document.getElementById("rTime").innerHTML="";
   const rev=document.getElementById("review");
-  rev.innerHTML=misses.length?'<div class="ttl">まだ間違えたところ</div>'+misses.map(m=>'<div class="rrow"><span>'+m.full+' <span style="color:var(--ink-soft)">['+m.verb+']</span></span><span><span class="miss">'+m.chosen+'</span> <span class="ar">→</span> <span class="got">'+m.answer+'</span></span></div>').join(""):'<div class="ttl">全部正解</div>';
-  const rb=document.getElementById("retryBtn");rb.classList.toggle("hidden",!misses.length);rb.textContent="まだ間違えたところを、もう一度";
+  rev.innerHTML=misses.length?misses.map(m=>'<div class="rrow"><span>'+m.full+' <span style="color:var(--ink-soft)">['+m.verb+']</span></span><span><span class="miss">'+m.chosen+'</span> <span class="ar">→</span> <span class="got">'+m.answer+'</span></span></div>').join(""):"";
+  const rb=document.getElementById("retryBtn");rb.classList.toggle("hidden",!misses.length);retryLabel(rb,misses.length);
   show(resultScreen);
   if(roundCorrect===N)setTimeout(playFanfare,280);
 }
@@ -1037,11 +1041,8 @@ function finishRound(){
   document.getElementById("rScore").innerHTML=roundCorrect+'<small> / '+ROUND+'</small>';
   document.getElementById("rPct").textContent=pct+"%";
   document.getElementById("rFace").textContent= pct===100?"◎": pct>=80?"○": pct>=50?"△":"✕";
-  document.getElementById("rMsg").textContent=
-    pct===100?"全問正解です。":
-    pct>=80 ?"よくできました。":
-    pct>=50 ?"あと少し。復習しましょう。":
-             "間違いを確認して再挑戦しましょう。";
+  document.getElementById("rMsg").textContent="";
+  const fc=document.getElementById("rFace");fc.classList.remove("nl-pop");void fc.offsetWidth;fc.classList.add("nl-pop");
   // タイム＋ランク表示
   const timeEl=document.getElementById("rTime");
   const rankEl=document.getElementById("rRank");
@@ -1052,26 +1053,22 @@ function finishRound(){
   }else if(roundCorrect===ROUND&&curMode==="choice"){
     rankEl.className="rank-badge";rankEl.innerHTML="";
     const bc=(store.bestTimesC||{})[sec];
-    timeEl.innerHTML='クリアタイム '+fmtTime(roundTime)+'（選択式）'+
-      (newRecord?' <span class="rec">★選択式ベスト</span>':(bc!=null?' <span class="best">（選択式ベスト '+fmtTime(bc)+'）</span>':''));
+    timeEl.innerHTML='<span class="nl-badge">'+NLI.svg("clock",16)+fmtTime(roundTime)+(newRecord?' <span class="rec">'+NLI.svg("star",16)+'</span>':'')+'</span>';
   }else if(roundCorrect===ROUND){
     const rk=rankOf(roundTime);
     rankEl.className="rank-badge show r-"+rk;
     rankEl.innerHTML='<span class="rk">'+rk+'</span><span class="rk-sub">RANK</span>';
     const best=store.bestTimes[sec];
-    timeEl.innerHTML='クリアタイム '+fmtTime(roundTime)+
-      (newRecord?' <span class="rec">★自己ベスト</span>':
-        (best!=null?' <span class="best">（ベスト '+fmtTime(best)+' / '+rankOf(best)+'）</span>':''));
+    timeEl.innerHTML='<span class="nl-badge">'+NLI.svg("clock",16)+fmtTime(roundTime)+(newRecord?' <span class="rec">'+NLI.svg("star",16)+'</span>':'')+'</span>';
   }else{
     rankEl.className="rank-badge";rankEl.innerHTML="";
-    timeEl.innerHTML='所要時間 '+fmtTime(roundTime)+
-      ' <span class="best">（ランク・クリアタイムは全問正解時に記録）</span>';
+    timeEl.innerHTML='<span class="nl-badge">'+NLI.svg("clock",16)+fmtTime(roundTime)+'</span>';
   }
   const rev=document.getElementById("review");
   if(misses.length===0){
-    rev.innerHTML='<div class="ttl">全問正解</div>';
+    rev.innerHTML='';
   }else{
-    let h='<div class="ttl">復習</div>';
+    let h='';
     misses.forEach(m=>{
       h+='<div class="rrow"><span>'+m.full+
          ' <span style="color:var(--ink-soft)">['+m.verb+']</span></span>'+
@@ -1079,13 +1076,11 @@ function finishRound(){
     });
     rev.innerHTML=h;
   }
-  const rb=document.getElementById("retryBtn");rb.classList.toggle("hidden",!misses.length);rb.textContent="間違えたところだけを練習";
+  const rb=document.getElementById("retryBtn");rb.classList.toggle("hidden",!misses.length);retryLabel(rb,misses.length);
   /* 選択式でよくできたら、記述式へさそう */
   const nd=document.getElementById("nudge");nd.innerHTML="";
   if(curMode==="choice"&&pct>=80){
-    nd.innerHTML='<div class="nudge"><div class="nd-t">'+(pct===100?"選択式で全問正解！":"選択式はもうばっちり！")+'</div>'+
-      '<div class="nd-d">「見て選べる」の次は「自分で書ける」。<b>記述式</b>で全問正解すると、クリアタイムに <b>SSS〜C のランク</b>がつきます。</div>'+
-      '<button class="play nd-go" id="ndGo">記述式で挑戦 →</button></div>';
+    nd.innerHTML='<button class="play nd-go" id="ndGo" aria-label="記述式で挑戦" title="記述式で挑戦"><span class="nl-badge">'+NLI.svg("pencil",22)+NLI.svg("next",22)+'</span></button>';
     document.getElementById("ndGo").onclick=()=>{curMode="write";store.mode="write";save();startRound(curVerb);};
   }
   show(resultScreen);

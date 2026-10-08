@@ -427,9 +427,19 @@
 
   try { migrateVerbs(false); } catch (e) {}   // いろいろな動詞の記録の引っ越し（一度だけ）
 
+  function nextSpeed() { var p = prefs(); return p.nextSpeed || (p.manualNext ? "manual" : "normal"); }
   /* アイコン（文字のかわりに使う）。NLI.svg("home", 22) で SVG の文字列 */
-  var ICON = {home:"<path d=\"M3.5 11 12 4l8.5 7\"/><path d=\"M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5\"/>",back:"<path d=\"M15 5l-7 7 7 7\"/>",next:"<path d=\"M5 12h13\"/><path d=\"M13 6l6 6-6 6\"/>",flag:"<path d=\"M6 21V4\"/><path d=\"M6 4.5h10.5l-2.2 4 2.2 4H6\"/>",again:"<path d=\"M4.5 12a7.5 7.5 0 1 0 2.2-5.3\"/><path d=\"M4.5 4.5v4.5H9\"/>",speaker:"<path d=\"M4 9.5h3.5L12 6v12l-4.5-3.5H4z\"/><path d=\"M15.5 9.5a3.5 3.5 0 0 1 0 5\"/><path d=\"M18 7.5a6.5 6.5 0 0 1 0 9\"/>",slow:"<path d=\"M3 18.5h12.5a4 4 0 0 0 4-4V12\"/><circle cx=\"10\" cy=\"12.5\" r=\"5\"/><path d=\"M10 12.5a1.6 1.6 0 1 1 1.6-1.6\"/><path d=\"M19.5 12 18 7.5M19.5 12l2.5-3.5\"/>",undo:"<path d=\"M9 7 4.5 11.5 9 16\"/><path d=\"M4.5 11.5H15a4.5 4.5 0 0 1 0 9h-2\"/>",clear:"<path d=\"M6 6l12 12M18 6 6 18\"/>",help:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.6 9.3a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2 1-1.2 1.9\"/><circle cx=\"12\" cy=\"16.8\" r=\".6\" fill=\"currentColor\"/>",logout:"<path d=\"M14 4h4.5a1.5 1.5 0 0 1 1.5 1.5v13a1.5 1.5 0 0 1-1.5 1.5H14\"/><path d=\"M10 8l-4 4 4 4\"/><path d=\"M6 12h10\"/>"};
-  window.NLI = { svg: function (k, sz) { sz = sz || 22; return '<svg class="nli" width="' + sz + '" height="' + sz + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICON[k] || "") + '</svg>'; } };
+  var ICON = {clock:"<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M12 7.5V12l3 2\"/>",pencil:"<path d=\"M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z\"/><path d=\"M14.5 7.5l3 3\"/>",bolt:"<path d=\"M13 2.5 5 13.5h6l-1 8 8-11h-6z\" fill=\"currentColor\"/>",star:"<path d=\"M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z\" fill=\"currentColor\"/>",x:"<path d=\"M7 7l10 10M17 7 7 17\"/>",home:"<path d=\"M3.5 11 12 4l8.5 7\"/><path d=\"M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5\"/>",back:"<path d=\"M15 5l-7 7 7 7\"/>",next:"<path d=\"M5 12h13\"/><path d=\"M13 6l6 6-6 6\"/>",flag:"<path d=\"M6 21V4\"/><path d=\"M6 4.5h10.5l-2.2 4 2.2 4H6\"/>",again:"<path d=\"M4.5 12a7.5 7.5 0 1 0 2.2-5.3\"/><path d=\"M4.5 4.5v4.5H9\"/>",speaker:"<path d=\"M4 9.5h3.5L12 6v12l-4.5-3.5H4z\"/><path d=\"M15.5 9.5a3.5 3.5 0 0 1 0 5\"/><path d=\"M18 7.5a6.5 6.5 0 0 1 0 9\"/>",slow:"<path d=\"M3 18.5h12.5a4 4 0 0 0 4-4V12\"/><circle cx=\"10\" cy=\"12.5\" r=\"5\"/><path d=\"M10 12.5a1.6 1.6 0 1 1 1.6-1.6\"/><path d=\"M19.5 12 18 7.5M19.5 12l2.5-3.5\"/>",undo:"<path d=\"M9 7 4.5 11.5 9 16\"/><path d=\"M4.5 11.5H15a4.5 4.5 0 0 1 0 9h-2\"/>",clear:"<path d=\"M6 6l12 12M18 6 6 18\"/>",help:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.6 9.3a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2 1-1.2 1.9\"/><circle cx=\"12\" cy=\"16.8\" r=\".6\" fill=\"currentColor\"/>",logout:"<path d=\"M14 4h4.5a1.5 1.5 0 0 1 1.5 1.5v13a1.5 1.5 0 0 1-1.5 1.5H14\"/><path d=\"M10 8l-4 4 4 4\"/><path d=\"M6 12h10\"/>"};
+  window.NLI = {
+    /* 達成ポイントの点（1問4点）。gained＝今回ふえた点の数（光らせる） */
+    dots: function (pt, max, gained) {
+      max = max || 4; var h = '<span class="pt-dots" role="img" aria-label="' + pt + ' / ' + max + '">';
+      for (var i = 0; i < max; i++) h += '<i class="' + (i < pt ? "on" : "") + (i < pt && i >= pt - (gained || 0) ? " new" : "") + '" style="animation-delay:' + (i * 90) + 'ms"></i>';
+      return h + '</span>';
+    },
+    /* 次の問題を横からすべりこませる */
+    slide: function (el) { if (!el) return; el.classList.remove("nl-slide"); void el.offsetWidth; el.classList.add("nl-slide"); },
+    svg: function (k, sz) { sz = sz || 22; return '<svg class="nli" width="' + sz + '" height="' + sz + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICON[k] || "") + '</svg>'; } };
   (function () {
     var css = document.createElement("style");
     css.textContent = '.ic-nav{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--rule,#ece1da);background:#fdfaf8;color:var(--ink-soft,#8c8088);text-decoration:none;cursor:pointer;padding:0;transition:color .15s,border-color .15s,transform .15s;}' +
@@ -438,13 +448,25 @@
       '.next-btn .nli{display:block;margin:0 auto;width:28px;height:28px;}' +
       '.play.again .nli{width:26px;height:26px;vertical-align:middle;}' +
       '.mini .nli,.bb .nli{width:17px;height:17px;vertical-align:-4px;}' +
-      'button.ic-only{line-height:1;}';
+      'button.ic-only{line-height:1;}' +
+      '.pt-dots{display:inline-flex;gap:6px;vertical-align:middle;}.pt-dots i{width:11px;height:11px;border-radius:50%;background:#ece2da;display:block;}' +
+      '.pt-dots i.on{background:var(--accent-ink,#8f667f);}.pt-dots i.new{animation:nlPt .55s cubic-bezier(.3,1.6,.5,1) both;}' +
+      '@keyframes nlPt{0%{transform:scale(.2);background:#f2c94c}60%{transform:scale(1.35);background:#f2c94c}100%{transform:none}}' +
+      '.nl-slide{animation:nlSlide .28s cubic-bezier(.2,.8,.3,1) both;}' +
+      '@keyframes nlSlide{from{opacity:0;transform:translateX(32px)}to{opacity:1;transform:none}}' +
+      '.nl-pop{animation:nlPop .55s cubic-bezier(.3,1.6,.5,1) both;}' +
+      '@keyframes nlPop{from{opacity:0;transform:scale(.4) rotate(-12deg)}to{opacity:1;transform:none}}' +
+      '.nl-badge{display:inline-flex;align-items:center;gap:6px;justify-content:center;}' +
+      '.nl-badge .nli{flex:none;}' +
+      '.fx-bolt{color:#e2a33a;}.fx-pencil{color:var(--accent-ink,#8f667f);}' +
+      '@media(prefers-reduced-motion:reduce){.nl-slide,.nl-pop,.pt-dots i.new{animation:none!important;}}';
     (document.head || document.documentElement).appendChild(css);
   })();
 
   window.Quiz = {
     prefs: prefs, setPref: setPref,
-    autoNext: function () { return !prefs().manualNext; },   // 正解したら自動で次の問題へ（設定で「自分で押す」にできる）
+    autoNext: function () { return nextSpeed() !== "manual"; },   // 正解したら自動で次の問題へ（設定で「自分で押す」にできる）
+    nextDelay: function (base) { return Math.round(base * ({ fast: 0.55, slow: 1.6 }[nextSpeed()] || 1)); },   // 自動で進むまでの時間（設定で速さを変えられる）
     SYNC_ON: SYNC_ON, APPS: APPS,
     user: function () { return user; },
     isPractice: function () { return !!(user && user.practice); },

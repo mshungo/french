@@ -158,7 +158,7 @@ function shell(){
 '    <span class="verbs">'+esc(L.sub||"")+'</span></div>'+
 '  <div class="panel" id="homeScreen">'+
 '    <div class="acct"><div class="row"><a class="ic-nav" href="'+esc(L.back||"grammar.html")+'" aria-label="'+esc((L.backText||"Leçon 一覧").replace(/^←\s*/,""))+'" title="'+esc((L.backText||"Leçon 一覧").replace(/^←\s*/,""))+'">'+NLI.svg("back",20)+'</a><div class="streak" id="streak"></div></div></div>'+
-'    <p class="hello">'+esc(LB())+' の練習<small>'+esc(L.lead||"")+'</small></p>'+
+
 '    <div class="stat-grid">'+
 '      <div class="stat"><div class="n" id="hTries">0</div><div class="l">挑戦回数</div></div>'+
 '      <div class="stat acc"><div class="n" id="hAcc">—</div><div class="l">通算正答率</div></div>'+
@@ -166,18 +166,13 @@ function shell(){
 '      <div class="stat"><div class="n" id="hTime">0分</div><div class="l">勉強時間</div></div>'+
 '    </div>'+
 '    <div id="goal"></div>'+
-'    <div class="mode-pick"><div class="mp-h">答え方をえらぶ</div><div class="mp-row">'+
-'      <button class="mode-btn mp" data-mode="choice"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"4\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"10\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"16\" width=\"17\" height=\"4.5\" rx=\"2\"/><path d=\"M6.5 12.2l1.3 1.2 2.4-2.6\"/></svg></span><b>選択式</b><small>選んで答える</small><em class="mp-lv">はじめの一歩・達成率50%まで</em></button>'+
-'      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z\"/><path d=\"M14.5 7.5l3 3\"/><path d=\"M12 20h8\"/></svg></span><b>記述式</b><small>自分で書いて答える</small><em class="mp-lv mp-goal">本番・100%をめざす</em></button></div></div>'+
-'    <div class="guide"><b>選択式</b>はタップで答える入門用（書きかえは札を並べる）、<b>記述式</b>は自分で書いて答える本番用です。並べかえ（仏作文）はどちらでも出ます。<br>'+
-'      正解するたびに達成率が上がります。<b>選択式</b>の正解は1問につき<b>25%</b>ずつ（50%まで）、<b>記述式</b>の正解は<b>50%</b>ずつ。100%（<b>習得</b>）には記述式での正解が必要です（記述で<b>8秒以内</b>に正解なら一発で習得）。'+
-'      <b>選択式だけでは達成率は50%まで</b>。100%と勲章は、記述式で書けるようになってから。<br>'+
-'      間違えた問題は「苦手」になり、2回続けて正解するまで残ります。累計'+CLEAR_ANS+'問（約1時間）で<b>クリア</b>。</div>'+
-'    <div class="section-label">項目を選択</div>'+
+'    <div class="mode-pick"><div class="mp-row">'+
+'      <button class="mode-btn mp" data-mode="choice"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"4\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"10\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"16\" width=\"17\" height=\"4.5\" rx=\"2\"/><path d=\"M6.5 12.2l1.3 1.2 2.4-2.6\"/></svg></span><b>選択式</b><span class="mp-dots">'+NLI.dots(2,4)+'</span></button>'+
+'      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z\"/><path d=\"M14.5 7.5l3 3\"/><path d=\"M12 20h8\"/></svg></span><b>記述式</b><span class="mp-dots">'+NLI.dots(4,4)+'</span></button></div></div>'+
 '    <div class="sections">'+secBtns+'</div>'+
 '    <div class="extra-row">'+
 '      <button class="start-btn summary" id="mixBtn"><i>★</i><span class="sb-name">総まとめ<span class="sb-desc" id="mixProg"></span><span class="gm" data-gm="mix"></span></span></button>'+
-'      <button class="start-btn weak" id="weakBtn"><i>!</i><span class="sb-name">苦手を復習<span class="sb-desc" id="weakCount">なし</span></span></button>'+
+'      <button class="start-btn weak" id="weakBtn"><i>!</i><span class="sb-name">苦手<span class="sb-desc" id="weakCount"></span></span></button>'+
 '    </div>'+
 (memos?'    <div class="section-label">'+esc(L.memoTitle||"文法のポイント")+'</div><div class="memos">'+memos+'</div>':'')+
 '  </div>'+
@@ -195,12 +190,12 @@ function shell(){
 '    <div class="hint" id="hintLine"></div>'+
 '  </div>'+
 '  <div class="panel hidden result" id="resultScreen">'+
-'    <div class="face" id="rFace">◎</div><h2>結果</h2>'+
+'    <div class="face" id="rFace">◎</div>'+
 '    <div class="ring" id="rScore">0<small> / 10</small></div>'+
 '    <div><span class="pct-pill" id="rPct">0%</span></div>'+
 '    <div class="msg" id="rMsg"></div><div class="rtime" id="rTime"></div><div class="mastery" id="rMastery"></div><div id="nudge"></div>'+
 '    <div class="review" id="review"></div>'+
-'    <button class="play retry hidden" id="retryBtn">間違えたところだけを練習</button>'+
+'    <button class="play retry hidden" id="retryBtn"></button>'+
 '    <button class="play again" id="againBtn" aria-label="もう一度" title="もう一度">'+NLI.svg("again",26)+'</button>'+
 '    <button class="home-link ic" id="toHomeBtn" aria-label="もどる" title="もどる">'+NLI.svg("back",22)+'</button>'+
 '  </div>'+
@@ -233,16 +228,15 @@ function renderHome(){
     const el=document.querySelector('[data-prog="'+s.k+'"]');if(!el)return;
     el.parentNode.classList.toggle("mastered",done);
     el.innerHTML=done&&window.Badge?
-      Badge.seal({kind:"sec",on:true,color:s.c,size:30})+'<span class="sb-done">習得 '+mm+'/'+list.length+'<small>Maîtrise</small></span>':
-      '<span>習得 '+mm+'/'+list.length+'</span>';
+      Badge.seal({kind:"sec",on:true,color:s.c,size:30})+'<span class="sb-done">'+mm+'/'+list.length+'</span>':
+      '<span>'+mm+'/'+list.length+'</span>';
     const g=document.querySelector('[data-gm="'+s.k+'"]');if(g)g.innerHTML=meterHTML(list);
   });
   const gx=document.querySelector('[data-gm="mix"]');if(gx)gx.innerHTML=meterHTML(ITEMS);
   $("goal").innerHTML=renderShelf();
   saveSum();
-  $("mixProg").textContent="全"+ITEMS.length+"問から出題";
   const wk=itemsOf("weak").length;
-  $("weakCount").textContent=wk?wk+"問":"なし";$("weakBtn").disabled=wk<1;
+  $("weakCount").textContent=wk?wk:"";$("weakBtn").disabled=wk<1;
   document.querySelectorAll(".mode-btn[data-mode]").forEach(b=>b.classList.toggle("on",b.dataset.mode===curMode));
   const sEl=$("streak");
   if(sEl&&window.Quiz){const r=Quiz.streak();sEl.innerHTML=Quiz.streakHTML();}
@@ -384,7 +378,7 @@ function startRetry(){
   retry=true;
   if(typeof ensureAudio==="function"){ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();}
   questions=shuffle(miss.map(makeQ));idx=0;roundCorrect=0;
-  $("roundLabel").textContent="間違えたところだけ（記録には入りません）";
+  $("roundLabel").innerHTML=NLI.svg("again",14)+' '+NLI.svg("x",14);
   show(quizScreen);
   roundStart=performance.now();clearInterval(timerHandle);
   timerHandle=setInterval(()=>{$("liveTimer").textContent=fmtTime(performance.now()-roundStart);},200);
@@ -404,7 +398,8 @@ function render(){
   let dots="";for(let i=0;i<N;i++)dots+='<span class="pdot '+(i<idx?(questions[i].ok?"d-ok":"d-no"):(i===idx?"d-now":"d-todo"))+'"></span>';
   $("hearts").innerHTML=dots;
   $("qType").textContent=q.label||KIND_LABEL[q.kind];
-  $("qSec").textContent=secInfo(it.sec).t+(mastered(it)?"　（習得済み）":"");
+  $("qSec").innerHTML=esc(secInfo(it.sec).t)+(mastered(it)?' <span class="fx-bolt" title="習得ずみ">'+NLI.svg("star",14)+'</span>':'');
+  NLI.slide($("stage"));   // 次の問題は横からすべりこむ
   $("fb").className="fb";$("fb").textContent="";
   const a=$("after");a.classList.add("hidden");a.innerHTML="";
   const stg=$("stage"),hint=$("hintLine");
@@ -422,26 +417,26 @@ function render(){
         grade(opt===it.a[0]?2:0,opt);};
       box.appendChild(b);
     });
-    hint.textContent="1〜"+q.options.length+"キー または クリック";
+    hint.textContent="";
   }else if(q.kind==="w"){
     stg.innerHTML='<div class="prompt gq">'+promptHTML(q)+'</div>'+ja+
       '<div class="write-box"><input type="text" id="writeInput" class="write-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="空欄に入る語">'+
       '<button class="write-btn" id="writeBtn">解答</button></div>';
-    bindWrite(q);hint.textContent="空欄に入る語を入力して Enter";
+    bindWrite(q);hint.textContent="";
   }else if(q.kind==="t"){
     stg.innerHTML='<div class="inst">'+esc(it.inst)+'</div><div class="src">'+esc(it.src)+'</div>'+ja+
       '<div class="write-box col"><textarea id="writeInput" class="write-input long" rows="2" autocomplete="off" autocapitalize="sentences" spellcheck="false" placeholder="文全体を書く"></textarea>'+
       '<button class="write-btn" id="writeBtn">解答</button></div>';
-    bindWrite(q);hint.textContent="文全体を入力して Enter（文末の . ? は省略可）";
+    bindWrite(q);hint.textContent="";
   }else if(q.kind==="b"){
-    stg.innerHTML=(it.t==="t"?'<div class="inst">'+esc(it.inst)+'</div><div class="src">'+esc(it.src)+'</div><div class="qtext">札を並べて、書きかえた文を作ろう</div>':
-      tagsHTML(it)+'<div class="prompt-ja">'+jaHTML(it.ja)+'</div><div class="qtext">単語を並べてフランス語の文にしよう</div>')+
+    stg.innerHTML=(it.t==="t"?'<div class="inst">'+esc(it.inst)+'</div><div class="src">'+esc(it.src)+'</div>':
+      tagsHTML(it)+'<div class="prompt-ja">'+jaHTML(it.ja)+'</div>')+
       '<div class="tray" id="tray"></div><div class="bank" id="bank"></div>'+
       '<div class="build-ctl"><button class="mini ic-only" id="undoBtn" aria-label="1つ戻す" title="1つ戻す">'+NLI.svg("undo",17)+'</button><button class="mini ic-only" id="clearBtn" aria-label="やり直す" title="やり直す">'+NLI.svg("clear",17)+'</button></div>';
     q.picked=[];drawTiles(q);
     $("undoBtn").onclick=()=>{if(locked)return;q.picked.pop();drawTiles(q);};
     $("clearBtn").onclick=()=>{if(locked)return;q.picked=[];drawTiles(q);};
-    hint.textContent="タップした順に並びます"+((it.extra||[]).length?"（使わない札が混ざっています）":"");
+    hint.textContent="";
   }
 }
 function bindWrite(q){
@@ -506,20 +501,20 @@ function answerLine(q){
 function showAfter(q){
   const it=q.it,a=$("after");a.classList.remove("hidden");
   let extra="";
-  if(q.fast)extra+='<div class="heard fast">8秒以内に正解 → 習得！</div>';
-  else if(q.ok&&!retry&&q.ptBefore!=null){const d=st(it).pt-q.ptBefore;
-    extra+='<div class="heard pt">'+(d>0?'達成ポイント +'+d+'（この問題 '+st(it).pt+' / 4）':st(it).pt>=PT_CHOICE_MAX&&curMode==="choice"?'選択式で取れる点は満点。あとは記述式で（この問題 '+st(it).pt+' / 4）':'この問題 '+st(it).pt+' / 4')+'</div>';}
-  else if(q.ok&&weak(it)&&!retry)extra+='<div class="heard">苦手を解除するには、もう1回続けて正解しよう</div>';
-  if(q.accent)extra+='<div class="heard">正解。ただしつづりは <b>'+esc(it.a[0])+'</b>（アクセント記号に注意）</div>';
-  if(!q.ok&&q.chosen!=null)extra+='<div class="heard">あなたの答え：<s>'+esc(q.chosen)+'</s></div>';
+  /* 達成ポイントは点（●●○○）で見せる。8秒以内の即習得は稲妻、選択式の上限は鉛筆（記述式へ） */
+  if(q.ok&&!retry&&q.ptBefore!=null){const pt=st(it).pt,d=Math.max(0,pt-q.ptBefore);
+    extra+='<div class="heard pt nl-badge">'+(q.fast?'<span class="fx-bolt">'+NLI.svg("bolt",18)+'</span>':'')+NLI.dots(pt,4,d)+
+      (!d&&pt>=PT_CHOICE_MAX&&curMode==="choice"&&pt<4?'<span class="fx-pencil" title="記述式で答えると、さらに点が入ります">'+NLI.svg("pencil",17)+'</span>':'')+'</div>';}
+  if(q.accent)extra+='<div class="heard nl-badge"><b>'+esc(it.a[0])+'</b></div>';
+  if(!q.ok&&q.chosen!=null)extra+='<div class="heard nl-badge"><span style="color:var(--bad-ink)">'+NLI.svg("x",15)+'</span><s>'+esc(q.chosen)+'</s></div>';
   const alts=it.a.slice(1);
-  if(alts.length&&(it.t==="t"||it.t==="w"))extra+='<div class="ans-alt">別解：'+alts.map(esc).join(" ／ ")+'</div>';
+  if(alts.length&&(it.t==="t"||it.t==="w"))extra+='<div class="ans-alt">＝ '+alts.map(esc).join(" ／ ")+'</div>';
   a.innerHTML='<div class="ans-fr">'+answerLine(q)+'</div>'+(it.ja&&it.t!=="b"?'':'')+extra+
     (it.ex?'<div class="ex"><span class="ex-h">ポイント</span>'+esc(it.ex)+'</div>':'')+
     '<div class="btns nx"><button class="next-btn" id="nextBtn" aria-label="'+(idx+1<questions.length?"次へ":"結果を見る")+'">'+NLI.svg(idx+1<questions.length?"next":"flag",28)+'</button></div>';
   $("nextBtn").onclick=next;
-  $("hintLine").textContent="Enter で次へ";
-  if(q.ok&&!q.accent&&(!window.Quiz||!Quiz.autoNext||Quiz.autoNext()))autoNext=setTimeout(next,1500);   // 間違えたときは自動では進まない
+  $("hintLine").textContent="";
+  if(q.ok&&!q.accent&&(!window.Quiz||!Quiz.autoNext||Quiz.autoNext()))autoNext=setTimeout(next,Quiz.nextDelay?Quiz.nextDelay(1000):1000);   // 間違えたときは自動では進まない
 }
 function next(){
   clearTimeout(autoNext);
@@ -539,27 +534,20 @@ function finishRound(){
   const pct=Math.round(roundCorrect/N*100);
   $("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
   $("rPct").textContent=pct+"%";
-  $("rFace").textContent=pct===100?"◎":pct>=80?"○":pct>=50?"△":"✕";
-  $("rMsg").textContent=pct===100?"Parfait ! 全問正解です。":pct>=80?"よくできました。":pct>=50?"あと少し。下のポイントを確認しよう。":"ポイントを読んでから、もう一度挑戦しよう。";
-  $("rTime").innerHTML='所要時間 '+fmtTime(time);
+  $("rFace").textContent=pct===100?"◎":pct>=80?"○":pct>=50?"△":"✕";NLI.slide&&$("rFace").classList.remove("nl-pop");void $("rFace").offsetWidth;$("rFace").classList.add("nl-pop");
+  $("rMsg").textContent="";
+  $("rTime").innerHTML='<span class="nl-badge">'+NLI.svg("clock",15)+fmtTime(time)+'</span>';
   const list=itemsOf(curSec==="weak"?"mix":curSec);
-  let mt=(curSec==="mix"||curSec==="weak"?LB()+" 全体":"この項目")+"の習得："+list.filter(mastered).length+" / "+list.length+"　／　通算 "+fmtDur(store.timeMs);
-  if(!wasClear&&store.answered>=CLEAR_ANS)mt+="　★ "+LB()+" クリア！";
-  if(retry)mt="間違えたところだけの練習なので、成績・習得・記録には入りません。";
   const newB=retry?[]:awardBadges();
-  $("rMastery").textContent=mt;
+  $("rMastery").innerHTML=retry?"":'<span class="gm r-gm">'+meterHTML(list)+'</span>';   // この項目の達成メーター
   /* 選択式でよくできたら、記述式へさそう */
   const nd=$("nudge");nd.innerHTML="";
-  if(!retry&&curMode==="choice"&&pct>=80){
-    const lst=itemsOf(curSec==="weak"?"mix":curSec),ready=lst.filter(it=>choiceDone(it)&&!mastered(it)).length;
-    nd.innerHTML='<div class="nudge"><div class="nd-t">選択式はもうばっちり！</div>'+
-      '<div class="nd-d">「見て選べる」の次は「自分で書ける」。記述式の正解は選択式の<b>倍</b>の速さで達成率が伸び、100%（習得）まで届きます。'+
-      (ready?'いま記述式で習得を待っている問題が <b>'+ready+'問</b>。':'')+'</div>'+
-      '<button class="play nd-go" id="ndGo">記述式でこの項目に挑戦 →</button></div>';
+  if(!retry&&curMode==="choice"&&pct>=80){   // 選択式でよくできたら、記述式へ（鉛筆のボタンだけ）
+    nd.innerHTML='<button class="play nd-go" id="ndGo" aria-label="記述式で挑戦" title="記述式で挑戦"><span class="nl-badge">'+NLI.svg("pencil",22)+NLI.svg("next",22)+'</span></button>';
     $("ndGo").onclick=()=>{curMode="write";store.mode="write";save();startRound(curSec);};
   }
   const miss=questions.filter(q=>!q.ok);
-  let h='<div class="ttl">'+(miss.length?"間違えた問題":"全問正解")+'</div>';
+  let h='';
   miss.forEach(q=>{
     h+='<div class="rrow"><span class="mk no">✕</span><span class="rtx">'+
       (q.it.t==="t"?'<span class="rja">'+esc(q.it.inst)+'：'+esc(q.it.src)+'</span>':q.it.t==="b"?'<span class="rja">'+jaHTML(q.it.ja)+'</span>':'')+
@@ -568,7 +556,7 @@ function finishRound(){
   });
   $("review").innerHTML=h;
   $("retryBtn").classList.toggle("hidden",!miss.length);
-  $("retryBtn").textContent=retry?"まだ間違えたところを、もう一度":"間違えたところだけを練習";
+  $("retryBtn").innerHTML='<span class="nl-badge">'+NLI.svg("again",20)+NLI.svg("x",18)+'<b>'+miss.length+'</b></span>';$("retryBtn").setAttribute("aria-label","間違えたところだけ練習");$("retryBtn").title="間違えたところだけ練習";
   show(resultScreen);
   if(roundCorrect===N&&typeof playFanfare==="function")setTimeout(playFanfare,280);
   if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),roundCorrect===N?1900:500);

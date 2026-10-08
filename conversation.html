@@ -6,7 +6,7 @@
 <title>会話練習 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=23"></script>
+<script src="common.js?v=24"></script>
 <script src="streak.js?v=3"></script>
 <script src="feedback.js?v=2"></script>
 <script src="audio/talk/index.js?v=3"></script>
@@ -278,6 +278,13 @@
 
   /* ===== 会話練習 追加分 ===== */
   .stat .n small{font-size:15px;color:var(--ink-faint);}
+  .play.retry .nl-badge b{font-family:var(--serif);font-size:18px;margin-left:2px;}
+  .face.nl-pop{display:inline-block;}
+  .r-meter{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:8px;}
+  .r-bar{display:block;width:180px;height:8px;border-radius:4px;background:#efe6df;overflow:hidden;}
+  .r-bar i{display:block;height:100%;background:var(--accent-ink);border-radius:4px;}
+  .r-meter b{font-family:var(--serif);font-size:18px;color:var(--ink);}
+  .r-meter b small{font-size:11px;color:var(--ink-faint);}
   .guide{font-size:11.5px;color:var(--ink-soft);line-height:1.75;margin:18px 0 0;background:#fbf5f1;border:1px solid var(--rule);border-radius:14px;padding:12px 16px;}
   .guide b{color:var(--accent-ink);font-weight:500;}
   .start-btn i.wk{font-style:normal;font-family:"Noto Sans JP";font-size:12px;font-weight:500;letter-spacing:-.3px;}
@@ -419,7 +426,6 @@
   <!-- ===== HOME ===== -->
   <div class="panel" id="homeScreen">
     <div class="acct"><div class="row"><a class="ic-nav" href="index.html" aria-label="メニュー" title="メニュー"><svg class="nli" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5"/></svg></a><div class="streak" id="streak"></div></div></div>
-    <p class="hello">フレーズ10問<small>よく使う決まり文句を、フランス語でさらりと言えるようにする練習です。</small></p>
     <div class="stat-grid">
       <div class="stat"><div class="n" id="hTries">0</div><div class="l">挑戦回数</div></div>
       <div class="stat acc"><div class="n" id="hAcc">—</div><div class="l">通算正答率</div></div>
@@ -450,16 +456,12 @@
       </div>
     </div>
 
-    <div class="guide">
-      <b>おまかせ</b>：フレーズごとに覚え具合（●5段階）を記録し、<b>聞く → 選ぶ → 並べる → 書く → 声に出す</b> の順に問題が難しくなります。<b>書く・声に出す</b>問題で正解すると●が2つ進みます。●4つ以上で「習得」。間違えたフレーズは優先して出ます。<br>
-      <b>言ってみる</b>：日本語を見て、すぐフランス語で言う練習だけを続けます。
-    </div>
 
-    <div class="section-label">セクションを選択</div>
+    <div class="section-label">フレーズ</div>
     <div class="sections" id="secList"></div>
     <div class="extra-row">
       <button class="start-btn summary" id="mixBtn"><i>★</i><span class="sb-name">総まとめ<span class="sb-desc" id="mixProg"></span></span></button>
-      <button class="start-btn weak" id="weakBtn"><i>!</i><span class="sb-name">苦手を復習<span class="sb-desc" id="weakCount">なし</span></span></button>
+      <button class="start-btn weak" id="weakBtn"><i>!</i><span class="sb-name">苦手<span class="sb-desc" id="weakCount"></span></span></button>
     </div>
 
     <div class="vnote hidden" id="voiceNote"></div>
@@ -486,14 +488,13 @@
   <!-- ===== RESULT ===== -->
   <div class="panel hidden result" id="resultScreen">
     <div class="face" id="rFace">◎</div>
-    <h2>結果</h2>
     <div class="ring" id="rScore">0<small> / 10</small></div>
     <div><span class="pct-pill" id="rPct">0%</span></div>
     <div class="msg" id="rMsg"></div>
     <div class="rtime" id="rTime"></div>
     <div class="mastery" id="rMastery"></div>
     <div class="review" id="review"></div>
-    <button class="play retry hidden" id="retryBtn">間違えたところだけを練習</button>
+    <button class="play retry hidden" id="retryBtn"></button>
     <button class="play again" id="againBtn" aria-label="もう一度" title="もう一度"><svg class="nli" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4.5H9"/></svg></button>
     <button class="home-link ic" id="toHomeBtn" aria-label="もどる" title="もどる"><svg class="nli" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
   </div>
@@ -1013,9 +1014,9 @@ function renderHome(){
   $("secList").innerHTML=h;
   renderShelf();
   const wk=weakList().length;
-  $("weakCount").textContent=wk?wk+"件":"なし";
+  $("weakCount").textContent=wk?wk:"";
   $("weakBtn").disabled=wk<3;
-  $("mixProg").textContent="習得 "+masteredIn(PH)+"/"+PH.length;
+  $("mixProg").textContent=masteredIn(PH)+"/"+PH.length;
   document.querySelectorAll(".mode-btn[data-mode]").forEach(b=>b.classList.toggle("on",b.dataset.mode===curMode));
   document.querySelectorAll(".mode-btn[data-slow]").forEach(b=>b.classList.toggle("on",(b.dataset.slow==="1")===!!store.slow));
   document.querySelectorAll(".mode-btn[data-voice]").forEach(b=>b.classList.toggle("on",b.dataset.voice===(store.voice==="m"?"m":"f")));
@@ -1059,6 +1060,7 @@ function render(){
   $("after").classList.add("hidden");$("after").innerHTML="";
   const st=$("stage");
   const hint=$("hintLine");
+  NLI.slide(st);   // 次の問題は横からすべりこむ
   if(q.type==="listen"){
     st.innerHTML='<div class="listen-box"><button class="big-play" id="playBtn" aria-label="もう一度聞く">▶</button>'+
       '<div class="row-btns"><button class="mini ic-only" id="slowBtn" aria-label="ゆっくり" title="ゆっくり">'+NLI.svg("slow",18)+'</button><button class="mini" id="peekBtn">文字を見る</button></div>'+
@@ -1068,25 +1070,25 @@ function render(){
     $("playBtn").onclick=()=>play(false);$("slowBtn").onclick=()=>play(true);
     $("peekBtn").onclick=()=>{$("peek").classList.remove("hidden");q.peeked=true;};
     renderOpts(q);setTimeout(()=>play(false),250);
-    hint.textContent="音声を聞いて、1〜4キー または クリック";
+    hint.textContent="";
   }else if(q.type==="choose"){
     st.innerHTML='<div class="prompt-ja">'+esc(q.v.ja)+'</div><div class="qtext">フランス語で言うと？</div><div class="opts long" id="opts"></div>';
-    renderOpts(q);hint.textContent="1〜4キー または クリック";
+    renderOpts(q);hint.textContent="";
   }else if(q.type==="reply"){
     st.innerHTML='<div class="situ">'+esc(q.p.ctx.pj)+'</div>'+
       '<div class="partner"><button class="round-btn" id="ctxPlay" aria-label="相手のセリフを聞く">▶</button><span class="fr">'+esc(q.p.ctx.p)+'</span></div>'+
       '<div class="qtext">どう返す？</div><div class="opts long" id="opts"></div>';
     $("ctxPlay").onclick=()=>speak(q.p.ctx.p);
     renderOpts(q);setTimeout(()=>{if(questions[idx]===q&&!q._done)speak(q.p.ctx.p);},250);
-    hint.textContent="相手のセリフに合う返事を選ぶ（1〜4キー）";
+    hint.textContent="";
   }else if(q.type==="build"){
-    st.innerHTML='<div class="prompt-ja">'+esc(q.v.ja)+'</div><div class="qtext">単語を並べてフランス語にしよう</div>'+
+    st.innerHTML='<div class="prompt-ja">'+esc(q.v.ja)+'</div>'+
       '<div class="tray" id="tray"></div><div class="bank" id="bank"></div>'+
       '<div class="build-ctl"><button class="mini ic-only" id="undoBtn" aria-label="1つ戻す" title="1つ戻す">'+NLI.svg("undo",17)+'</button> <button class="mini ic-only" id="clearBtn" aria-label="やり直す" title="やり直す">'+NLI.svg("clear",17)+'</button></div>';
     q.picked=[];drawTiles(q);
     $("undoBtn").onclick=()=>{if(locked)return;q.picked.pop();drawTiles(q);};
     $("clearBtn").onclick=()=>{if(locked)return;q.picked=[];drawTiles(q);};
-    hint.textContent="タップした順に並びます"+(q.tiles.length>q.words.length?"（使わない単語が混ざっています）":"");
+    hint.textContent="";
   }else if(q.type==="fill"){
     const toks=q.v.fr.split(/\s+/);
     const line=toks.map((w,i)=>i===q.blank.i?esc(w.replace(q.blank.core,"\u0000")).replace("\u0000",'<span class="blank">'+esc(q.blank.core.charAt(0))+'…</span>'):esc(w)).join(" ");
@@ -1097,9 +1099,9 @@ function render(){
     $("writeBtn").onclick=()=>checkFill(q);
     inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!locked){e.preventDefault();e.stopPropagation();checkFill(q);}});
     setTimeout(()=>inp.focus(),30);
-    hint.textContent="アクセント記号は省略してもOK。Enterで解答";
+    hint.textContent="";
   }else if(q.type==="speak"){
-    st.innerHTML='<div class="prompt-ja big">'+esc(q.v.ja)+'</div><div class="qtext">フランス語で、声に出して言ってみよう</div>'+
+    st.innerHTML='<div class="prompt-ja big">'+esc(q.v.ja)+'</div><div class="qtext">'+NLI.svg("speaker",18)+'</div>'+
       '<div class="think" id="think"><span></span></div>'+
       '<div class="speak-ctl">'+(SR?micUI("mic","押して話す"):'')+
       '<div class="speak-sub"><button class="mini" id="hintBtn">ヒント</button><button class="mini" id="revealBtn">答えを見る</button></div>'+
@@ -1113,7 +1115,7 @@ function render(){
     });
     $("hintBtn").onclick=()=>{const h=$("hintText");h.textContent=hintFor(q);h.classList.remove("hidden");q.hinted=true;};
     $("revealBtn").onclick=()=>revealSelf(q);
-    hint.textContent=SR?"マイクで答えると自動で判定（Enter：答えを見る）":"頭の中ではなく、実際に声に出してから「答えを見る」（Enter）";
+    hint.textContent="";
   }
 }
 function renderOpts(q){
@@ -1287,7 +1289,7 @@ function revealSelf(q){
   q.selfPending=true;
   $("okBtn").onclick=()=>{q.selfPending=false;locked=false;grade(true,{chosen:"（自己判定）",self:true});};
   $("ngBtn").onclick=()=>{q.selfPending=false;locked=false;grade(false,{chosen:"（自己判定）",self:true});};
-  $("hintLine").textContent="1：言えた　2：言えなかった";
+  $("hintLine").textContent="";
 }
 function altLine(q){
   const alts=(q.v.alts||[]).filter(a=>a!==q.v.fr);
@@ -1321,11 +1323,11 @@ function showAfter(q){
   const sctl=$("stage").querySelector(".speak-ctl");if(sctl)sctl.classList.add("hidden");
   let extra="";
   if(q.type==="speak"&&q.byMic)extra+='<div class="recog"><span class="recog-l">あなたの発音はこう聞き取られました</span><span class="recog-t">«&nbsp;'+esc(q.heard||"")+'&nbsp;»</span></div>';
-  if(q.altOk)extra+='<div class="heard altok">言い方は違うけれど正解。教材の形は上の文。</div>';
-  if(q.type==="fill"&&q.accentNote)extra+='<div class="heard">正解。ただしつづりは <b>'+esc(q.answer)+'</b>（アクセント記号に注意）</div>';
-  if(!q.ok&&(q.type==="choose"||q.type==="build")&&q.chosen&&q.chosen!==q.v.fr)extra+='<div class="heard">あなたの答え：<s>'+esc(q.chosen)+'</s></div>';
-  if(!q.ok&&q.type==="fill")extra+='<div class="heard">空欄の正解：<b>'+esc(q.answer)+'</b></div>';
-  if(q.type==="reply")extra='<div class="heard">相手：«'+esc(q.p.ctx.p)+'»</div>'+extra;
+  if(q.altOk)extra+='<div class="heard altok">≈ «&nbsp;'+esc(q.heard||"")+'&nbsp;»</div>';
+  if(q.type==="fill"&&q.accentNote)extra+='<div class="heard"><b>'+esc(q.answer)+'</b></div>';
+  if(!q.ok&&(q.type==="choose"||q.type==="build")&&q.chosen&&q.chosen!==q.v.fr)extra+='<div class="heard nl-badge"><span style="color:var(--bad-ink)">'+NLI.svg("x",15)+'</span><s>'+esc(q.chosen)+'</s></div>';
+  if(!q.ok&&q.type==="fill")extra+='<div class="heard"><b>'+esc(q.answer)+'</b></div>';
+  if(q.type==="reply")extra='<div class="heard">«'+esc(q.p.ctx.p)+'»</div>'+extra;
   const fix=(!q.ok&&q.type==="speak"&&q.byMic)?'<button class="mini" id="fixBtn">今のは言えていた（正解にする）</button>':'';
   a.innerHTML='<div class="ans-fr">'+esc(q.v.fr)+'</div><div class="ans-ja">'+esc(q.v.ja)+'</div>'+altLine(q)+extra+
     '<div class="btns"><button class="mini ic-only" id="rep1" aria-label="もう一度聞く" title="もう一度聞く">'+NLI.svg("speaker",18)+'</button><button class="mini ic-only" id="rep2" aria-label="ゆっくり" title="ゆっくり">'+NLI.svg("slow",18)+'</button>'+fix+
@@ -1340,13 +1342,13 @@ function showAfter(q){
     if(q.ok)$("prOpen").onclick=()=>{clearTimeout(autoNext);q._stay=true;$("prOpen").parentNode.remove();$("prBox").innerHTML=practiceHTML(q);bindPractice(q);};
     else bindPractice(q);
   }
-  $("hintLine").textContent="「次へ」を押す（Enter でも可）";
+  $("hintLine").textContent="";
   const isSelf=q.type==="speak"&&!q.byMic;  // 自己判定は読み上げ済み
   // 正解なら、答えの音声が終わってから自動で次へ（設定で「自分で押す」にできる）。間違えたときは自動では進まない
   const auto=q.ok&&(!Q||!Q.autoNext||Q.autoNext());
-  const arm=()=>{if(questions[idx]===q&&!q._stay){clearTimeout(autoNext);autoNext=setTimeout(next,1100);}};
+  const arm=()=>{if(questions[idx]===q&&!q._stay){clearTimeout(autoNext);autoNext=setTimeout(next,Q&&Q.nextDelay?Q.nextDelay(700):700);}};
   if(!isSelf&&!(q.ok&&q.type==="listen"))speak(q.v.fr,false,auto?arm:null,700);
-  else if(auto)autoNext=setTimeout(next,1500);
+  else if(auto)autoNext=setTimeout(next,Q&&Q.nextDelay?Q.nextDelay(1000):1000);
 }
 function overrideCorrect(q){
   if(q.ok)return;
@@ -1368,7 +1370,7 @@ function startRetry(){
   retry=true;
   ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();
   questions=shuffle(miss.map(q=>makeQ(q.p,q.type)));idx=0;roundCorrect=0;locked=false;
-  $("roundLabel").textContent="間違えたところだけ（記録には入りません）";
+  $("roundLabel").innerHTML=NLI.svg("again",14)+' '+NLI.svg("x",14);
   show(quizScreen);
   roundStart=performance.now();clearInterval(timerHandle);
   timerHandle=setInterval(()=>{$("liveTimer").textContent=fmtTime(performance.now()-roundStart);},200);
@@ -1388,12 +1390,14 @@ function finishRound(){
   $("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
   $("rPct").textContent=pct+"%";
   $("rFace").textContent=pct===100?"◎":pct>=80?"○":pct>=50?"△":"✕";
-  $("rMsg").textContent=pct===100?"Parfait ! 全問正解です。":pct>=80?"よくできました。":pct>=50?"あと少し。下の一覧を声に出して復習しよう。":"音声を聞きながら、もう一度挑戦しよう。";
+  $("rMsg").textContent="";
+  {const fc=$("rFace");fc.classList.remove("nl-pop");void fc.offsetWidth;fc.classList.add("nl-pop");}
   const avg=questions.reduce((s,q)=>s+(q.rt||0),0)/N;
-  $("rTime").innerHTML='所要時間 '+fmtTime(time)+' <span class="best">（1問あたり '+(avg/1000).toFixed(1)+'秒）</span>';
+  $("rTime").innerHTML='<span class="nl-badge">'+NLI.svg("clock",15)+fmtTime(time)+'</span>';
   const list=poolFor(curSec==="weak"?"mix":curSec);
-  $("rMastery").textContent=(curSec==="weak"||curSec==="mix"?"全体":"このセクション")+"の習得："+masteredIn(list)+" / "+list.length+"　（●が4つ以上で習得）　／　通算 "+fmtDur(store.timeMs)+"・累計 "+store.answered+"問";
-  let h='<div class="ttl">今回のフレーズ（▶で音声）</div>';
+  {const mm=masteredIn(list),pp=Math.round(pctIn(list));   // このセクションの達成メーター
+    $("rMastery").innerHTML='<span class="r-meter"><span class="r-bar"><i style="width:'+pp+'%"></i></span><b>'+pp+'<small>%</small></b></span>';}
+  let h='';
   questions.forEach((q,i)=>{
     h+='<div class="rrow"><span class="mk '+(q.ok?"ok":"no")+'">'+(q.ok?"○":"✕")+'</span>'+
        '<span class="rtx"><span class="rfr">'+esc(q.v.fr)+'</span><span class="rja">'+esc(q.v.ja)+' · '+TYPE_LABEL[q.type]+'</span></span>'+
@@ -1401,9 +1405,9 @@ function finishRound(){
   });
   $("review").innerHTML=h;
   $("review").querySelectorAll(".round-btn").forEach(b=>b.onclick=()=>speak(questions[+b.dataset.i].v.fr));
-  if(retry)$("rMastery").textContent="間違えたところだけの練習なので、覚え具合・成績・記録には入りません。";
+  if(retry)$("rMastery").innerHTML="";
   const nMiss=questions.filter(q=>!q.ok).length;
-  $("retryBtn").classList.toggle("hidden",!nMiss);$("retryBtn").textContent=retry?"まだ間違えたところを、もう一度":"間違えたところだけを練習";
+  $("retryBtn").classList.toggle("hidden",!nMiss);$("retryBtn").innerHTML='<span class="nl-badge">'+NLI.svg("again",20)+NLI.svg("x",18)+'<b>'+nMiss+'</b></span>';$("retryBtn").title="間違えたところだけ練習";
   show(resultScreen);
   if(roundCorrect===N)setTimeout(playFanfare,280);
   if(retry)return;
@@ -1452,6 +1456,6 @@ if(!store.badges){store.badges={};awardBadges();fresh={};}   // この版より�
 renderHome();show(homeScreen);
 
 </script>
-<script src="dialogue.js?v=5"></script>
+<script src="dialogue.js?v=6"></script>
 </body>
 </html>

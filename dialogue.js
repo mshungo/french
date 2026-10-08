@@ -300,9 +300,7 @@
   const home = document.getElementById("homeScreen");
   const anchor = home.querySelector(".section-label");   // 「セクションを選択」の上に置く
   const block = document.createElement("div");
-  block.innerHTML = '<div class="section-label">対話で練習（会話フレーズ ①〜⑲）</div>' +
-    '<div class="dlg-guide">カミーユと<b>声で会話</b>します。相手の言葉を聞いて、マイクを押してフランス語で答えよう。' +
-    '名前・出身地・誕生日など<b>自分のことに変える部分</b>は自由で、<b>決まった言い方の部分</b>だけを採点します。最後に、相手の話の聞き取りクイズもあります。</div>' +
+  block.innerHTML = '<div class="section-label">対話</div>' +
     '<div class="sections" id="dlgList"></div>';
   home.insertBefore(block, anchor);
 
@@ -399,8 +397,8 @@
     parseTp(tp0).forEach(x => { if (x.k === "slot") { const lb = (SLOT[x.kind] || SLOT.x)[3]; if (lb && labels.indexOf(lb) < 0) labels.push(lb); } });
     $("dlgCtl").innerHTML =
       '<div class="dlg-task">' + (t.n ? '<span class="nm">' + esc(t.n) + '</span>' : '') + esc(t.task) + '</div>' +
-      (labels.length ? '<div class="dlg-legend">' + labels.map(l => '<span class="pt-slot">' + esc(l) + '</span>').join(" ") + ' は自分のことに変えてよい部分（採点しない）。決まった言い方の部分を採点します。</div>'
-        : '<div class="dlg-legend">決まった言い方なので、文全体を採点します。</div>') +
+      (labels.length ? '<div class="dlg-legend" title="自分のことに変えてよい部分（採点しない）">' + labels.map(l => '<span class="pt-slot">' + esc(l) + '</span>').join(" ") + ' ＝ 自由</div>'
+        : '') +
       '<div class="dlg-pat hidden" id="dlgPat">' + patternHTML(tp0) + '</div>' +
       (SR ? micUI("dlgMic", "押して話す") : '<div class="dlg-msg">このブラウザは音声認識に対応していないため、声に出したあと「答えを見る」で自分で判定します。</div>') +
       '<div class="dlg-msg" id="dlgMsg"></div><div id="dlgExBox"></div>' +
@@ -425,7 +423,7 @@
     const s = cur(), t = s.t, msg = $("dlgMsg");
     const joined = alts.map(a => words(a).join(" "));
     if (D.role === "answer" && joined.some(a => /\brepeter\b/.test(a))) {   // 「Vous pouvez répéter ?」→ ゆっくりもう一度
-      msg.className = "dlg-msg ok"; msg.textContent = "Bien sûr ! ゆっくり、もう一度言います。";
+      msg.className = "dlg-msg ok"; msg.textContent = "Bien sûr !";
       speak(G(t.p), true); return;
     }
     if (joined.some(a => /\bje passe\b/.test(a))) { studentBub(null, false); finishTurn(false, "Je passe."); return; }
@@ -444,10 +442,10 @@
     if (hm.miss.length && !r.badSlot) why += "（" + hm.miss.slice(0, 3).join("、") + " が聞き取れなかった）";
     showPat();
     if (s.tries < 2) {
-      msg.className = "dlg-msg ng"; msg.textContent = why + "。上の型を見て、もう一度言ってみよう。";
+      msg.className = "dlg-msg ng"; msg.textContent = why;
       return;
     }
-    msg.className = "dlg-msg ng"; msg.textContent = why + "。";
+    msg.className = "dlg-msg ng"; msg.textContent = why;
     showEx();
     const box = $("dlgExBox");
     box.insertAdjacentHTML("beforeend", '<div class="dlg-tools"><button class="mini" id="dlgFix">今のは言えていた（正解にする）</button><button class="next-btn" id="dlgNext" aria-label="次へ">' + NLI.svg("next", 28) + '</button></div>');
@@ -466,9 +464,9 @@
     $("sNg").onclick = () => { const b = document.createElement("div"); b.className = "bub s"; b.innerHTML = '<span class="who">あなた</span><span class="dh">（自己判定）</span><span class="mk ng">✕</span>'; $("dlgLog").appendChild(b); finishTurn(false, "（自己判定）"); };
   }
   /* 正解なら自動で次へ（設定で「自分で押す」にできる）。間違えたときは「次へ」を押すまで進まない */
-  function autoOn() { const Qz = window.Quiz; return !(Qz && Qz.prefs && Qz.prefs().manualNext); }
+  function autoOn() { const Qz = window.Quiz; return !Qz || !Qz.autoNext || Qz.autoNext(); }
   function proceed(ok, go, delay, host) {
-    if (ok && autoOn()) { setTimeout(go, delay); return; }
+    if (ok && autoOn()) { setTimeout(go, window.Quiz && Quiz.nextDelay ? Quiz.nextDelay(delay) : delay); return; }
     const h = host || $("dlgCtl");
     h.insertAdjacentHTML("beforeend", '<div class="nx-wrap"><button class="next-btn" id="dlgGo" aria-label="次へ">' + NLI.svg("next", 28) + '</button></div>');
     const b = $("dlgGo"); b.onclick = () => { b.disabled = true; go(); };
@@ -547,9 +545,8 @@
     const pct = Math.round(score / total * 100);
     let h = '<div class="result" style="padding-top:6px"><div class="face">' + (pct === 100 ? "◎" : pct >= 80 ? "○" : pct >= 50 ? "△" : "✕") + '</div>' +
       '<div class="ring">' + score + '<small> / ' + total + '</small></div><div><span class="pct-pill">' + pct + '%</span></div>' +
-      '<div class="msg">' + (pct === 100 ? "Parfait ! 最後まで会話できました。" : pct >= 80 ? "よく話せました。" : pct >= 50 ? "あと少し。✕の文をお手本で聞いて、まねしてみよう。" : "お手本を聞きながら、もう一度話してみよう。") + '</div>' +
-      '<div class="rtime">所要時間 ' + fmtTime(time) + '</div>' +
-      '<div class="review"><div class="ttl">今回の会話（▶でお手本）</div>';
+      '<div class="rtime"><span class="nl-badge">' + NLI.svg("clock", 15) + fmtTime(time) + '</span></div>' +
+      '<div class="review">';
     live.forEach((x, i) => {
       h += '<div class="rrow"><span class="mk ' + (x.ok ? "ok" : "no") + '">' + (x.ok ? "○" : "✕") + '</span><span class="rtx"><span class="rfr">' + esc(G(x.t.ex)) + '</span>' +
         '<span class="rja">' + esc((x.t.n ? x.t.n + " " : "") + x.t.task) + (x.heard ? '　／ あなた：«' + esc(x.heard) + '»' : '') +
