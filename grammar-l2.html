@@ -6,7 +6,7 @@
 <title>Leçon 2 主語・動詞・限定詞 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=19"></script>
+<script src="common.js?v=20"></script>
 <script src="streak.js?v=1"></script>
 <script src="feedback.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,33 +15,21 @@
 <link rel="stylesheet" href="grammar.css?v=8">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=14"></script>
+<script src="grammar.js?v=15"></script>
 </head>
 <body>
 <div id="app"></div>
 <script>
-/* ===== Leçon 2：主語人称代名詞、-er動詞、être / avoir、指示形容詞、所有形容詞 ===== */
-window.LESSON={no:2,title:"主語・動詞・限定詞",sub:"pronoms · verbes en -er · être · avoir",
-  lead:"主語人称代名詞、-er動詞と être・avoir の現在形、「この」「私の」などを練習します。",
+/* ===== Leçon 2：主語人称代名詞、指示形容詞、所有形容詞（-er動詞・être / avoir は verbs.html へ） ===== */
+window.LESSON={no:2,title:"主語と限定詞",sub:"pronoms · démonstratifs · possessifs",
+  lead:"主語人称代名詞と、「この」「私の」などを練習します。動詞の活用は「動詞活用 › 教科書の動詞」で練習できます。",
   sections:[
   {k:"pro",t:"主語人称代名詞",d:"je, tu, il… / on（Grammaire 1 ／ En plus 1）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
    memo:'<table><tr><th></th><th>単数</th><th>複数</th></tr><tr><td>1人称</td><td class="fr">je (j\')</td><td class="fr">nous</td></tr><tr><td>2人称</td><td class="fr">tu</td><td class="fr">vous</td></tr><tr><td>3人称</td><td class="fr">il / elle</td><td class="fr">ils / elles</td></tr></table>'+
    '<p>tu は親しい相手1人。vous は丁寧な「あなた」と、複数の「あなたたち・きみたち」。</p>'+
    '<p>il / elle は人にも物にも使う。男女まざった複数は <span class="fr">ils</span>。</p>'+
    '<p><span class="fr">on</span>：「人々は」「だれかが」「私たちは」。文法上は3人称単数（il と同じ活用）。</p>'},
-  {k:"er",t:"-er動詞の現在形",d:"第1群規則動詞（Grammaire 2）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
-   memo:'<p>語幹（-er を取った部分）＋語尾 <span class="fr">-e, -es, -e, -ons, -ez, -ent</span></p>'+
-   '<table><tr><td class="fr">je parle</td><td class="fr">nous parlons</td></tr><tr><td class="fr">tu parles</td><td class="fr">vous parlez</td></tr><tr><td class="fr">il / elle parle</td><td class="fr">ils / elles parlent</td></tr></table>'+
-   '<p>-e, -es, -ent は発音しない（parle, parles, parlent は同じ発音）。母音で始まる動詞の前で je → <span class="fr">j\'</span>。</p>'+
-   '<p>発展：<span class="fr">manger → nous mangeons</span>、<span class="fr">commencer → nous commençons</span>（発音を保つためのつづりの変化）</p>'},
-  {k:"ea",t:"être と avoir",d:"現在形と avoir の慣用表現（Grammaire 3 ／ En plus 2）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
-   memo:'<table><tr><th colspan="2">être（～である、いる）</th><th colspan="2">avoir（持つ）</th></tr>'+
-   '<tr><td class="fr">je suis</td><td class="fr">nous sommes</td><td class="fr">j\'ai</td><td class="fr">nous avons</td></tr>'+
-   '<tr><td class="fr">tu es</td><td class="fr">vous êtes</td><td class="fr">tu as</td><td class="fr">vous avez</td></tr>'+
-   '<tr><td class="fr">il est</td><td class="fr">ils sont</td><td class="fr">il a</td><td class="fr">ils ont</td></tr></table>'+
-   '<p>年齢は avoir：<span class="fr">J\'ai vingt ans.</span>（× Je suis vingt ans）。職業・国籍は無冠詞：<span class="fr">Elle est médecin.</span></p>'+
-   '<p>avoir faim / soif / sommeil / chaud / froid、avoir peur de ～、avoir besoin de ～、avoir mal à ～</p>'},
-  {k:"dem",t:"指示形容詞",d:"ce / cet / cette / ces（Grammaire 4）",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8",
+      {k:"dem",t:"指示形容詞",d:"ce / cet / cette / ces（Grammaire 4）",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8",
    memo:'<table><tr><th>男性単数</th><th>女性単数</th><th>複数</th></tr><tr><td class="fr">ce (cet)</td><td class="fr">cette</td><td class="fr">ces</td></tr></table>'+
    '<p>母音・無音のhで始まる男性単数名詞の前では <span class="fr">cet</span>：cet arbre, cet hôtel。女性名詞は母音で始まっても cette。</p>'},
   {k:"pos",t:"所有形容詞",d:"mon, ma, mes…（Grammaire 5）と数 11〜20",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
@@ -79,53 +67,10 @@ C("pro","On frappe à la porte. の on は？","だれかが",["だれかが","�
 C("pro","Nous, on ___ le cinéma.（aimer）","aime",["aime","aimons","aiment"],"on は3人称単数扱い → il と同じ aime。",{ja:"私たちは映画が好きなんだ。"});
 
 /* ---------- -er動詞 ---------- */
-W("er","Tu ___ japonais ?（parler）","parles","tu → -es。");
-W("er","Nous ___ à Nara.（habiter）","habitons","nous → -ons。");
-W("er","Elles ___ bien.（chanter）","chantent","ils / elles → -ent（発音しない）。");
-W("er","Vous ___ le thé ?（aimer）","aimez","vous → -ez。");
-W("er","Je ___ le samedi.（travailler）","travaille","je → -e。");
-W("er","J'___ de la musique.（écouter）","écoute","母音で始まる動詞なので je → j'。語尾は -e。");
-W("er","Il ___ la télévision.（regarder）","regarde","il → -e。");
-W("er","Les enfants ___ dans le jardin.（jouer）","jouent","主語が複数の名詞 → ils と同じ -ent。");
-W("er","Mes parents ___ à Kobe.（habiter）","habitent","mes parents ＝ ils → -ent。");
-W("er","Vous ___ le français.（étudier）","étudiez","vous → -ez。");
-W("er","Nous ___ un appartement.（chercher）","cherchons","nous → -ons。");
-W("er","Marie ___ des fleurs à sa mère.（donner）","donne","Marie ＝ elle → -e。");
-W("er","Tu ___ demain ?（arriver）","arrives","tu → -es。");
-W("er","On ___ ?（danser）","danse","on は3人称単数扱い → -e。");
-C("er","Ils ___ français.（parler）","parlent",["parlent","parlont","parles","parlez"],"ils → -ent。× parlont（-ont は avoir や être の形と混同しやすい）。");
-C("er","Nous ___ souvent.（marcher）","marchons",["marchons","marchez","marchent","marchonts"],"nous → -ons。");
-C("er","___ aime le chocolat.","J'",["J'","Je"],"aimer は母音で始まる → j'。");
-C("er","___ travaille ici.","Je",["Je","J'"],"travailler は子音で始まる → je のまま。");
-C("er","___ habite à Osaka.","J'",["J'","Je"],"無音の h で始まる動詞の前でも j'。");
-W("er","Nous ___ ensemble.（manger）","mangeons","発展：manger は nous のとき mangeons（g の音を保つため e を入れる）。");
-W("er","Nous ___ à neuf heures.（commencer）","commençons","発展：commencer は nous のとき commençons（c を［s］で読むため ç）。");
+SKIP(21);   // この21問は「動詞活用 › 教科書の動詞」（verbs.html）へ移した。ほかの問題の番号（＝記録）を保つため、番号だけ進める
 
 /* ---------- être と avoir ---------- */
-W("ea","Je ___ étudiante.（être）","suis","être：je suis。職業・身分は無冠詞。");
-W("ea","Vous ___ japonais ?（être）","êtes","être：vous êtes（ê に注意）。");
-W("ea","Nous ___ dans le train.（être）","sommes","être：nous sommes。");
-W("ea","Ils ___ en retard.（être）","sont","être：ils sont。");
-W("ea","Tu ___ là ?（être）","es","être：tu es。");
-W("ea","Elle ___ médecin.（être）","est","être：elle est。職業は無冠詞（× Elle est une médecin）。");
-W("ea","J'___ vingt ans.（avoir）","ai","avoir：j'ai。年齢は avoir で言う。");
-W("ea","Tu ___ un stylo ?（avoir）","as","avoir：tu as。");
-W("ea","Nous ___ cours demain.（avoir）","avons","avoir：nous avons。");
-W("ea","Ils ___ deux chiens.（avoir）","ont","avoir：ils ont（sont と混同しないこと）。");
-W("ea","Vous ___ des frères ?（avoir）","avez","avoir：vous avez。");
-W("ea","Elle ___ une voiture.（avoir）","a","avoir：elle a（à ではない）。");
-C("ea","J'___ dix-neuf ans.","ai",["ai","suis"],"年齢は avoir。× Je suis dix-neuf ans。",{ja:"私は19歳です。"});
-C("ea","Ils ___ étudiants.","sont",["sont","ont"],"「～である」は être。",{ja:"彼らは学生です。"});
-C("ea","Elles ___ trois enfants.","ont",["ont","sont"],"「持っている」は avoir。",{ja:"彼女たちには子どもが3人いる。"});
-const IDI=["faim","soif","sommeil","peur","besoin","mal","froid","chaud"];
-C("ea","Midi ! J'ai ___.","faim",IDI,"avoir faim「おなかがすいている」。",{ja:"お昼だ！おなかがすいた。"});
-C("ea","Tu as ___ ? Voici de l'eau.","soif",IDI,"avoir soif「のどがかわく」。",{ja:"のどかわいた？はい、お水。"});
-C("ea","Il est minuit. Tu as ___ ?","sommeil",IDI,"avoir sommeil「眠い」。",{ja:"もう夜中だ。眠い？"});
-C("ea","Elle a ___ des araignées.","peur",IDI,"avoir peur de ～「～がこわい」。de + les → des。",{ja:"彼女はクモがこわい。"});
-C("ea","J'ai ___ de ton aide.","besoin",IDI,"avoir besoin de ～「～が必要だ」。",{ja:"きみの助けが必要だ。"});
-C("ea","J'ai ___ à la tête.","mal",IDI,"avoir mal à ～「～が痛い」。",{ja:"頭が痛い。"});
-C("ea","Il neige. J'ai ___.","froid",IDI,"avoir froid「寒い」。",{ja:"雪だ。寒い。"});
-C("ea","Il fait 35 degrés ! On a ___.","chaud",IDI,"avoir chaud「暑い」。",{ja:"35度だ！暑いね。"});
+SKIP(23);   // この23問は「動詞活用 › 教科書の動詞」（verbs.html）へ移した。ほかの問題の番号（＝記録）を保つため、番号だけ進める
 
 /* ---------- 指示形容詞 ---------- */
 const DEM=["ce","cet","cette","ces"];

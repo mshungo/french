@@ -6,7 +6,7 @@
 <title>Leçon 5 補語人称代名詞 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=19"></script>
+<script src="common.js?v=20"></script>
 <script src="streak.js?v=1"></script>
 <script src="feedback.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,21 +15,16 @@
 <link rel="stylesheet" href="grammar.css?v=8">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=14"></script>
+<script src="grammar.js?v=15"></script>
 </head>
 <body>
 <div id="app"></div>
 <script>
-/* ===== Leçon 5：faire・partir・sortir、補語人称代名詞、強勢形、非人称構文・所有代名詞 ===== */
-window.LESSON={no:5,title:"補語人称代名詞",sub:"faire · partir · sortir · pronoms compléments · pronoms toniques",
-  lead:"faire・partir・sortir の活用、直接・間接目的補語の代名詞とその語順、強勢形、非人称構文と所有代名詞を練習します。",
+/* ===== Leçon 5：補語人称代名詞、強勢形、非人称構文・所有代名詞（動詞の活用は verbs.html へ） ===== */
+window.LESSON={no:5,title:"補語人称代名詞",sub:"pronoms compléments · pronoms toniques · impersonnel",
+  lead:"直接・間接目的補語の代名詞とその語順、強勢形、非人称構文と所有代名詞を練習します。動詞の活用は「動詞活用 › 教科書の動詞」で練習できます。",
   sections:[
-  {k:"verb",t:"faire・partir・sortir",d:"直説法現在（Grammaire 1）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
-   memo:'<table><tr><td class="fr">je fais</td><td class="fr">nous faisons</td></tr><tr><td class="fr">tu fais</td><td class="fr">vous faites</td></tr><tr><td class="fr">il / elle fait</td><td class="fr">ils / elles font</td></tr></table>'+
-   '<p>faisons の発音に注意：［フゾン］</p>'+
-   '<table><tr><td class="fr">je pars</td><td class="fr">nous partons</td></tr><tr><td class="fr">tu pars</td><td class="fr">vous partez</td></tr><tr><td class="fr">il / elle part</td><td class="fr">ils / elles partent</td></tr></table>'+
-   '<p>sortir も同じ型：<span class="fr">je sors, il sort, nous sortons, ils sortent</span></p>'},
-  {k:"cod",t:"補語人称代名詞",d:"直接目的補語・間接目的補語（Grammaire 2-①）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+    {k:"cod",t:"補語人称代名詞",d:"直接目的補語・間接目的補語（Grammaire 2-①）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
    memo:'<table><tr><td>主語</td><td>直接目的「～を」</td><td>間接目的「～に」</td></tr>'+
    '<tr><td class="fr">je</td><td class="fr">me (m\')</td><td class="fr">me (m\')</td></tr><tr><td class="fr">tu</td><td class="fr">te (t\')</td><td class="fr">te (t\')</td></tr>'+
    '<tr><td class="fr">il / elle</td><td class="fr">le (l\') / la (l\')</td><td class="fr">lui</td></tr><tr><td class="fr">nous</td><td class="fr">nous</td><td class="fr">nous</td></tr>'+
@@ -55,27 +50,7 @@ window.LESSON={no:5,title:"補語人称代名詞",sub:"faire · partir · sortir
 ]};
 
 /* ---------- faire・partir・sortir ---------- */
-W("verb","Je ___ du tennis.（faire）","fais","faire：je fais。faire du ＋スポーツ「～をする」。",{ja:"私はテニスをする。"});
-W("verb","Tu ___ la cuisine ce soir ?（faire）","fais","faire：tu fais。",{ja:"今夜はきみが料理するの？"});
-W("verb","Nous ___ une promenade.（faire）","faisons","faire：nous faisons（発音は［フゾン］）。",{ja:"私たちは散歩する。"});
-W("verb","Qu'est-ce que vous ___ ?（faire）","faites","faire：vous faites（-ez ではない）。",{ja:"何をしているのですか？"});
-W("verb","Ils ___ leurs devoirs.（faire）","font","faire：ils font。",{ja:"彼らは宿題をする。"});
-W("verb","Je ___ demain pour Paris.（partir）","pars","partir：je pars。partir pour ～「～に向けて出発する」。",{ja:"私は明日パリに出発する。"});
-W("verb","Le train ___ à dix heures.（partir）","part","partir：il part。",{ja:"列車は10時に出発する。"});
-W("verb","Nous ___ en vacances en août.（partir）","partons","partir：nous partons。",{ja:"私たちは8月に休暇に出かける。"});
-W("verb","Vous ___ quand ?（partir）","partez","partir：vous partez。",{ja:"いつ出発しますか？"});
-W("verb","Elles ___ tôt le matin.（partir）","partent","partir：elles partent。",{ja:"彼女たちは朝早く出発する。"});
-W("verb","Tu ___ ce soir ?（sortir）","sors","sortir：tu sors。",{ja:"今夜出かけるの？"});
-W("verb","Elle ___ avec ses amis.（sortir）","sort","sortir：elle sort。",{ja:"彼女は友だちと出かける。"});
-W("verb","Nous ___ du cinéma à neuf heures.（sortir）","sortons","sortir：nous sortons。sortir de ～「～から出る」。",{ja:"私たちは9時に映画館を出る。"});
-W("verb","Ils ___ souvent le samedi.（sortir）","sortent","sortir：ils sortent。",{ja:"彼らは土曜日によく出かける。"});
-C("verb","Vous ___ du sport ?（faire）","faites",["faites","faisez","faisons"],"vous → faites。",{ja:"スポーツをしますか？"});
-C("verb","Ils ___ la vaisselle.（faire）","font",["font","faisent","fait"],"ils → font。",{ja:"彼らは皿洗いをする。"});
-C("verb","Il ___ froid aujourd'hui.（faire）","fait",["fait","fais","font"],"天候の il fait（非人称）。",{ja:"今日は寒い。"});
-C("verb","Tu ___ à quelle heure ?（partir）","pars",["pars","partes","part"],"tu → pars。",{ja:"何時に出発するの？"});
-C("verb","Elle ___ du bureau à six heures.（sortir）","sort",["sort","sors","sortent"],"elle → sort。",{ja:"彼女は6時に会社を出る。"});
-B("verb","週末は何をするの？","Qu'est-ce que tu fais ce week-end ?",["fait","qui"],"faire：tu fais。「何を」→ qu'est-ce que。");
-B("verb","私たちは明日の朝出発する。","Nous partons demain matin.",["partez","sortons"],"partir：nous partons。");
+SKIP(21);   // この21問は「動詞活用 › 教科書の動詞」（verbs.html）へ移した。ほかの問題の番号（＝記録）を保つため、番号だけ進める
 
 /* ---------- 補語人称代名詞 ---------- */
 T("cod","« ce livre » を代名詞に","J'achète ce livre.",["Je l'achète."],"ce livre は直接目的補語（男性単数）→ le。母音の前で l'。");

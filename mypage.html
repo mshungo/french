@@ -6,11 +6,11 @@
 <title>学習記録 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=19"></script>
+<script src="common.js?v=20"></script>
 <script src="streak.js?v=1"></script>
 <script src="feedback.js?v=2"></script>
 <script src="coach.js?v=4"></script>
-<script src="card.js?v=6"></script>
+<script src="card.js?v=7"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -64,6 +64,9 @@
   .nick button{border:1px solid var(--card-edge);background:#fff;border-radius:14px;padding:4px 11px;font:inherit;font-size:12px;color:var(--accent-ink);cursor:pointer;}
   .nick input{flex:1 1 140px;min-width:0;padding:7px 10px;border:1px solid var(--card-edge);border-radius:10px;font:inherit;font-size:16px;}
   .nick .nk-msg{flex-basis:100%;font-size:11.5px;}
+  .pw-box{display:flex;flex-direction:column;gap:6px;width:100%;}
+  .pw-box input{flex:none;width:100%;}
+  .pw-btns{display:flex;gap:8px;}
   .msg-box{font-size:13px;color:var(--ink-soft);line-height:1.8;}
   .pg{font-size:12.5px;}
   .pg-h{display:flex;align-items:baseline;gap:8px;margin:14px 0 6px;color:var(--ink);font-weight:500;}
@@ -114,6 +117,7 @@
     <div class="bar"><a class="link" href="index.html">← メニュー</a><div class="streak" id="streak"></div></div>
     <p class="hello" id="hello" style="margin-top:14px">読み込み中…</p>
     <div class="nick" id="nickRow"></div>
+    <div class="nick" id="pwRow"></div>
     <div id="stkCard"></div>
     <div id="body"></div>
   </div>
@@ -128,6 +132,7 @@
   var APP={conj:"動詞活用",grammar:"文法練習",talk:"会話練習"};
   var TALKSEC={s1:"第1–3週",s2:"第4–6週",s3:"第7–9週",s4:"第10–11週",s5:"第12–14週",mix:"総まとめ",weak:"苦手"};
   function secName(app,s){
+    if(app==="grammar"&&/^V-/.test(s))return "教科書の動詞";
     if(app==="grammar"){var m=/^L(\d+)-(.+)$/.exec(s);if(m)return "Leçon "+m[1]+(m[2]==="mix"?" 総まとめ":m[2]==="weak"?" 苦手":"");}
     if(app==="talk")return TALKSEC[s]||s;
     return s;
@@ -158,7 +163,33 @@
       });
     };
   }
-  nickView();
+  nickView();pwView();
+  /* パスワードの変更（ふだんは共通パスワード。変えると自分だけのパスワードになる） */
+  function pwView(){
+    if(u.practice){$("pwRow").innerHTML="";return;}
+    $("pwRow").innerHTML='パスワード：<button type="button" id="pwEdit">変える</button>';
+    $("pwEdit").onclick=pwEdit;
+  }
+  function pwEdit(){
+    $("pwRow").innerHTML='<div class="pw-box"><input id="pwCur" type="password" autocomplete="current-password" placeholder="今のパスワード">'+
+      '<input id="pwNew" type="password" autocomplete="new-password" placeholder="新しいパスワード（4文字以上）">'+
+      '<input id="pwNew2" type="password" autocomplete="new-password" placeholder="新しいパスワード（もう一度）">'+
+      '<div class="pw-btns"><button type="button" id="pwSave">変更する</button><button type="button" id="pwCancel">やめる</button></div>'+
+      '<span class="nk-msg" id="pwMsg">大文字・小文字は区別しません。忘れたときは先生に知らせてください（共通パスワードに戻してもらえます）。</span></div>';
+    $("pwCur").focus();$("pwCancel").onclick=pwView;
+    $("pwSave").onclick=function(){
+      var a=$("pwCur").value,b=$("pwNew").value,c=$("pwNew2").value,m=$("pwMsg");
+      if(!a||!b){m.textContent="今のパスワードと新しいパスワードを入れてください。";return;}
+      if(b.replace(/\s+/g,"").length<4){m.textContent="新しいパスワードは4文字以上にしてください。";return;}
+      if(b!==c){m.textContent="新しいパスワードが2回とも同じになっていません。";return;}
+      var btn=this;btn.disabled=true;m.textContent="変更しています…";
+      Q.setPw(a,b).then(function(st){
+        if(st==="ok"){$("pwRow").innerHTML='パスワード：<b>変更しました</b>（次からは新しいパスワードでログイン）';setTimeout(pwView,6000);return;}
+        m.textContent=st==="auth"?"今のパスワードがちがいます。":st==="rate"?"変更が多すぎます。しばらくしてからにしてください。":st==="locked"?"いまは混み合っています。10分ほどしてからためしてください。":st==="short"?"新しいパスワードは4文字以上にしてください。":"変更できませんでした。通信を確かめてください。";
+        btn.disabled=false;
+      });
+    };
+  }
 
 
   /* Excel で保存（読み込み機能はつけない） */
@@ -209,7 +240,7 @@
   }
   /* 成果カード：端末に残っている進み具合（文法の達成・会話の習得・ランク・バッジ）と、サーバーの集計から描く */
   function J(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
-  var LN={1:108,2:105,3:97,4:124,5:105,6:115};   // 各 Leçon の問題数（grammar.html と同じ）
+  var LN={1:108,2:61,3:83,4:100,5:84,6:89};   // 各 Leçon の問題数（grammar.html と同じ）
   /* 文法1問の達成ポイント（0〜4）。grammar.js と同じ数え方 */
   function ptOf(x){if(x.pt!=null)return Math.min(4,x.pt);var run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);
     return (!x.wk&&(((x.wrun||0)>=1&&run>=2)||x.m))?4:(!x.wk&&run>=2)?2:((x.c||0)>0&&x.last===1)?1:0;}
@@ -238,7 +269,14 @@
     var dl=[];Object.keys(DLGT).forEach(function(k){var r=(t.dlg||{})[k];dl.push({k:k,t:DLGT[k],best:r?r.best:null,total:r?r.total:null,tries:r?r.tries:0});});
     var cj=J("conjQuizStats_v4_"+id)||{},ranks={};
     ["être","aller","avoir","faire","mix"].forEach(function(v){ranks[v]=rankOf((cj.bestTimes||{})[v]);});
-    return {gram:gram,talk:{n:100,m:tm,mid:tmid,low:tlow,pct:Math.floor(tpts/400*100),seen:Math.min(tseen,100),rounds:t.tries||0},dlg:dl,conj:{ranks:ranks,rounds:cj.tries||0},badges:badges};
+    badges+=Object.keys(cj.badges||{}).length;
+    /* 教科書の動詞（動詞活用コーナー。もとは文法練習にあった129問） */
+    var vq=J("verbQuiz_v1_"+id)||{},vb={n:129,m:0,ch:0,once:0,pts:0,tried:0,rounds:vq.tries||0};
+    for(var k3 in (vq.it||{})){var y=vq.it[k3];if(!((y.c||0)+(y.w||0)))continue;vb.tried++;var p3=ptOf(y);vb.pts+=p3;
+      if(p3>=4&&!y.wk)vb.m++;else if(p3>=2)vb.ch++;else if(p3>=1)vb.once++;}
+    vb.tried=Math.min(vb.tried,vb.n);vb.pct=Math.floor(vb.pts/(vb.n*4)*100);
+    badges+=Object.keys(vq.badges||{}).length;
+    return {gram:gram,talk:{n:100,m:tm,mid:tmid,low:tlow,pct:Math.floor(tpts/400*100),seen:Math.min(tseen,100),rounds:t.tries||0},dlg:dl,conj:{ranks:ranks,rounds:cj.tries||0},verb:vb,badges:badges};
   }
   function cardData(d){
     var P=progress(),ca=d.byApp.conj;
@@ -246,7 +284,7 @@
     while(q&&!q.fr)q=Coach.pickStory(Math.floor(Math.random()*1000));
     var now=new Date(),hm=now.toLocaleTimeString("ja-JP",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit",hour12:false});
     return {id:maskId(u.id),nick:(u.name&&u.name!==u.id)?u.name:"",stamp:Q.todayJST().replace(/-/g,".")+" "+hm,durSec:d.dur,days:Object.keys(d.days).length,streak:st.n,acc:d.q?Math.round(d.c/d.q*100):null,
-      gram:P.gram,talk:P.talk,dlg:P.dlg,conj:{acc:ca&&ca.q?Math.round(ca.c/ca.q*100):null,rounds:ca?ca.n:P.conj.rounds,ranks:P.conj.ranks},badges:P.badges,quote:q};
+      gram:P.gram,talk:P.talk,dlg:P.dlg,conj:{acc:ca&&ca.q?Math.round(ca.c/ca.q*100):null,rounds:ca?ca.n:P.conj.rounds,ranks:P.conj.ranks,verb:P.verb.tried?P.verb.pct:null},badges:P.badges,quote:q};
   }
   /* 「達成度」の欄（画面） */
   function bar3(m,ch,once,N){
@@ -268,7 +306,10 @@
     P.dlg.forEach(function(x){h+='<div class="pg-d"><span>'+esc(x.t)+'</span><b>'+(x.best==null?'<em>まだ</em>':x.best+' / '+x.total)+'</b></div>';});
     h+='</div><div class="pg-h"><span>動詞活用ランク</span><small>記述式・全問正解のクリアタイム</small></div><div class="pg-rk">';
     ["être","aller","avoir","faire","mix"].forEach(function(v){var r=P.conj.ranks[v];h+='<div class="'+(r?'on':'')+'"><span>'+(v==="mix"?"総まとめ":v)+'</span><b>'+(r||'—')+'</b></div>';});
-    h+='</div><div class="pg-note">文法の達成率：1問4点で、選択式の正解は＋1点（2点まで）、記述式の正解は＋2点。会話の達成率：●4つで100%として数えています。バッジ '+P.badges+' 個。進み具合はこの端末とバックアップから読んでいます。</div></div>';
+    var V=P.verb;
+    h+='</div><div class="pg-h"><span>教科書の動詞</span><b>'+V.pct+'%</b><small>挑戦 '+V.tried+' / '+V.n+' 問</small></div>'+
+      '<div class="pg-row"><span class="pg-l">Leçon 2〜6</span>'+bar3(V.m,V.ch,V.once,V.n)+'<span class="pg-v"><b>'+V.pct+'%</b><small>'+(V.tried?'挑戦 '+V.tried+'/'+V.n:'まだ')+'</small></span></div>';
+    h+='<div class="pg-note">文法・教科書の動詞の達成率：1問4点で、選択式の正解は＋1点（2点まで）、記述式の正解は＋2点。会話の達成率：●4つで100%として数えています。バッジ '+P.badges+' 個。進み具合はこの端末とバックアップから読んでいます。</div></div>';
     return h;
   }
   /* 成果カードは、ボタンを押したときだけ端末の中で描く（サーバーは使わない）。
@@ -285,7 +326,7 @@
     var data=cardData(d),sig=JSON.stringify([data.id,data.nick,data.stamp,data.durSec,data.days,data.streak,data.acc,data.gram,data.talk,data.conj,data.badges]);   // 作成時刻（分）が変われば描き直す
     if(cardURL&&sig===cardSig){showCard(btn);return;}
     btn.disabled=true;btn.textContent="作成中…";
-    var sample="0123456789%/分時間日連続学習のきろく通算正答率動詞活用文法練習会話フレーズ達成度挑戦問習得選択でできた回正解練習中ラウンド対話最高点総合記述式全問正解バッジ個ニックネーム未登録作成まだはじめまして週末と夏休みインタビュー①〜⑭⑮⑲Leçon"+(data.nick||"");
+    var sample="0123456789%/分時間日連続学習のきろく通算正答率動詞活用文法練習会話フレーズ達成度挑戦問習得選択でできた回正解練習中ラウンド対話最高点総合記述式全問正解バッジ個ニックネーム未登録作成まだ教科書の動詞はじめまして週末と夏休みインタビュー①〜⑭⑮⑲Leçon"+(data.nick||"");
     NLCard.ready(sample).then(function(){
       var cv=NLCard.draw(data);
       cv.toBlob(function(b){

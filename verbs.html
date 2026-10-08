@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教科書の動詞 — Naralingo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
+<script src="config.js?v=4"></script>
+<script src="common.js?v=20"></script>
+<script src="streak.js?v=1"></script>
+<script src="feedback.js?v=2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="grammar.css?v=8">
+<script src="sound.js?v=1"></script>
+<script src="badge.js?v=3"></script>
+<script src="grammar.js?v=15"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== 教科書の動詞（動詞活用コーナー）：教科書『Accès』Leçon 2〜6 の動詞の現在形 =====
+   もとは文法練習の各 Leçon にあった問題。問題IDは文法練習のときと同じにしてあり、
+   それまでの練習の記録（common.js が gramQuiz から verbQuiz へ移す）がそのまま続く。 */
+window.LESSON={no:"V",label:"教科書の動詞",eyebrow:"Verbes · Leçon 2〜6",title:"教科書の動詞",
+  sub:"verbes en -er · être · avoir · -ir · irréguliers",
+  lead:"教科書『Accès』Leçon 2〜6 に出てくる動詞の現在形を練習します。",
+  memoTitle:"活用のポイント",store:"verbQuiz_v1",back:"conjugation.html",backText:"← 動詞活用",secPrefix:"V-",fbName:"動詞活用 › 教科書の動詞",
+  crest:'<svg width="30" height="30" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 9.5C9.6 7.3 9.2 5.1 10 2.8M10.2 5.9 7.4 4.6M12.6 9.2c-.6-1.8-.1-3.4 1-4.6"/><path d="M20.5 9.5c1.9-2.2 2.3-4.4 1.5-6.7M21.8 5.9l2.8-1.3M19.4 9.2c.6-1.8.1-3.4-1-4.6"/><path d="M11.4 11.6 6.6 10.4c.9 1.9 2.6 3 4.9 3.1"/><path d="M20.6 11.6l4.8-1.2c-.9 1.9-2.6 3-4.9 3.1"/><path d="M11.3 11.2c.3-1.4 2.2-2.1 4.7-2.1s4.4.7 4.7 2.1l-1.1 8.2c-.5 3.6-1.9 6.4-3.6 6.4s-3.1-2.8-3.6-6.4z"/><circle cx="13.9" cy="14.8" r=".7" fill="currentColor" stroke="none"/><circle cx="18.1" cy="14.8" r=".7" fill="currentColor" stroke="none"/><path d="M15 24.3h2"/></svg>',
+  sections:[
+  {k:"er",t:"-er動詞の現在形",d:"Leçon 2 ／ 第1群規則動詞（Grammaire 2）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+   memo:'<p>語幹（-er を取った部分）＋語尾 <span class="fr">-e, -es, -e, -ons, -ez, -ent</span></p>'+
+   '<table><tr><td class="fr">je parle</td><td class="fr">nous parlons</td></tr><tr><td class="fr">tu parles</td><td class="fr">vous parlez</td></tr><tr><td class="fr">il / elle parle</td><td class="fr">ils / elles parlent</td></tr></table>'+
+   '<p>-e, -es, -ent は発音しない（parle, parles, parlent は同じ発音）。母音で始まる動詞の前で je → <span class="fr">j\'</span>。</p>'+
+   '<p>発展：<span class="fr">manger → nous mangeons</span>、<span class="fr">commencer → nous commençons</span>（発音を保つためのつづりの変化）</p>'},
+  {k:"ea",t:"être と avoir",d:"Leçon 2 ／ 現在形と avoir の慣用表現（Grammaire 3 ／ En plus 2）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
+   memo:'<table><tr><th colspan="2">être（～である、いる）</th><th colspan="2">avoir（持つ）</th></tr>'+
+   '<tr><td class="fr">je suis</td><td class="fr">nous sommes</td><td class="fr">j\'ai</td><td class="fr">nous avons</td></tr>'+
+   '<tr><td class="fr">tu es</td><td class="fr">vous êtes</td><td class="fr">tu as</td><td class="fr">vous avez</td></tr>'+
+   '<tr><td class="fr">il est</td><td class="fr">ils sont</td><td class="fr">il a</td><td class="fr">ils ont</td></tr></table>'+
+   '<p>年齢は avoir：<span class="fr">J\'ai vingt ans.</span>（× Je suis vingt ans）。職業・国籍は無冠詞：<span class="fr">Elle est médecin.</span></p>'+
+   '<p>avoir faim / soif / sommeil / chaud / froid、avoir peur de ～、avoir besoin de ～、avoir mal à ～</p>'},
+  {k:"ir",t:"-ir動詞の現在形",d:"Leçon 3 ／ 第2群規則動詞（Grammaire 2）",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8",
+   memo:'<p>語幹＋語尾 <span class="fr">-is, -is, -it, -issons, -issez, -issent</span></p>'+
+   '<table><tr><td class="fr">je finis</td><td class="fr">nous finissons</td></tr><tr><td class="fr">tu finis</td><td class="fr">vous finissez</td></tr><tr><td class="fr">il / elle finit</td><td class="fr">ils / elles finissent</td></tr></table>'+
+   '<p>同じ活用：choisir, réussir, grandir, grossir, maigrir, obéir, réfléchir, bâtir</p>'},
+  {k:"v4",t:"aller・venir・tenir",d:"Leçon 4 ／ 直説法現在（Grammaire 1）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
+   memo:'<table><tr><td class="fr">je vais</td><td class="fr">nous allons</td></tr><tr><td class="fr">tu vas</td><td class="fr">vous allez</td></tr><tr><td class="fr">il / elle va</td><td class="fr">ils / elles vont</td></tr></table>'+
+   '<table><tr><td class="fr">je viens</td><td class="fr">nous venons</td></tr><tr><td class="fr">tu viens</td><td class="fr">vous venez</td></tr><tr><td class="fr">il / elle vient</td><td class="fr">ils / elles viennent</td></tr></table>'+
+   '<p>tenir（つかむ、持つ）も venir と同じ型：<span class="fr">je tiens, nous tenons, ils tiennent</span></p>'+
+   '<p>同じ型の動詞：devenir（～になる）、revenir（戻る）、obtenir（手に入れる）</p>'},
+  {k:"v5",t:"faire・partir・sortir",d:"Leçon 5 ／ 直説法現在（Grammaire 1）",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
+   memo:'<table><tr><td class="fr">je fais</td><td class="fr">nous faisons</td></tr><tr><td class="fr">tu fais</td><td class="fr">vous faites</td></tr><tr><td class="fr">il / elle fait</td><td class="fr">ils / elles font</td></tr></table>'+
+   '<p>faisons の発音に注意：［フゾン］</p>'+
+   '<table><tr><td class="fr">je pars</td><td class="fr">nous partons</td></tr><tr><td class="fr">tu pars</td><td class="fr">vous partez</td></tr><tr><td class="fr">il / elle part</td><td class="fr">ils / elles partent</td></tr></table>'+
+   '<p>sortir も同じ型：<span class="fr">je sors, il sort, nous sortons, ils sortent</span></p>'},
+  {k:"v6",t:"lire・dire・écrire・attendre・mettre",d:"Leçon 6 ／ 直説法現在（Grammaire 1）",c:"#6fb0ad",ci:"#4c8e8b",cw:"#ebf5f4",
+   memo:'<p><span class="fr">lire</span>：lis, lis, lit, lisons, lisez, lisent</p>'+
+   '<p><span class="fr">dire</span>：dis, dis, dit, disons, <b>dites</b>, disent</p>'+
+   '<p><span class="fr">écrire</span>：écris, écris, écrit, écrivons, écrivez, écrivent</p>'+
+   '<p><span class="fr">attendre</span>：attends, attends, <b>attend</b>, attendons, attendez, attendent（3人称単数は d で終わる）</p>'+
+   '<p><span class="fr">mettre</span>：mets, mets, met, mettons, mettez, mettent</p>'+
+   '<p>attendre と同じ型：entendre（聞く）、répondre（答える）、perdre（失う）、rendre（返す）、vendre（売る）、descendre（降りる）。mettre と同じ型：permettre、promettre。</p>'}
+]};
+
+/* ---------- Leçon 2：-er動詞 ---------- */
+FROM(2,18);   // 問題IDは文法練習 Leçon 2 のときと同じ（記録を引き継ぐため）
+W("er","Tu ___ japonais ?（parler）","parles","tu → -es。");
+W("er","Nous ___ à Nara.（habiter）","habitons","nous → -ons。");
+W("er","Elles ___ bien.（chanter）","chantent","ils / elles → -ent（発音しない）。");
+W("er","Vous ___ le thé ?（aimer）","aimez","vous → -ez。");
+W("er","Je ___ le samedi.（travailler）","travaille","je → -e。");
+W("er","J'___ de la musique.（écouter）","écoute","母音で始まる動詞なので je → j'。語尾は -e。");
+W("er","Il ___ la télévision.（regarder）","regarde","il → -e。");
+W("er","Les enfants ___ dans le jardin.（jouer）","jouent","主語が複数の名詞 → ils と同じ -ent。");
+W("er","Mes parents ___ à Kobe.（habiter）","habitent","mes parents ＝ ils → -ent。");
+W("er","Vous ___ le français.（étudier）","étudiez","vous → -ez。");
+W("er","Nous ___ un appartement.（chercher）","cherchons","nous → -ons。");
+W("er","Marie ___ des fleurs à sa mère.（donner）","donne","Marie ＝ elle → -e。");
+W("er","Tu ___ demain ?（arriver）","arrives","tu → -es。");
+W("er","On ___ ?（danser）","danse","on は3人称単数扱い → -e。");
+C("er","Ils ___ français.（parler）","parlent",["parlent","parlont","parles","parlez"],"ils → -ent。× parlont（-ont は avoir や être の形と混同しやすい）。");
+C("er","Nous ___ souvent.（marcher）","marchons",["marchons","marchez","marchent","marchonts"],"nous → -ons。");
+C("er","___ aime le chocolat.","J'",["J'","Je"],"aimer は母音で始まる → j'。");
+C("er","___ travaille ici.","Je",["Je","J'"],"travailler は子音で始まる → je のまま。");
+C("er","___ habite à Osaka.","J'",["J'","Je"],"無音の h で始まる動詞の前でも j'。");
+W("er","Nous ___ ensemble.（manger）","mangeons","発展：manger は nous のとき mangeons（g の音を保つため e を入れる）。");
+W("er","Nous ___ à neuf heures.（commencer）","commençons","発展：commencer は nous のとき commençons（c を［s］で読むため ç）。");
+
+/* ---------- Leçon 2：être と avoir ---------- */
+FROM(2,39);   // 問題IDは文法練習 Leçon 2 のときと同じ（記録を引き継ぐため）
+W("ea","Je ___ étudiante.（être）","suis","être：je suis。職業・身分は無冠詞。");
+W("ea","Vous ___ japonais ?（être）","êtes","être：vous êtes（ê に注意）。");
+W("ea","Nous ___ dans le train.（être）","sommes","être：nous sommes。");
+W("ea","Ils ___ en retard.（être）","sont","être：ils sont。");
+W("ea","Tu ___ là ?（être）","es","être：tu es。");
+W("ea","Elle ___ médecin.（être）","est","être：elle est。職業は無冠詞（× Elle est une médecin）。");
+W("ea","J'___ vingt ans.（avoir）","ai","avoir：j'ai。年齢は avoir で言う。");
+W("ea","Tu ___ un stylo ?（avoir）","as","avoir：tu as。");
+W("ea","Nous ___ cours demain.（avoir）","avons","avoir：nous avons。");
+W("ea","Ils ___ deux chiens.（avoir）","ont","avoir：ils ont（sont と混同しないこと）。");
+W("ea","Vous ___ des frères ?（avoir）","avez","avoir：vous avez。");
+W("ea","Elle ___ une voiture.（avoir）","a","avoir：elle a（à ではない）。");
+C("ea","J'___ dix-neuf ans.","ai",["ai","suis"],"年齢は avoir。× Je suis dix-neuf ans。",{ja:"私は19歳です。"});
+C("ea","Ils ___ étudiants.","sont",["sont","ont"],"「～である」は être。",{ja:"彼らは学生です。"});
+C("ea","Elles ___ trois enfants.","ont",["ont","sont"],"「持っている」は avoir。",{ja:"彼女たちには子どもが3人いる。"});
+const IDI=["faim","soif","sommeil","peur","besoin","mal","froid","chaud"];
+C("ea","Midi ! J'ai ___.","faim",IDI,"avoir faim「おなかがすいている」。",{ja:"お昼だ！おなかがすいた。"});
+C("ea","Tu as ___ ? Voici de l'eau.","soif",IDI,"avoir soif「のどがかわく」。",{ja:"のどかわいた？はい、お水。"});
+C("ea","Il est minuit. Tu as ___ ?","sommeil",IDI,"avoir sommeil「眠い」。",{ja:"もう夜中だ。眠い？"});
+C("ea","Elle a ___ des araignées.","peur",IDI,"avoir peur de ～「～がこわい」。de + les → des。",{ja:"彼女はクモがこわい。"});
+C("ea","J'ai ___ de ton aide.","besoin",IDI,"avoir besoin de ～「～が必要だ」。",{ja:"きみの助けが必要だ。"});
+C("ea","J'ai ___ à la tête.","mal",IDI,"avoir mal à ～「～が痛い」。",{ja:"頭が痛い。"});
+C("ea","Il neige. J'ai ___.","froid",IDI,"avoir froid「寒い」。",{ja:"雪だ。寒い。"});
+C("ea","Il fait 35 degrés ! On a ___.","chaud",IDI,"avoir chaud「暑い」。",{ja:"35度だ！暑いね。"});
+
+/* ---------- Leçon 3：-ir動詞 ---------- */
+FROM(3,28);   // 問題IDは文法練習 Leçon 3 のときと同じ（記録を引き継ぐため）
+W("ir","Je ___ à cinq heures.（finir）","finis","je → -is。");
+W("ir","Tu ___ ce gâteau ?（choisir）","choisis","tu → -is。");
+W("ir","Il ___ ses devoirs.（finir）","finit","il → -it。");
+W("ir","Nous ___ un cadeau pour Léa.（choisir）","choisissons","nous → -issons。");
+W("ir","Vous ___ trop.（réfléchir）","réfléchissez","vous → -issez。");
+W("ir","Ils ___ vite.（grandir）","grandissent","ils → -issent。");
+W("ir","Elle ___ toujours.（réussir）","réussit","elle → -it。");
+W("ir","Les élèves ___ au professeur.（obéir）","obéissent","主語が複数名詞 → -issent。obéir à ～「～に従う」。");
+W("ir","On ___ tard aujourd'hui.（finir）","finit","on は3人称単数扱い → -it。");
+W("ir","Je ___ en hiver.（grossir）","grossis","je → -is。");
+W("ir","Nous ___ le repas.（finir）","finissons","nous → -issons。");
+C("ir","Vous ___ ce livre ?（choisir）","choisissez",["choisissez","choisez","choisisez"],"vous → -issez（s は2つ）。");
+C("ir","Elles ___ le travail.（finir）","finissent",["finissent","finent","finisent"],"elles → -issent。");
+C("ir","Il ___ beaucoup.（maigrir）","maigrit",["maigrit","maigris","maigre"],"il → -it。");
+
+/* ---------- Leçon 4：aller・venir・tenir ---------- */
+FROM(4,0);   // 問題IDは文法練習 Leçon 4 のときと同じ（記録を引き継ぐため）
+W("v4","Je ___ à la bibliothèque.（aller）","vais","aller：je vais。",{ja:"私は図書館に行く。"});
+W("v4","Tu ___ au cinéma ce soir ?（aller）","vas","aller：tu vas。",{ja:"今夜映画に行くの？"});
+W("v4","Il ___ à Kyoto en train.（aller）","va","aller：il va。",{ja:"彼は電車で京都に行く。"});
+W("v4","Nous ___ chez Marie.（aller）","allons","aller：nous allons。",{ja:"私たちはマリーの家に行く。"});
+W("v4","Comment ___-vous ?（aller）","allez","aller：vous allez。Comment allez-vous ?「お元気ですか」。",{ja:"お元気ですか？"});
+W("v4","Ils ___ à l'université à pied.（aller）","vont","aller：ils vont。",{ja:"彼らは歩いて大学に行く。"});
+W("v4","Je ___ du Japon.（venir）","viens","venir：je viens。venir de ～「～から来る、～の出身だ」。",{ja:"私は日本から来ました。"});
+W("v4","Tu ___ avec nous ?（venir）","viens","venir：tu viens。",{ja:"いっしょに来る？"});
+W("v4","Elle ___ de Lyon.（venir）","vient","venir：elle vient。",{ja:"彼女はリヨンの出身だ。"});
+W("v4","Nous ___ à la fête samedi.（venir）","venons","venir：nous venons。",{ja:"私たちは土曜日のパーティーに行きます。"});
+W("v4","D'où ___-vous ?（venir）","venez","venir：vous venez。d'où ＝ de＋où。",{ja:"どちらのご出身ですか？"});
+W("v4","Ils ___ ce soir.（venir）","viennent","venir：ils viennent（n を重ねる）。",{ja:"彼らは今夜来る。"});
+W("v4","Elle ___ un parapluie à la main.（tenir）","tient","tenir は venir と同じ型：elle tient。",{ja:"彼女は手に傘を持っている。"});
+W("v4","Les enfants ___ la main de leur mère.（tenir）","tiennent","tenir：ils tiennent（n を重ねる）。",{ja:"子どもたちは母親と手をつないでいる。"});
+W("v4","Il ___ médecin.（devenir）","devient","devenir は venir と同じ型：il devient。",{ja:"彼は医者になる。"});
+W("v4","Nous ___ demain.（revenir）","revenons","revenir は venir と同じ型：nous revenons。",{ja:"私たちは明日戻ります。"});
+W("v4","Vous ___ votre diplôme en mars ?（obtenir）","obtenez","obtenir は venir と同じ型：vous obtenez。",{ja:"3月に卒業証書を取るのですか？"});
+C("v4","Vous ___ à Paris ?（aller）","allez",["allez","allons","vont"],"vous → allez。",{ja:"パリに行くのですか？"});
+C("v4","Elles ___ de Nara.（venir）","viennent",["viennent","venent","vient"],"ils / elles → viennent（n を重ねる）。",{ja:"彼女たちは奈良の出身だ。"});
+C("v4","Nous ___ un petit café.（tenir）","tenons",["tenons","tienons","tenez"],"nous / vous の語幹は ten-（tenons, tenez）。tenir un café「カフェを経営する」。",{ja:"私たちは小さなカフェを営んでいる。"});
+C("v4","Tu ___ souvent ici ?（venir）","viens",["viens","vient","venes"],"tu → viens。",{ja:"よくここに来るの？"});
+C("v4","Je ___ bien, merci.（aller）","vais",["vais","va","allons"],"je → vais。aller bien「元気だ」。",{ja:"元気です、ありがとう。"});
+B("v4","今年、彼らはフランスに行く。","Cette année, ils vont en France.",["va","au"],"aller：ils vont。France は女性名詞なので en France。");
+B("v4","どちらのご出身ですか？","D'où venez-vous ?",["viens","Où"],"venir de ～「～の出身だ」。de＋où → d'où。");
+
+/* ---------- Leçon 5：faire・partir・sortir ---------- */
+FROM(5,0);   // 問題IDは文法練習 Leçon 5 のときと同じ（記録を引き継ぐため）
+W("v5","Je ___ du tennis.（faire）","fais","faire：je fais。faire du ＋スポーツ「～をする」。",{ja:"私はテニスをする。"});
+W("v5","Tu ___ la cuisine ce soir ?（faire）","fais","faire：tu fais。",{ja:"今夜はきみが料理するの？"});
+W("v5","Nous ___ une promenade.（faire）","faisons","faire：nous faisons（発音は［フゾン］）。",{ja:"私たちは散歩する。"});
+W("v5","Qu'est-ce que vous ___ ?（faire）","faites","faire：vous faites（-ez ではない）。",{ja:"何をしているのですか？"});
+W("v5","Ils ___ leurs devoirs.（faire）","font","faire：ils font。",{ja:"彼らは宿題をする。"});
+W("v5","Je ___ demain pour Paris.（partir）","pars","partir：je pars。partir pour ～「～に向けて出発する」。",{ja:"私は明日パリに出発する。"});
+W("v5","Le train ___ à dix heures.（partir）","part","partir：il part。",{ja:"列車は10時に出発する。"});
+W("v5","Nous ___ en vacances en août.（partir）","partons","partir：nous partons。",{ja:"私たちは8月に休暇に出かける。"});
+W("v5","Vous ___ quand ?（partir）","partez","partir：vous partez。",{ja:"いつ出発しますか？"});
+W("v5","Elles ___ tôt le matin.（partir）","partent","partir：elles partent。",{ja:"彼女たちは朝早く出発する。"});
+W("v5","Tu ___ ce soir ?（sortir）","sors","sortir：tu sors。",{ja:"今夜出かけるの？"});
+W("v5","Elle ___ avec ses amis.（sortir）","sort","sortir：elle sort。",{ja:"彼女は友だちと出かける。"});
+W("v5","Nous ___ du cinéma à neuf heures.（sortir）","sortons","sortir：nous sortons。sortir de ～「～から出る」。",{ja:"私たちは9時に映画館を出る。"});
+W("v5","Ils ___ souvent le samedi.（sortir）","sortent","sortir：ils sortent。",{ja:"彼らは土曜日によく出かける。"});
+C("v5","Vous ___ du sport ?（faire）","faites",["faites","faisez","faisons"],"vous → faites。",{ja:"スポーツをしますか？"});
+C("v5","Ils ___ la vaisselle.（faire）","font",["font","faisent","fait"],"ils → font。",{ja:"彼らは皿洗いをする。"});
+C("v5","Il ___ froid aujourd'hui.（faire）","fait",["fait","fais","font"],"天候の il fait（非人称）。",{ja:"今日は寒い。"});
+C("v5","Tu ___ à quelle heure ?（partir）","pars",["pars","partes","part"],"tu → pars。",{ja:"何時に出発するの？"});
+C("v5","Elle ___ du bureau à six heures.（sortir）","sort",["sort","sors","sortent"],"elle → sort。",{ja:"彼女は6時に会社を出る。"});
+B("v5","週末は何をするの？","Qu'est-ce que tu fais ce week-end ?",["fait","qui"],"faire：tu fais。「何を」→ qu'est-ce que。");
+B("v5","私たちは明日の朝出発する。","Nous partons demain matin.",["partez","sortons"],"partir：nous partons。");
+
+/* ---------- Leçon 6：lire・dire・écrire・attendre・mettre ---------- */
+FROM(6,0);   // 問題IDは文法練習 Leçon 6 のときと同じ（記録を引き継ぐため）
+W("v6","Je ___ le journal le matin.（lire）","lis","lire：je lis。",{ja:"私は朝、新聞を読む。"});
+W("v6","Elle ___ un roman.（lire）","lit","lire：elle lit。",{ja:"彼女は小説を読んでいる。"});
+W("v6","Nous ___ un texte en français.（lire）","lisons","lire：nous lisons。",{ja:"私たちはフランス語の文章を読む。"});
+W("v6","Ils ___ des mangas.（lire）","lisent","lire：ils lisent。",{ja:"彼らはマンガを読む。"});
+W("v6","Qu'est-ce que tu ___ ?（dire）","dis","dire：tu dis。",{ja:"何て言ったの？（何を言っているの？）"});
+W("v6","Il ___ bonjour à tout le monde.（dire）","dit","dire：il dit。",{ja:"彼はみんなにあいさつをする。"});
+W("v6","Vous ___ la vérité ?（dire）","dites","dire：vous dites（-ez ではない）。",{ja:"本当のことを言っていますか？"});
+W("v6","Ils ___ que c'est facile.（dire）","disent","dire：ils disent。",{ja:"彼らはそれは簡単だと言う。"});
+W("v6","J'___ une lettre à ma grand-mère.（écrire）","écris","écrire：j'écris。",{ja:"私は祖母に手紙を書く。"});
+W("v6","Nous ___ un mail au professeur.（écrire）","écrivons","écrire：nous écrivons（v が入る）。",{ja:"私たちは先生にメールを書く。"});
+W("v6","Elles ___ des poèmes.（écrire）","écrivent","écrire：elles écrivent。",{ja:"彼女たちは詩を書く。"});
+W("v6","J'___ le bus.（attendre）","attends","attendre：j'attends。",{ja:"私はバスを待っている。"});
+W("v6","Elle ___ son ami devant la gare.（attendre）","attend","attendre：elle attend（d で終わる）。",{ja:"彼女は駅の前で友だちを待っている。"});
+W("v6","Vous ___ quelqu'un ?（attendre）","attendez","attendre：vous attendez。",{ja:"だれかを待っているのですか？"});
+W("v6","Je ___ du sucre dans mon café.（mettre）","mets","mettre：je mets。",{ja:"私はコーヒーに砂糖を入れる。"});
+W("v6","Il ___ son manteau.（mettre）","met","mettre：il met。",{ja:"彼はコートを着る。"});
+W("v6","Nous ___ la table.（mettre）","mettons","mettre：nous mettons。mettre la table「食卓の準備をする」。",{ja:"私たちは食卓の準備をする。"});
+W("v6","Ils ___ une heure pour venir.（mettre）","mettent","mettre：ils mettent。mettre＋時間「（時間）をかける」。",{ja:"彼らは来るのに1時間かかる。"});
+C("v6","Qu'est-ce que vous ___ ?（dire）","dites",["dites","disez","disons"],"vous → dites。",{ja:"何とおっしゃいましたか？"});
+C("v6","Tu ___ à ma question ?（répondre）","réponds",["réponds","répond","répondes"],"répondre は attendre と同じ型：tu réponds。",{ja:"私の質問に答えてくれる？"});
+C("v6","Il ___ souvent ses clés.（perdre）","perd",["perd","perds","perde"],"perdre は attendre と同じ型：il perd。",{ja:"彼はよく鍵をなくす。"});
+C("v6","On ___ des fruits au marché.（vendre）","vend",["vend","vends","vent"],"vendre：on vend（d で終わる）。",{ja:"市場では果物を売っている。"});
+C("v6","Nous ___ du train à Nara.（descendre）","descendons",["descendons","descendez","descends"],"descendre：nous descendons。",{ja:"私たちは奈良で電車を降りる。"});
+C("v6","Elles ___ des lettres.（écrire）","écrivent",["écrivent","écrient","écrisent"],"écrire の複数形は v が入る。",{ja:"彼女たちは手紙を書く。"});
+C("v6","Il ___ de venir demain.（promettre）","promet",["promet","promets","promette"],"promettre は mettre と同じ型：il promet。",{ja:"彼は明日来ると約束する。"});
+B("v6","私は駅の前で友だちを待っている。","J'attends mon ami devant la gare.",["attend","à"],"attendre：j'attends。attendre は直接目的補語をとる（à は不要）。");
+
+</script>
+</body>
+</html>

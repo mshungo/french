@@ -6,7 +6,7 @@
 <title>Leçon 6 代名動詞と命令法 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=19"></script>
+<script src="common.js?v=20"></script>
 <script src="streak.js?v=1"></script>
 <script src="feedback.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,23 +15,16 @@
 <link rel="stylesheet" href="grammar.css?v=8">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=14"></script>
+<script src="grammar.js?v=15"></script>
 </head>
 <body>
 <div id="app"></div>
 <script>
-/* ===== Leçon 6：lire・dire・écrire・attendre・mettre、代名動詞、命令法 ===== */
-window.LESSON={no:6,title:"代名動詞と命令法",sub:"lire · écrire · attendre · verbes pronominaux · impératif",
-  lead:"lire・dire・écrire・attendre・mettre の活用、代名動詞の形と用法、命令法（代名詞・代名動詞をともなう命令も）を練習します。",
+/* ===== Leçon 6：代名動詞、命令法（動詞の活用は verbs.html へ） ===== */
+window.LESSON={no:6,title:"代名動詞と命令法",sub:"verbes pronominaux · impératif",
+  lead:"代名動詞の形と用法、命令法（代名詞・代名動詞をともなう命令も）を練習します。動詞の活用は「動詞活用 › 教科書の動詞」で練習できます。",
   sections:[
-  {k:"verb",t:"lire・dire・écrire・attendre・mettre",d:"直説法現在（Grammaire 1）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
-   memo:'<p><span class="fr">lire</span>：lis, lis, lit, lisons, lisez, lisent</p>'+
-   '<p><span class="fr">dire</span>：dis, dis, dit, disons, <b>dites</b>, disent</p>'+
-   '<p><span class="fr">écrire</span>：écris, écris, écrit, écrivons, écrivez, écrivent</p>'+
-   '<p><span class="fr">attendre</span>：attends, attends, <b>attend</b>, attendons, attendez, attendent（3人称単数は d で終わる）</p>'+
-   '<p><span class="fr">mettre</span>：mets, mets, met, mettons, mettez, mettent</p>'+
-   '<p>attendre と同じ型：entendre（聞く）、répondre（答える）、perdre（失う）、rendre（返す）、vendre（売る）、descendre（降りる）。mettre と同じ型：permettre、promettre。</p>'},
-  {k:"pr",t:"代名動詞の形",d:"活用・否定文・疑問文（Grammaire 2）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+    {k:"pr",t:"代名動詞の形",d:"活用・否定文・疑問文（Grammaire 2）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
    memo:'<p>主語と同じ人・物を指す再帰代名詞をともなう動詞。</p>'+
    '<table><tr><td class="fr">je me réveille</td><td class="fr">nous nous réveillons</td></tr><tr><td class="fr">tu te réveilles</td><td class="fr">vous vous réveillez</td></tr><tr><td class="fr">il / elle se réveille</td><td class="fr">ils / elles se réveillent</td></tr></table>'+
    '<p>母音・無音の h の前で <span class="fr">m\', t\', s\'</span>：<span class="fr">je m\'habille, il s\'appelle</span></p>'+
@@ -56,32 +49,7 @@ window.LESSON={no:6,title:"代名動詞と命令法",sub:"lire · écrire · att
 ]};
 
 /* ---------- lire・dire・écrire・attendre・mettre ---------- */
-W("verb","Je ___ le journal le matin.（lire）","lis","lire：je lis。",{ja:"私は朝、新聞を読む。"});
-W("verb","Elle ___ un roman.（lire）","lit","lire：elle lit。",{ja:"彼女は小説を読んでいる。"});
-W("verb","Nous ___ un texte en français.（lire）","lisons","lire：nous lisons。",{ja:"私たちはフランス語の文章を読む。"});
-W("verb","Ils ___ des mangas.（lire）","lisent","lire：ils lisent。",{ja:"彼らはマンガを読む。"});
-W("verb","Qu'est-ce que tu ___ ?（dire）","dis","dire：tu dis。",{ja:"何て言ったの？（何を言っているの？）"});
-W("verb","Il ___ bonjour à tout le monde.（dire）","dit","dire：il dit。",{ja:"彼はみんなにあいさつをする。"});
-W("verb","Vous ___ la vérité ?（dire）","dites","dire：vous dites（-ez ではない）。",{ja:"本当のことを言っていますか？"});
-W("verb","Ils ___ que c'est facile.（dire）","disent","dire：ils disent。",{ja:"彼らはそれは簡単だと言う。"});
-W("verb","J'___ une lettre à ma grand-mère.（écrire）","écris","écrire：j'écris。",{ja:"私は祖母に手紙を書く。"});
-W("verb","Nous ___ un mail au professeur.（écrire）","écrivons","écrire：nous écrivons（v が入る）。",{ja:"私たちは先生にメールを書く。"});
-W("verb","Elles ___ des poèmes.（écrire）","écrivent","écrire：elles écrivent。",{ja:"彼女たちは詩を書く。"});
-W("verb","J'___ le bus.（attendre）","attends","attendre：j'attends。",{ja:"私はバスを待っている。"});
-W("verb","Elle ___ son ami devant la gare.（attendre）","attend","attendre：elle attend（d で終わる）。",{ja:"彼女は駅の前で友だちを待っている。"});
-W("verb","Vous ___ quelqu'un ?（attendre）","attendez","attendre：vous attendez。",{ja:"だれかを待っているのですか？"});
-W("verb","Je ___ du sucre dans mon café.（mettre）","mets","mettre：je mets。",{ja:"私はコーヒーに砂糖を入れる。"});
-W("verb","Il ___ son manteau.（mettre）","met","mettre：il met。",{ja:"彼はコートを着る。"});
-W("verb","Nous ___ la table.（mettre）","mettons","mettre：nous mettons。mettre la table「食卓の準備をする」。",{ja:"私たちは食卓の準備をする。"});
-W("verb","Ils ___ une heure pour venir.（mettre）","mettent","mettre：ils mettent。mettre＋時間「（時間）をかける」。",{ja:"彼らは来るのに1時間かかる。"});
-C("verb","Qu'est-ce que vous ___ ?（dire）","dites",["dites","disez","disons"],"vous → dites。",{ja:"何とおっしゃいましたか？"});
-C("verb","Tu ___ à ma question ?（répondre）","réponds",["réponds","répond","répondes"],"répondre は attendre と同じ型：tu réponds。",{ja:"私の質問に答えてくれる？"});
-C("verb","Il ___ souvent ses clés.（perdre）","perd",["perd","perds","perde"],"perdre は attendre と同じ型：il perd。",{ja:"彼はよく鍵をなくす。"});
-C("verb","On ___ des fruits au marché.（vendre）","vend",["vend","vends","vent"],"vendre：on vend（d で終わる）。",{ja:"市場では果物を売っている。"});
-C("verb","Nous ___ du train à Nara.（descendre）","descendons",["descendons","descendez","descends"],"descendre：nous descendons。",{ja:"私たちは奈良で電車を降りる。"});
-C("verb","Elles ___ des lettres.（écrire）","écrivent",["écrivent","écrient","écrisent"],"écrire の複数形は v が入る。",{ja:"彼女たちは手紙を書く。"});
-C("verb","Il ___ de venir demain.（promettre）","promet",["promet","promets","promette"],"promettre は mettre と同じ型：il promet。",{ja:"彼は明日来ると約束する。"});
-B("verb","私は駅の前で友だちを待っている。","J'attends mon ami devant la gare.",["attend","à"],"attendre：j'attends。attendre は直接目的補語をとる（à は不要）。");
+SKIP(26);   // この26問は「動詞活用 › 教科書の動詞」（verbs.html）へ移した。ほかの問題の番号（＝記録）を保つため、番号だけ進める
 
 /* ---------- 代名動詞の形 ---------- */
 W("pr","Je ___ à sept heures.（se réveiller）","me réveille","je → me＋動詞。",{ja:"私は7時に目が覚める。"});

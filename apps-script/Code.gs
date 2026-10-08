@@ -27,11 +27,11 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-08b';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-08c';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
-const PROG_KEY_RE = /^(conjQuizStats_v4|talkQuiz_v1|gramQuiz_L[1-9]_v1|conjQuizDays|nlWelcome_v1|nlStamp_v1)$/;   // 端末の記録のうち、バックアップするもの
+const PROG_KEY_RE = /^(conjQuizStats_v4|talkQuiz_v1|gramQuiz_L[1-9]_v1|verbQuiz_v1|conjQuizDays|nlWelcome_v1|nlStamp_v1)$/;   // 端末の記録のうち、バックアップするもの
 const PROG_MAX = 45000;      // 1件あたりの最大文字数（セルの上限は5万字）
 const BACKUP_FOLDER = 'Naralingo バックアップ';
 const BACKUP_KEEP = 30;   // 自動バックアップを何日分残すか
@@ -260,8 +260,10 @@ function handle_(req) {
   const pass = password_();
   if (!pass) return { ok: false, error: 'nopass' };   // 共通パスワードが未設定
   const id = normId_(req.id);
-  const pwOk = normPw_(req.pw) === pass;
-  const row = (pwOk && ID_RE.test(id)) ? rosterRow_(ss, id) : null;   // パスワード違い・名簿にいなければ null
+  // 本人がパスワードを変えていれば（名簿のH列）それで、変えていなければ共通パスワードで確かめる
+  const row0 = ID_RE.test(id) && id !== PRACTICE_ID ? rosterRow_(ss, id) : null;
+  const pwOk = row0 && row0.pwHash ? pwHash_(id, req.pw) === row0.pwHash : normPw_(req.pw) === pass;
+  const row = pwOk ? row0 : null;   // パスワード違い・名簿にいなければ null
   let name = row ? row.name : null;
   if (name === null && pwOk && id === PRACTICE_ID && req.action === 'feedback') name = '練習用';
   if (name === null) {
@@ -295,6 +297,13 @@ function handle_(req) {
     const v = validateResult_(req.result);
     if (!v) return { ok: false, error: 'bad_request' };
     return { ok: true, user: pub, stats: recordResult_(ss, user, v) };
+  }
+  if (req.action === 'setpw') {   // 学生が自分のパスワードを変える（名簿のH列にハッシュだけを書く。H列を消すと共通パスワードに戻る）
+    if (!rateOk_(cache, 'w:' + id, 5, 3600)) return { ok: false, error: 'rate' };
+    const np = normPw_(req.newpw);
+    if (np.length < 4 || np.length > 40) return { ok: false, error: 'bad_request' };
+    const done = withLock_(15000, function () { return setPwHash_(ss, id, np === pass ? '' : pwHash_(id, np)); });
+    return done ? { ok: true } : { ok: false, error: 'auth' };
   }
   if (req.action === 'setnick') {   // 学生が自分でニックネームを決める（名簿のG列に書く）
     if (!rateOk_(cache, 'n:' + id, 6, 3600)) return { ok: false, error: 'rate' };
@@ -382,17 +391,41 @@ function lookupRoster_(ss, id) {
 function rosterRow_(ss, id) {
   const sh = ss.getSheetByName(SHEET.roster);
   if (!sh || sh.getLastRow() < 2) return null;
-  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, NICK_COL).getValues();
+  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, Math.max(NICK_COL, PW_COL)).getValues();
   for (const r of vals) {
     if (normId_(r[0]) === id) {
       const name = String(r[1] || '').trim();
       let pub = String(r[NICK_COL - 1] || '').trim();                       // G列：本人が決めたニックネーム（いちばん優先）
       if (!pub) pub = String(r[5] || '').trim() ? safe_(name, 20) : '';   // F列（本名）がある行は、B列がニックネーム
       if (!pub) { try { pub = formNick_(ss, id); } catch (e) { pub = ''; } }   // 名簿にF列がなくても、フォームで登録したニックネームがあれば使う
-      return { name: name, pub: pub };
+      const ph = String(r[PW_COL - 1] || '').trim();
+      return { name: name, pub: pub, pwHash: /^h1:/.test(ph) ? ph : '' };
     }
   }
   return null;
+}
+// 名簿のH列「パスワード（本人が変更）」：パスワードそのものではなく、ハッシュ（元に戻せない値）だけを書く。
+// 先生がこのセルを消すと、その学生は共通パスワードに戻る（パスワードを忘れたとき）
+const PW_COL = 8;
+function pwSalt_() {
+  const props = PropertiesService.getScriptProperties();
+  let s = props.getProperty('PW_SALT');
+  if (!s) { s = Utilities.getUuid(); props.setProperty('PW_SALT', s); }
+  return s;
+}
+function pwHash_(id, pw) {
+  const b = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, pwSalt_() + ':' + id + ':' + normPw_(pw), Utilities.Charset.UTF_8);
+  return 'h1:' + Utilities.base64Encode(b);
+}
+function setPwHash_(ss, id, hash) {
+  const sh = ss.getSheetByName(SHEET.roster);
+  if (!sh || sh.getLastRow() < 2) return false;
+  if (!String(sh.getRange(1, PW_COL).getValue()).trim()) sh.getRange(1, PW_COL).setValue('パスワード（本人が変更／消すと共通パスワードに戻る）').setFontWeight('bold');
+  const ids = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) {
+    if (normId_(ids[i][0]) === id) { sh.getRange(i + 2, PW_COL).setValue(hash); return true; }
+  }
+  return false;
 }
 // 名簿のG列「ニックネーム（本人が設定）」に書く
 const NICK_COL = 7;

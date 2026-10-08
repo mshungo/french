@@ -10,7 +10,12 @@
 (function(){
 "use strict";
 const ITEMS=[];
-function add(o){o.id=(window.LESSON?window.LESSON.no:0)+"-"+ITEMS.length;ITEMS.push(o);}
+/* 問題IDは「課の番号-その課での通し番号」。問題を別のページへ移しても記録が引き継がれるよう、
+   FROM(課, 番号) で番号の起点を、SKIP(n) で移した問題の分だけ番号を進められる */
+let IDP=null,SEQ=0;
+function add(o){o.id=(IDP!=null?IDP:(window.LESSON?window.LESSON.no:0))+"-"+(SEQ++);ITEMS.push(o);}
+window.FROM=function(no,start){IDP=no;SEQ=start;};
+window.SKIP=function(n){SEQ+=n;};
 function arr(a){return Array.isArray(a)?a:[a];}
 window.C=function(sec,q,a,o,ex,x){add(Object.assign({t:"c",sec,q,a:[a],o,ex},x||{}));};
 window.W=function(sec,q,a,ex,x){add(Object.assign({t:"w",sec,q,a:arr(a),ex},x||{}));};
@@ -21,6 +26,7 @@ const ROUND=10;
 const CLEAR_ANS=300;      // 累計解答数がこれに達したら「クリア」（約1時間の練習の目安）
 const FAST_MS=8000;       // 記述で8秒以内に正解したら、その場で「習得」
 const $=id=>document.getElementById(id);
+function LB(){return L.label||"Leçon "+L.no;}   // 画面での呼び名（教科書の動詞のページは別名）
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
@@ -106,8 +112,8 @@ let fresh={};
 function badgeTargets(){
   const out=L.sections.map(s=>{const list=itemsOf(s.k);return {key:"s:"+s.k,kind:"sec",color:s.c,name:s.t,
     done:list.length>0&&list.every(mastered),sub:"この項目の "+list.length+" 問をすべて習得しました"};});
-  out.push({key:"clear",kind:"clear",name:"Leçon "+L.no+" クリア",done:store.answered>=CLEAR_ANS,sub:"累計 "+CLEAR_ANS+" 問の練習を達成しました"});
-  out.push({key:"medal",kind:"medal",name:"Leçon "+L.no+" 勲章",done:ITEMS.length>0&&ITEMS.every(mastered),sub:"全 "+ITEMS.length+" 問を習得しました"});
+  out.push({key:"clear",kind:"clear",name:LB()+" クリア",done:store.answered>=CLEAR_ANS,sub:"累計 "+CLEAR_ANS+" 問の練習を達成しました"});
+  out.push({key:"medal",kind:"medal",name:LB()+" 勲章",done:ITEMS.length>0&&ITEMS.every(mastered),sub:"全 "+ITEMS.length+" 問を習得しました"});
   return out;
 }
 /* まだ持っていないバッジのうち、条件を満たしたものを付与して返す */
@@ -148,11 +154,11 @@ function shell(){
     '<details class="memo"><summary>'+esc(s.t)+'</summary><div class="memo-body">'+s.memo+'</div></details>').join("");
   return ''+
 '<div class="wrap">'+
-'  <div class="crown"><div class="crest"><svg width="30" height="30" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7.5c-1.2 5.5-1.3 11.4.8 15.6 2 4 10.4 4 12.4 0 2.1-4.2 2-10.1.8-15.6-3.1 2-10.9 2-14 0z"/><circle cx="12.8" cy="14.6" r="2.7"/><circle cx="19.2" cy="14.6" r="2.7"/><circle cx="12.8" cy="14.6" r=".8" fill="currentColor" stroke="none"/><circle cx="19.2" cy="14.6" r=".8" fill="currentColor" stroke="none"/><path d="M15.2 18.2l.8 1.5.8-1.5"/><path d="M12 23.2c1.3.8 2.7.8 4 0 1.3.8 2.7.8 4 0"/></svg></div><div class="eyebrow">Naralingo · Leçon '+L.no+'</div><h1>'+esc(L.title)+'</h1>'+
+'  <div class="crown"><div class="crest">'+(L.crest||'<svg width="30" height="30" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7.5c-1.2 5.5-1.3 11.4.8 15.6 2 4 10.4 4 12.4 0 2.1-4.2 2-10.1.8-15.6-3.1 2-10.9 2-14 0z"/><circle cx="12.8" cy="14.6" r="2.7"/><circle cx="19.2" cy="14.6" r="2.7"/><circle cx="12.8" cy="14.6" r=".8" fill="currentColor" stroke="none"/><circle cx="19.2" cy="14.6" r=".8" fill="currentColor" stroke="none"/><path d="M15.2 18.2l.8 1.5.8-1.5"/><path d="M12 23.2c1.3.8 2.7.8 4 0 1.3.8 2.7.8 4 0"/></svg>')+'</div><div class="eyebrow">Naralingo · '+esc(L.eyebrow||"Leçon "+L.no)+'</div><h1>'+esc(L.title)+'</h1>'+
 '    <span class="verbs">'+esc(L.sub||"")+'</span></div>'+
 '  <div class="panel" id="homeScreen">'+
-'    <div class="acct"><div class="row"><a class="link" href="grammar.html">← Leçon 一覧</a><div class="streak" id="streak"></div></div></div>'+
-'    <p class="hello">Leçon '+L.no+' の練習<small>'+esc(L.lead||"")+'</small></p>'+
+'    <div class="acct"><div class="row"><a class="link" href="'+esc(L.back||"grammar.html")+'">'+esc(L.backText||"← Leçon 一覧")+'</a><div class="streak" id="streak"></div></div></div>'+
+'    <p class="hello">'+esc(LB())+' の練習<small>'+esc(L.lead||"")+'</small></p>'+
 '    <div class="stat-grid">'+
 '      <div class="stat"><div class="n" id="hTries">0</div><div class="l">挑戦回数</div></div>'+
 '      <div class="stat acc"><div class="n" id="hAcc">—</div><div class="l">通算正答率</div></div>'+
@@ -173,7 +179,7 @@ function shell(){
 '      <button class="start-btn summary" id="mixBtn"><i>★</i><span class="sb-name">総まとめ<span class="sb-desc" id="mixProg"></span><span class="gm" data-gm="mix"></span></span></button>'+
 '      <button class="start-btn weak" id="weakBtn"><i>!</i><span class="sb-name">苦手を復習<span class="sb-desc" id="weakCount">なし</span></span></button>'+
 '    </div>'+
-(memos?'    <div class="section-label">文法のポイント</div><div class="memos">'+memos+'</div>':'')+
+(memos?'    <div class="section-label">'+esc(L.memoTitle||"文法のポイント")+'</div><div class="memos">'+memos+'</div>':'')+
 '  </div>'+
 '  <div class="panel hidden" id="quizScreen">'+
 '    <div class="topbar"><button class="back" id="backBtn" aria-label="ホームに戻る">←</button>'+
@@ -533,8 +539,8 @@ function finishRound(){
   $("rMsg").textContent=pct===100?"Parfait ! 全問正解です。":pct>=80?"よくできました。":pct>=50?"あと少し。下のポイントを確認しよう。":"ポイントを読んでから、もう一度挑戦しよう。";
   $("rTime").innerHTML='所要時間 '+fmtTime(time);
   const list=itemsOf(curSec==="weak"?"mix":curSec);
-  let mt=(curSec==="mix"||curSec==="weak"?"Leçon "+L.no+" 全体":"この項目")+"の習得："+list.filter(mastered).length+" / "+list.length+"　／　通算 "+fmtDur(store.timeMs);
-  if(!wasClear&&store.answered>=CLEAR_ANS)mt+="　★ Leçon "+L.no+" クリア！";
+  let mt=(curSec==="mix"||curSec==="weak"?LB()+" 全体":"この項目")+"の習得："+list.filter(mastered).length+" / "+list.length+"　／　通算 "+fmtDur(store.timeMs);
+  if(!wasClear&&store.answered>=CLEAR_ANS)mt+="　★ "+LB()+" クリア！";
   if(retry)mt="間違えたところだけの練習なので、成績・習得・記録には入りません。";
   const newB=retry?[]:awardBadges();
   $("rMastery").textContent=mt;
@@ -563,8 +569,8 @@ function finishRound(){
   if(roundCorrect===N&&typeof playFanfare==="function")setTimeout(playFanfare,280);
   if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),roundCorrect===N?1900:500);
   if(retry)return;
-  if(window.Quiz)Quiz.submit("grammar",{section:"L"+L.no+"-"+curSec,mode:curMode,durMs:Math.round(time),score:roundCorrect,total:N,timeAttack:false,timeMs:null,
-    misses:miss.map(q=>({full:q.it.t==="b"?plain(q.it.ja):(q.it.q||q.it.src||""),verb:"L"+L.no,chosen:q.chosen||"",answer:q.it.a[0]}))});
+  if(window.Quiz)Quiz.submit("grammar",{section:(L.secPrefix||"L"+L.no+"-")+curSec,mode:curMode,durMs:Math.round(time),score:roundCorrect,total:N,timeAttack:false,timeMs:null,
+    misses:miss.map(q=>({full:q.it.t==="b"?plain(q.it.ja):(q.it.q||q.it.src||""),verb:L.secPrefix?L.secPrefix.replace(/-$/,""):"L"+L.no,chosen:q.chosen||"",answer:q.it.a[0]}))});
 }
 /* 問題の報告用：このラウンドで出た問題（新しい順）。feedback.js が使う */
 window.FB_QUESTIONS=function(){
@@ -573,7 +579,7 @@ window.FB_QUESTIONS=function(){
   for(let i=n-1;i>=0;i--){
     const q=questions[i],it=q.it,body=it.t==="t"?it.inst+"："+it.src:it.t==="b"?it.ja:(it.q||"");
     out.push({label:(i+1)+". "+body,
-      detail:"文法練習 Leçon "+L.no+"／"+secInfo(it.sec).t+"／ラウンドの第"+(i+1)+"問（問題ID "+it.id+"）\n問題："+plain(body)+(it.ja&&it.t!=="b"?"（"+plain(it.ja)+"）":"")+
+      detail:(L.fbName||"文法練習 Leçon "+L.no)+"／"+secInfo(it.sec).t+"／ラウンドの第"+(i+1)+"問（問題ID "+it.id+"）\n問題："+plain(body)+(it.ja&&it.t!=="b"?"（"+plain(it.ja)+"）":"")+
         "\n正解："+it.a.join(" / ")+"\n自分の答え："+(q.ok==null?"（まだ答えていない）":(q.chosen||"")+(q.ok?"　○":"　✕"))});
   }
   return out;
@@ -585,7 +591,7 @@ function init(){
   if(window.Quiz){if(!Quiz.requireLogin())return;Quiz.refresh();}
   L=window.LESSON;
   WHO=(window.Quiz&&Quiz.user())?Quiz.user().id:"guest";
-  KEY="gramQuiz_L"+L.no+"_v1_"+WHO;
+  KEY=(L.store||"gramQuiz_L"+L.no+"_v1")+"_"+WHO;
   store=load();curMode=store.mode||"choice";
   if(!store.badges){store.badges={};awardBadges();fresh={};}   // この版より前に達成していた分は、お祝いなしで付ける
   const app=document.getElementById("app");app.innerHTML=shell();

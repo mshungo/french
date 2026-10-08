@@ -6,7 +6,7 @@
 <title>Leçon 3 形容詞・否定・疑問 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=19"></script>
+<script src="common.js?v=20"></script>
 <script src="streak.js?v=1"></script>
 <script src="feedback.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,14 +15,14 @@
 <link rel="stylesheet" href="grammar.css?v=8">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=14"></script>
+<script src="grammar.js?v=15"></script>
 </head>
 <body>
 <div id="app"></div>
 <script>
-/* ===== Leçon 3：形容詞、-ir動詞、否定文、疑問文、答え方 ===== */
-window.LESSON={no:3,title:"形容詞・否定・疑問",sub:"adjectifs · verbes en -ir · négation · interrogation",
-  lead:"形容詞の一致と位置、-ir動詞、否定文・疑問文のつくりかたと答えかたを練習します。",
+/* ===== Leçon 3：形容詞、否定文、疑問文、答え方（-ir動詞は verbs.html へ） ===== */
+window.LESSON={no:3,title:"形容詞・否定・疑問",sub:"adjectifs · négation · interrogation",
+  lead:"形容詞の一致と位置、否定文・疑問文のつくりかたと答えかたを練習します。動詞の活用は「動詞活用 › 教科書の動詞」で練習できます。",
   sections:[
   {k:"adj",t:"形容詞",d:"一致と位置（Grammaire 1 ／ En plus 1〜3）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
    memo:'<p>修飾する名詞に合わせて性・数が変わる。原則：女性形は<b>＋e</b>、複数形は<b>＋s</b>。</p>'+
@@ -30,11 +30,7 @@ window.LESSON={no:3,title:"形容詞・否定・疑問",sub:"adjectifs · verbes
    '<p>ふつうは名詞のあと：<span class="fr">un chat noir</span>。よく使う短い形容詞（grand, petit, beau, joli, bon, mauvais, jeune, vieux, nouveau）は前：<span class="fr">un bon restaurant</span>。</p>'+
    '<p>形容詞が複数名詞の前にあると des → <span class="fr">de</span>：<span class="fr">de jolies fleurs</span></p>'+
    '<p>En plus：bon → bonne、-er → -ère、-eux → -euse、-f → -ve、long → longue、blanc → blanche、frais → fraîche、-al → -aux。beau / nouveau / vieux は母音の前で <span class="fr">bel / nouvel / vieil</span>。</p>'},
-  {k:"ir",t:"-ir動詞の現在形",d:"第2群規則動詞（Grammaire 2）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
-   memo:'<p>語幹＋語尾 <span class="fr">-is, -is, -it, -issons, -issez, -issent</span></p>'+
-   '<table><tr><td class="fr">je finis</td><td class="fr">nous finissons</td></tr><tr><td class="fr">tu finis</td><td class="fr">vous finissez</td></tr><tr><td class="fr">il / elle finit</td><td class="fr">ils / elles finissent</td></tr></table>'+
-   '<p>同じ活用：choisir, réussir, grandir, grossir, maigrir, obéir, réfléchir, bâtir</p>'},
-  {k:"neg",t:"否定文",d:"ne ～ pas と、その他の否定（Grammaire 3 ／ En plus 4）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
+    {k:"neg",t:"否定文",d:"ne ～ pas と、その他の否定（Grammaire 3 ／ En plus 4）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
    memo:'<p>主語＋<span class="fr">ne (n\')</span>＋動詞＋<span class="fr">pas</span>：<span class="fr">Je ne parle pas.</span>　母音の前で n\'：<span class="fr">Elle n\'aime pas…</span></p>'+
    '<p>否定文では、直接目的補語につく<b>不定冠詞・部分冠詞が de (d\')</b> になる：<span class="fr">J\'ai un vélo. → Je n\'ai pas de vélo.</span>　Il y a のあとも同じ。</p>'+
    '<p>定冠詞はそのまま（Je n\'aime pas <b>le</b> café）。être のあとも de にならない（Ce n\'est pas <b>un</b> problème）。</p>'+
@@ -81,20 +77,7 @@ W("adj","Ma sœur est ___.（grand）","grande","sœur は女性 → grande。",
 W("adj","Ces exercices sont ___.（difficile）","difficiles","男性複数 → ＋s。",{ja:"これらの練習問題は難しい。"});
 
 /* ---------- -ir動詞 ---------- */
-W("ir","Je ___ à cinq heures.（finir）","finis","je → -is。");
-W("ir","Tu ___ ce gâteau ?（choisir）","choisis","tu → -is。");
-W("ir","Il ___ ses devoirs.（finir）","finit","il → -it。");
-W("ir","Nous ___ un cadeau pour Léa.（choisir）","choisissons","nous → -issons。");
-W("ir","Vous ___ trop.（réfléchir）","réfléchissez","vous → -issez。");
-W("ir","Ils ___ vite.（grandir）","grandissent","ils → -issent。");
-W("ir","Elle ___ toujours.（réussir）","réussit","elle → -it。");
-W("ir","Les élèves ___ au professeur.（obéir）","obéissent","主語が複数名詞 → -issent。obéir à ～「～に従う」。");
-W("ir","On ___ tard aujourd'hui.（finir）","finit","on は3人称単数扱い → -it。");
-W("ir","Je ___ en hiver.（grossir）","grossis","je → -is。");
-W("ir","Nous ___ le repas.（finir）","finissons","nous → -issons。");
-C("ir","Vous ___ ce livre ?（choisir）","choisissez",["choisissez","choisez","choisisez"],"vous → -issez（s は2つ）。");
-C("ir","Elles ___ le travail.（finir）","finissent",["finissent","finent","finisent"],"elles → -issent。");
-C("ir","Il ___ beaucoup.（maigrir）","maigrit",["maigrit","maigris","maigre"],"il → -it。");
+SKIP(14);   // この14問は「動詞活用 › 教科書の動詞」（verbs.html）へ移した。ほかの問題の番号（＝記録）を保つため、番号だけ進める
 
 /* ---------- 否定文 ---------- */
 T("neg","否定文に","Je parle allemand.",["Je ne parle pas allemand."],"動詞を ne と pas ではさむ。");

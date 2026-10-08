@@ -171,7 +171,7 @@
      端末に保存している記録を、変わったものだけサーバー（シート「進み具合」）に控える。
      ログインしたとき、端末にない・端末より進んでいる控えがあれば戻す（自分の控えだけ）。 */
   var PROG_KEYS = ["conjQuizStats_v4", "talkQuiz_v1", "gramQuiz_L1_v1", "gramQuiz_L2_v1", "gramQuiz_L3_v1",
-    "gramQuiz_L4_v1", "gramQuiz_L5_v1", "gramQuiz_L6_v1", "conjQuizDays", "nlWelcome_v1", "nlStamp_v1"];
+    "gramQuiz_L4_v1", "gramQuiz_L5_v1", "gramQuiz_L6_v1", "verbQuiz_v1", "conjQuizDays", "nlWelcome_v1", "nlStamp_v1"];
   function hashStr(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return s.length + ":" + h.toString(36); }
   function bkKey(k) { return "conjQuizBk_" + k + "_" + user.id; }
   var backingUp = false;
@@ -191,6 +191,38 @@
     } catch (e) { return "error"; } finally { backingUp = false; }
   }
   function score(v) { try { var o = JSON.parse(v); return Array.isArray(o) ? o.length : (Number(o.answered) || 0) * 1000 + (Number(o.tries) || 0); } catch (e) { return -1; } }
+  /* 文法練習にあった動詞の活用の問題を「動詞活用 › 教科書の動詞」（verbs.html）へ移したので、
+     その問題の記録（問題ごとの点数・項目バッジ）を gramQuiz_Lx から verbQuiz へ移す。問題IDは同じ。
+     この端末で一度済めば印を残す。バックアップから古い記録が戻ったときは、もう一度だけ行う */
+  var VMOVE = { 2: [18, 61, { er: "er", ea: "ea" }], 3: [28, 41, { ir: "ir" }], 4: [0, 23, { verb: "v4" }], 5: [0, 20, { verb: "v5" }], 6: [0, 25, { verb: "v6" }] };
+  function migrateVerbs(force) {
+    var w = who(), flag = "nlVMig1_" + w;
+    if (!force && lsGet(flag)) return;
+    var vk = "verbQuiz_v1_" + w, v = jget(vk, null), changed = false;
+    Object.keys(VMOVE).forEach(function (n) {
+      var gk = "gramQuiz_L" + n + "_v1_" + w, g = jget(gk, null), r = VMOVE[n], moved = 0;
+      if (!g) return;
+      Object.keys(g.it || {}).forEach(function (k) {
+        var m = /^(\d+)-(\d+)$/.exec(k);
+        if (!m || m[1] !== n || +m[2] < r[0] || +m[2] > r[1]) return;
+        v = v || { tries: 0, answered: 0, correct: 0, best: null, it: {}, mode: "choice", timeMs: 0 };
+        v.it = v.it || {};
+        if (!v.it[k]) v.it[k] = g.it[k];
+        delete g.it[k]; moved++;
+      });
+      Object.keys(r[2]).forEach(function (sk) {
+        if (!g.badges || !g.badges["s:" + sk]) return;
+        v = v || { tries: 0, answered: 0, correct: 0, best: null, it: {}, mode: "choice", timeMs: 0 };
+        v.badges = v.badges || {};
+        if (!v.badges["s:" + r[2][sk]]) v.badges["s:" + r[2][sk]] = g.badges["s:" + sk];
+        delete g.badges["s:" + sk]; moved++;
+      });
+      if (moved) { delete g.sum; lsSet(gk, JSON.stringify(g)); changed = true; }
+    });
+    if (changed && v) lsSet(vk, JSON.stringify(v));
+    lsSet(flag, "1");
+  }
+
   function restore(prog) {
     var n = 0;
     Object.keys(prog || {}).forEach(function (k) {
@@ -263,6 +295,17 @@
       return res.error === "rate" ? "rate" : res.error === "bad_request" ? "bad" : "error";
     } catch (e) { return "error"; }
   }
+  /* パスワードを変える（サーバーにはハッシュだけが残る）。変えたら、この端末の控えも新しいパスワードにする */
+  async function setPw(cur, np) {
+    if (!online()) return "error";
+    cur = normPw(cur); np = normPw(np);
+    if (np.length < 4) return "short";
+    try {
+      var res = await call({ id: user.id, pw: cur }, "setpw", { newpw: np });
+      if (res.ok) { user.pw = np; keep(user, !!lsGet(LOGIN_KEY)); return "ok"; }
+      return res.error === "auth" ? "auth" : res.error === "rate" ? "rate" : res.error === "locked" ? "locked" : res.error === "bad_request" ? "short" : "error";
+    } catch (e) { return "error"; }
+  }
   /* サーバーが返す表示名（ニックネーム。なければID）で、端末の控えを更新する */
   function updName(res) {
     if (!user || user.practice || !res || !res.user) return;
@@ -298,6 +341,7 @@
     keep(user, remember);
     setCached(res.stats); markSynced();
     var restored = 0; try { restored = restore(res.prog); } catch (e) {}
+    try { migrateVerbs(true); } catch (e) {}
     if (getPending().length) flush().then(function (st) { if (st === "ok") backup(); });   // 未送信の結果は裏で送る（ログインは待たせない）
     else backup();
     return { ok: true, user: user, restored: restored };
@@ -381,6 +425,8 @@
     });
   })();
 
+  try { migrateVerbs(false); } catch (e) {}   // 教科書の動詞の記録の引っ越し（一度だけ）
+
   window.Quiz = {
     prefs: prefs, setPref: setPref,
     SYNC_ON: SYNC_ON, APPS: APPS,
@@ -389,7 +435,7 @@
     todayJST: todayJST, days: days, markToday: markToday, streak: streak, chain: chain, streakHTML: streakHTML,
     cached: cached, onStats: onStats,
     pendingCount: function () { return getPending().length; },
-    submit: submit, flush: flush, refresh: refresh, history: history, cachedHistory: cachedHistory, feedback: feedback, backup: backup, setNick: setNick,
+    submit: submit, flush: flush, refresh: refresh, history: history, cachedHistory: cachedHistory, feedback: feedback, backup: backup, setNick: setNick, setPw: setPw,
     login: login, logout: logout, requireLogin: requireLogin
   };
 })();

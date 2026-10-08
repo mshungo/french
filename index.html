@@ -10,7 +10,7 @@
 <title>Naralingo — フランス語練習</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=19"></script>
+<script src="common.js?v=20"></script>
 <script src="streak.js?v=1"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=3"></script>
@@ -79,7 +79,7 @@
     <div class="menu">
       <a class="card conj" href="conjugation.html">
         <div class="ico"><svg width="28" height="28" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 9.5C9.6 7.3 9.2 5.1 10 2.8M10.2 5.9 7.4 4.6M12.6 9.2c-.6-1.8-.1-3.4 1-4.6"/><path d="M20.5 9.5c1.9-2.2 2.3-4.4 1.5-6.7M21.8 5.9l2.8-1.3M19.4 9.2c.6-1.8.1-3.4-1-4.6"/><path d="M11.4 11.6 6.6 10.4c.9 1.9 2.6 3 4.9 3.1"/><path d="M20.6 11.6l4.8-1.2c-.9 1.9-2.6 3-4.9 3.1"/><path d="M11.3 11.2c.3-1.4 2.2-2.1 4.7-2.1s4.4.7 4.7 2.1l-1.1 8.2c-.5 3.6-1.9 6.4-3.6 6.4s-3.1-2.8-3.6-6.4z"/><circle cx="13.9" cy="14.8" r=".7" fill="currentColor" stroke="none"/><circle cx="18.1" cy="14.8" r=".7" fill="currentColor" stroke="none"/><path d="M15 24.3h2"/></svg></div>
-        <div class="tx"><div class="ti">動詞活用</div><div class="de">être · aller · avoir · faire ／ 直説法現在</div></div>
+        <div class="tx"><div class="ti">動詞活用</div><div class="de">être · aller · avoir · faire ＋ 教科書の動詞（Leçon 2〜6）</div></div>
         <div class="st" id="stConj"></div>
       </a>
       <a class="card grammar" href="grammar.html">
@@ -133,13 +133,14 @@
     function J(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
     var tot={time:0,tries:0,ans:0,cor:0};
     var SV=(Q.cached()||{}).apps||{};
-    function best(loc,k){var s=SV[k];if(s&&s.tries&&(!loc||!loc.tries||s.tries>loc.tries))return {tries:s.tries,answered:s.answered,correct:s.correct,timeMs:s.timeMs||0,lv:loc&&loc.lv};return loc;}
+    function best(loc,k){var s=SV[k];if(s&&s.tries&&(!loc||!loc.tries||s.tries>loc.tries))return {tries:s.tries,answered:s.answered,correct:s.correct,timeMs:s.timeMs||0,lv:loc&&loc.lv,badges:loc&&loc.badges};return loc;}
     function addTot(x){if(!x||!x.tries)return;tot.time+=x.timeMs||0;tot.tries+=x.tries;tot.ans+=x.answered||0;tot.cor+=x.correct||0;}
     // 動詞活用
     var cj=u?J("conjQuizStats_v4_"+u.id):J("conjQuizStats_v4");if(u)cj=best(cj,"conj");addTot(cj);
     function bN(x){return x&&x.badges?Object.keys(x.badges).length:0;}
     function bTag(k){return k&&window.Badge?'<span class="bdg-mini" style="display:flex;justify-content:flex-end;margin-top:3px">'+Badge.seal({kind:"sec",on:true,color:"#c0a06a",size:13})+'バッジ '+k+'</span>':"";}
-    $("stConj").innerHTML=(cj&&cj.tries)?(cj.tries+"回<small>正答率 "+Math.round(cj.correct/cj.answered*100)+"%"+(cj.timeMs?" ・ "+fmtDur(cj.timeMs):"")+"</small>"):"";
+    var vq=J("verbQuiz_v1_"+who)||{};   // 教科書の動詞
+    $("stConj").innerHTML=(cj&&cj.tries)?(cj.tries+"回<small>正答率 "+Math.round(cj.correct/cj.answered*100)+"%"+(cj.timeMs?" ・ "+fmtDur(cj.timeMs):"")+bTag(bN(cj)+bN(vq))+"</small>"):"";
     // 会話練習
     var t=J("talkQuiz_v1_"+who);if(u)t=best(t,"talk");addTot(t);
     if(t&&t.tries){var m=0;for(var k in (t.lv||{}))if(t.lv[k]>=4)m++;
@@ -147,7 +148,9 @@
     // 文法練習（Leçon 1〜6）
     var gT=0,clr=0,gt=0,gb=0,gA=0,gC=0;
     for(var n=1;n<=6;n++){var g=J("gramQuiz_L"+n+"_v1_"+who);addTot(g);gb+=bN(g);if(g&&g.tries){gT+=g.tries;gt+=g.timeMs||0;gA+=g.answered||0;gC+=g.correct||0;if(g.answered>=300)clr++;}}
-    var sg=SV.grammar;if(u&&sg&&sg.tries>gT){tot.time+=(sg.timeMs||0)-gt;tot.tries+=sg.tries-gT;tot.ans+=sg.answered-gA;tot.cor+=sg.correct-gC;gT=sg.tries;gt=sg.timeMs||0;}
+    /* 教科書の動詞（動詞活用コーナー）。サーバーには文法練習として記録されるので、合計の比べ合わせに含める */
+    var vT=vq.tries||0,vt=vq.timeMs||0;addTot(vq);
+    var sg=SV.grammar;if(u&&sg&&sg.tries>gT+vT){tot.time+=(sg.timeMs||0)-gt-vt;tot.tries+=sg.tries-gT-vT;tot.ans+=sg.answered-gA-(vq.answered||0);tot.cor+=sg.correct-gC-(vq.correct||0);gT=sg.tries-vT;gt=Math.max(0,(sg.timeMs||0)-vt);}
     $("stGram").innerHTML=gT?(gT+"回<small>クリア "+clr+"/6"+(gt?" ・ "+fmtDur(gt):"")+bTag(gb)+"</small>"):"";
     $("sTime").textContent=fmtDur(tot.time);$("sTries").textContent=tot.tries;$("sAns").textContent=tot.ans;
     $("sAcc").textContent=tot.ans?Math.round(tot.cor/tot.ans*100)+"%":"—";
@@ -242,21 +245,23 @@
   function renderNotices(list){
     if(list)nList=list.filter(function(n){return n&&n.text;});
     var box=$("notices"),read=lsJ(NREAD,[]);
-    var unread=nList.filter(function(n){return read.indexOf(nKey(n))<0;}),done=nList.length-unread.length;
+    /* 「期間限定」は既読にできない（先生が表示を外すまで出しつづける） */
+    var unread=nList.filter(function(n){return n.kind==="期間限定"||read.indexOf(nKey(n))<0;}),done=nList.length-unread.length;
+    var canRead=unread.filter(function(n){return n.kind!=="期間限定";});
     if(!nList.length){box.innerHTML="";box.className="";return;}
     var shownList=showRead?nList:unread;
     var sig=nHash(unread.map(nKey).join("|")),fold=unread.length>0&&lsJ(NFOLD,"")===sig;
     var h="";
     if(unread.length||showRead){
       h+='<div class="nhead"><span class="nh-t">お知らせ<span class="nh-n">'+unread.length+'</span></span><span class="nh-btns">'+
-        (unread.length>1&&!fold?'<button class="nh-btn" type="button" data-a="all">すべて既読</button>':'')+
+        (canRead.length>1&&!fold?'<button class="nh-btn" type="button" data-a="all">すべて既読</button>':'')+
         (unread.length?'<button class="nh-btn" type="button" data-a="fold">'+(fold?'表示する ▾':'隠す ▴')+'</button>':'')+'</span></div>';
       if(!fold){
         h+='<div class="nlist">';
         shownList.forEach(function(n){
-          var k=nKey(n),isRead=read.indexOf(k)>=0,cls=NCLS[n.kind]||"info";
+          var k=nKey(n),ltd=n.kind==="期間限定",isRead=!ltd&&read.indexOf(k)>=0,cls=NCLS[n.kind]||"info";
           h+='<div class="notice '+cls+(isRead?' read':'')+'"><span class="nk">'+nEsc(n.kind)+'</span><div class="nt">'+nBody(n)+'</div>'+
-            (isRead?'<span class="nr-done">既読</span>':'<button class="nr" type="button" data-k="'+k+'">既読</button>')+'</div>';
+            (ltd?'':isRead?'<span class="nr-done">既読</span>':'<button class="nr" type="button" data-k="'+k+'">既読</button>')+'</div>';
         });
         h+='</div>';
       }
@@ -267,7 +272,7 @@
       var r=lsJ(NREAD,[]);if(r.indexOf(btn.dataset.k)<0)r.push(btn.dataset.k);lsP(NREAD,r.slice(-80));renderNotices();};});
     box.querySelectorAll("[data-a]").forEach(function(btn){btn.onclick=function(){
       var a=btn.dataset.a;
-      if(a==="all"){var r=lsJ(NREAD,[]);unread.forEach(function(n){var k=nKey(n);if(r.indexOf(k)<0)r.push(k);});lsP(NREAD,r.slice(-80));}
+      if(a==="all"){var r=lsJ(NREAD,[]);canRead.forEach(function(n){var k=nKey(n);if(r.indexOf(k)<0)r.push(k);});lsP(NREAD,r.slice(-80));}
       else if(a==="fold"){if(fold)lsP(NFOLD,"");else lsP(NFOLD,sig);}
       else if(a==="past")showRead=!showRead;
       renderNotices();};});
