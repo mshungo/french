@@ -27,7 +27,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-08f';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-08g';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
@@ -630,7 +630,7 @@ function validateResult_(r) {
 
   let dur = Math.round(Number(r.durMs) / 1000);
   if (!isFinite(dur) || dur < 0) dur = '';
-  else dur = Math.min(dur, total * 90);   // 放置した時間は1問90秒まで
+  else dur = Math.max(60, Math.min(dur, total * 90));   // 1回の練習は最低1分として数える。放置した時間は1問90秒まで
   return { rid: rid, app: r.app, section: section, mode: mode, total: total, score: score,
     timeAttack: timeAttack, timeSec: timeSec, rank: rank, misses: safe_(misses, 4000), dur: dur };
 }

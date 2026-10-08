@@ -1381,7 +1381,7 @@ function finishRound(){
   const N=questions.length,time=performance.now()-roundStart;
   if(!retry){
     store.tries++;store.answered+=N;store.correct+=roundCorrect;
-    store.timeMs=(store.timeMs||0)+Math.min(time,N*90000);   // 勉強時間（放置分は1問90秒まで）
+    store.timeMs=(store.timeMs||0)+Math.max(60000,Math.min(time,N*90000));   // 勉強時間（1回は最低1分、放置分は1問90秒まで）
     if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
     save();
     if(Q)Q.markToday();
@@ -1456,6 +1456,6 @@ if(!store.badges){store.badges={};awardBadges();fresh={};}   // この版より�
 renderHome();show(homeScreen);
 
 </script>
-<script src="dialogue.js?v=9"></script>
+<script src="dialogue.js?v=10"></script>
 </body>
 </html>

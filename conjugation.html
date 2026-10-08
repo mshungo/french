@@ -1040,7 +1040,7 @@ function finishRound(){
   if(retry){finishRetry();return;}
   roundTime = timeAttack ? (activeMs+GAP_MS*(questions.length-1)+PEN_MS*(ROUND-roundCorrect)) : null;
   store.tries++;store.answered+=ROUND;store.correct+=roundCorrect;
-  store.timeMs=(store.timeMs||0)+Math.min(performance.now()-roundBegin,ROUND*90000);   // 勉強時間（放置分は1問90秒まで）
+  store.timeMs=(store.timeMs||0)+Math.max(60000,Math.min(performance.now()-roundBegin,ROUND*90000));   // 勉強時間（1回は最低1分、放置分は1問90秒まで）
   if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
   // クリアタイム：8割以上正解ならクリア（間違えた1問につき PEN_MS を足したタイムで、ベスト・ランクを決める）
   const sec = curVerb || "mix";

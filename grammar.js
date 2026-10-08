@@ -528,7 +528,7 @@ function finishRound(){
   const wasClear=store.answered>=CLEAR_ANS,wasAll=ITEMS.every(mastered)&&false;
   if(!retry){
     store.tries++;store.answered+=N;store.correct+=roundCorrect;
-    store.timeMs=(store.timeMs||0)+Math.min(time,N*90000);   // 放置した時間は数えすぎないよう1問90秒まで
+    store.timeMs=(store.timeMs||0)+Math.max(60000,Math.min(time,N*90000));   // 1回は最低1分。放置した時間は数えすぎないよう1問90秒まで
     if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
     save();if(window.Quiz)Quiz.markToday();
   }
