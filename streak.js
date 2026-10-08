@@ -112,7 +112,10 @@
     o.d.push(t); save(o);
     if (hadToday) return;                       // 今日はもう学習スタンプがある（別の画面から始めた）
     var n = before + 1;
-    waitFree(function () { bonusPop(n); });
+    waitFree(function () {   // ログアウトしたあとや、メニューが出ていないときは出さない
+      var mp = document.getElementById("menuPanel");
+      if (Q.user() && (!mp || !mp.classList.contains("hidden"))) bonusPop(n);
+    });
   }
   function waitFree(fn) {   // 「はじめての案内」などが開いていれば、閉じてから出す
     var k = 0, iv = setInterval(function () {

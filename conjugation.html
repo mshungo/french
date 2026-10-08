@@ -6,8 +6,8 @@
 <title>動詞活用 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=25"></script>
-<script src="streak.js?v=3"></script>
+<script src="common.js?v=26"></script>
+<script src="streak.js?v=4"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=3"></script>
 <script>
@@ -616,7 +616,7 @@ function fmtTime(ms){
   const m=Math.floor(s/60), sec=s-m*60;
   return m>0 ? (m+"分"+sec.toFixed(1)+"秒") : (sec.toFixed(1)+"秒");
 }
-/* クリアタイム(ms)→ランク。全問正解タイムのみ対象。 */
+/* クリアタイム(ms)→ランク。8問以上正解したときのタイム（間違い1問につき3秒加算）が対象。 */
 function rankOf(ms){
   if(ms==null)return null;
   const s=ms/1000;
@@ -629,7 +629,7 @@ function rankOf(ms){
 }
 
 /* ===== バッジ =====
-   セクション（être・aller・avoir・faire・総まとめ）を記述式で全問正解し、ランクS以上 → 項目バッジ
+   セクション（être・aller・avoir・faire・総まとめ）を記述式で8問以上正解し、ランクS以上 → 項目バッジ
    累計300問 → クリア ／ 5セクションすべてランクSS以上 → 勲章
    一度もらったバッジは消えない */
 const BADGE_SEC_COLOR={"être":"#cf8aa0","aller":"#d6a96f","avoir":"#8db79b","faire":"#92a6cf","mix":"#b48aa8"};
@@ -639,7 +639,7 @@ function rankAtLeast(ms,r){const k=rankOf(ms);return k!=null&&RANK_ORDER.indexOf
 let fresh={};
 function badgeTargets(){
   const out=SECTIONS.map(s=>({key:"s:"+s,kind:"sec",color:BADGE_SEC_COLOR[s],name:SECTION_LABEL[s]+" バッジ",
-    done:rankAtLeast(store.bestTimes[s],"S"),sub:SECTION_LABEL[s]+"：記述式で全問正解、ランクS以上を達成しました"}));
+    done:rankAtLeast(store.bestTimes[s],"S"),sub:SECTION_LABEL[s]+"：記述式で8問以上正解、ランクS以上を達成しました"}));
   out.push({key:"clear",kind:"clear",name:"動詞活用 クリア",done:store.answered>=CONJ_CLEAR,sub:"累計 "+CONJ_CLEAR+" 問の練習を達成しました"});
   out.push({key:"medal",kind:"medal",name:"動詞活用 勲章",done:SECTIONS.every(s=>rankAtLeast(store.bestTimes[s],"SS")),sub:"5つのセクションすべてでランクSS以上を達成しました"});
   return out;
@@ -812,6 +812,8 @@ let roundStart=0, roundTime=0, timerHandle=null, roundBegin=0;
    以前の記録（1問ごとに約0.7秒の自動送りを含んでいた）と比べられるよう、問題と問題のあいだを1回0.7秒として足す */
 let activeMs=0, qStart=0;
 const GAP_MS=700;
+const PASS=8;          // 10問中8問以上でクリア（ランク・ベストタイムがつく）
+const PEN_MS=3000;     // クリアタイム：間違えた1問につき3秒を足す
 
 /* 問題の報告用：このラウンドで出た問題（新しい順）。feedback.js が使う */
 window.FB_QUESTIONS=function(){
@@ -1005,7 +1007,7 @@ function reviewHTML(){
     (q._wrong?'<span class="rja"><span class="miss">'+(q._chosen||"")+'</span> <span class="ar">→</span> <span class="got">'+q.answer+'</span></span>':'')+
     '</span><span class="rvb">'+q.verb+'</span></div>').join("");
 }
-function resultMsg(p){return p===100?"全問正解！":p>=80?"よくできました":p>=50?"あと少し！":"もう一回やってみよう";}
+function resultMsg(p){return p===100?"全問正解！":p>=80?"クリア！":p>=50?"あと少し！":"もう一回やってみよう";}
 /* 「間違えたところだけ練習」ボタン：↻ ✕ 数 */
 function retryLabel(rb,n){rb.innerHTML='<span class="nl-badge">'+NLI.svg("again",20)+NLI.svg("x",18)+'<b>'+n+'</b></span>';rb.title="間違えたところだけ練習";rb.setAttribute("aria-label",rb.title);}
 function startRetry(){
@@ -1022,7 +1024,7 @@ function finishRetry(){
   const N=questions.length,pct=Math.round(roundCorrect/N*100);
   document.getElementById("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
   document.getElementById("rPct").textContent=pct+"%";
-  document.getElementById("rFace").textContent=pct===100?"◎":pct>=80?"○":pct>=50?"△":"✕";
+  document.getElementById("rFace").textContent=pct>=80?"◎":pct>=50?"△":"✕";
   document.getElementById("rMsg").textContent=resultMsg(pct);
   const nd0=document.getElementById("nudge");if(nd0)nd0.innerHTML="";
   const rankEl=document.getElementById("rRank");rankEl.className="rank-badge";rankEl.innerHTML="";
@@ -1030,21 +1032,21 @@ function finishRetry(){
   document.getElementById("review").innerHTML=reviewHTML();
   const rb=document.getElementById("retryBtn");rb.classList.toggle("hidden",!misses.length);retryLabel(rb,misses.length);
   show(resultScreen);
-  if(roundCorrect===N)setTimeout(playFanfare,280);
+  if(pct>=80)setTimeout(playFanfare,280);
 }
 
 function finishRound(){
   clearInterval(timerHandle);
   if(retry){finishRetry();return;}
-  roundTime = timeAttack ? (activeMs+GAP_MS*(questions.length-1)) : null;
+  roundTime = timeAttack ? (activeMs+GAP_MS*(questions.length-1)+PEN_MS*(ROUND-roundCorrect)) : null;
   store.tries++;store.answered+=ROUND;store.correct+=roundCorrect;
   store.timeMs=(store.timeMs||0)+Math.min(performance.now()-roundBegin,ROUND*90000);   // 勉強時間（放置分は1問90秒まで）
   if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
-  // クリアタイム＝タイムアタック有効かつ全問正解時のみ、そのセクションのベストを更新
+  // クリアタイム：8割以上正解ならクリア（間違えた1問につき PEN_MS を足したタイムで、ベスト・ランクを決める）
   const sec = curVerb || "mix";
   let newRecord=false;
   // ランク・自己ベストは記述式だけ。選択式のタイムは「選択式ベスト」として端末にだけ残す
-  if(timeAttack && roundCorrect===ROUND){
+  if(timeAttack && roundCorrect>=PASS){
     if(curMode==="write"){
       const prev=store.bestTimes[sec];
       if(prev===null||roundTime<prev){store.bestTimes[sec]=roundTime;newRecord=true;}
@@ -1057,11 +1059,11 @@ function finishRound(){
   Quiz.markToday();
   save();
   const newB=awardBadges();
-  if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),roundCorrect===ROUND?1900:500);
+  if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),roundCorrect>=PASS?1900:500);
   const pct=Math.round(roundCorrect/ROUND*100);
   document.getElementById("rScore").innerHTML=roundCorrect+'<small> / '+ROUND+'</small>';
   document.getElementById("rPct").textContent=pct+"%";
-  document.getElementById("rFace").textContent= pct===100?"◎": pct>=80?"○": pct>=50?"△":"✕";
+  document.getElementById("rFace").textContent= pct>=80?"◎":pct>=50?"△":"✕";
   document.getElementById("rMsg").textContent=resultMsg(pct);
   const fc=document.getElementById("rFace");fc.classList.remove("nl-pop");void fc.offsetWidth;fc.classList.add("nl-pop");
   // タイム＋ランク表示
@@ -1071,11 +1073,11 @@ function finishRound(){
     // タイムアタック無効：タイム・ランクは表示しない
     rankEl.className="rank-badge";rankEl.innerHTML="";
     timeEl.innerHTML="";
-  }else if(roundCorrect===ROUND&&curMode==="choice"){
+  }else if(roundCorrect>=PASS&&curMode==="choice"){
     rankEl.className="rank-badge";rankEl.innerHTML="";
     const bc=(store.bestTimesC||{})[sec];
     timeEl.innerHTML='<span class="nl-badge">'+NLI.svg("clock",16)+fmtTime(roundTime)+(newRecord?' <span class="rec">'+NLI.svg("star",16)+'</span>':'')+'</span>';
-  }else if(roundCorrect===ROUND){
+  }else if(roundCorrect>=PASS){
     const rk=rankOf(roundTime);
     rankEl.className="rank-badge show r-"+rk;
     rankEl.innerHTML='<span class="rk">'+rk+'</span><span class="rk-sub">RANK</span>';
@@ -1097,7 +1099,7 @@ function finishRound(){
   submitRound({section:sec,mode:curMode,durMs:Math.round(performance.now()-roundBegin),score:roundCorrect,total:ROUND,timeAttack:timeAttack&&curMode==="write",
     timeMs:timeAttack?Math.round(roundTime):null,
     misses:misses.map(m=>({full:m.full,verb:m.verb,chosen:m.chosen,answer:m.answer}))});
-  if(roundCorrect===ROUND){ setTimeout(playFanfare, 280); }
+  if(roundCorrect>=PASS){ setTimeout(playFanfare, 280); }
 }
 
 /* ===== events ===== */

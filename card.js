@@ -130,7 +130,7 @@
     });
     panel(ctx, 580, 1120, 460, 196, 28);
     text(ctx, "動詞活用ランク", 612, 1160, "700 22px " + SANS, C.ink);
-    text(ctx, "記述式・全問正解", 1010, 1160, "400 16px " + SANS, C.faint, "right");
+    text(ctx, "記述式・8問以上正解", 1010, 1160, "400 16px " + SANS, C.faint, "right");
     ["être", "aller", "avoir", "faire", "mix"].forEach((v, i) => {
       const x = 640 + i * 82;
       text(ctx, v === "mix" ? "総合" : v, x, 1200, (v === "mix" ? "400 17px " + SANS : "italic 400 21px " + SERIF), C.soft, "center");

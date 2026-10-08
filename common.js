@@ -332,7 +332,9 @@
       return { ok: true, user: user };
     }
     var res;
-    try { res = await call({ id: id, pw: pw }, "sync", { prog: true }, 35000); }   // サーバーが眠っていると最初の応答に時間がかかるので長めに待つ
+    /* 進み具合の控え（大きいデータ）は、この端末にまだ記録がないときか、前に受け取ってから1日たったときだけもらう */
+    var needProg = !PROG_KEYS.some(function (k) { return lsGet(k + "_" + id); }) || Date.now() - Number(lsGet("nlProgAt_" + id) || 0) > 86400000;
+    try { res = await call({ id: id, pw: pw }, "sync", { prog: needProg }, 35000); }   // サーバーが眠っていると最初の応答に時間がかかるので長めに待つ
     catch (e) { return { ok: false, error: (e && e.name === "AbortError") ? "timeout" : "network", id: id, detail: String(e && e.message || e) }; }
     if (!res.ok) return { ok: false, id: id, version: res.version || "旧版",
       error: (res.error === "locked" || res.error === "rate" || res.error === "auth" || res.error === "nopass") ? res.error : "server",
@@ -340,7 +342,7 @@
     user = { id: id, name: (res.user && res.user.name) || id, pw: pw, practice: false };
     keep(user, remember);
     setCached(res.stats); markSynced();
-    var restored = 0; try { restored = restore(res.prog); } catch (e) {}
+    var restored = 0; try { if (res.prog) { restored = restore(res.prog); lsSet("nlProgAt_" + id, String(Date.now())); } } catch (e) {}
     try { migrateVerbs(true); } catch (e) {}
     if (getPending().length) flush().then(function (st) { if (st === "ok") backup(); });   // 未送信の結果は裏で送る（ログインは待たせない）
     else backup();
@@ -463,6 +465,15 @@
     (document.head || document.documentElement).appendChild(css);
   })();
 
+  /* サーバーの「目覚まし」：ログイン画面でIDを入れ始めたら、軽い問い合わせを先に送っておく
+     （Apps Script はしばらく使われないと眠り、最初の1回が遅い。ログインを押すまでに起こしておく） */
+  function warmUp() {
+    if (!SYNC_ON || !CFG.SCRIPT_URL || !window.fetch) return;
+    if (Date.now() - Number(ssGet("nlWarm") || 0) < 120000) return;
+    ssSet("nlWarm", String(Date.now()));
+    try { fetch(CFG.SCRIPT_URL + (CFG.SCRIPT_URL.indexOf("?") < 0 ? "?" : "&") + "n=1").catch(function () {}); } catch (e) {}
+  }
+
   window.Quiz = {
     prefs: prefs, setPref: setPref,
     autoNext: function () { return nextSpeed() !== "manual"; },   // 正解したら自動で次の問題へ（設定で「自分で押す」にできる）
@@ -474,6 +485,6 @@
     cached: cached, onStats: onStats,
     pendingCount: function () { return getPending().length; },
     submit: submit, flush: flush, refresh: refresh, history: history, cachedHistory: cachedHistory, feedback: feedback, backup: backup, setNick: setNick, setPw: setPw,
-    login: login, logout: logout, requireLogin: requireLogin
+    login: login, logout: logout, requireLogin: requireLogin, warmUp: warmUp
   };
 })();

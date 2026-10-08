@@ -543,9 +543,9 @@
     store.timeMs = (store.timeMs || 0) + Math.min(time, total * 90000);
     save(); if (Q) Q.markToday();
     const pct = Math.round(score / total * 100);
-    let h = '<div class="result" style="padding-top:6px"><div class="face">' + (pct === 100 ? "◎" : pct >= 80 ? "○" : pct >= 50 ? "△" : "✕") + '</div>' +
+    let h = '<div class="result" style="padding-top:6px"><div class="face">' + (pct >= 80 ? "◎" : pct >= 50 ? "△" : "✕") + '</div>' +
       '<div class="ring">' + score + '<small> / ' + total + '</small></div><div><span class="pct-pill">' + pct + '%</span></div>' +
-      '<div class="msg">' + (pct === 100 ? "最後まで会話できた！" : pct >= 80 ? "よく話せました" : pct >= 50 ? "あと少し！" : "もう一回やってみよう") + '</div>' +
+      '<div class="msg">' + (pct === 100 ? "最後まで会話できた！" : pct >= 80 ? "クリア！" : pct >= 50 ? "あと少し！" : "もう一回やってみよう") + '</div>' +
       '<div class="rtime"><span class="nl-badge">' + NLI.svg("clock", 15) + fmtTime(time) + '</span></div>' +
       '<div class="review">';
     live.forEach((x, i) => {
@@ -562,7 +562,7 @@
     $("dlgAgain").onclick = () => startDlg(D.k);
     $("dlgHome").onclick = exitDlg;
     scrollEnd();
-    if (pct === 100) setTimeout(playFanfare, 280);
+    if (pct >= 80) setTimeout(playFanfare, 280);
     if (Q) Q.submit("talk", { section: "対話・" + D.t, mode: "対話", durMs: Math.round(time), score, total, timeAttack: false, timeMs: null,
       misses: live.filter(x => !x.ok).map(x => ({ full: G(x.t.ex), verb: "対話" + (x.t.n || ""), chosen: x.heard || "", answer: G(x.t.ex) })) });
   }

@@ -27,7 +27,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-08d';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-08f';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
@@ -261,8 +261,10 @@ function handle_(req) {
   if (!pass) return { ok: false, error: 'nopass' };   // 共通パスワードが未設定
   const id = normId_(req.id);
   // 本人がパスワードを変えていれば（名簿のH列）それで、変えていなければ共通パスワードで確かめる
-  const row0 = ID_RE.test(id) && id !== PRACTICE_ID ? rosterRow_(ss, id) : null;
-  const pwOk = row0 && row0.pwHash ? pwHash_(id, req.pw) === row0.pwHash : normPw_(req.pw) === pass;
+  const pwCheck = function (r) { return r && r.pwHash ? pwHash_(id, req.pw) === r.pwHash : normPw_(req.pw) === pass; };
+  let row0 = ID_RE.test(id) && id !== PRACTICE_ID ? rosterRow_(ss, id) : null;
+  let pwOk = pwCheck(row0);
+  if (!pwOk && row0) { row0 = rosterRow_(ss, id, true); pwOk = pwCheck(row0); }   // 名簿のキャッシュが古いかもしれないので、合わないときはシートを読み直して確かめる
   const row = pwOk ? row0 : null;   // パスワード違い・名簿にいなければ null
   let name = row ? row.name : null;
   if (name === null && pwOk && id === PRACTICE_ID && req.action === 'feedback') name = '練習用';
@@ -388,21 +390,33 @@ function lookupRoster_(ss, id) {
 // 名簿の1行：name＝B列（先生のシート用）、pub＝学生の画面に出してよい名前。
 // F列「氏名（本名）」が入っている行（フォームで登録した行）だけ、B列はニックネームなので画面に返す。
 // F列が空の行（以前の名簿）はB列が本名かもしれないので、画面には何も返さない（IDを表示）。
-function rosterRow_(ss, id) {
-  const sh = ss.getSheetByName(SHEET.roster);
-  if (!sh || sh.getLastRow() < 2) return null;
-  const vals = sh.getRange(2, 1, sh.getLastRow() - 1, Math.max(NICK_COL, PW_COL)).getValues();
-  for (const r of vals) {
-    if (normId_(r[0]) === id) {
-      const name = String(r[1] || '').trim();
-      let pub = String(r[NICK_COL - 1] || '').trim();                       // G列：本人が決めたニックネーム（いちばん優先）
-      if (!pub) pub = String(r[5] || '').trim() ? safe_(name, 20) : '';   // F列（本名）がある行は、B列がニックネーム
-      if (!pub) { try { pub = formNick_(ss, id); } catch (e) { pub = ''; } }   // 名簿にF列がなくても、フォームで登録したニックネームがあれば使う
-      const ph = String(r[PW_COL - 1] || '').trim();
-      return { name: name, pub: pub, pwHash: /^h1:/.test(ph) ? ph : '' };
-    }
+// 名簿は10分間キャッシュに置いて、ログインのたびにシートを読まない（ID → [B列, F列あり, G列, H列]）。
+// 名簿を手で直したとき（onEdit）・ニックネームやパスワードを変えたとき・フォームから写したときは、すぐ捨てる。
+// キャッシュにないIDは、念のためシートを読み直す（追加したばかりの学生も入れるように）。
+const ROSTER_CACHE = 'roster:v1';
+function rosterMap_(ss, fresh) {
+  const cache = CacheService.getScriptCache();
+  if (!fresh) { const c = cache.get(ROSTER_CACHE); if (c) { try { return JSON.parse(c); } catch (e) {} } }
+  const sh = ss.getSheetByName(SHEET.roster), map = {};
+  if (sh && sh.getLastRow() >= 2) {
+    sh.getRange(2, 1, sh.getLastRow() - 1, Math.max(NICK_COL, PW_COL)).getValues().forEach(function (r) {
+      const k = normId_(r[0]);
+      if (k && !map[k]) map[k] = [String(r[1] || '').trim(), String(r[5] || '').trim() ? 1 : 0, String(r[NICK_COL - 1] || '').trim(), String(r[PW_COL - 1] || '').trim()];
+    });
   }
-  return null;
+  try { cache.put(ROSTER_CACHE, JSON.stringify(map), 600); } catch (e) {}
+  return map;
+}
+function dropRosterCache_() { try { CacheService.getScriptCache().remove(ROSTER_CACHE); } catch (e) {} }
+function rosterRow_(ss, id, fresh) {
+  let r = fresh ? null : rosterMap_(ss, false)[id];
+  if (!r) r = rosterMap_(ss, true)[id];
+  if (!r) return null;
+  const name = r[0];
+  let pub = r[2];                                   // G列：本人が決めたニックネーム（いちばん優先）
+  if (!pub) pub = r[1] ? safe_(name, 20) : '';      // F列（本名）がある行は、B列がニックネーム
+  if (!pub) { try { pub = formNick_(ss, id); } catch (e) { pub = ''; } }   // 名簿にF列がなくても、フォームで登録したニックネームがあれば使う
+  return { name: name, pub: pub, pwHash: /^h1:/.test(r[3]) ? r[3] : '' };
 }
 // 名簿のH列「パスワード（本人が変更）」：パスワードそのものではなく、ハッシュ（元に戻せない値）だけを書く。
 // 先生がこのセルを消すと、その学生は共通パスワードに戻る（パスワードを忘れたとき）
@@ -423,7 +437,7 @@ function setPwHash_(ss, id, hash) {
   if (!String(sh.getRange(1, PW_COL).getValue()).trim()) sh.getRange(1, PW_COL).setValue('パスワード（本人が変更／消すと共通パスワードに戻る）').setFontWeight('bold');
   const ids = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
   for (let i = 0; i < ids.length; i++) {
-    if (normId_(ids[i][0]) === id) { sh.getRange(i + 2, PW_COL).setValue(hash); return true; }
+    if (normId_(ids[i][0]) === id) { sh.getRange(i + 2, PW_COL).setValue(hash); dropRosterCache_(); return true; }
   }
   return false;
 }
@@ -435,7 +449,7 @@ function setNick_(ss, id, nick) {
   if (!String(sh.getRange(1, NICK_COL).getValue()).trim()) sh.getRange(1, NICK_COL).setValue('ニックネーム（本人が設定）').setFontWeight('bold');
   const ids = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
   for (let i = 0; i < ids.length; i++) {
-    if (normId_(ids[i][0]) === id) { sh.getRange(i + 2, NICK_COL).setValue(nick); return true; }
+    if (normId_(ids[i][0]) === id) { sh.getRange(i + 2, NICK_COL).setValue(nick); dropRosterCache_(); return true; }
   }
   return false;
 }
@@ -504,12 +518,23 @@ function saveProg_(ss, id, items) {
     });
   } finally { try { lock.releaseLock(); } catch (e) {} }
 }
+// ログインのたびに呼ばれるので、まずA・B列（ID・種類）だけを読み、本人の行のデータ（E列）だけを取り出す。
+// （以前はE列の大きなデータを全員分まとめて読んでいたため、学生と教材が増えるほどログインが遅くなっていた）
 function loadProg_(ss, id) {
   const sh = ss.getSheetByName(SHEET.progress), out = {};
   if (!sh || sh.getLastRow() < 2) return out;
-  sh.getRange(2, 1, sh.getLastRow() - 1, 5).getValues().forEach(function (r) {
-    if (normId_(r[0]) === id && PROG_KEY_RE.test(String(r[1])) && r[4]) out[String(r[1])] = String(r[4]);
+  const rows = [];
+  sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues().forEach(function (r, i) {
+    if (normId_(r[0]) === id && PROG_KEY_RE.test(String(r[1]))) rows.push({ r: i + 2, k: String(r[1]) });
   });
+  if (!rows.length) return out;
+  const lo = rows[0].r, hi = rows[rows.length - 1].r;
+  if (hi - lo + 1 <= rows.length * 3) {   // 本人の行が近くにまとまっていれば、1回で読む
+    const v = sh.getRange(lo, 5, hi - lo + 1, 1).getValues();
+    rows.forEach(function (x) { const d = v[x.r - lo][0]; if (d) out[x.k] = String(d); });
+  } else {
+    rows.forEach(function (x) { const d = sh.getRange(x.r, 5).getValue(); if (d) out[x.k] = String(d); });
+  }
   return out;
 }
 
@@ -596,7 +621,7 @@ function validateResult_(r) {
     if (!isFinite(ms) || ms < 0 || ms > 6 * 3600 * 1000) return null;
     timeSec = Math.round(ms / 100) / 10;
   }
-  const rank = (timeAttack && score === total) ? rankOfSec_(timeSec) : '';   // ランクは全問正解のタイムアタックだけ
+  const rank = (timeAttack && score >= Math.ceil(total * 0.8)) ? rankOfSec_(timeSec) : '';   // ランクは8割以上正解のタイムアタック（タイムには間違い1問ごとの加算を含めて送られる）
 
   const misses = (Array.isArray(r.misses) ? r.misses.slice(0, 50) : []).map(function (m) {
     m = m || {};
@@ -1116,7 +1141,7 @@ function syncFormToRoster_(ss) {
       status.push(['反映済み' + (nick ? '' : '（ニックネーム空欄：アプリではIDを表示）')]);
     });
     if (touched) fs.getRange(2, c.status + 1, status.length, 1).setValues(status);
-    if (touched) { try { CacheService.getScriptCache().remove('formnick'); } catch (e) {} }
+    if (touched) { try { CacheService.getScriptCache().remove('formnick'); } catch (e) {} dropRosterCache_(); }
     return out;
   });
 }
@@ -1144,6 +1169,7 @@ function onEdit(e) {
   try {
     const rng = e && e.range;
     if (rng && rng.getSheet().getName() === COACH_SHEET) { CacheService.getScriptCache().remove('coach'); return; }   // 鹿コーチを直したら、すぐ反映
+    if (rng && rng.getSheet().getName() === SHEET.roster) dropRosterCache_();   // 名簿を直したら、ログイン用のキャッシュを捨てる
     if (!rng || rng.getSheet().getName() !== SHEET.roster || rng.getColumn() !== 1 || rng.getRow() < 2) return;
     if (rng.getNumRows() !== 1 || rng.getNumColumns() !== 1) return;
     const v = rng.getValue();

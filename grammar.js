@@ -493,7 +493,7 @@ function grade(r,chosen){
   else{fb.className="fb show no";fb.textContent=pick(["Pas tout à fait…","Presque !","Attention…"]);if(typeof playWrong==="function")playWrong();}
   showAfter(q);
 }
-function resultMsg(p){return p===100?"全問正解！":p>=80?"よくできました":p>=50?"あと少し！":"もう一回やってみよう";}
+function resultMsg(p){return p===100?"全問正解！":p>=80?"クリア！":p>=50?"あと少し！":"もう一回やってみよう";}
 function answerLine(q){
   const it=q.it;
   if(it.t==="c"||it.t==="w")return promptHTML(q,it.a[0]);
@@ -535,7 +535,7 @@ function finishRound(){
   const pct=Math.round(roundCorrect/N*100);
   $("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
   $("rPct").textContent=pct+"%";
-  $("rFace").textContent=pct===100?"◎":pct>=80?"○":pct>=50?"△":"✕";NLI.slide&&$("rFace").classList.remove("nl-pop");void $("rFace").offsetWidth;$("rFace").classList.add("nl-pop");
+  $("rFace").textContent=pct>=80?"◎":pct>=50?"△":"✕";NLI.slide&&$("rFace").classList.remove("nl-pop");void $("rFace").offsetWidth;$("rFace").classList.add("nl-pop");
   $("rMsg").textContent=resultMsg(pct);
   $("rTime").innerHTML='<span class="nl-badge">'+NLI.svg("clock",15)+fmtTime(time)+'</span>';
   const list=itemsOf(curSec==="weak"?"mix":curSec);
@@ -562,8 +562,8 @@ function finishRound(){
   $("retryBtn").classList.toggle("hidden",!miss.length);
   $("retryBtn").innerHTML='<span class="nl-badge">'+NLI.svg("again",20)+NLI.svg("x",18)+'<b>'+miss.length+'</b></span>';$("retryBtn").setAttribute("aria-label","間違えたところだけ練習");$("retryBtn").title="間違えたところだけ練習";
   show(resultScreen);
-  if(roundCorrect===N&&typeof playFanfare==="function")setTimeout(playFanfare,280);
-  if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),roundCorrect===N?1900:500);
+  if(pct>=80&&typeof playFanfare==="function")setTimeout(playFanfare,280);   // 8割以上でクリア
+  if(newB.length&&window.Badge)setTimeout(()=>Badge.celebrate(newB),pct>=80?1900:500);
   if(retry)return;
   if(window.Quiz)Quiz.submit("grammar",{section:(L.secPrefix||"L"+L.no+"-")+curSec,mode:curMode,durMs:Math.round(time),score:roundCorrect,total:N,timeAttack:false,timeMs:null,
     misses:miss.map(q=>({full:q.it.t==="b"?plain(q.it.ja):(q.it.q||q.it.src||""),verb:L.secPrefix?L.secPrefix.replace(/-$/,""):"L"+L.no,chosen:q.chosen||"",answer:q.it.a[0]}))});
