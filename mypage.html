@@ -6,15 +6,15 @@
 <title>学習記録 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=20"></script>
-<script src="streak.js?v=1"></script>
+<script src="common.js?v=23"></script>
+<script src="streak.js?v=3"></script>
 <script src="feedback.js?v=2"></script>
-<script src="coach.js?v=4"></script>
-<script src="card.js?v=7"></script>
+<script src="coach.js?v=5"></script>
+<script src="card.js?v=8"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=12">
+<link rel="stylesheet" href="base.css?v=15">
 <style>
   /* 読み込み中 */
   .sync-note{margin:0 0 10px;font-size:11.5px;color:var(--ink-soft);text-align:center;}
@@ -34,6 +34,10 @@
   .deer-bub p{margin:0;}
   .deer-bub p+p{margin-top:6px;}
   @media(prefers-reduced-motion:reduce){.loading .ld-deer,.loading .ld-bar span{animation:none}}
+  summary.sec-h{cursor:pointer;list-style:none;}
+  summary.sec-h::-webkit-details-marker{display:none;}
+  summary.sec-h::before{content:"▸";font-size:11px;margin-right:-6px;}
+  .recent-d[open] summary.sec-h::before{content:"▾";}
   .sec-h{font-size:10.5px;color:var(--ink-faint);letter-spacing:2px;margin:26px 0 10px;display:flex;align-items:center;gap:12px;}
   .sec-h::after{content:"";flex:1;height:1px;background:var(--rule);}
   table.apps{width:100%;border-collapse:collapse;font-size:13px;}
@@ -114,7 +118,7 @@
     <h1>学習記録</h1>
   </div>
   <div class="panel">
-    <div class="bar"><a class="link" href="index.html">← メニュー</a><div class="streak" id="streak"></div></div>
+    <div class="bar"><a class="ic-nav" href="index.html" aria-label="メニュー" title="メニュー"><svg class="nli" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5"/></svg></a></div>
     <p class="hello" id="hello" style="margin-top:14px">読み込み中…</p>
     <div class="nick" id="nickRow"></div>
     <div class="nick" id="pwRow"></div>
@@ -132,17 +136,16 @@
   var APP={conj:"動詞活用",grammar:"文法練習",talk:"会話練習"};
   var TALKSEC={s1:"第1–3週",s2:"第4–6週",s3:"第7–9週",s4:"第10–11週",s5:"第12–14週",mix:"総まとめ",weak:"苦手"};
   function secName(app,s){
-    if(app==="grammar"&&/^V-/.test(s))return "教科書の動詞";
+    if(app==="grammar"&&/^V-/.test(s))return "いろいろな動詞";
     if(app==="grammar"){var m=/^L(\d+)-(.+)$/.exec(s);if(m)return "Leçon "+m[1]+(m[2]==="mix"?" 総まとめ":m[2]==="weak"?" 苦手":"");}
     if(app==="talk")return TALKSEC[s]||s;
     return s;
   }
-  $("streak").innerHTML=Q.streakHTML();
-  if(window.Streak){Streak.mount($("stkCard"));Q.onStats(function(){Streak.mount($("stkCard"));$("streak").innerHTML=Q.streakHTML();});}
+  if(window.Streak){Streak.mount($("stkCard"));Q.onStats(function(){Streak.mount($("stkCard"));});}
   var u=Q.user();
   if(!Q.SYNC_ON||!u){$("hello").textContent="学習記録";$("body").innerHTML='<p class="msg-box">記録の送信が有効になっていないため、ここには表示できません。</p>';return;}
   if(u.practice){$("hello").textContent="学習記録";$("body").innerHTML='<p class="msg-box">練習用IDでは、学習記録は残りません。自分のIDでログインすると、ここに記録が表示されます。</p>';return;}
-  $("hello").innerHTML=esc(u.name&&u.name!==u.id?u.name:"学習記録")+'<small>ID: '+esc(u.id)+'　（学習記録はログインした本人だけが見られます）</small>';
+  $("hello").innerHTML=esc(u.name&&u.name!==u.id?u.name:"学習記録")+'<small>ID: '+esc(u.id)+'</small>';
   /* ニックネーム（画面と成果カードに出る名前）。本名は入れないでね */
   function nickView(){
     var has=u.name&&u.name!==u.id;
@@ -204,7 +207,7 @@
     btn.disabled=true;var label=btn.textContent;btn.textContent="作成中…";
     loadXlsx().then(function(){
       var rows=[["日時","教材","項目","正解数","問題数","正答率","学習時間（分）"]];
-      H.forEach(function(x){rows.push([x.t.replace("T"," "),APP[x.app]||"",secName(x.app,x.sec),x.score,x.total,x.total?Math.round(x.score/x.total*100)/100:"",Math.round((x.dur||0)/6)/10]);});
+      H.forEach(function(x){rows.push([x.t.replace("T"," "),(x.app==="grammar"&&/^V-/.test(x.sec||"")?APP.conj:APP[x.app])||"",secName(x.app,x.sec),x.score,x.total,x.total?Math.round(x.score/x.total*100)/100:"",Math.round((x.dur||0)/6)/10]);});
       var ws=XLSX.utils.aoa_to_sheet(rows);
       ws["!cols"]=[{wch:17},{wch:10},{wch:18},{wch:8},{wch:8},{wch:8},{wch:14}];
       for(var i=2;i<=rows.length;i++){var c=ws["F"+i];if(c&&c.t==="n")c.z="0%";}
@@ -270,7 +273,7 @@
     var cj=J("conjQuizStats_v4_"+id)||{},ranks={};
     ["être","aller","avoir","faire","mix"].forEach(function(v){ranks[v]=rankOf((cj.bestTimes||{})[v]);});
     badges+=Object.keys(cj.badges||{}).length;
-    /* 教科書の動詞（動詞活用コーナー。もとは文法練習にあった129問） */
+    /* いろいろな動詞（動詞活用ページ。もとは文法練習にあった129問） */
     var vq=J("verbQuiz_v1_"+id)||{},vb={n:129,m:0,ch:0,once:0,pts:0,tried:0,rounds:vq.tries||0};
     for(var k3 in (vq.it||{})){var y=vq.it[k3];if(!((y.c||0)+(y.w||0)))continue;vb.tried++;var p3=ptOf(y);vb.pts+=p3;
       if(p3>=4&&!y.wk)vb.m++;else if(p3>=2)vb.ch++;else if(p3>=1)vb.once++;}
@@ -293,23 +296,22 @@
   function progressHTML(){
     var P=progress(),h='<div class="sec-h">達成度</div><div class="pg">';
     var gN=0,gS=0,gT=0;P.gram.forEach(function(l){gN+=l.n;gS+=l.pts/4;gT+=l.tried;});
-    h+='<div class="pg-h"><span>文法練習</span><b>'+Math.floor(gS/gN*100)+'%</b><small>挑戦 '+gT+' / '+gN+' 問</small></div>';
+    h+='<div class="pg-h"><span>文法練習</span><b>'+Math.floor(gS/gN*100)+'%</b></div>';
     P.gram.forEach(function(l){
       h+='<div class="pg-row"><span class="pg-l">Leçon '+l.no+'</span>'+bar3(l.m,l.ch,l.once,l.n)+
-        '<span class="pg-v"><b>'+l.pct+'%</b><small>'+(l.tried?'挑戦 '+l.tried+'/'+l.n:'まだ')+'</small></span></div>';
+        '<span class="pg-v"><b>'+l.pct+'%</b></span></div>';
     });
-    h+='<div class="pg-leg"><i class="pg-m"></i>習得（4点）<i class="pg-c"></i>もう少し（2〜3点）<i class="pg-o"></i>1点</div>';
     var T=P.talk;
-    h+='<div class="pg-h"><span>会話フレーズ</span><b>'+T.pct+'%</b><small>習得 '+T.m+' / 100（練習中 '+(T.mid+T.low)+'）</small></div>'+
-      '<div class="pg-row"><span class="pg-l">100 フレーズ</span>'+bar3(T.m,T.mid,T.low,100)+'<span class="pg-v"><b>'+T.pct+'%</b><small>挑戦 '+T.seen+'/100</small></span></div>';
+    h+='<div class="pg-h"><span>会話フレーズ</span><b>'+T.pct+'%</b></div>'+
+      '<div class="pg-row"><span class="pg-l">フレーズ</span>'+bar3(T.m,T.mid,T.low,100)+'<span class="pg-v"><b>'+T.pct+'%</b></span></div>';
     h+='<div class="pg-h"><span>対話</span></div><div class="pg-dl">';
     P.dlg.forEach(function(x){h+='<div class="pg-d"><span>'+esc(x.t)+'</span><b>'+(x.best==null?'<em>まだ</em>':x.best+' / '+x.total)+'</b></div>';});
-    h+='</div><div class="pg-h"><span>動詞活用ランク</span><small>記述式・全問正解のクリアタイム</small></div><div class="pg-rk">';
+    h+='</div><div class="pg-h"><span>動詞活用ランク</span></div><div class="pg-rk">';
     ["être","aller","avoir","faire","mix"].forEach(function(v){var r=P.conj.ranks[v];h+='<div class="'+(r?'on':'')+'"><span>'+(v==="mix"?"総まとめ":v)+'</span><b>'+(r||'—')+'</b></div>';});
     var V=P.verb;
-    h+='</div><div class="pg-h"><span>教科書の動詞</span><b>'+V.pct+'%</b><small>挑戦 '+V.tried+' / '+V.n+' 問</small></div>'+
-      '<div class="pg-row"><span class="pg-l">Leçon 2〜6</span>'+bar3(V.m,V.ch,V.once,V.n)+'<span class="pg-v"><b>'+V.pct+'%</b><small>'+(V.tried?'挑戦 '+V.tried+'/'+V.n:'まだ')+'</small></span></div>';
-    h+='<div class="pg-note">文法・教科書の動詞の達成率：1問4点で、選択式の正解は＋1点（2点まで）、記述式の正解は＋2点。会話の達成率：●4つで100%として数えています。バッジ '+P.badges+' 個。進み具合はこの端末とバックアップから読んでいます。</div></div>';
+    h+='</div><div class="pg-h"><span>いろいろな動詞</span><b>'+V.pct+'%</b></div>'+
+      '<div class="pg-row"><span class="pg-l">-er・-ir ほか</span>'+bar3(V.m,V.ch,V.once,V.n)+'<span class="pg-v"><b>'+V.pct+'%</b></span></div>';
+    h+='</div>';
     return h;
   }
   /* 成果カードは、ボタンを押したときだけ端末の中で描く（サーバーは使わない）。
@@ -326,7 +328,7 @@
     var data=cardData(d),sig=JSON.stringify([data.id,data.nick,data.stamp,data.durSec,data.days,data.streak,data.acc,data.gram,data.talk,data.conj,data.badges]);   // 作成時刻（分）が変われば描き直す
     if(cardURL&&sig===cardSig){showCard(btn);return;}
     btn.disabled=true;btn.textContent="作成中…";
-    var sample="0123456789%/分時間日連続学習のきろく通算正答率動詞活用文法練習会話フレーズ達成度挑戦問習得選択でできた回正解練習中ラウンド対話最高点総合記述式全問正解バッジ個ニックネーム未登録作成まだ教科書の動詞はじめまして週末と夏休みインタビュー①〜⑭⑮⑲Leçon"+(data.nick||"");
+    var sample="0123456789%/分時間日連続学習のきろく通算正答率動詞活用文法練習会話フレーズ達成度挑戦問習得選択でできた回正解練習中ラウンド対話最高点総合記述式全問正解バッジ個ニックネーム未登録作成まだいろいろな動詞はじめまして週末と夏休みインタビュー①〜⑭⑮⑲Leçon"+(data.nick||"");
     NLCard.ready(sample).then(function(){
       var cv=NLCard.draw(data);
       cv.toBlob(function(b){
@@ -361,17 +363,12 @@
       '<div class="sum"><div class="n">'+rounds+'</div><div class="l">ラウンド</div></div>'+
       '<div class="sum"><div class="n">'+(totQ?Math.round(totC/totQ*100)+'%':'—')+'</div><div class="l">正答率</div></div></div>';
     html+=progressHTML();
-    // 教材別
-    html+='<div class="sec-h">教材ごと</div><table class="apps"><tr><th>教材</th><th>回数</th><th>解答数</th><th>正答率</th><th>時間</th></tr>';
-    ["conj","grammar","talk"].forEach(function(k){var a=byApp[k];
-      html+='<tr><td>'+APP[k]+'</td><td>'+(a?a.n:0)+'</td><td>'+(a?a.q:0)+'</td><td>'+(a&&a.q?Math.round(a.c/a.q*100)+'%':'—')+'</td><td>'+(a?dur(a.dur):'0分')+'</td></tr>';});
-    html+='</table>';
     // カレンダー（直近10週）
     var today=Q.todayJST(),t0=new Date(today+"T00:00:00Z");
     var dow=(t0.getUTCDay()+6)%7;           // 月曜=0
     var start=new Date(t0);start.setUTCDate(start.getUTCDate()-dow-7*9);
     var labels=["月","火","水","木","金","土","日"];
-    html+='<div class="sec-h">最近10週間の学習日（色が濃いほど多く練習）</div><div class="cal">';
+    html+='<div class="sec-h">学習した日</div><div class="cal">';
     for(var r=0;r<7;r++){
       html+='<div class="dl">'+labels[r]+'</div>';
       for(var w=0;w<10;w++){
@@ -384,23 +381,22 @@
     html+='</div><div class="legend">少<i style="background:#f1e9e3"></i><i style="background:#e9d3dd"></i><i style="background:#d6a8bd"></i><i style="background:#b5789a"></i><i style="background:#8f4f74"></i>多</div>';
     // 時間帯
     var mx=Math.max.apply(null,hours)||1,peak=hours.indexOf(Math.max.apply(null,hours));
-    html+='<div class="sec-h">よく練習する時間帯</div><div class="hours">';
+    html+='<div class="sec-h">時間帯</div><div class="hours">';
     hours.forEach(function(v,i){html+='<div class="b'+(v?'':' z')+'" style="height:'+(v?Math.max(6,Math.round(v/mx*100)):3)+'%" title="'+i+'時台：'+v+'回"></div>';});
     html+='</div><div class="hlab"><span>0時</span><span>6時</span><span>12時</span><span>18時</span><span>24時</span></div>';
-    html+='<div class="peak">いちばん多いのは '+peak+'時台（'+hours[peak]+'回）</div>';
     // 最近の記録
-    html+='<div class="sec-h">最近の記録</div><div class="recent">';
+    html+='<details class="recent-d"><summary class="sec-h">最近の記録</summary><div class="recent">';   // ふだんは閉じておく
     H.slice(-15).reverse().forEach(function(x){
       html+='<div class="r"><span class="d">'+esc(x.t.slice(5,10).replace("-","/"))+' '+esc(x.t.slice(11,16))+'</span>'+
-        '<span class="a">'+(APP[x.app]||"")+' <span style="color:var(--ink-faint)">'+esc(secName(x.app,x.sec))+'</span></span>'+
+        '<span class="a">'+(x.app==="grammar"&&/^V-/.test(x.sec||"")?APP.conj:(APP[x.app]||""))+' <span style="color:var(--ink-faint)">'+esc(secName(x.app,x.sec))+'</span></span>'+
         '<span class="s">'+x.score+' / '+x.total+'</span></div>';
     });
-    html+='</div>';
+    html+='</div></details>';
     if(pend)html+='<p class="note">未送信の結果が '+pend+' 件あります（次に練習ページを開いたときに送られます）。</p>';
     html+='<div class="sec-h">成果カード</div>'+
       '<div class="card-box"><div class="card-img hidden" id="cardImg"></div>'+
-      '<div class="card-btns"><button type="button" class="cb-main" id="pngBtn">成果カードを作る</button><button type="button" id="xlsxBtn">Excel で保存（くわしい記録）</button></div>'+
-      '<p class="card-note">記録は自動で保存されています。成果カードには、ニックネーム・作成した日時と、IDの一部（MO****Q のように一部をかくした形）が入ります。本名は入りません。スマホでは、画像を長押しして保存することもできます。</p></div>';
+      '<div class="card-btns"><button type="button" class="cb-main" id="pngBtn">成果カードを作る</button><button type="button" id="xlsxBtn">Excel で保存</button></div>'+
+      '<p class="card-note">本名は入りません。</p></div>';
     $("body").innerHTML=html;
     mountDeer();
     $("xlsxBtn").onclick=function(){exportXlsx(H,this,G);};

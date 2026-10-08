@@ -331,8 +331,9 @@
   .after .heard s{color:var(--bad-ink);}
   .after .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px;align-items:center;}
   .after .shadow{font-size:10.5px;color:var(--ink-faint);margin-top:10px;letter-spacing:.5px;}
-  .next-btn{font-family:"Noto Sans JP";font-size:13px;color:#fff;background:var(--accent-ink);border:none;border-radius:20px;padding:8px 22px;cursor:pointer;}
+  .next-btn{font-family:"Noto Sans JP";font-size:16px;font-weight:600;color:#fff;background:var(--accent-ink);border:none;border-radius:999px;padding:14px 40px;min-width:min(240px,100%);cursor:pointer;box-shadow:0 10px 20px -12px var(--accent-ink);}
   .next-btn:hover{background:var(--accent);}
+  .btns .next-btn{flex:1 1 100%;max-width:340px;margin-top:4px;}
   .selfchk{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .selfchk .opt{font-family:"Noto Sans JP";font-size:14px;font-weight:500;display:flex;gap:8px;justify-content:center;align-items:baseline;}
   .fb{margin-top:14px;}

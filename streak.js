@@ -71,10 +71,10 @@
   }
   function isMile(n) { return MILES.indexOf(n) >= 0 || (n > 100 && n % 50 === 0); }
   function message(c, everStudied) {
-    if (c.doneToday) return { t: "今日の学習スタンプ、ゲット！", w: false };
-    if (c.risk) return { t: "今日がラストチャンス！ 1回解けば、継続 " + (c.n + 1) + "日。", w: true };
-    if (c.n) return { t: "今日1回解くと、継続 " + (c.n + 1) + "日になります。", w: false };
-    return { t: everStudied ? "1回解けば、今日から継続スタート。" : "1回解くと、学習スタンプがたまっていきます。", w: false };
+    if (c.doneToday) return { t: "今日もクリア！", w: false };
+    if (c.risk) return { t: "今日がラスト！", w: true };
+    if (c.n) return { t: "今日やれば " + (c.n + 1) + "日！", w: false };
+    return { t: "1問解いてスタート", w: false };
   }
 
   /* ---- 継続カード ---- */
@@ -87,18 +87,18 @@
       var d = addDays(t, -i), wd = new Date(d + "T00:00:00Z").getUTCDay();
       var cls = study[d] ? "on" : st[d] ? "lg" : "";
       if (!i) cls += " today";
-      cells += '<div class="stk-c ' + cls + '" title="' + d + (study[d] ? "　学習した日" : st[d] ? "　ログインした日" : "") + '">' +
-        '<i>' + (study[d] || st[d] ? deer(18) : "") + '</i><small>' + Number(d.slice(8)) + '<b class="w' + wd + '">' + WD.charAt(wd) + '</b></small></div>';
+      cells += '<div class="stk-c ' + cls + '" title="' + Number(d.slice(5, 7)) + '/' + Number(d.slice(8)) + '（' + WD.charAt(wd) + '）' + (study[d] ? "　学習した日" : st[d] ? "　ログインした日" : "") + '">' +
+        '<i>' + (study[d] || st[d] ? deer(16) : "") + '</i></div>';
     }
     var nm = nextMile(c.n), pct = Math.round((c.n - nm.from) / (nm.to - nm.from) * 100), msg = message(c, Q.days().length > 0);
     var total = Object.keys(st).length;
     return '<div class="stk' + (c.doneToday ? " done" : "") + '">' +
       '<div class="stk-top"><div class="stk-fl' + (c.n ? (c.doneToday ? " hot" : " warm") : "") + '">' + FLAME + '</div>' +
       '<div class="stk-num"><b>' + c.n + '</b><span>日<br>継続</span></div>' +
-      '<div class="stk-msg' + (msg.w ? " warn" : "") + '">' + esc(msg.t) + '<small>1日あいてもつながります（2日あくとリセット）</small></div></div>' +
+      '<div class="stk-msg' + (msg.w ? " warn" : "") + '">' + esc(msg.t) + '</div></div>' +
       '<div class="stk-days">' + cells + '</div>' +
-      '<div class="stk-foot"><span class="stk-tot">' + deer(14) + 'スタンプ 通算 <b>' + total + '</b>個</span>' +
-      '<span class="stk-nx">次の目標「継続 ' + nm.to + '日」まであと ' + (nm.to - c.n) + '日<span class="stk-bar"><i style="width:' + pct + '%"></i></span></span></div>' +
+      '<div class="stk-foot"><span class="stk-nx">' + (c.n ? 'あと' + (nm.to - c.n) + '日で' + nm.to + '日継続！' : 'まずは' + nm.to + '日続けよう！') + '<span class="stk-bar"><i style="width:' + pct + '%"></i></span></span>' +
+      '<span class="stk-tot" title="スタンプの数">' + deer(14) + '<b>' + total + '</b></span></div>' +
       '</div>';
   }
   function mount(el) { if (el) el.innerHTML = card(); }
@@ -147,9 +147,9 @@
     overlay(
       '<div class="stk-kick">ログインボーナス</div>' +
       '<div class="stk-burst">' + sparks(12) + '<div class="stk-big">' + deer(58) + '<span>' + esc(Q.todayJST().slice(5).replace("-", "/")) + '</span></div></div>' +
-      '<div class="stk-h">今日のスタンプ　通算 <b>' + n + '</b> 個目</div>' +
+      '<div class="stk-h">スタンプ <b>' + n + '</b> 個目</div>' +
       '<div class="stk-sheet">' + sheet + '</div>' +
-      (slot === 10 ? '<div class="stk-comp">スタンプカード ' + (n / 10) + '枚目、コンプリート！</div>' : '<div class="stk-sub">あと ' + (10 - slot) + '個でカードがいっぱいに</div>') +
+      (slot === 10 ? '<div class="stk-comp">カード ' + (n / 10) + '枚目コンプリート！</div>' : '') +
       '<div class="stk-pmsg' + (msg.w ? " warn" : "") + '">' + esc(msg.t) + '</div>' +
       '<div class="stk-word"><small>今日のひとこと</small><b lang="fr">' + esc(w[0]) + '</b><span>' + esc(w[1]) + '</span></div>',
       "よし、やろう");
@@ -178,12 +178,12 @@
         overlay('<div class="stk-kick">継続ボーナス</div>' +
           '<div class="stk-burst">' + sparks(16) + '<div class="stk-big gold">' + FLAME + '<span>' + c.n + '日</span></div></div>' +
           '<div class="stk-h">継続 <b>' + c.n + '</b>日 達成！</div>' +
-          '<div class="stk-pmsg">' + esc(c.n >= 30 ? "ここまで続けられる人は、ほんのひとにぎり。Magnifique !" : c.n >= 10 ? "もう習慣になってきたね。Bravo !" : "いい流れ！ このまま続けよう。") + '</div>' +
-          '<div class="stk-sub">次の目標：継続 ' + nextMile(c.n).to + '日</div>', "やったね");
+          '<div class="stk-pmsg">' + esc(c.n >= 30 ? "Magnifique !" : c.n >= 10 ? "Bravo !" : "Très bien !") + '</div>' +
+          '', "やったね");
         try { if (typeof window.playFanfare === "function") window.playFanfare(); } catch (er) {}
       });
     } else {
-      toast('<span class="stk-ti">' + deer(20) + '</span><span><b>今日の学習スタンプ ゲット！</b><small>継続 ' + c.n + '日' + (c.n > 1 ? "　この調子！" : "　ここからスタート") + '</small></span>');
+      toast('<span class="stk-ti">' + deer(20) + '</span><span><b>今日のスタンプ ゲット！</b><small>' + c.n + '日継続</small></span>');
     }
   });
 
@@ -200,10 +200,10 @@
       '.stk-num{display:flex;align-items:center;gap:4px;flex:none;}' +
       '.stk-num b{font-family:var(--serif);font-size:34px;line-height:1;color:#7a4f3a;font-weight:600;}' +
       '.stk-num span{font-size:10.5px;line-height:1.25;color:var(--ink-soft);}' +
-      '.stk-msg{flex:1;min-width:0;font-size:12.5px;font-weight:500;color:var(--ink);line-height:1.5;}' +
+      '.stk-msg{flex:1;min-width:0;font-size:14px;font-weight:600;color:var(--ink);line-height:1.4;text-align:right;}' +
       '.stk-msg small{display:block;font-size:10.5px;font-weight:400;color:var(--ink-faint);}' +
       '.stk-msg.warn{color:#b8542a;}' +
-      '.stk-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px 4px;margin-top:12px;}' +
+      '.stk-days{display:grid;grid-template-columns:repeat(7,1fr);gap:7px 4px;margin-top:12px;}' +
       '.stk-c{display:flex;flex-direction:column;align-items:center;gap:2px;}' +
       '.stk-c i{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px dashed #e3d4cb;color:#d6c3b8;background:#fffdfb;}' +
       '.stk-c.lg i{border:1.5px solid #e8d6c4;color:#c9a98e;background:#fff8ef;}' +

@@ -6,10 +6,17 @@
 <title>動詞活用 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=20"></script>
-<script src="streak.js?v=1"></script>
+<script src="common.js?v=23"></script>
+<script src="streak.js?v=3"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=3"></script>
+<script>
+/* いろいろな動詞（verbs-data.js）：ここでは項目と問題IDだけ読む（出題は verbs.html） */
+window.VDATA={ids:{}};
+(function(){let p=0,n=0;const f=sec=>{(VDATA.ids[sec]=VDATA.ids[sec]||[]).push(p+"-"+(n++));};
+  window.C=window.W=window.T=window.B=f;window.FROM=(a,b)=>{p=a;n=b;};window.SKIP=k=>{n+=k;};})();
+</script>
+<script src="verbs-data.js?v=1"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -164,13 +171,24 @@
   .start-btn.summary{width:100%;margin-top:6px;background:linear-gradient(135deg,#fdf6f0,#f8eef4);}
   .start-btn.summary i{font-style:normal;color:var(--gold);font-family:"Noto Sans JP";font-size:17px;background:#fff;}
   .start-btn.summary:hover{border-color:var(--gold);}
-  .verbs-link{text-decoration:none;color:inherit;--vc:#6fb0ad;--vcw:#ebf5f4;}
-  .verbs-link i{font-style:normal;font-family:"Noto Sans JP";font-size:13px;font-weight:700;}
-  .verbs-link .sb-name{flex:1;min-width:0;}
+  .vg i{font-style:normal;font-family:var(--serif);font-size:15px;font-weight:600;}
+  .vg .sb-name{flex:1;min-width:0;}
   .sb-desc{display:block;font-size:11px;color:var(--ink-soft);margin-top:3px;line-height:1.5;}
-  #verbProg{margin-left:auto;text-align:right;flex:none;}
-  #verbProg b{display:block;font-family:var(--serif);font-size:20px;color:var(--ink);}
-  #verbProg small{font-size:10.5px;color:var(--ink-faint);}
+  .vg-m{display:flex;align-items:center;gap:8px;margin-top:6px;}
+  .vg-bar{display:block;flex:1;max-width:160px;height:6px;border-radius:3px;background:#f0e6df;overflow:hidden;}
+  .vg-bar i{display:block;height:100%;width:0;background:var(--vc,var(--gold));border-radius:3px;}
+  .vg-m b{font-family:var(--serif);font-size:13px;color:var(--ink-soft);font-weight:600;}
+  .vg-m b small{font-size:10px;color:var(--ink-faint);}
+  .vg .bdg-svg{flex:none;}
+  .weakb{--vc:#c0605a;--vcw:#fbeeee;}
+  .vmemo{margin-top:18px;border:1px solid var(--rule);border-radius:16px;background:#fdfaf8;padding:10px 14px;}
+  .vmemo>summary{cursor:pointer;font-size:12.5px;color:var(--accent-ink);font-weight:500;}
+  .vmemo-i{border-top:1px solid var(--rule);margin-top:8px;padding-top:8px;}
+  .vmemo-i>summary{cursor:pointer;font-size:13px;}
+  .vmemo-b{font-size:12.5px;line-height:1.7;color:var(--ink);padding:6px 2px;}
+  .vmemo-b table{border-collapse:collapse;margin:6px 0;}
+  .vmemo-b td,.vmemo-b th{border:1px solid var(--rule);padding:3px 8px;font-size:12.5px;}
+  .vmemo-b .fr{font-family:var(--serif);}
 
   .mini-reset{display:block;margin:22px auto 0;background:none;border:none;cursor:pointer;
     color:var(--ink-faint);font-family:"Noto Sans JP";font-size:11.5px;letter-spacing:1px;text-decoration:underline;text-underline-offset:3px;}
@@ -231,6 +249,9 @@
   .fb{text-align:center;min-height:24px;margin-top:22px;font-family:var(--serif);
     font-style:italic;font-size:19px;opacity:0;transition:opacity .15s;}
   .fb.show{opacity:1;}
+  .nx-wrap{display:flex;justify-content:center;margin-top:14px;min-height:0;}
+  .next-btn{font-family:"Noto Sans JP";font-size:16px;font-weight:600;color:#fff;background:var(--accent-ink);border:none;border-radius:999px;padding:14px 40px;min-width:min(240px,100%);cursor:pointer;box-shadow:0 10px 20px -12px var(--accent-ink);}
+  .next-btn:hover{background:var(--accent);}
   .fb.ok{color:var(--good-ink);}
   .fb.no{color:var(--bad-ink);}
   .fb .full{font-weight:600;font-style:normal;color:var(--ink);}
@@ -332,7 +353,7 @@
 
     <div class="acct" id="acct">
       <div class="row">
-        <a class="link" href="index.html">← メニュー</a>
+        <a class="ic-nav" href="index.html" aria-label="メニュー" title="メニュー"><svg class="nli" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5"/></svg></a>
         <div id="acctState" class="who"></div>
         <div class="streak" id="streak"></div>
       </div>
@@ -369,10 +390,9 @@
     </div>
     <button class="start-btn summary" data-verb=""><i>★</i><span class="sb-name">総まとめ（4動詞ミックス）</span><span class="sb-time" data-sec="mix"></span></button>
 
-    <div class="section-label" style="margin-top:22px">教科書の動詞</div>
-    <a class="start-btn verbs-link" href="verbs.html"><i>L2–6</i><span class="sb-name">教科書『Accès』Leçon 2〜6 の動詞
-      <span class="sb-desc">-er動詞・être と avoir・-ir動詞・aller・venir・faire・partir・lire・mettre など</span></span>
-      <span class="sb-time" id="verbProg"></span></a>
+    <div class="section-label" style="margin-top:22px">いろいろな動詞</div>
+    <div class="sections" id="vGroup"></div>
+    <div id="vMemo"></div>
 
   </div>
 
@@ -396,6 +416,7 @@
       <button class="write-btn" id="writeBtn">解答</button>
     </div>
     <div class="fb" id="fb"></div>
+    <div class="nx-wrap" id="nxBox"></div>
     <div class="hint" id="hintLine">1〜4キー または クリックで解答</div>
   </div>
 
@@ -412,8 +433,8 @@
     <div class="rsync" id="rSync"></div>
     <div class="review" id="review"></div>
     <button class="play retry hidden" id="retryBtn">間違えたところだけを練習</button>
-    <button class="play again" id="againBtn">もう一度</button>
-    <button class="home-link" id="toHomeBtn">ホームにもどる</button>
+    <button class="play again" id="againBtn" aria-label="もう一度" title="もう一度"><svg class="nli" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4.5H9"/></svg></button>
+    <button class="home-link ic" id="toHomeBtn" aria-label="もどる" title="もどる"><svg class="nli" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
   </div>
 </div>
 
@@ -815,16 +836,29 @@ function renderHome(){
   renderVerbs();
   renderStreak();
 }
-/* 教科書の動詞（verbs.html）の達成率：1問4点（grammar.js と同じ数え方） */
+/* いろいろな動詞（verbs.html で出題）の一覧と達成率。1問4点（grammar.js と同じ数え方） */
 function verbPt(x){if(x.pt!=null)return Math.min(4,x.pt);const run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);
   return (!x.wk&&(((x.wrun||0)>=1&&run>=2)||x.m))?4:(!x.wk&&run>=2)?2:((x.c||0)>0&&x.last===1)?1:0;}
+const VSHORT={er:"-er",ea:"être",ir:"-ir",v4:"aller",v5:"faire",v6:"lire"};
 function renderVerbs(){
-  const el=document.getElementById("verbProg");if(!el)return;
+  const el=document.getElementById("vGroup"),L=window.LESSON;if(!el||!L||!window.VDATA)return;
   let v=null;try{v=JSON.parse(localStorage.getItem("verbQuiz_v1_"+((window.Quiz&&Quiz.user())?Quiz.user().id:"guest")));}catch(e){}
-  const N=129;let pts=0,m=0;
-  for(const k in ((v&&v.it)||{})){const x=v.it[k];const pt=verbPt(x);pts+=pt;if(pt>=4&&!x.wk)m++;}
-  const nb=Object.keys((v&&v.badges)||{}).length;
-  el.innerHTML='<b>'+Math.floor(pts/(N*4)*100)+'<small>%</small></b><small>習得 '+m+'/'+N+(nb?'・バッジ '+nb:'')+'</small>';
+  const it=(v&&v.it)||{},B=(v&&v.badges)||{};
+  const pctOf=ids=>{let p=0;ids.forEach(id=>{if(it[id])p+=verbPt(it[id]);});return ids.length?Math.floor(p/(ids.length*4)*100):0;};
+  const all=[].concat(...L.sections.map(x=>VDATA.ids[x.k]||[]));
+  const weakN=all.filter(id=>it[id]&&it[id].wk).length;
+  const meter=p=>'<span class="vg-m"><span class="vg-bar"><i style="width:'+p+'%"></i></span><b>'+p+'<small>%</small></b></span>';
+  let h=L.sections.map(x=>{const ids=VDATA.ids[x.k]||[],p=pctOf(ids),got=!!B["s:"+x.k]&&window.Badge;
+    return '<button class="start-btn vg" data-vsec="'+x.k+'" style="--vc:'+x.c+';--vcw:'+x.cw+'"><i>'+(VSHORT[x.k]||"")+'</i>'+
+      '<span class="sb-name">'+x.t+meter(p)+'</span>'+
+      (got?Badge.seal({kind:"sec",on:true,color:x.c,size:28}):'')+'</button>';}).join("");
+  h+='<button class="start-btn summary vg" data-vsec="mix"><i>★</i><span class="sb-name">ミックス'+meter(pctOf(all))+'</span></button>';
+  if(weakN)h+='<button class="start-btn vg weakb" data-vsec="weak"><i>!</i><span class="sb-name">苦手を復習<span class="sb-desc">'+weakN+' 問</span></span></button>';
+  el.innerHTML=h;
+  el.querySelectorAll("[data-vsec]").forEach(b=>b.onclick=()=>{location.href="verbs.html#"+b.dataset.vsec+":"+curMode;});
+  const mm=document.getElementById("vMemo");
+  if(mm&&!mm.dataset.done){mm.dataset.done=1;
+    mm.innerHTML='<details class="vmemo"><summary>活用のポイント</summary>'+L.sections.filter(x=>x.memo).map(x=>'<details class="vmemo-i"><summary>'+x.t+'</summary><div class="vmemo-b">'+x.memo+'</div></details>').join("")+'</details>';}
 }
 
 function startRound(verbFilter){
@@ -891,6 +925,7 @@ function render(){
     setTimeout(()=>inp.focus(),30);
   }
   const fb=document.getElementById("fb");fb.className="fb";fb.textContent="";
+  document.getElementById("nxBox").innerHTML="";
   locked=false;
 }
 
@@ -931,7 +966,18 @@ function resolve(val, btn){
     playWrong();
   }
   document.getElementById("fill").style.width=((idx+1)/questions.length*100)+"%";
-  setTimeout(next,correct?750:1750);
+  // 正解なら自動で次へ（設定で「自分で押す」にできる）。間違えたときは自動では進まない
+  if(correct&&(!window.Quiz||!Quiz.autoNext||Quiz.autoNext()))setTimeout(next,750);
+  else showNext();
+}
+let nxAt=0;
+function showNext(){
+  nxAt=Date.now();
+  const box=document.getElementById("nxBox");
+  box.innerHTML='<button class="next-btn" id="nextBtn" aria-label="'+(idx+1<questions.length?"次へ":"結果を見る")+'">'+NLI.svg(idx+1<questions.length?"next":"flag",28)+'</button>';
+  const b=document.getElementById("nextBtn");b.onclick=()=>{box.innerHTML="";next();};
+  setTimeout(()=>{try{b.focus({preventScroll:true});}catch(e){}},50);
+  document.getElementById("hintLine").textContent="Enter でも次へ";
 }
 
 function next(){idx++;if(idx<questions.length)render();else finishRound();}
@@ -1052,6 +1098,8 @@ function finishRound(){
 /* ===== events ===== */
 document.addEventListener("keydown",e=>{
   if(quizScreen.classList.contains("hidden"))return;
+  const nb=document.getElementById("nextBtn");
+  if(nb&&e.key==="Enter"&&!e.repeat&&Date.now()-nxAt>300){e.preventDefault();nb.click();return;}
   if(curMode==="choice" && ["1","2","3","4"].includes(e.key)){
     const b=document.querySelectorAll(".opt")[+e.key-1];
     if(b&&!b.disabled)b.click();
@@ -1148,6 +1196,10 @@ if(!store.badges){
   }
 }
 renderHome();show(homeScreen);
+/* メニューの「今日の学習をはじめる！」から #play:セクション つきで開いたら、すぐに始める */
+(function(){const m=/^#play:(.+)$/.exec(location.hash||"");if(!m)return;
+  const sec=decodeURIComponent(m[1]);try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}
+  if(sec==="mix")startRound(null);else if(SECTIONS.indexOf(sec)>=0)startRound(sec);})();
 </script>
 </body>
 </html>

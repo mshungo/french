@@ -26,7 +26,7 @@ const ROUND=10;
 const CLEAR_ANS=300;      // 累計解答数がこれに達したら「クリア」（約1時間の練習の目安）
 const FAST_MS=8000;       // 記述で8秒以内に正解したら、その場で「習得」
 const $=id=>document.getElementById(id);
-function LB(){return L.label||"Leçon "+L.no;}   // 画面での呼び名（教科書の動詞のページは別名）
+function LB(){return L.label||"Leçon "+L.no;}   // 画面での呼び名（verbs-data.js では別名）
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
@@ -157,7 +157,7 @@ function shell(){
 '  <div class="crown"><div class="crest">'+(L.crest||'<svg width="30" height="30" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7.5c-1.2 5.5-1.3 11.4.8 15.6 2 4 10.4 4 12.4 0 2.1-4.2 2-10.1.8-15.6-3.1 2-10.9 2-14 0z"/><circle cx="12.8" cy="14.6" r="2.7"/><circle cx="19.2" cy="14.6" r="2.7"/><circle cx="12.8" cy="14.6" r=".8" fill="currentColor" stroke="none"/><circle cx="19.2" cy="14.6" r=".8" fill="currentColor" stroke="none"/><path d="M15.2 18.2l.8 1.5.8-1.5"/><path d="M12 23.2c1.3.8 2.7.8 4 0 1.3.8 2.7.8 4 0"/></svg>')+'</div><div class="eyebrow">Naralingo · '+esc(L.eyebrow||"Leçon "+L.no)+'</div><h1>'+esc(L.title)+'</h1>'+
 '    <span class="verbs">'+esc(L.sub||"")+'</span></div>'+
 '  <div class="panel" id="homeScreen">'+
-'    <div class="acct"><div class="row"><a class="link" href="'+esc(L.back||"grammar.html")+'">'+esc(L.backText||"← Leçon 一覧")+'</a><div class="streak" id="streak"></div></div></div>'+
+'    <div class="acct"><div class="row"><a class="ic-nav" href="'+esc(L.back||"grammar.html")+'" aria-label="'+esc((L.backText||"Leçon 一覧").replace(/^←\s*/,""))+'" title="'+esc((L.backText||"Leçon 一覧").replace(/^←\s*/,""))+'">'+NLI.svg("back",20)+'</a><div class="streak" id="streak"></div></div></div>'+
 '    <p class="hello">'+esc(LB())+' の練習<small>'+esc(L.lead||"")+'</small></p>'+
 '    <div class="stat-grid">'+
 '      <div class="stat"><div class="n" id="hTries">0</div><div class="l">挑戦回数</div></div>'+
@@ -201,8 +201,8 @@ function shell(){
 '    <div class="msg" id="rMsg"></div><div class="rtime" id="rTime"></div><div class="mastery" id="rMastery"></div><div id="nudge"></div>'+
 '    <div class="review" id="review"></div>'+
 '    <button class="play retry hidden" id="retryBtn">間違えたところだけを練習</button>'+
-'    <button class="play again" id="againBtn">もう一度</button>'+
-'    <button class="home-link" id="toHomeBtn">ホームにもどる</button>'+
+'    <button class="play again" id="againBtn" aria-label="もう一度" title="もう一度">'+NLI.svg("again",26)+'</button>'+
+'    <button class="home-link ic" id="toHomeBtn" aria-label="もどる" title="もどる">'+NLI.svg("back",22)+'</button>'+
 '  </div>'+
 '</div>';
 }
@@ -268,8 +268,12 @@ function buildRound(sec){
   take(pool.filter(it=>attempts(it)===1&&!mastered(it)&&!weak(it)&&!recent(it)).sort(older),ROUND);
   // 記述式では「まだ書いて習得していない」問題を、選択式では「まだ選択でできていない」問題を先に
   take(pool.filter(it=>!(curMode==="write"?mastered(it):choiceDone(it))&&!weak(it)&&!recent(it)).sort(older),ROUND);
-  take(pool.filter(it=>!recent(it)).sort(older),ROUND);           // お休み中の問題（古い順）
-  take(pool.slice().sort(older),ROUND);                            // それでも足りなければ直近の問題も
+  take(pool.filter(it=>!mastered(it)).sort(older),ROUND);          // まだ習得していない問題は、直近に出たものでも先に
+  // 習得ずみの問題は、ほかに出す問題が足りないときだけ（ふだんは1ラウンドに多くて1問の復習）
+  const done=pool.filter(it=>mastered(it)).sort(older);
+  if(out.length<ROUND&&done.length)take(done.filter(it=>!recent(it)),1);
+  take(pool.filter(it=>!mastered(it)),ROUND);
+  take(done,ROUND);
   return shuffle(out.map(makeQ));
 }
 /* 選択式で出すとき、書いて答える問題（W）の選択肢を自動で作る。
@@ -433,7 +437,7 @@ function render(){
     stg.innerHTML=(it.t==="t"?'<div class="inst">'+esc(it.inst)+'</div><div class="src">'+esc(it.src)+'</div><div class="qtext">札を並べて、書きかえた文を作ろう</div>':
       tagsHTML(it)+'<div class="prompt-ja">'+jaHTML(it.ja)+'</div><div class="qtext">単語を並べてフランス語の文にしよう</div>')+
       '<div class="tray" id="tray"></div><div class="bank" id="bank"></div>'+
-      '<div class="build-ctl"><button class="mini" id="undoBtn">1つ戻す</button><button class="mini" id="clearBtn">やり直す</button></div>';
+      '<div class="build-ctl"><button class="mini ic-only" id="undoBtn" aria-label="1つ戻す" title="1つ戻す">'+NLI.svg("undo",17)+'</button><button class="mini ic-only" id="clearBtn" aria-label="やり直す" title="やり直す">'+NLI.svg("clear",17)+'</button></div>';
     q.picked=[];drawTiles(q);
     $("undoBtn").onclick=()=>{if(locked)return;q.picked.pop();drawTiles(q);};
     $("clearBtn").onclick=()=>{if(locked)return;q.picked=[];drawTiles(q);};
@@ -512,10 +516,10 @@ function showAfter(q){
   if(alts.length&&(it.t==="t"||it.t==="w"))extra+='<div class="ans-alt">別解：'+alts.map(esc).join(" ／ ")+'</div>';
   a.innerHTML='<div class="ans-fr">'+answerLine(q)+'</div>'+(it.ja&&it.t!=="b"?'':'')+extra+
     (it.ex?'<div class="ex"><span class="ex-h">ポイント</span>'+esc(it.ex)+'</div>':'')+
-    '<div class="btns"><button class="next-btn" id="nextBtn">'+(idx+1<questions.length?"次へ →":"結果を見る")+'</button></div>';
+    '<div class="btns nx"><button class="next-btn" id="nextBtn" aria-label="'+(idx+1<questions.length?"次へ":"結果を見る")+'">'+NLI.svg(idx+1<questions.length?"next":"flag",28)+'</button></div>';
   $("nextBtn").onclick=next;
   $("hintLine").textContent="Enter で次へ";
-  if(q.ok&&!q.accent)autoNext=setTimeout(next,1500);
+  if(q.ok&&!q.accent&&(!window.Quiz||!Quiz.autoNext||Quiz.autoNext()))autoNext=setTimeout(next,1500);   // 間違えたときは自動では進まない
 }
 function next(){
   clearTimeout(autoNext);
@@ -584,7 +588,9 @@ window.FB_QUESTIONS=function(){
   }
   return out;
 };
-function goHome(){clearInterval(timerHandle);clearTimeout(autoNext);setAccent(null);renderHome();show(homeScreen);}
+function goHome(){clearInterval(timerHandle);clearTimeout(autoNext);
+  if(L.home){location.href=L.home;return;}   // 動詞活用ページから開いたときは、そこへ戻る
+  setAccent(null);renderHome();show(homeScreen);}
 
 /* ---------- 起動 ---------- */
 function init(){
@@ -610,6 +616,16 @@ function init(){
     if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;
     if(q.kind==="c"&&/^[1-9]$/.test(e.key)){const b=document.querySelectorAll("#opts .opt")[+e.key-1];if(b&&!b.disabled)b.click();}
   });
+  /* #項目:答え方（例 #er:write）つきで開いたら、すぐにその項目の問題を始める */
+  const hm=/^#([a-z0-9]+)(?::(choice|write))?$/.exec(location.hash||"");
+  if(hm&&(hm[1]==="mix"||hm[1]==="weak"||L.sections.some(x=>x.k===hm[1]))){
+    if(hm[2]){curMode=hm[2];store.mode=curMode;save();}
+    try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}   // 読み込み直しで、また始まらないように
+    renderHome();
+    if(hm[1]==="weak"&&!itemsOf("weak").length){goHome();return;}
+    startRound(hm[1]);return;
+  }
+  if(L.home){location.replace(L.home);return;}
   renderHome();show(homeScreen);
 }
 window.GRAMMAR={ITEMS,judge,nz,tiles,init,get questions(){return questions;},get idx(){return idx;}};

@@ -191,7 +191,7 @@
     } catch (e) { return "error"; } finally { backingUp = false; }
   }
   function score(v) { try { var o = JSON.parse(v); return Array.isArray(o) ? o.length : (Number(o.answered) || 0) * 1000 + (Number(o.tries) || 0); } catch (e) { return -1; } }
-  /* 文法練習にあった動詞の活用の問題を「動詞活用 › 教科書の動詞」（verbs.html）へ移したので、
+  /* 文法練習にあった動詞の活用の問題を「動詞活用」の「いろいろな動詞」（verbs-data.js）へ移したので、
      その問題の記録（問題ごとの点数・項目バッジ）を gramQuiz_Lx から verbQuiz へ移す。問題IDは同じ。
      この端末で一度済めば印を残す。バックアップから古い記録が戻ったときは、もう一度だけ行う */
   var VMOVE = { 2: [18, 61, { er: "er", ea: "ea" }], 3: [28, 41, { ir: "ir" }], 4: [0, 23, { verb: "v4" }], 5: [0, 20, { verb: "v5" }], 6: [0, 25, { verb: "v6" }] };
@@ -425,10 +425,26 @@
     });
   })();
 
-  try { migrateVerbs(false); } catch (e) {}   // 教科書の動詞の記録の引っ越し（一度だけ）
+  try { migrateVerbs(false); } catch (e) {}   // いろいろな動詞の記録の引っ越し（一度だけ）
+
+  /* アイコン（文字のかわりに使う）。NLI.svg("home", 22) で SVG の文字列 */
+  var ICON = {home:"<path d=\"M3.5 11 12 4l8.5 7\"/><path d=\"M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5\"/>",back:"<path d=\"M15 5l-7 7 7 7\"/>",next:"<path d=\"M5 12h13\"/><path d=\"M13 6l6 6-6 6\"/>",flag:"<path d=\"M6 21V4\"/><path d=\"M6 4.5h10.5l-2.2 4 2.2 4H6\"/>",again:"<path d=\"M4.5 12a7.5 7.5 0 1 0 2.2-5.3\"/><path d=\"M4.5 4.5v4.5H9\"/>",speaker:"<path d=\"M4 9.5h3.5L12 6v12l-4.5-3.5H4z\"/><path d=\"M15.5 9.5a3.5 3.5 0 0 1 0 5\"/><path d=\"M18 7.5a6.5 6.5 0 0 1 0 9\"/>",slow:"<path d=\"M3 18.5h12.5a4 4 0 0 0 4-4V12\"/><circle cx=\"10\" cy=\"12.5\" r=\"5\"/><path d=\"M10 12.5a1.6 1.6 0 1 1 1.6-1.6\"/><path d=\"M19.5 12 18 7.5M19.5 12l2.5-3.5\"/>",undo:"<path d=\"M9 7 4.5 11.5 9 16\"/><path d=\"M4.5 11.5H15a4.5 4.5 0 0 1 0 9h-2\"/>",clear:"<path d=\"M6 6l12 12M18 6 6 18\"/>",help:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.6 9.3a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2 1-1.2 1.9\"/><circle cx=\"12\" cy=\"16.8\" r=\".6\" fill=\"currentColor\"/>",logout:"<path d=\"M14 4h4.5a1.5 1.5 0 0 1 1.5 1.5v13a1.5 1.5 0 0 1-1.5 1.5H14\"/><path d=\"M10 8l-4 4 4 4\"/><path d=\"M6 12h10\"/>"};
+  window.NLI = { svg: function (k, sz) { sz = sz || 22; return '<svg class="nli" width="' + sz + '" height="' + sz + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICON[k] || "") + '</svg>'; } };
+  (function () {
+    var css = document.createElement("style");
+    css.textContent = '.ic-nav{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--rule,#ece1da);background:#fdfaf8;color:var(--ink-soft,#8c8088);text-decoration:none;cursor:pointer;padding:0;transition:color .15s,border-color .15s,transform .15s;}' +
+      '.ic-nav:hover{color:var(--accent-ink,#8f667f);border-color:var(--accent,#b48aa8);transform:translateY(-1px);}' +
+      '.home-link.ic{display:flex;align-items:center;justify-content:center;width:46px;height:46px;margin:16px auto 0;border-radius:50%;border:1px solid var(--rule,#ece1da);background:#fdfaf8;color:var(--ink-soft,#8c8088);padding:0;}' +
+      '.next-btn .nli{display:block;margin:0 auto;width:28px;height:28px;}' +
+      '.play.again .nli{width:26px;height:26px;vertical-align:middle;}' +
+      '.mini .nli,.bb .nli{width:17px;height:17px;vertical-align:-4px;}' +
+      'button.ic-only{line-height:1;}';
+    (document.head || document.documentElement).appendChild(css);
+  })();
 
   window.Quiz = {
     prefs: prefs, setPref: setPref,
+    autoNext: function () { return !prefs().manualNext; },   // 正解したら自動で次の問題へ（設定で「自分で押す」にできる）
     SYNC_ON: SYNC_ON, APPS: APPS,
     user: function () { return user; },
     isPractice: function () { return !!(user && user.practice); },

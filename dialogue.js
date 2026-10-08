@@ -367,7 +367,7 @@
     fr = G(fr);
     const b = document.createElement("div"); b.className = "bub p" + (showText() ? " open" : "");
     b.innerHTML = '<span class="who">Camille</span><span class="veil">🔊 聞き取ってみよう</span><span class="fr">' + esc(fr) + '</span><span class="ja">' + esc(ja || "") + '</span>' +
-      '<span class="bb"><button type="button" data-a="re">▶ もう一度</button><button type="button" data-a="slow">▶ ゆっくり</button><button type="button" data-a="txt"></button></span>';
+      '<span class="bb"><button type="button" data-a="re" aria-label="もう一度聞く" title="もう一度聞く">' + NLI.svg("speaker", 16) + '</button><button type="button" data-a="slow" aria-label="ゆっくり" title="ゆっくり">' + NLI.svg("slow", 16) + '</button><button type="button" data-a="txt"></button></span>';
     $("dlgLog").appendChild(b);
     b.querySelector("[data-a=re]").onclick = () => speak(fr);
     b.querySelector("[data-a=slow]").onclick = () => speak(fr, true);
@@ -417,7 +417,7 @@
   function showEx() {
     const t = cur().t, ex = G(t.ex);
     $("dlgExBox").innerHTML = '<div class="dlg-ex"><span class="fr">' + esc(ex) + '</span>' +
-      '<div class="bb" style="margin-top:6px"><button class="mini" id="exPlay">▶ お手本</button><button class="mini" id="exSlow">▶ ゆっくり</button></div></div>';
+      '<div class="bb" style="margin-top:6px"><button class="mini ic-only" id="exPlay" aria-label="お手本を聞く" title="お手本を聞く">' + NLI.svg("speaker", 17) + '</button><button class="mini ic-only" id="exSlow" aria-label="ゆっくり" title="ゆっくり">' + NLI.svg("slow", 17) + '</button></div></div>';
     $("exPlay").onclick = () => speak(ex); $("exSlow").onclick = () => speak(ex, true);
   }
   function onSaid(alts) {
@@ -450,7 +450,7 @@
     msg.className = "dlg-msg ng"; msg.textContent = why + "。";
     showEx();
     const box = $("dlgExBox");
-    box.insertAdjacentHTML("beforeend", '<div class="dlg-tools"><button class="mini" id="dlgFix">今のは言えていた（正解にする）</button><button class="next-btn" id="dlgNext">次へ →</button></div>');
+    box.insertAdjacentHTML("beforeend", '<div class="dlg-tools"><button class="mini" id="dlgFix">今のは言えていた（正解にする）</button><button class="next-btn" id="dlgNext" aria-label="次へ">' + NLI.svg("next", 28) + '</button></div>');
     const mic = $("dlgMic"); if (mic) mic.classList.add("hidden");
     busy = true;
     $("dlgFix").onclick = () => { busy = false; const ms = document.querySelectorAll("#dlgLog .bub.s .mk"); const mk = ms[ms.length - 1]; if (mk) { mk.className = "mk ok"; mk.textContent = "✓"; } lastTag = r.tag || ""; finishTurn(true, r.said, true); };
@@ -465,6 +465,15 @@
     $("sOk").onclick = () => { const b = document.createElement("div"); b.className = "bub s"; b.innerHTML = '<span class="who">あなた</span><span class="dh">（自己判定）</span><span class="mk ok">✓</span>'; $("dlgLog").appendChild(b); finishTurn(true, "（自己判定）"); };
     $("sNg").onclick = () => { const b = document.createElement("div"); b.className = "bub s"; b.innerHTML = '<span class="who">あなた</span><span class="dh">（自己判定）</span><span class="mk ng">✕</span>'; $("dlgLog").appendChild(b); finishTurn(false, "（自己判定）"); };
   }
+  /* 正解なら自動で次へ（設定で「自分で押す」にできる）。間違えたときは「次へ」を押すまで進まない */
+  function autoOn() { const Qz = window.Quiz; return !(Qz && Qz.prefs && Qz.prefs().manualNext); }
+  function proceed(ok, go, delay, host) {
+    if (ok && autoOn()) { setTimeout(go, delay); return; }
+    const h = host || $("dlgCtl");
+    h.insertAdjacentHTML("beforeend", '<div class="nx-wrap"><button class="next-btn" id="dlgGo" aria-label="次へ">' + NLI.svg("next", 28) + '</button></div>');
+    const b = $("dlgGo"); b.onclick = () => { b.disabled = true; go(); };
+    scrollEnd();
+  }
   function finishTurn(ok, heard, manual) {
     const s = cur(); if (s.ok !== null) return;
     s.ok = ok; s.heard = heard || s.heard;
@@ -473,20 +482,20 @@
     if (D.role === "ask") {   // 相手が答える → 聞き取りの確認
       $("dlgCtl").innerHTML = '<div class="dlg-msg">カミーユが答えます…</div>';
       partnerSay(s.t.ans, s.t.aj, () => {
-        if (s.t.noQuiz) { setTimeout(go, 500); return; }
+        if (s.t.noQuiz) { setTimeout(go, 500); return; }   // 聞き取りの確認がないときは、そのまま続ける
         listenQ(s, go);
       });
       return;
     }
     if (manual) { go(); return; }
-    setTimeout(go, ok ? 900 : 1400);
+    proceed(ok, go, 900);
   }
   function listenQ(s, go) {
     const pool = D.turns.filter(t => !t.noQuiz && t !== s.t).map(t => t.aj);
     const opts = shuffle([s.t.aj].concat(shuffle(pool).slice(0, 2)));
     $("dlgCtl").innerHTML = '<div class="dlg-q"><div class="dlg-task">カミーユは何と答えた？</div><div class="opts" id="lqOpts">' +
       opts.map((o, i) => '<button class="opt" data-i="' + i + '">' + esc(o) + '</button>').join("") + '</div>' +
-      '<div class="dlg-tools"><button class="mini" id="lqRe">▶ もう一度聞く</button><button class="mini" id="lqSlow">▶ ゆっくり</button></div></div>';
+      '<div class="dlg-tools"><button class="mini ic-only" id="lqRe" aria-label="もう一度聞く" title="もう一度聞く">' + NLI.svg("speaker", 17) + '</button><button class="mini ic-only" id="lqSlow" aria-label="ゆっくり" title="ゆっくり">' + NLI.svg("slow", 17) + '</button></div></div>';
     $("lqRe").onclick = () => speak(G(s.t.ans)); $("lqSlow").onclick = () => speak(G(s.t.ans), true);
     $("lqOpts").querySelectorAll(".opt").forEach(b => b.onclick = () => {
       const ok = opts[+b.dataset.i] === s.t.aj; s.lq = ok;
@@ -494,7 +503,7 @@
       if (ok) playCorrect(); else playWrong();
       const last = document.querySelectorAll("#dlgLog .bub.p"); const lb = last[last.length - 1];
       if (lb && !lb.classList.contains("open")) { lb.classList.add("open"); refreshVeils(); }
-      setTimeout(go, ok ? 900 : 1700);
+      proceed(ok, go, 900, document.querySelector("#dlgCtl .dlg-q"));
     });
     scrollEnd();
   }
@@ -512,14 +521,14 @@
     if (qi >= quizItems.length) { finishDlg(); return; }
     const it = quizItems[qi], opts = shuffle([it.q.a].concat(it.q.o));
     $("dlgCount").textContent = "聞き取り " + (qi + 1) + " / " + quizItems.length;
-    $("dlgCtl").innerHTML = '<div class="dlg-q"><div class="dlg-msg">会話の聞き取りクイズ（上の吹き出しの ▶ で聞き直してもOK）</div>' +
+    $("dlgCtl").innerHTML = '<div class="dlg-q"><div class="dlg-msg">聞き取りクイズ</div>' +
       '<div class="dlg-task">' + esc(it.q.q) + '</div><div class="opts" id="cqOpts">' +
       opts.map((o, i) => '<button class="opt" data-i="' + i + '">' + esc(o) + '</button>').join("") + '</div></div>';
     $("cqOpts").querySelectorAll(".opt").forEach(b => b.onclick = () => {
       const ok = opts[+b.dataset.i] === it.q.a; it.ok = ok;
       $("cqOpts").querySelectorAll(".opt").forEach(x => { x.disabled = true; if (opts[+x.dataset.i] === it.q.a) x.classList.add("correct"); else if (x === b) x.classList.add("wrong"); else x.classList.add("dim"); });
       if (ok) playCorrect(); else playWrong();
-      setTimeout(() => { qi++; quizStep(); }, ok ? 800 : 1500);
+      proceed(ok, () => { qi++; quizStep(); }, 800, document.querySelector("#dlgCtl .dlg-q"));
     });
     scrollEnd();
   }
@@ -548,7 +557,7 @@
         '<button class="round-btn" data-i="' + i + '" aria-label="音声">▶</button></div>';
     });
     if (quizItems.length) h += '<div class="rrow"><span class="mk ' + (quizItems.every(x => x.ok) ? "ok" : "no") + '">' + quizItems.filter(x => x.ok).length + '</span><span class="rtx"><span class="rja">聞き取りクイズ ' + quizItems.filter(x => x.ok).length + ' / ' + quizItems.length + '</span></span></div>';
-    h += '</div><button class="play again" id="dlgAgain">もう一度この会話</button><button class="home-link" id="dlgHome">ホームにもどる</button></div>';
+    h += '</div><button class="play again" id="dlgAgain" aria-label="もう一度この会話" title="もう一度この会話">' + NLI.svg("again", 26) + '</button><button class="home-link ic" id="dlgHome" aria-label="もどる" title="もどる">' + NLI.svg("back", 22) + '</button></div>';
     $("dlgCtl").classList.add("hidden");
     const end = $("dlgEnd"); end.innerHTML = h; end.classList.remove("hidden");
     end.querySelectorAll(".round-btn").forEach(b => b.onclick = () => speak(G(live[+b.dataset.i].t.ex)));

@@ -85,7 +85,7 @@
     const T = s.talk, D = s.conj;
     const rings = [
       { x: 205, c: C.conj, name: "動詞活用", big: D.acc == null ? "—" : D.acc + "%", sub: "正答率",
-        parts: [{ v: (D.acc || 0) / 100, c: C.conj }], l1: (D.rounds || 0) + " ラウンド", l2: D.verb != null ? "教科書の動詞 " + D.verb + "%" : "" },
+        parts: [{ v: (D.acc || 0) / 100, c: C.conj }], l1: (D.rounds || 0) + " ラウンド", l2: D.verb != null ? "いろいろな動詞 " + D.verb + "%" : "" },
       { x: 540, c: C.gram, name: "文法練習", big: gPct + "%", sub: "達成率",
         parts: [{ v: gM / gN, c: C.gram }, { v: Math.max(0, gPct / 100 - gM / gN), c: fade(C.gram, .45) }], l1: "挑戦 " + gT + " / " + gN + " 問", l2: "習得 " + gM + " 問" },
       { x: 875, c: C.talk, name: "会話フレーズ", big: (T.pct != null ? T.pct : T.m) + "%", sub: "達成率",

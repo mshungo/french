@@ -6,8 +6,8 @@
 <title>会話練習 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=20"></script>
-<script src="streak.js?v=1"></script>
+<script src="common.js?v=23"></script>
+<script src="streak.js?v=3"></script>
 <script src="feedback.js?v=2"></script>
 <script src="audio/talk/index.js?v=3"></script>
 <script src="badge.js?v=3"></script>
@@ -344,8 +344,10 @@
   .after .heard s{color:var(--bad-ink);}
   .after .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px;align-items:center;}
   .after .shadow{font-size:10.5px;color:var(--ink-faint);margin-top:10px;letter-spacing:.5px;}
-  .next-btn{font-family:"Noto Sans JP";font-size:13px;color:#fff;background:var(--accent-ink);border:none;border-radius:20px;padding:8px 22px;cursor:pointer;}
+  .next-btn{font-family:"Noto Sans JP";font-size:16px;font-weight:600;color:#fff;background:var(--accent-ink);border:none;border-radius:999px;padding:14px 40px;min-width:min(240px,100%);cursor:pointer;box-shadow:0 10px 20px -12px var(--accent-ink);}
   .next-btn:hover{background:var(--accent);}
+  .btns .next-btn{flex:1 1 100%;max-width:340px;margin-top:4px;}
+  .nx-wrap{display:flex;justify-content:center;margin-top:12px;}
   .selfchk{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .selfchk .opt{font-family:"Noto Sans JP";font-size:14px;font-weight:500;display:flex;gap:8px;justify-content:center;align-items:baseline;}
   .fb{margin-top:14px;}
@@ -416,7 +418,7 @@
 
   <!-- ===== HOME ===== -->
   <div class="panel" id="homeScreen">
-    <div class="acct"><div class="row"><a class="link" href="index.html">← メニュー</a><div class="streak" id="streak"></div></div></div>
+    <div class="acct"><div class="row"><a class="ic-nav" href="index.html" aria-label="メニュー" title="メニュー"><svg class="nli" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5"/></svg></a><div class="streak" id="streak"></div></div></div>
     <p class="hello">フレーズ10問<small>よく使う決まり文句を、フランス語でさらりと言えるようにする練習です。</small></p>
     <div class="stat-grid">
       <div class="stat"><div class="n" id="hTries">0</div><div class="l">挑戦回数</div></div>
@@ -492,8 +494,8 @@
     <div class="mastery" id="rMastery"></div>
     <div class="review" id="review"></div>
     <button class="play retry hidden" id="retryBtn">間違えたところだけを練習</button>
-    <button class="play again" id="againBtn">もう一度</button>
-    <button class="home-link" id="toHomeBtn">ホームにもどる</button>
+    <button class="play again" id="againBtn" aria-label="もう一度" title="もう一度"><svg class="nli" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4.5H9"/></svg></button>
+    <button class="home-link ic" id="toHomeBtn" aria-label="もどる" title="もどる"><svg class="nli" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
   </div>
 </div>
 
@@ -965,6 +967,7 @@ function poolFor(sec){
 function buildRound(sec){
   const pool=poolFor(sec).map(p=>{
     const lv=lvOf(p.n);let pr=lv+Math.random()*2.4;
+    if(lv>=4)pr+=5;          // 習得ずみ（●4以上）は、ほかに出す問題が足りないときだけ出る
     if(lv>=5)pr+=3;
     if(store.wrong[p.n])pr-=Math.min(2.5,store.wrong[p.n]*0.8);
     return {p,pr};
@@ -1058,7 +1061,7 @@ function render(){
   const hint=$("hintLine");
   if(q.type==="listen"){
     st.innerHTML='<div class="listen-box"><button class="big-play" id="playBtn" aria-label="もう一度聞く">▶</button>'+
-      '<div class="row-btns"><button class="mini" id="slowBtn">ゆっくり</button><button class="mini" id="peekBtn">文字を見る</button></div>'+
+      '<div class="row-btns"><button class="mini ic-only" id="slowBtn" aria-label="ゆっくり" title="ゆっくり">'+NLI.svg("slow",18)+'</button><button class="mini" id="peekBtn">文字を見る</button></div>'+
       '<div class="peek hidden" id="peek">'+esc(q.v.fr)+'</div></div>'+
       '<div class="qtext">この意味は？</div><div class="opts long ja" id="opts"></div>';
     const play=(slow)=>{if(questions[idx]!==q||!$("playBtn"))return;$("playBtn").classList.add("on");speak(q.v.fr,slow,()=>{const b=$("playBtn");if(b)b.classList.remove("on");});};
@@ -1079,7 +1082,7 @@ function render(){
   }else if(q.type==="build"){
     st.innerHTML='<div class="prompt-ja">'+esc(q.v.ja)+'</div><div class="qtext">単語を並べてフランス語にしよう</div>'+
       '<div class="tray" id="tray"></div><div class="bank" id="bank"></div>'+
-      '<div class="build-ctl"><button class="mini" id="undoBtn">1つ戻す</button> <button class="mini" id="clearBtn">やり直す</button></div>';
+      '<div class="build-ctl"><button class="mini ic-only" id="undoBtn" aria-label="1つ戻す" title="1つ戻す">'+NLI.svg("undo",17)+'</button> <button class="mini ic-only" id="clearBtn" aria-label="やり直す" title="やり直す">'+NLI.svg("clear",17)+'</button></div>';
     q.picked=[];drawTiles(q);
     $("undoBtn").onclick=()=>{if(locked)return;q.picked.pop();drawTiles(q);};
     $("clearBtn").onclick=()=>{if(locked)return;q.picked=[];drawTiles(q);};
@@ -1276,7 +1279,7 @@ function revealSelf(q){
   const a=$("after");a.classList.remove("hidden");
   a.innerHTML='<div class="ans-fr">'+esc(q.v.fr)+'</div><div class="ans-ja">'+esc(q.v.ja)+'</div>'+
     altLine(q)+
-    '<div class="btns"><button class="mini" id="rep1">▶ もう一度</button><button class="mini" id="rep2">▶ ゆっくり</button></div>'+
+    '<div class="btns"><button class="mini ic-only" id="rep1" aria-label="もう一度聞く" title="もう一度聞く">'+NLI.svg("speaker",18)+'</button><button class="mini ic-only" id="rep2" aria-label="ゆっくり" title="ゆっくり">'+NLI.svg("slow",18)+'</button></div>'+
     '<div class="qtext" style="margin:14px 0 8px">言えたかどうか、正直に</div>'+
     '<div class="selfchk"><button class="opt" id="okBtn"><span class="k">1</span>言えた</button><button class="opt" id="ngBtn"><span class="k">2</span>言えなかった</button></div>';
   $("rep1").onclick=()=>speak(q.v.fr);$("rep2").onclick=()=>speak(q.v.fr,true);
@@ -1325,8 +1328,8 @@ function showAfter(q){
   if(q.type==="reply")extra='<div class="heard">相手：«'+esc(q.p.ctx.p)+'»</div>'+extra;
   const fix=(!q.ok&&q.type==="speak"&&q.byMic)?'<button class="mini" id="fixBtn">今のは言えていた（正解にする）</button>':'';
   a.innerHTML='<div class="ans-fr">'+esc(q.v.fr)+'</div><div class="ans-ja">'+esc(q.v.ja)+'</div>'+altLine(q)+extra+
-    '<div class="btns"><button class="mini" id="rep1">▶ もう一度</button><button class="mini" id="rep2">▶ ゆっくり</button>'+fix+
-    '<button class="next-btn" id="nextBtn">'+(idx+1<questions.length?"次へ →":"結果を見る")+'</button></div>'+
+    '<div class="btns"><button class="mini ic-only" id="rep1" aria-label="もう一度聞く" title="もう一度聞く">'+NLI.svg("speaker",18)+'</button><button class="mini ic-only" id="rep2" aria-label="ゆっくり" title="ゆっくり">'+NLI.svg("slow",18)+'</button>'+fix+
+    '<button class="next-btn" id="nextBtn" aria-label="'+(idx+1<questions.length?"次へ":"結果を見る")+'">'+NLI.svg(idx+1<questions.length?"next":"flag",28)+'</button></div>'+
     (SR?(q.ok?'<div class="pr-open"><button class="mini" id="prOpen">発音を練習する</button></div><div id="prBox"></div>':'<div id="prBox">'+practiceHTML(q)+'</div>'):
       '<div class="shadow">音声のあとに、まねして声に出してみよう</div>');
   $("rep1").onclick=()=>{clearTimeout(autoNext);speak(q.v.fr);};
@@ -1334,13 +1337,16 @@ function showAfter(q){
   $("nextBtn").onclick=next;
   if(fix)$("fixBtn").onclick=()=>overrideCorrect(q);
   if(SR){
-    if(q.ok)$("prOpen").onclick=()=>{clearTimeout(autoNext);$("prOpen").parentNode.remove();$("prBox").innerHTML=practiceHTML(q);bindPractice(q);};
+    if(q.ok)$("prOpen").onclick=()=>{clearTimeout(autoNext);q._stay=true;$("prOpen").parentNode.remove();$("prBox").innerHTML=practiceHTML(q);bindPractice(q);};
     else bindPractice(q);
   }
   $("hintLine").textContent="「次へ」を押す（Enter でも可）";
   const isSelf=q.type==="speak"&&!q.byMic;  // 自己判定は読み上げ済み
-  // 次へは自分で押す（自動では進まない）。答えの音声は効果音が鳴り終わってから再生する
-  if(!isSelf&&!(q.ok&&q.type==="listen"))speak(q.v.fr,false,null,700);
+  // 正解なら、答えの音声が終わってから自動で次へ（設定で「自分で押す」にできる）。間違えたときは自動では進まない
+  const auto=q.ok&&(!Q||!Q.autoNext||Q.autoNext());
+  const arm=()=>{if(questions[idx]===q&&!q._stay){clearTimeout(autoNext);autoNext=setTimeout(next,1100);}};
+  if(!isSelf&&!(q.ok&&q.type==="listen"))speak(q.v.fr,false,auto?arm:null,700);
+  else if(auto)autoNext=setTimeout(next,1500);
 }
 function overrideCorrect(q){
   if(q.ok)return;
@@ -1446,6 +1452,6 @@ if(!store.badges){store.badges={};awardBadges();fresh={};}   // この版より�
 renderHome();show(homeScreen);
 
 </script>
-<script src="dialogue.js?v=3"></script>
+<script src="dialogue.js?v=5"></script>
 </body>
 </html>
