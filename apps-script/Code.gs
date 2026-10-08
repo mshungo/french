@@ -27,11 +27,11 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-07k';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-08b';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
-const PROG_KEY_RE = /^(conjQuizStats_v4|talkQuiz_v1|gramQuiz_L[1-9]_v1|conjQuizDays|nlWelcome_v1)$/;   // 端末の記録のうち、バックアップするもの
+const PROG_KEY_RE = /^(conjQuizStats_v4|talkQuiz_v1|gramQuiz_L[1-9]_v1|conjQuizDays|nlWelcome_v1|nlStamp_v1)$/;   // 端末の記録のうち、バックアップするもの
 const PROG_MAX = 45000;      // 1件あたりの最大文字数（セルの上限は5万字）
 const BACKUP_FOLDER = 'Naralingo バックアップ';
 const BACKUP_KEEP = 30;   // 自動バックアップを何日分残すか
@@ -133,7 +133,8 @@ function coachData_() {
 
 // ===== お知らせ（シート「お知らせ」でA列にチェックを入れた行を、ログイン画面とメニューの上に出す）=====
 const NOTICE_SHEET = 'お知らせ';
-const NOTICE_HEADERS = ['表示する', '種類（お知らせ／注意／障害）', '本文', 'メモ（表示されない）'];
+const NOTICE_HEADERS = ['表示する', '種類（お知らせ／期間限定／イベント／注意／障害）', '本文（太字・色・下線・リンクなどの装飾もそのまま出ます）', 'メモ（表示されない）'];
+const NOTICE_KINDS = ['お知らせ', '期間限定', 'イベント', '注意', '障害'];   // ほかの語はすべて「お知らせ」として出す
 function noticeSheet_(ss) {
   let sh = ss.getSheetByName(NOTICE_SHEET);
   if (!sh) {
@@ -151,13 +152,60 @@ function notices_() {
   if (c) return JSON.parse(c);
   const sh = ss_().getSheetByName(NOTICE_SHEET), out = [];
   if (sh && sh.getLastRow() >= 2) {
-    sh.getRange(2, 1, Math.min(sh.getLastRow() - 1, 30), 3).getValues().forEach(function (r) {
+    const n = Math.min(sh.getLastRow() - 1, 30), vals = sh.getRange(2, 1, n, 3).getValues();
+    let rich = null, cell = null;
+    try {
+      const rg = sh.getRange(2, 3, n, 1);
+      rich = rg.getRichTextValues();
+      cell = { w: rg.getFontWeights(), st: rg.getFontStyles(), ln: rg.getFontLines(), col: rg.getFontColors() };   // セル全体にかけた装飾
+    } catch (e) {}
+    vals.forEach(function (r, i) {
       const on = r[0] === true || String(r[0]).toUpperCase() === 'TRUE' || r[0] === '○';
-      const text = String(r[2] || '').replace(/[\u0000-\u0009\u000b-\u001f]/g, ' ').trim().slice(0, 400);
-      if (on && text && out.length < 3) out.push({ kind: ['注意', '障害'].indexOf(String(r[1]).trim()) >= 0 ? String(r[1]).trim() : 'お知らせ', text: text });
+      if (!on || out.length >= 3) return;
+      const def = cell ? { b: cell.w[i][0] === 'bold', i: cell.st[i][0] === 'italic', u: cell.ln[i][0] === 'underline', s: cell.ln[i][0] === 'line-through', c: String(cell.col[i][0] || '') } : {};
+      const runs = noticeRuns_(rich && rich[i] && rich[i][0], r[2], def);
+      const text = runs.map(function (x) { return x.t; }).join('').trim();
+      if (!text) return;
+      const item = { kind: NOTICE_KINDS.indexOf(String(r[1]).trim()) >= 0 ? String(r[1]).trim() : 'お知らせ', text: text };
+      if (runs.some(function (x) { return Object.keys(x).length > 1; })) item.rich = runs;   // 文字装飾があるときだけ送る
+      out.push(item);
     });
   }
   cache.put('notices', JSON.stringify(out), 60);   // 1分間は読み直さない（書き換えると1分以内に反映）
+  return out;
+}
+/* セルの文字装飾（太字・斜体・下線・取り消し線・文字色・リンク）を、区切りごとの小さな記録にする。
+   送るのは文字と装飾の種類だけ（HTMLは送らない）。表示する側で安全に組み立てる */
+function noticeRuns_(rv, plain, def) {
+  def = def || {};
+  const clean = function (t) { return String(t || '').replace(/[\u0000-\u0009\u000b-\u001f]/g, ' '); };
+  const out = [];
+  let len = 0;
+  const push = function (t, st, url) {
+    t = clean(t);
+    if (!t || len >= 400) return;
+    t = t.slice(0, 400 - len); len += t.length;
+    const x = { t: t };
+    // 部分ごとの装飾があればそれを、なければセル全体の装飾を使う
+    const get = function (fn, d) { try { const v = st && st[fn] ? st[fn]() : null; return v === null || v === undefined ? d : v; } catch (e) { return d; } };
+    if (get('isBold', def.b)) x.b = 1;
+    if (get('isItalic', def.i)) x.i = 1;
+    if (get('isUnderline', def.u)) x.u = 1;
+    if (get('isStrikethrough', def.s)) x.s = 1;
+    const col = String(get('getForegroundColor', def.c) || '');
+    if (/^#[0-9a-f]{6}$/i.test(col) && !/^#000000$/i.test(col)) x.c = col.toLowerCase();
+    if (url && /^https?:\/\//i.test(url)) x.h = String(url).slice(0, 500);
+    out.push(x);
+  };
+  try {
+    if (rv && rv.getRuns) {
+      rv.getRuns().forEach(function (run) { push(run.getText(), run.getTextStyle(), run.getLinkUrl && run.getLinkUrl()); });
+      if (out.length > 40) { const t = out.map(function (x) { return x.t; }).join(''); return [{ t: t }]; }
+      if (out.length) return out;
+    }
+  } catch (e) {}
+  out.length = 0; len = 0;
+  push(plain, null, null);
   return out;
 }
 

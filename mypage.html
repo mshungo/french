@@ -6,10 +6,11 @@
 <title>学習記録 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=18"></script>
+<script src="common.js?v=19"></script>
+<script src="streak.js?v=1"></script>
 <script src="feedback.js?v=2"></script>
 <script src="coach.js?v=4"></script>
-<script src="card.js?v=5"></script>
+<script src="card.js?v=6"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -113,6 +114,7 @@
     <div class="bar"><a class="link" href="index.html">← メニュー</a><div class="streak" id="streak"></div></div>
     <p class="hello" id="hello" style="margin-top:14px">読み込み中…</p>
     <div class="nick" id="nickRow"></div>
+    <div id="stkCard"></div>
     <div id="body"></div>
   </div>
 </div>
@@ -130,7 +132,8 @@
     if(app==="talk")return TALKSEC[s]||s;
     return s;
   }
-  var r0=Q.streak();$("streak").innerHTML="連続 "+r0.n+"日";
+  $("streak").innerHTML=Q.streakHTML();
+  if(window.Streak){Streak.mount($("stkCard"));Q.onStats(function(){Streak.mount($("stkCard"));$("streak").innerHTML=Q.streakHTML();});}
   var u=Q.user();
   if(!Q.SYNC_ON||!u){$("hello").textContent="学習記録";$("body").innerHTML='<p class="msg-box">記録の送信が有効になっていないため、ここには表示できません。</p>';return;}
   if(u.practice){$("hello").textContent="学習記録";$("body").innerHTML='<p class="msg-box">練習用IDでは、学習記録は残りません。自分のIDでログインすると、ここに記録が表示されます。</p>';return;}
@@ -210,6 +213,8 @@
   /* 文法1問の達成ポイント（0〜4）。grammar.js と同じ数え方 */
   function ptOf(x){if(x.pt!=null)return Math.min(4,x.pt);var run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);
     return (!x.wk&&(((x.wrun||0)>=1&&run>=2)||x.m))?4:(!x.wk&&run>=2)?2:((x.c||0)>0&&x.last===1)?1:0;}
+  /* 成果カードに出すIDは一部だけ（MORITA7K3Q → MO****Q）。長さも分からないように * は4つ固定 */
+  function maskId(id){id=String(id||"");return id.length<=3?id.charAt(0)+"****":id.slice(0,2)+"****"+id.slice(-1);}
   function rankOf(ms){if(ms==null)return null;var s=ms/1000;return s<=20?"SSS":s<=30?"SS":s<=45?"S":s<=60?"A":s<=120?"B":"C";}
   /* 達成度：端末に残っている進み具合から数える（成果カードと「達成度」の欄で使う）
      文法：1問4点の達成ポイント（選択式の正解＋1点・2点まで、記述式の正解＋2点、4点で習得）
@@ -237,10 +242,10 @@
   }
   function cardData(d){
     var P=progress(),ca=d.byApp.conj;
-    var st=Q.streak(),q=window.Coach?Coach.pickStory(Math.floor(Date.now()/86400000)):null;
+    var st=Q.chain(),q=window.Coach?Coach.pickStory(Math.floor(Date.now()/86400000)):null;
     while(q&&!q.fr)q=Coach.pickStory(Math.floor(Math.random()*1000));
     var now=new Date(),hm=now.toLocaleTimeString("ja-JP",{timeZone:"Asia/Tokyo",hour:"2-digit",minute:"2-digit",hour12:false});
-    return {id:u.id,nick:(u.name&&u.name!==u.id)?u.name:"",stamp:Q.todayJST().replace(/-/g,".")+" "+hm,durSec:d.dur,days:Object.keys(d.days).length,streak:st.n,acc:d.q?Math.round(d.c/d.q*100):null,
+    return {id:maskId(u.id),nick:(u.name&&u.name!==u.id)?u.name:"",stamp:Q.todayJST().replace(/-/g,".")+" "+hm,durSec:d.dur,days:Object.keys(d.days).length,streak:st.n,acc:d.q?Math.round(d.c/d.q*100):null,
       gram:P.gram,talk:P.talk,dlg:P.dlg,conj:{acc:ca&&ca.q?Math.round(ca.c/ca.q*100):null,rounds:ca?ca.n:P.conj.rounds,ranks:P.conj.ranks},badges:P.badges,quote:q};
   }
   /* 「達成度」の欄（画面） */
@@ -354,7 +359,7 @@
     html+='<div class="sec-h">成果カード</div>'+
       '<div class="card-box"><div class="card-img hidden" id="cardImg"></div>'+
       '<div class="card-btns"><button type="button" class="cb-main" id="pngBtn">成果カードを作る</button><button type="button" id="xlsxBtn">Excel で保存（くわしい記録）</button></div>'+
-      '<p class="card-note">記録は自動で保存されています。成果カードには、ID・ニックネーム・作成した日時が入ります（本名は入りません）。人に見せるときは、IDが写っていることに気をつけてね。スマホでは、画像を長押しして保存することもできます。</p></div>';
+      '<p class="card-note">記録は自動で保存されています。成果カードには、ニックネーム・作成した日時と、IDの一部（MO****Q のように一部をかくした形）が入ります。本名は入りません。スマホでは、画像を長押しして保存することもできます。</p></div>';
     $("body").innerHTML=html;
     mountDeer();
     $("xlsxBtn").onclick=function(){exportXlsx(H,this,G);};

@@ -239,7 +239,7 @@ function renderHome(){
   $("weakCount").textContent=wk?wk+"問":"なし";$("weakBtn").disabled=wk<1;
   document.querySelectorAll(".mode-btn[data-mode]").forEach(b=>b.classList.toggle("on",b.dataset.mode===curMode));
   const sEl=$("streak");
-  if(sEl&&window.Quiz){const r=Quiz.streak();sEl.innerHTML='連続 '+r.n+'日'+(r.doneToday?' <small>今日済</small>':(r.n>0?' <small>今日はまだ</small>':''));}
+  if(sEl&&window.Quiz){const r=Quiz.streak();sEl.innerHTML=Quiz.streakHTML();}
 }
 
 /* ---------- 出題 ---------- */

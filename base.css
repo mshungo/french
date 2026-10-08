@@ -52,7 +52,14 @@ body{
 .notice .nk{flex:none;margin-top:1px;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:500;letter-spacing:1px;color:#fff;background:var(--accent-ink);}
 .notice.warn .nk{background:#c08a2b;}
 .notice.ng .nk{background:#b5524c;}
+.notice.ltd{background:#eaf6f2;border-color:#b9ddd0;}
+.notice.ltd .nk{background:#3f8f78;}
+.notice.ltd .nk::before{content:"⏳ ";}
+.notice.evt{background:#eef2fb;border-color:#c9d4ef;}
+.notice.evt .nk{background:#5b74b5;}
 .notice .nt{flex:1;min-width:0;word-break:break-word;}
+.notice .nt b{font-weight:700;}
+.notice .nt a{color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px;word-break:break-all;}
 .nhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px;}
 .nh-t{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;letter-spacing:1px;color:var(--accent-ink);}
 .nh-n{min-width:18px;padding:0 6px;border-radius:10px;background:var(--accent-ink);color:#fff;font-size:10.5px;line-height:18px;text-align:center;letter-spacing:0;}

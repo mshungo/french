@@ -6,11 +6,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=12">
+<link rel="stylesheet" href="base.css?v=13">
 <title>Naralingo — フランス語練習</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=18"></script>
+<script src="common.js?v=19"></script>
+<script src="streak.js?v=1"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=3"></script>
 </head>
@@ -67,6 +68,7 @@
       <div class="streak" id="streak"></div>
     </div>
     <div class="note" id="who"></div>
+    <div id="stkCard"></div>
     <a class="mylink hidden" id="myLink" href="mypage.html">学習記録を見る →</a>
     <div class="sumgrid">
       <div class="sum"><div class="n" id="sTime">0分</div><div class="l">勉強時間</div></div>
@@ -112,7 +114,8 @@
 
   function renderStreak(){
     var r=Q.streak();
-    $("streak").innerHTML="連続 "+r.n+"日"+(r.doneToday?" <small>今日済</small>":(r.n>0?" <small>今日はまだ</small>":""));
+    $("streak").innerHTML=Q.streakHTML();
+    if(window.Streak)Streak.mount($("stkCard"));
   }
   function fmtDur(ms){var m=Math.round((ms||0)/60000);return m<60?m+"分":Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
   function guestConj(){
@@ -150,7 +153,7 @@
     $("sAcc").textContent=tot.ans?Math.round(tot.cor/tot.ans*100)+"%":"—";
     renderStreak();
   }
-  function showMenu(){loginPanel.classList.add("hidden");menuPanel.classList.remove("hidden");renderMenu();var fb=document.getElementById("fbCorner");if(fb)fb.remove();if(window.Feedback)Feedback.mount();maybeWelcome();}
+  function showMenu(){loginPanel.classList.add("hidden");menuPanel.classList.remove("hidden");renderMenu();var fb=document.getElementById("fbCorner");if(fb)fb.remove();if(window.Feedback)Feedback.mount();maybeWelcome();if(window.Streak)Streak.loginBonus();}
   /* はじめてログインしたときだけの案内（見終わったら、この人の記録に「見た」と残す。進み具合のバックアップで別の端末にも伝わる） */
   var WSLIDES=[
     {t:"Bienvenue ! ようこそ",b:"Naralingo(仮)は、フランス語の自習サイトです。<br>現在はベータ版です。少しだけ使い方を紹介します。"},
@@ -218,6 +221,24 @@
   function lsJ(k,d){try{var v=JSON.parse(localStorage.getItem(k)||"null");return v==null?d:v;}catch(e){return d;}}
   function lsP(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
   function nKey(n){return nHash(n.kind+"\u0001"+n.text);}
+  /* 本文：スプレッドシートの文字装飾（太字・斜体・下線・取り消し線・文字色・リンク）を反映。
+     文字はすべてエスケープし、色は #rrggbb、リンクは http(s) だけ通す。装飾なしの文中の URL もリンクにする */
+  function nLink(t){return nEsc(t).replace(/https?:\/\/[^\s<>"]+/g,function(u){return '<a href="'+u+'" target="_blank" rel="noopener noreferrer">'+u+'</a>';});}
+  function nBody(n){
+    if(!Array.isArray(n.rich))return nLink(n.text);
+    return n.rich.map(function(x){
+      if(!x||typeof x.t!=="string")return "";
+      var h=x.h&&/^https?:\/\//i.test(x.h)?x.h:"",t=h?nEsc(x.t):nLink(x.t),st=[],dec=[];
+      if(x.c&&/^#[0-9a-f]{6}$/i.test(x.c))st.push("color:"+x.c);
+      if(x.u)dec.push("underline");if(x.s)dec.push("line-through");
+      if(dec.length)st.push("text-decoration:"+dec.join(" "));
+      if(x.b)t="<b>"+t+"</b>";if(x.i)t="<i>"+t+"</i>";
+      if(st.length)t='<span style="'+st.join(";")+'">'+t+"</span>";
+      if(h)t='<a href="'+nEsc(h)+'" target="_blank" rel="noopener noreferrer">'+t+"</a>";
+      return t;
+    }).join("");
+  }
+  var NCLS={"障害":"ng","注意":"warn","期間限定":"ltd","イベント":"evt"};   /* 種類ごとの色 */
   function renderNotices(list){
     if(list)nList=list.filter(function(n){return n&&n.text;});
     var box=$("notices"),read=lsJ(NREAD,[]);
@@ -233,8 +254,8 @@
       if(!fold){
         h+='<div class="nlist">';
         shownList.forEach(function(n){
-          var k=nKey(n),isRead=read.indexOf(k)>=0,cls=n.kind==="障害"?"ng":n.kind==="注意"?"warn":"info";
-          h+='<div class="notice '+cls+(isRead?' read':'')+'"><span class="nk">'+nEsc(n.kind)+'</span><div class="nt">'+nEsc(n.text)+'</div>'+
+          var k=nKey(n),isRead=read.indexOf(k)>=0,cls=NCLS[n.kind]||"info";
+          h+='<div class="notice '+cls+(isRead?' read':'')+'"><span class="nk">'+nEsc(n.kind)+'</span><div class="nt">'+nBody(n)+'</div>'+
             (isRead?'<span class="nr-done">既読</span>':'<button class="nr" type="button" data-k="'+k+'">既読</button>')+'</div>';
         });
         h+='</div>';

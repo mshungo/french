@@ -74,7 +74,28 @@
     lsSet("conjQuizDays_" + who(), JSON.stringify(out));
     return out;
   }
-  function markToday() { return mergeDays([todayJST()]); }
+  /* その日はじめて解き終えたら「nl:firststudy」を知らせる（継続カード・小さなお祝い用） */
+  function markToday() {
+    var t = todayJST(), had = days().indexOf(t) >= 0, out = mergeDays([t]);
+    if (!had) setTimeout(function () { try { window.dispatchEvent(new CustomEvent("nl:firststudy", { detail: chain() })); } catch (e) {} }, 400);
+    return out;
+  }
+  /* 継続：1日あいてもつながる（2日あくと切れる）。n＝つながっている学習日の数
+     gap … 最後に学習した日が 0＝今日 / 1＝きのう / 2＝おととい（今日がラストチャンス） */
+  function chain() {
+    var set = {}; days().forEach(function (d) { set[d] = 1; });
+    var t = todayJST(), cur = null, gap = -1;
+    for (var g = 0; g <= 2; g++) if (set[addDays(t, -g)]) { cur = addDays(t, -g); gap = g; break; }
+    var n = 0;
+    while (cur) { n++; cur = set[addDays(cur, -1)] ? addDays(cur, -1) : set[addDays(cur, -2)] ? addDays(cur, -2) : null; }
+    return { n: n, gap: gap, doneToday: gap === 0, risk: gap === 2 };
+  }
+  function streakHTML() {
+    var c = chain(), tip = ' title="1日あいてもつながります（2日あくとリセット）"';
+    if (!c.n) return '<span' + tip + '>継続 0日</span>';
+    return '<span' + tip + '>継続 ' + c.n + '日</span> ' + (c.doneToday ? '<small>今日済</small>' :
+      c.risk ? '<small style="color:#c0662b;font-weight:600">今日がラスト！</small>' : '<small>今日はまだ</small>');
+  }
   function streak() {
     var set = {}; days().forEach(function (d) { set[d] = 1; });
     var cur = todayJST(), doneToday = !!set[cur];
@@ -150,7 +171,7 @@
      端末に保存している記録を、変わったものだけサーバー（シート「進み具合」）に控える。
      ログインしたとき、端末にない・端末より進んでいる控えがあれば戻す（自分の控えだけ）。 */
   var PROG_KEYS = ["conjQuizStats_v4", "talkQuiz_v1", "gramQuiz_L1_v1", "gramQuiz_L2_v1", "gramQuiz_L3_v1",
-    "gramQuiz_L4_v1", "gramQuiz_L5_v1", "gramQuiz_L6_v1", "conjQuizDays", "nlWelcome_v1"];
+    "gramQuiz_L4_v1", "gramQuiz_L5_v1", "gramQuiz_L6_v1", "conjQuizDays", "nlWelcome_v1", "nlStamp_v1"];
   function hashStr(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return s.length + ":" + h.toString(36); }
   function bkKey(k) { return "conjQuizBk_" + k + "_" + user.id; }
   var backingUp = false;
@@ -176,6 +197,14 @@
       if (PROG_KEYS.indexOf(k) < 0) return;
       var key = k + "_" + user.id, local = lsGet(key), srv = prog[k];
       if (k === "conjQuizDays") { try { mergeDays(JSON.parse(srv)); } catch (e) {} return; }
+      if (k === "nlStamp_v1") {   // ログインスタンプは、端末とサーバーの両方を合わせる
+        try {
+          var a = JSON.parse(srv) || {}, b = JSON.parse(local || "null") || {}, u2 = function (x, y) { var o = {}; (x || []).concat(y || []).forEach(function (d) { o[d] = 1; }); return Object.keys(o).sort(); };
+          var m = { d: u2(a.d, b.d).slice(-400), m: u2(a.m, b.m).slice(-100) }, js = JSON.stringify(m);
+          if (js !== local) { lsSet(key, js); if (js === srv) lsSet(bkKey(k), hashStr(srv)); }
+        } catch (e) {}
+        return;
+      }
       if (!local || score(srv) > score(local)) { lsSet(key, srv); lsSet(bkKey(k), hashStr(srv)); n++; }
     });
     return n;
@@ -357,7 +386,7 @@
     SYNC_ON: SYNC_ON, APPS: APPS,
     user: function () { return user; },
     isPractice: function () { return !!(user && user.practice); },
-    todayJST: todayJST, days: days, markToday: markToday, streak: streak,
+    todayJST: todayJST, days: days, markToday: markToday, streak: streak, chain: chain, streakHTML: streakHTML,
     cached: cached, onStats: onStats,
     pendingCount: function () { return getPending().length; },
     submit: submit, flush: flush, refresh: refresh, history: history, cachedHistory: cachedHistory, feedback: feedback, backup: backup, setNick: setNick,

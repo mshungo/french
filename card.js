@@ -67,7 +67,7 @@
     fit(ctx, "作成 " + s.stamp, W - 64, 170, 400, 22, 400, C.soft);
 
     // ---- 数字の4枚 ----
-    const tiles = [[fmtMin(s.durSec), "学習時間"], [s.days + "日", "学習した日"], [s.streak + "日", "連続"], [s.acc == null ? "—" : s.acc + "%", "通算正答率"]];
+    const tiles = [[fmtMin(s.durSec), "学習時間"], [s.days + "日", "学習した日"], [s.streak + "日", "継続"], [s.acc == null ? "—" : s.acc + "%", "通算正答率"]];
     tiles.forEach((t, i) => {
       const x = 52 + i * 248, y = 206;
       panel(ctx, x, y, 232, 122, 24);
