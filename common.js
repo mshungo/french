@@ -453,6 +453,21 @@
       'button.ic-only{line-height:1;}' +
       '.btn-t{font-size:14.5px;font-weight:600;letter-spacing:.5px;}.btn-t b{font-family:var(--serif);font-size:17px;}' +
       '.play.again,.play.retry,.play.nd-go{display:flex;align-items:center;justify-content:center;gap:8px;}' +
+      '.hidden{display:none!important;}' +
+      '.review{margin-bottom:22px;}.play.retry{margin-top:6px;}' +
+      /* 問題の進み具合のバー：太く、伸びるときに弾んで、先の星が光る */
+      '#quizScreen .bar,#dlgScreen .bar{height:14px;border-radius:999px;background:#f1e7df;overflow:visible;position:relative;margin:4px 6px 28px;box-shadow:inset 0 1px 2px rgba(120,80,60,.14);}' +
+      '#quizScreen .bar .fill,#dlgScreen .bar .fill{position:relative;height:100%;min-width:14px;border-radius:999px;' +
+      'background:linear-gradient(90deg,#f2b36b,#e9788f 55%,#b77fb6);transition:width .75s cubic-bezier(.34,1.56,.64,1);box-shadow:0 3px 10px -3px rgba(226,104,140,.65);}' +
+      '#quizScreen .bar .fill::before,#dlgScreen .bar .fill::before{content:"";position:absolute;inset:0;border-radius:inherit;' +
+      'background:repeating-linear-gradient(45deg,rgba(255,255,255,.28) 0 7px,transparent 7px 14px);background-size:20px 20px;animation:nlStripe 1s linear infinite;}' +
+      '@keyframes nlStripe{to{background-position:20px 0}}' +
+      '#quizScreen .bar .fill::after,#dlgScreen .bar .fill::after{content:"";position:absolute;right:-9px;top:50%;width:22px;height:22px;margin-top:-11px;border-radius:50%;' +
+      'background:radial-gradient(circle at 35% 30%,#fff7d6,#f2c94c 60%,#d99a2b);box-shadow:0 0 0 3px #fff,0 3px 8px rgba(200,140,40,.5);}' +
+      '.bar .fill.nl-bump::after{animation:nlTip .6s cubic-bezier(.3,1.8,.5,1);}' +
+      '@keyframes nlTip{0%{transform:scale(1)}40%{transform:scale(1.55) rotate(25deg)}100%{transform:scale(1)}}' +
+      '.nl-spk{position:absolute;top:50%;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;pointer-events:none;animation:nlSpk .7s ease-out forwards;}' +
+      '@keyframes nlSpk{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4)}}' +
       '.home-link.ic.wide{text-decoration:none;width:auto;height:42px;padding:0 18px 0 12px;border-radius:999px;gap:4px;}.home-link.ic.wide .btn-t{font-size:13px;font-weight:500;}' +
       '.pt-dots{display:inline-flex;gap:6px;vertical-align:middle;}.pt-dots i{width:11px;height:11px;border-radius:50%;background:#ece2da;display:block;}' +
       '.pt-dots i.on{background:var(--accent-ink,#8f667f);}.pt-dots i.new{animation:nlPt .55s cubic-bezier(.3,1.6,.5,1) both;}' +
@@ -464,7 +479,7 @@
       '.nl-badge{display:inline-flex;align-items:center;gap:6px;justify-content:center;}' +
       '.nl-badge .nli{flex:none;}' +
       '.fx-bolt{color:#e2a33a;}.fx-pencil{color:var(--accent-ink,#8f667f);}' +
-      '@media(prefers-reduced-motion:reduce){.nl-slide,.nl-pop,.pt-dots i.new{animation:none!important;}}';
+      '@media(prefers-reduced-motion:reduce){.nl-slide,.nl-pop,.pt-dots i.new,.bar .fill::before,.bar .fill.nl-bump::after,.nl-spk{animation:none!important;}}';
     (document.head || document.documentElement).appendChild(css);
   })();
 
@@ -476,6 +491,36 @@
     ssSet("nlWarm", String(Date.now()));
     try { fetch(CFG.SCRIPT_URL + (CFG.SCRIPT_URL.indexOf("?") < 0 ? "?" : "&") + "n=1").catch(function () {}); } catch (e) {}
   }
+
+  /* 進み具合のバーが伸びたら、先の星をはずませて、火花を散らす（100% のときは多め） */
+  (function () {
+    if (!window.MutationObserver) return;
+    var last = new WeakMap(), COLS = ["#f2c94c", "#e9788f", "#8db79b", "#92a6cf", "#fff"];
+    function burst(fill, n) {
+      var bar = fill.parentNode; if (!bar) return;
+      var x = fill.offsetWidth;
+      for (var i = 0; i < n; i++) {
+        var sp = document.createElement("i"), a = Math.random() * Math.PI * 2, d = 14 + Math.random() * (n > 8 ? 34 : 20);
+        sp.className = "nl-spk"; sp.style.left = x + "px"; sp.style.background = COLS[i % COLS.length];
+        sp.style.setProperty("--dx", (Math.cos(a) * d).toFixed(0) + "px"); sp.style.setProperty("--dy", (Math.sin(a) * d).toFixed(0) + "px");
+        bar.appendChild(sp); setTimeout(function (e) { return function () { e.remove(); }; }(sp), 750);
+      }
+    }
+    function watch() {
+      new MutationObserver(function (ms) {
+        ms.forEach(function (m) {
+          var f = m.target;
+          if (!f.classList || !f.classList.contains("fill") || !f.parentNode || !f.parentNode.classList.contains("bar")) return;
+          var w = parseFloat(f.style.width) || 0, pw = last.has(f) ? last.get(f) : 0;
+          last.set(f, w);
+          if (w <= pw) return;
+          f.classList.remove("nl-bump"); void f.offsetWidth; f.classList.add("nl-bump");
+          setTimeout(function () { burst(f, w >= 100 ? 14 : 6); }, 380);   // 伸びきるころに火花
+        });
+      }).observe(document.body, { attributes: true, attributeFilter: ["style"], subtree: true });
+    }
+    if (document.body) watch(); else document.addEventListener("DOMContentLoaded", watch);
+  })();
 
   window.Quiz = {
     prefs: prefs, setPref: setPref,

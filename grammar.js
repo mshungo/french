@@ -33,9 +33,10 @@ function pick(a){return a[Math.floor(Math.random()*a.length)];}
 
 /* ---------- 照合 ---------- */
 function nz(s,keepAcc){
-  s=String(s||"").replace(/[’ʼ`´]/g,"'").replace(/ /g," ")
+  s=String(s||"").replace(/[’ʼ`´]/g,"'").replace(/ /g," ").replace(/\s*,\s*/g," ")   // 読点（,）はあってもなくても正解
     .replace(/\s*-\s*/g,"-").replace(/\s*'\s*/g,"'")
-    .replace(/\s+([?!:;,.])/g,"$1").replace(/\s+/g," ").trim()
+    .replace(/\s*,\s*/g," ")   // 読点（virgule）はあってもなくても同じに扱う（Non, je… ＝ Non je…）
+    .replace(/\s+([?!:;.])/g,"$1").replace(/\s+/g," ").trim()
     .replace(/[.!?]+$/,"").trim().toLowerCase();
   if(!keepAcc)s=s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/œ/g,"oe");
   return s;
@@ -49,12 +50,22 @@ function judge(input,answers){
 
 /* ---------- 並べかえの札 ---------- */
 const PRON=/^(.+?)(-t-(?:il|elle|on)|-(?:vous|tu|moi|toi|on|je|il|elle|ils|elles|nous))$/i;
+/* 並べかえの札は、固有名詞（Paris, Julie など）以外すべて小文字にする（文の先頭の語も）。
+   固有名詞＝問題の正解文のどこかで、文の途中に大文字で出てくる語 */
+let PROPER=null;
+function properSet(){
+  if(PROPER)return PROPER;PROPER=new Set("Paris Lyon Tokyo Kyoto Osaka Nara Kobe Julie Marie Paul Pierre Luc Léa Chloé Marc Camille Isabelle Québec France Japon".split(" "));
+  ITEMS.forEach(it=>(it.a||[]).forEach(a=>String(a).trim().split(/\s+/).forEach((w,i)=>{
+    const c=w.replace(/^[«"(]+|[»",.!?;:)]+$/g,"");if(i>0&&/^[A-ZÀ-Ý]/.test(c)&&!/^(Je|Il|Elle|Nous|Vous|Ils|Elles|On)$/.test(c))PROPER.add(c);})));
+  return PROPER;
+}
+function lowTile(w){const c=w.replace(/[,.!?;:]+$/,"");return properSet().has(c)?w:w.charAt(0).toLowerCase()+w.slice(1);}
 function tiles(s,cap){
   let t=s.trim(),end="";
   const m=t.match(/\s*([.!?]+)$/);if(m){end=m[1];t=t.slice(0,m.index);}
   const words=[];
   t.split(/\s+/).filter(Boolean).forEach((w,i)=>{
-    if(i===0&&!cap)w=w.charAt(0).toLowerCase()+w.slice(1);
+    if(i===0)w=lowTile(w);
     const p=w.match(PRON);
     if(p&&!/^est-ce$/i.test(w)){words.push(p[1]);words.push(p[2]);}else words.push(w);
   });
@@ -354,7 +365,7 @@ function makeQ(it){
   if(curMode==="choice"&&it.t==="t"){q.kind="b";q.label="書きかえ（札を並べる）";}
   if(q.kind==="b"){
     const m=tiles(it.a[0],it.cap);q.words=m.words;q.end=m.end;
-    q.tiles=shuffle(m.words.concat(it.extra||[]).map((w,i)=>({w,id:i})));
+    q.tiles=shuffle(m.words.concat((it.extra||[]).map(lowTile)).map((w,i)=>({w,id:i})));
     if(q.tiles.length>1&&q.tiles.map(t=>t.w).join(" ")===m.words.join(" "))q.tiles.reverse();
   }
   return q;
@@ -431,7 +442,7 @@ function render(){
   }else if(q.kind==="b"){
     stg.innerHTML=(it.t==="t"?'<div class="inst">'+esc(it.inst)+'</div><div class="src">'+esc(it.src)+'</div>':
       tagsHTML(it)+'<div class="prompt-ja">'+jaHTML(it.ja)+'</div>')+
-      '<div class="tray" id="tray"></div><div class="bank" id="bank"></div>'+
+      '<div class="tile-note">※ 固有名詞のほかは、文の先頭の語も小文字にしてあります</div><div class="tray" id="tray"></div><div class="bank" id="bank"></div>'+
       '<div class="build-ctl"><button class="mini ic-only" id="undoBtn" aria-label="1つ戻す" title="1つ戻す">'+NLI.svg("undo",17)+'</button><button class="mini ic-only" id="clearBtn" aria-label="やり直す" title="やり直す">'+NLI.svg("clear",17)+'</button></div>';
     q.picked=[];drawTiles(q);
     $("undoBtn").onclick=()=>{if(locked)return;q.picked.pop();drawTiles(q);};
