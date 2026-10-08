@@ -6,7 +6,7 @@
 <title>動詞活用 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=24"></script>
+<script src="common.js?v=25"></script>
 <script src="streak.js?v=3"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=3"></script>
@@ -113,6 +113,13 @@ window.VDATA={ids:{}};
   .rank-badge{display:none;}
   .mode-btn.mp .mp-rk{display:block;margin-top:5px;font-style:normal;font-family:var(--serif);font-weight:700;font-size:12px;letter-spacing:1px;color:#a06a2c;}
   #nudge .nd-go{display:block;width:min(260px,100%);margin:14px auto 0;}
+  .rrow.rv{justify-content:flex-start;gap:10px;align-items:flex-start;}
+  .rrow.rv .mk{flex:none;width:16px;font-weight:700;}.rrow.rv .mk.ok{color:var(--good-ink);}.rrow.rv .mk.no{color:var(--bad-ink);}
+  .rrow.rv .rtx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left;}
+  .rrow.rv .rfr{font-family:var(--serif);font-size:17px;color:var(--ink);line-height:1.35;}
+  .rrow.rv .rja{font-size:12px;color:var(--ink-soft);}
+  .rrow.rv .rvb{flex:none;font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ink-faint);}
+  .review .ttl{font-size:11px;letter-spacing:2px;color:var(--ink-faint);margin-bottom:4px;}
   .play.retry .nl-badge b{font-family:var(--serif);font-size:18px;margin-left:2px;}
   .face.nl-pop{display:inline-block;}
   .mode-btn.mp .mp-lv{display:block;margin-top:3px;font-style:normal;font-size:10.5px;color:var(--ink-faint);letter-spacing:.3px;}
@@ -372,7 +379,7 @@ window.VDATA={ids:{}};
 
     <div class="mode-pick"><div class="mp-h">答え方をえらぶ</div><div class="mp-row">
       <button class="mode-btn mp on" data-mode="choice"><span class="mp-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4" width="17" height="4.5" rx="2"/><rect x="3.5" y="10" width="17" height="4.5" rx="2"/><rect x="3.5" y="16" width="17" height="4.5" rx="2"/><path d="M6.5 12.2l1.3 1.2 2.4-2.6"/></svg></span><b>選択式</b></button>
-      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 7.5l3 3"/><path d="M12 20h8"/></svg></span><b>記述式</b><em class="mp-rk">SSS</em></button>
+      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M14.5 7.5l3 3"/><path d="M12 20h8"/></svg></span><b>記述式</b><em class="mp-rk">★ ランクがつく</em></button>
     </div></div>
 
     <div class="mode-row">
@@ -801,6 +808,10 @@ let curVerb=null;       // null=総まとめ
 let curMode=(store.mode==="write")?"write":"choice";   // "choice" | "write"（前回の形式を覚えておく）
 let timeAttack = (typeof store.timeAttack==="boolean") ? store.timeAttack : true;
 let roundStart=0, roundTime=0, timerHandle=null, roundBegin=0;
+/* クリアタイムは「答えている時間」だけを数える（答えのあと「次へ」を押すまでの時間は入れない）。
+   以前の記録（1問ごとに約0.7秒の自動送りを含んでいた）と比べられるよう、問題と問題のあいだを1回0.7秒として足す */
+let activeMs=0, qStart=0;
+const GAP_MS=700;
 
 /* 問題の報告用：このラウンドで出た問題（新しい順）。feedback.js が使う */
 window.FB_QUESTIONS=function(){
@@ -878,10 +889,10 @@ function startRound(verbFilter){
   clearInterval(timerHandle);
   const liveEl=document.getElementById("liveTimer");
   if(timeAttack){
-    roundStart=performance.now();
+    roundStart=performance.now();activeMs=0;qStart=performance.now();
     if(liveEl){liveEl.style.display="";liveEl.textContent="0.0秒";}
     timerHandle=setInterval(()=>{
-      if(liveEl)liveEl.textContent=fmtTime(performance.now()-roundStart);
+      if(liveEl)liveEl.textContent=fmtTime(activeMs+(qStart?performance.now()-qStart:0)+GAP_MS*idx);
     },100);
   }else{
     if(liveEl)liveEl.style.display="none";
@@ -890,6 +901,7 @@ function startRound(verbFilter){
 }
 
 function render(){
+  qStart=performance.now();
   const q=questions[idx];
   const NQ=questions.length;
   document.getElementById("qcount").textContent=(idx+1)+" / "+NQ;
@@ -939,6 +951,7 @@ function norm(s){
 
 function resolve(val, btn){
   if(locked)return;locked=true;
+  if(qStart){activeMs+=performance.now()-qStart;qStart=0;}
   const q=questions[idx];
   const correct = norm(val)===norm(q.answer);
   q._wrong=!correct;q._chosen=val;
@@ -984,6 +997,15 @@ function showNext(){
 
 function next(){idx++;if(idx<questions.length)render();else finishRound();}
 /* 間違えたところだけを、もう一度（成績・記録には入らない） */
+/* 結果画面：今回の10問をすべて並べる（間違えた問題を先に） */
+function reviewHTML(){
+  const qs=questions.filter(q=>q._wrong).concat(questions.filter(q=>!q._wrong));
+  return '<div class="ttl">今回の問題</div>'+qs.map(q=>'<div class="rrow rv'+(q._wrong?'':' okrow')+'"><span class="mk '+(q._wrong?'no':'ok')+'">'+(q._wrong?'✕':'○')+'</span>'+
+    '<span class="rtx"><span class="rfr">'+q.full+'</span>'+(q.jp?'<span class="rja">'+q.jp+'</span>':'')+
+    (q._wrong?'<span class="rja"><span class="miss">'+(q._chosen||"")+'</span> <span class="ar">→</span> <span class="got">'+q.answer+'</span></span>':'')+
+    '</span><span class="rvb">'+q.verb+'</span></div>').join("");
+}
+function resultMsg(p){return p===100?"全問正解！":p>=80?"よくできました":p>=50?"あと少し！":"もう一回やってみよう";}
 /* 「間違えたところだけ練習」ボタン：↻ ✕ 数 */
 function retryLabel(rb,n){rb.innerHTML='<span class="nl-badge">'+NLI.svg("again",20)+NLI.svg("x",18)+'<b>'+n+'</b></span>';rb.title="間違えたところだけ練習";rb.setAttribute("aria-label",rb.title);}
 function startRetry(){
@@ -1001,12 +1023,11 @@ function finishRetry(){
   document.getElementById("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
   document.getElementById("rPct").textContent=pct+"%";
   document.getElementById("rFace").textContent=pct===100?"◎":pct>=80?"○":pct>=50?"△":"✕";
-  document.getElementById("rMsg").textContent="";
+  document.getElementById("rMsg").textContent=resultMsg(pct);
   const nd0=document.getElementById("nudge");if(nd0)nd0.innerHTML="";
   const rankEl=document.getElementById("rRank");rankEl.className="rank-badge";rankEl.innerHTML="";
   document.getElementById("rTime").innerHTML="";
-  const rev=document.getElementById("review");
-  rev.innerHTML=misses.length?misses.map(m=>'<div class="rrow"><span>'+m.full+' <span style="color:var(--ink-soft)">['+m.verb+']</span></span><span><span class="miss">'+m.chosen+'</span> <span class="ar">→</span> <span class="got">'+m.answer+'</span></span></div>').join(""):"";
+  document.getElementById("review").innerHTML=reviewHTML();
   const rb=document.getElementById("retryBtn");rb.classList.toggle("hidden",!misses.length);retryLabel(rb,misses.length);
   show(resultScreen);
   if(roundCorrect===N)setTimeout(playFanfare,280);
@@ -1015,7 +1036,7 @@ function finishRetry(){
 function finishRound(){
   clearInterval(timerHandle);
   if(retry){finishRetry();return;}
-  roundTime = timeAttack ? (performance.now()-roundStart) : null;
+  roundTime = timeAttack ? (activeMs+GAP_MS*(questions.length-1)) : null;
   store.tries++;store.answered+=ROUND;store.correct+=roundCorrect;
   store.timeMs=(store.timeMs||0)+Math.min(performance.now()-roundBegin,ROUND*90000);   // 勉強時間（放置分は1問90秒まで）
   if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
@@ -1041,7 +1062,7 @@ function finishRound(){
   document.getElementById("rScore").innerHTML=roundCorrect+'<small> / '+ROUND+'</small>';
   document.getElementById("rPct").textContent=pct+"%";
   document.getElementById("rFace").textContent= pct===100?"◎": pct>=80?"○": pct>=50?"△":"✕";
-  document.getElementById("rMsg").textContent="";
+  document.getElementById("rMsg").textContent=resultMsg(pct);
   const fc=document.getElementById("rFace");fc.classList.remove("nl-pop");void fc.offsetWidth;fc.classList.add("nl-pop");
   // タイム＋ランク表示
   const timeEl=document.getElementById("rTime");
@@ -1064,18 +1085,7 @@ function finishRound(){
     rankEl.className="rank-badge";rankEl.innerHTML="";
     timeEl.innerHTML='<span class="nl-badge">'+NLI.svg("clock",16)+fmtTime(roundTime)+'</span>';
   }
-  const rev=document.getElementById("review");
-  if(misses.length===0){
-    rev.innerHTML='';
-  }else{
-    let h='';
-    misses.forEach(m=>{
-      h+='<div class="rrow"><span>'+m.full+
-         ' <span style="color:var(--ink-soft)">['+m.verb+']</span></span>'+
-         '<span><span class="miss">'+m.chosen+'</span> <span class="ar">→</span> <span class="got">'+m.answer+'</span></span></div>';
-    });
-    rev.innerHTML=h;
-  }
+  document.getElementById("review").innerHTML=reviewHTML();
   const rb=document.getElementById("retryBtn");rb.classList.toggle("hidden",!misses.length);retryLabel(rb,misses.length);
   /* 選択式でよくできたら、記述式へさそう */
   const nd=document.getElementById("nudge");nd.innerHTML="";

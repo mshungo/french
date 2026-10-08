@@ -493,6 +493,7 @@ function grade(r,chosen){
   else{fb.className="fb show no";fb.textContent=pick(["Pas tout à fait…","Presque !","Attention…"]);if(typeof playWrong==="function")playWrong();}
   showAfter(q);
 }
+function resultMsg(p){return p===100?"全問正解！":p>=80?"よくできました":p>=50?"あと少し！":"もう一回やってみよう";}
 function answerLine(q){
   const it=q.it;
   if(it.t==="c"||it.t==="w")return promptHTML(q,it.a[0]);
@@ -535,7 +536,7 @@ function finishRound(){
   $("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
   $("rPct").textContent=pct+"%";
   $("rFace").textContent=pct===100?"◎":pct>=80?"○":pct>=50?"△":"✕";NLI.slide&&$("rFace").classList.remove("nl-pop");void $("rFace").offsetWidth;$("rFace").classList.add("nl-pop");
-  $("rMsg").textContent="";
+  $("rMsg").textContent=resultMsg(pct);
   $("rTime").innerHTML='<span class="nl-badge">'+NLI.svg("clock",15)+fmtTime(time)+'</span>';
   const list=itemsOf(curSec==="weak"?"mix":curSec);
   const newB=retry?[]:awardBadges();
@@ -547,12 +548,15 @@ function finishRound(){
     $("ndGo").onclick=()=>{curMode="write";store.mode="write";save();startRound(curSec);};
   }
   const miss=questions.filter(q=>!q.ok);
-  let h='';
-  miss.forEach(q=>{
-    h+='<div class="rrow"><span class="mk no">✕</span><span class="rtx">'+
+  /* 今回の問題をすべて並べる（間違えた問題を先に）。解説もここでゆっくり読める */
+  let h='<div class="ttl">今回の問題</div>';
+  questions.filter(q=>!q.ok).concat(questions.filter(q=>q.ok)).forEach(q=>{
+    h+='<div class="rrow'+(q.ok?' okrow':'')+'"><span class="mk '+(q.ok?'ok':'no')+'">'+(q.ok?'○':'✕')+'</span><span class="rtx">'+
       (q.it.t==="t"?'<span class="rja">'+esc(q.it.inst)+'：'+esc(q.it.src)+'</span>':q.it.t==="b"?'<span class="rja">'+jaHTML(q.it.ja)+'</span>':'')+
       '<span class="rfr">'+answerLine(q)+'</span>'+
-      (q.it.ex?'<span class="rja">'+esc(q.it.ex)+'</span>':'')+'</span></div>';
+      (q.it.ja&&q.it.t!=="b"?'<span class="rja">'+jaHTML(q.it.ja)+'</span>':'')+
+      (!q.ok&&q.chosen!=null&&q.chosen!==""?'<span class="rja rmy"><s>'+esc(q.chosen)+'</s></span>':'')+
+      (q.it.ex?'<span class="rex">'+esc(q.it.ex)+'</span>':'')+'</span></div>';
   });
   $("review").innerHTML=h;
   $("retryBtn").classList.toggle("hidden",!miss.length);

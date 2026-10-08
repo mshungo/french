@@ -6,16 +6,16 @@
 <title>Leçon 2 主語・動詞・限定詞 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=24"></script>
+<script src="common.js?v=25"></script>
 <script src="streak.js?v=3"></script>
 <script src="feedback.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=10">
+<link rel="stylesheet" href="grammar.css?v=11">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=19"></script>
+<script src="grammar.js?v=20"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -46,18 +46,20 @@ window.LESSON={no:2,title:"主語と限定詞",sub:"pronoms · démonstratifs ·
 ]};
 
 /* ---------- 主語人称代名詞 ---------- */
-const P6=["il","elle","ils","elles"];
-C("pro","mon oncle → ___","il",P6,"男性単数 → il。");
-C("pro","ma tante → ___","elle",P6,"女性単数 → elle。");
-C("pro","Paul et Marie → ___","ils",P6,"男女まざった複数 → ils。");
-C("pro","Léa et Chloé → ___","elles",P6,"女性だけの複数 → elles。");
-C("pro","ce livre → ___","il",P6,"物にも il / elle を使う。livre は男性名詞。");
-C("pro","la table → ___","elle",P6,"table は女性名詞 → elle（「それは」）。");
-C("pro","ces fleurs → ___","elles",P6,"fleur は女性名詞の複数 → elles。");
-C("pro","mes parents → ___","ils",P6,"両親（男女）→ ils。");
-C("pro","les voitures → ___","elles",P6,"voiture は女性名詞の複数 → elles。");
-C("pro","mon frère et moi → ___","nous",["nous","vous","ils"],"「私」を含む複数 → nous。");
-C("pro","ta mère et toi → ___","vous",["vous","nous","ils","elles"],"「きみ」を含む複数 → vous。");
+/* 主語（名詞）を代名詞に置きかえる問題。文の形で出すので、動詞の形（est / sont など）も手がかりになる */
+const P6=["Il","Elle","Ils","Elles"];
+const PH_=["主語を代名詞に"];
+C("pro","Mon oncle est médecin. → ___ est médecin.","Il",P6,"mon oncle（男性・1人）→ il。",{ja:"おじは医者だ。",h:PH_});
+C("pro","Ma tante habite à Kyoto. → ___ habite à Kyoto.","Elle",P6,"ma tante（女性・1人）→ elle。",{ja:"おばは京都に住んでいる。",h:PH_});
+C("pro","Paul et Marie sont étudiants. → ___ sont étudiants.","Ils",P6,"男女まざった複数 → ils。",{ja:"ポールとマリーは学生だ。",h:PH_});
+C("pro","Léa et Chloé chantent bien. → ___ chantent bien.","Elles",P6,"女性だけの複数 → elles。",{ja:"レアとクロエは歌がうまい。",h:PH_});
+C("pro","Ce livre est intéressant. → ___ est intéressant.","Il",P6,"物にも il / elle を使う（「それは」）。livre は男性名詞 → il。",{ja:"この本はおもしろい。",h:PH_});
+C("pro","La table est grande. → ___ est grande.","Elle",P6,"table は女性名詞 → elle（「それは」）。",{ja:"そのテーブルは大きい。",h:PH_});
+C("pro","Ces fleurs sont belles. → ___ sont belles.","Elles",P6,"fleur は女性名詞の複数 → elles。",{ja:"これらの花はきれいだ。",h:PH_});
+C("pro","Mes parents travaillent à Osaka. → ___ travaillent à Osaka.","Ils",P6,"両親（男女）→ ils。",{ja:"両親は大阪で働いている。",h:PH_});
+C("pro","Les voitures sont chères. → ___ sont chères.","Elles",P6,"voiture は女性名詞の複数 → elles。",{ja:"車は高い。",h:PH_});
+C("pro","Mon frère et moi aimons le sport. → ___ aimons le sport.","Nous",["Nous","Vous","Ils"],"「私」を含む複数 → nous（動詞も aimons）。",{ja:"兄と私はスポーツが好きだ。",h:PH_});
+C("pro","Ta mère et toi êtes en vacances ? → ___ êtes en vacances ?","Vous",["Vous","Nous","Ils","Elles"],"「きみ」を含む複数 → vous（動詞も êtes）。",{ja:"きみとお母さんは休暇中？",h:PH_});
 C("pro","___ es fatigué, papa ?","Tu",["Tu","Vous"],"家族など親しい相手1人 → tu（être は tu es）。",{ja:"パパ、疲れてる？"});
 C("pro","___ êtes professeur, madame ?","Vous",["Vous","Tu"],"初対面・目上の人 → vous（être は vous êtes）。",{ja:"先生でいらっしゃいますか？"});
 C("pro","___ êtes prêts, les enfants ?","Vous",["Vous","Tu"],"親しい相手でも複数なら vous。",{ja:"みんな、準備できた？"});

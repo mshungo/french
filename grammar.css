@@ -454,3 +454,7 @@
   .play.retry .nl-badge b{font-family:var(--serif);font-size:18px;margin-left:2px;}
   .heard.nl-badge{display:flex;gap:8px;}
   .face.nl-pop{display:inline-block;}
+  .review .ttl{font-size:11px;letter-spacing:2px;color:var(--ink-faint);margin-bottom:4px;}
+  .rrow .rex{display:block;margin-top:5px;padding:6px 10px;border-radius:10px;background:#fff;border:1px solid var(--rule);font-size:12.5px;line-height:1.65;color:var(--ink);}
+  .rrow .rmy s{color:var(--bad-ink);}
+  .rrow.okrow .rfr{font-weight:500;}

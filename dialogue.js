@@ -545,6 +545,7 @@
     const pct = Math.round(score / total * 100);
     let h = '<div class="result" style="padding-top:6px"><div class="face">' + (pct === 100 ? "◎" : pct >= 80 ? "○" : pct >= 50 ? "△" : "✕") + '</div>' +
       '<div class="ring">' + score + '<small> / ' + total + '</small></div><div><span class="pct-pill">' + pct + '%</span></div>' +
+      '<div class="msg">' + (pct === 100 ? "最後まで会話できた！" : pct >= 80 ? "よく話せました" : pct >= 50 ? "あと少し！" : "もう一回やってみよう") + '</div>' +
       '<div class="rtime"><span class="nl-badge">' + NLI.svg("clock", 15) + fmtTime(time) + '</span></div>' +
       '<div class="review">';
     live.forEach((x, i) => {
