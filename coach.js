@@ -4,6 +4,23 @@
 (function () {
   "use strict";
 
+  /* 使い方のコツ（設定や機能の紹介）。ときどき「勉強のコツ」のかわりに出る */
+  const HOWTO = [
+    "メニューの「設定」で、正解したあと次の問題へ進む速さを変えられるよ（はやい・ふつう・おそい・押す）。",
+    "解いている画面の右上の時間は、タップするとかくせるよ。時間が気になって焦る人は試してみて。",
+    "「設定」で文字の書体をゴシックにすると、フランス語の文が太めになって読みやすくなるよ。",
+    "記述式で正解すると、選択式の倍の速さで達成度が上がるよ。8秒以内に書けたら、一気に「習得」！",
+    "結果画面の「間違えた○問だけ練習」で、まちがえたところだけをすぐにやり直せるよ。",
+    "メニューの「今日の学習をはじめる！」を押すと、教材をランダムに選んで、すぐに始まるよ。迷ったらこれ。",
+    "継続は、1日あいてもつながるよ。2日あくとリセットだから、1日おきのペースでも大丈夫。",
+    "8割以上正解すれば「クリア」。1〜2問まちがえても、ちゃんと記録に残るよ。",
+    "まちがえた問題は「苦手」になって、2回続けて正解すると外れるよ。項目の一覧の「苦手」からまとめて復習できる。",
+    "パスワードは、この学習記録ページの上の「パスワード：変える」から、自分だけのものに変えられるよ。",
+    "ニックネームも、このページの上で決められるよ。成果カードには本名ではなくニックネームが入るんだ。",
+    "動詞活用のタイムアタックは、答えている時間だけを数えるよ。答えのあとは落ち着いて見直してね。",
+    "結果画面の「今回の問題」には、解説もまとめて出るよ。まちがえた問題は、そこでゆっくり読みなおそう。",
+    "成果カードを作ると、これまでの達成度が1枚の画像になるよ。がんばりの記念にどうぞ。"
+  ];
   const TIPS = {
     conj: [
       "-er 動詞は、je parle／tu parles／il parle／ils parlent が全部同じ発音。変わるのはつづりだけだから、耳で覚えて、目でつづりを確かめるのがコツだよ。",
@@ -94,6 +111,8 @@
       const a = (d.tips || {})[k];
       if (Array.isArray(a) && a.length) TIPS[k] = a.filter(x => typeof x === "string" && x);
     });
+    const hw = (d.tips || {}).howto;   // シートの「使い方のコツ」は、上の使い方に足す
+    if (Array.isArray(hw)) hw.forEach(x => { if (typeof x === "string" && x && HOWTO.indexOf(x) < 0) HOWTO.push(x); });
     if (Array.isArray(d.stories) && d.stories.length) {
       const st = d.stories.filter(x => x && (x.n || x.fr)).map(x => ({ t: String(x.t || "フランスのこぼれ話"), fr: x.fr || "", ja: x.ja || "", n: x.n || "" }));
       if (st.length) { STORIES.length = 0; st.forEach(x => STORIES.push(x)); }
@@ -130,10 +149,11 @@
   function pickFor(d) {
     const seed = hash((d.today || "") + "|" + (d.id || "")) + turn * 7919;
     const tips = tipPool(d);
-    let tip = tips[seed % tips.length];
-    if (turn === 0 && lateNight(d)) tip = "夜ふかしさんかな？ 眠い頭より、少し早い時間のほうが覚えやすいとも言われているよ。";
+    let tip = tips[seed % tips.length], kind = "勉強のコツ";
+    if ((seed >>> 5) % 3 === 0) { tip = HOWTO[(seed >>> 7) % HOWTO.length]; kind = "使い方"; }   // 3回に1回くらいは使い方の話
+    if (turn === 0 && lateNight(d)) { tip = "夜ふかしさんかな？ 眠い頭より、少し早い時間のほうが覚えやすいとも言われているよ。"; kind = "勉強のコツ"; }
     const story = STORIES[(seed >>> 3) % STORIES.length];
-    return { tip, story };
+    return { tip, story, kind };
   }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
   function storyHTML(s) {
@@ -144,10 +164,10 @@
   function bodyHTML(d) {
     const p = pickFor(d);
     return (turn === 0 ? '<p>' + esc(greet(d)) + '</p>' : '') +
-      '<div class="dc-tip"><span class="dc-lb">勉強のコツ</span>' + esc(p.tip) + '</div>' + storyHTML(p.story);
+      '<div class="dc-tip"><span class="dc-lb' + (p.kind === "使い方" ? ' how' : '') + '">' + p.kind + '</span>' + esc(p.tip) + '</div>' + storyHTML(p.story);
   }
   const CSS = '.deer-bub .dc-lb{display:inline-block;font-size:10.5px;letter-spacing:1px;color:#fff;background:#c0a06a;border-radius:9px;padding:0 8px;margin:0 6px 3px 0;vertical-align:1px;}' +
-    '.deer-bub .dc-tip{margin-top:8px;}' +
+    '.deer-bub .dc-tip{margin-top:8px;}.deer-bub .dc-lb.how{background:#7d92c4;}' +
     '.deer-bub .dc-story{margin-top:9px;padding:9px 11px;border-radius:12px;background:#fff;border:1px dashed #efe0c2;}' +
     '.deer-bub .dc-story .dc-lb{background:#b48aa8;}' +
     '.deer-bub .dc-fr{display:block;font-family:var(--serif);font-size:17px;font-weight:600;line-height:1.4;color:var(--ink);margin:2px 0 1px;}' +

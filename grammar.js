@@ -205,10 +205,10 @@ function shell(){
 '    <div class="ring" id="rScore">0<small> / 10</small></div>'+
 '    <div><span class="pct-pill" id="rPct">0%</span></div>'+
 '    <div class="msg" id="rMsg"></div><div class="rtime" id="rTime"></div><div class="mastery" id="rMastery"></div><div id="nudge"></div>'+
-'    <div class="review" id="review"></div>'+
 '    <button class="play retry hidden" id="retryBtn"></button>'+
 '    <button class="play again" id="againBtn" aria-label="もう一度" title="もう一度">'+NLI.svg("again",26)+'<span class="btn-t">もう一度</span></button>'+
 '    <button class="home-link ic wide" id="toHomeBtn" aria-label="もどる" title="もどる">'+NLI.svg("back",22)+'<span class="btn-t">もどる</span></button>'+
+'    <div class="review" id="review"></div>'+
 '  </div>'+
 '</div>';
 }

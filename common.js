@@ -429,7 +429,7 @@
 
   try { migrateVerbs(false); } catch (e) {}   // いろいろな動詞の記録の引っ越し（一度だけ）
 
-  function nextSpeed() { var p = prefs(); return p.nextSpeed || "manual"; }   // はじめは「押す」（自動では進まない）
+  function nextSpeed() { var p = prefs(); return p.nextSpeed || "slow"; }   // はじめは「おそい」
   /* アイコン（文字のかわりに使う）。NLI.svg("home", 22) で SVG の文字列 */
   var ICON = {clock:"<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><path d=\"M12 7.5V12l3 2\"/>",pencil:"<path d=\"M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z\"/><path d=\"M14.5 7.5l3 3\"/>",bolt:"<path d=\"M13 2.5 5 13.5h6l-1 8 8-11h-6z\" fill=\"currentColor\"/>",star:"<path d=\"M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z\" fill=\"currentColor\"/>",x:"<path d=\"M7 7l10 10M17 7 7 17\"/>",home:"<path d=\"M3.5 11 12 4l8.5 7\"/><path d=\"M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5\"/>",back:"<path d=\"M15 5l-7 7 7 7\"/>",next:"<path d=\"M5 12h13\"/><path d=\"M13 6l6 6-6 6\"/>",flag:"<path d=\"M6 21V4\"/><path d=\"M6 4.5h10.5l-2.2 4 2.2 4H6\"/>",again:"<path d=\"M4.5 12a7.5 7.5 0 1 0 2.2-5.3\"/><path d=\"M4.5 4.5v4.5H9\"/>",speaker:"<path d=\"M4 9.5h3.5L12 6v12l-4.5-3.5H4z\"/><path d=\"M15.5 9.5a3.5 3.5 0 0 1 0 5\"/><path d=\"M18 7.5a6.5 6.5 0 0 1 0 9\"/>",slow:"<path d=\"M3 18.5h12.5a4 4 0 0 0 4-4V12\"/><circle cx=\"10\" cy=\"12.5\" r=\"5\"/><path d=\"M10 12.5a1.6 1.6 0 1 1 1.6-1.6\"/><path d=\"M19.5 12 18 7.5M19.5 12l2.5-3.5\"/>",undo:"<path d=\"M9 7 4.5 11.5 9 16\"/><path d=\"M4.5 11.5H15a4.5 4.5 0 0 1 0 9h-2\"/>",clear:"<path d=\"M6 6l12 12M18 6 6 18\"/>",help:"<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.6 9.3a2.5 2.5 0 1 1 3.6 2.3c-.8.4-1.2 1-1.2 1.9\"/><circle cx=\"12\" cy=\"16.8\" r=\".6\" fill=\"currentColor\"/>",logout:"<path d=\"M14 4h4.5a1.5 1.5 0 0 1 1.5 1.5v13a1.5 1.5 0 0 1-1.5 1.5H14\"/><path d=\"M10 8l-4 4 4 4\"/><path d=\"M6 12h10\"/>"};
   window.NLI = {
@@ -454,7 +454,16 @@
       '.btn-t{font-size:14.5px;font-weight:600;letter-spacing:.5px;}.btn-t b{font-family:var(--serif);font-size:17px;}' +
       '.play.again,.play.retry,.play.nd-go{display:flex;align-items:center;justify-content:center;gap:8px;}' +
       '.hidden{display:none!important;}' +
-      '.review{margin-bottom:22px;}.play.retry{margin-top:6px;}' +
+      /* 解いている画面・結果画面では、上の大きな見出しをしまって、スクロールしなくても収まるように */
+      'html.nl-q .crown,html.nl-r .crown{display:none;}' +
+      'html.nl-q body,html.nl-r body{padding-top:10px;padding-bottom:20px;}' +
+      'html.nl-q .panel{padding-top:14px;padding-bottom:16px;}html.nl-r .panel{padding-top:18px;}' +
+      'html.nl-q .topbar{margin-bottom:8px;}html.nl-q #quizScreen .hearts{margin-bottom:4px!important;}' +
+      'html.nl-q .opts{gap:9px;}html.nl-q .opt{padding-top:11px;padding-bottom:11px;}html.nl-q .chiprow{display:none;}' +
+      'html.nl-q .prompt{margin-top:8px;}html.nl-q .prompt.gq{margin:10px 0 4px;}html.nl-q .fb{margin-top:8px;min-height:0;}' +
+      'html.nl-q .after{margin-top:10px;padding:12px 14px;}html.nl-q .after .btns{margin-top:8px;}html.nl-q .after .ex{margin-top:8px;}' +
+      'html.nl-q .round-label{margin-bottom:4px;}html.nl-q #quizScreen .bar,html.nl-q #dlgScreen .bar{margin-bottom:14px;}' +
+      '.review{margin:20px 0 6px;}.play.retry{margin-top:6px;}' +
       /* 問題の進み具合のバー：太く、伸びるときに弾んで、先の星が光る */
       '#quizScreen .bar,#dlgScreen .bar{height:14px;border-radius:999px;background:#f1e7df;overflow:visible;position:relative;margin:4px 6px 28px;box-shadow:inset 0 1px 2px rgba(120,80,60,.14);}' +
       '#quizScreen .bar .fill,#dlgScreen .bar .fill{position:relative;height:100%;min-width:14px;border-radius:999px;' +
@@ -520,6 +529,33 @@
       }).observe(document.body, { attributes: true, attributeFilter: ["style"], subtree: true });
     }
     if (document.body) watch(); else document.addEventListener("DOMContentLoaded", watch);
+  })();
+
+  /* いまどの画面か（解いている／結果）を html の印にする。画面が変わったら一番上へ */
+  (function () {
+    var IDS = { quizScreen: 1, resultScreen: 1, dlgScreen: 1, homeScreen: 1 };
+    function vis(id) { var e = document.getElementById(id); return !!(e && !e.classList.contains("hidden")); }
+    var prev = "";
+    function upd() {
+      var q = vis("quizScreen") || vis("dlgScreen"), r = vis("resultScreen"), h = document.documentElement;
+      h.classList.toggle("nl-q", q); h.classList.toggle("nl-r", r && !q);
+      var now = q ? "q" : r ? "r" : "";
+      if (now !== prev) { prev = now; if (now) try { window.scrollTo(0, 0); } catch (e) {} }
+    }
+    function start() {
+      upd();
+      new MutationObserver(function (ms) { for (var i = 0; i < ms.length; i++) if (IDS[ms[i].target.id]) { upd(); return; } })
+        .observe(document.body, { attributes: true, attributeFilter: ["class"], subtree: true });
+      /* 「次へ」ボタンが出たら、画面の中に見えるようにする */
+      new MutationObserver(function (ms) {
+        ms.forEach(function (m) { m.addedNodes && Array.prototype.forEach.call(m.addedNodes, function (n) {
+          if (n.nodeType !== 1) return;
+          var b = n.classList && n.classList.contains("next-btn") ? n : n.querySelector && n.querySelector(".next-btn");
+          if (b) setTimeout(function () { try { b.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch (e) {} }, 60);
+        }); });
+      }).observe(document.body, { childList: true, subtree: true });
+    }
+    if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
   })();
 
   window.Quiz = {

@@ -464,7 +464,7 @@
     $("sNg").onclick = () => { const b = document.createElement("div"); b.className = "bub s"; b.innerHTML = '<span class="who">あなた</span><span class="dh">（自己判定）</span><span class="mk ng">✕</span>'; $("dlgLog").appendChild(b); finishTurn(false, "（自己判定）"); };
   }
   /* 正解なら自動で次へ（設定で「自分で押す」にできる）。間違えたときは「次へ」を押すまで進まない */
-  function autoOn() { const Qz = window.Quiz; return !Qz || !Qz.autoNext || Qz.autoNext(); }
+  function autoOn() { return false; }   // 対話（会話練習）は、設定の速さに関係なく、いつも「次へ」を押して進む
   function proceed(ok, go, delay, host) {
     if (ok && autoOn()) { setTimeout(go, window.Quiz && Quiz.nextDelay ? Quiz.nextDelay(delay) : delay); return; }
     const h = host || $("dlgCtl");
@@ -547,6 +547,7 @@
       '<div class="ring">' + score + '<small> / ' + total + '</small></div><div><span class="pct-pill">' + pct + '%</span></div>' +
       '<div class="msg">' + (pct === 100 ? "最後まで会話できた！" : pct >= 80 ? "クリア！" : pct >= 50 ? "あと少し！" : "もう一回やってみよう") + '</div>' +
       '<div class="rtime"><span class="nl-badge">' + NLI.svg("clock", 15) + fmtTime(time) + '</span></div>' +
+      '<button class="play again" id="dlgAgain" aria-label="もう一度この会話" title="もう一度この会話">' + NLI.svg("again", 26) + '<span class="btn-t">もう一度この会話</span></button><button class="home-link ic wide" id="dlgHome" aria-label="もどる" title="もどる">' + NLI.svg("back", 22) + '<span class="btn-t">もどる</span></button>' +
       '<div class="review">';
     live.forEach((x, i) => {
       h += '<div class="rrow"><span class="mk ' + (x.ok ? "ok" : "no") + '">' + (x.ok ? "○" : "✕") + '</span><span class="rtx"><span class="rfr">' + esc(G(x.t.ex)) + '</span>' +
@@ -555,7 +556,7 @@
         '<button class="round-btn" data-i="' + i + '" aria-label="音声">▶</button></div>';
     });
     if (quizItems.length) h += '<div class="rrow"><span class="mk ' + (quizItems.every(x => x.ok) ? "ok" : "no") + '">' + quizItems.filter(x => x.ok).length + '</span><span class="rtx"><span class="rja">聞き取りクイズ ' + quizItems.filter(x => x.ok).length + ' / ' + quizItems.length + '</span></span></div>';
-    h += '</div><button class="play again" id="dlgAgain" aria-label="もう一度この会話" title="もう一度この会話">' + NLI.svg("again", 26) + '<span class="btn-t">もう一度この会話</span></button><button class="home-link ic wide" id="dlgHome" aria-label="もどる" title="もどる">' + NLI.svg("back", 22) + '<span class="btn-t">もどる</span></button></div>';
+    h += '</div></div>';
     $("dlgCtl").classList.add("hidden");
     const end = $("dlgEnd"); end.innerHTML = h; end.classList.remove("hidden");
     end.querySelectorAll(".round-btn").forEach(b => b.onclick = () => speak(G(live[+b.dataset.i].t.ex)));
