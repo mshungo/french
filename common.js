@@ -462,6 +462,7 @@
       '.btn-t{font-size:14.5px;font-weight:600;letter-spacing:.5px;}.btn-t b{font-family:var(--serif);font-size:17px;}' +
       '.play.again,.play.retry,.play.nd-go{display:flex;align-items:center;justify-content:center;gap:8px;}' +
       '.hidden{display:none!important;}' +
+      '.crown{cursor:pointer;-webkit-tap-highlight-color:transparent;}.crown:active{opacity:.75;}' +
       /* 解いている画面・結果画面では、上の大きな見出しをしまって、スクロールしなくても収まるように */
       'html.nl-q .crown,html.nl-r .crown{display:none;}' +
       'html.nl-q body,html.nl-r body{padding-top:10px;padding-bottom:20px;}' +
@@ -565,6 +566,13 @@
     }
     if (document.body) start(); else document.addEventListener("DOMContentLoaded", start);
   })();
+
+  /* 上のロゴ（鹿・Naralingo・題名）を押したら、メニュー（index.html）へ戻る */
+  document.addEventListener("click", function (e) {
+    var c = e.target && e.target.closest ? e.target.closest(".crown") : null;
+    if (!c || (e.target.closest && e.target.closest("a,button,input,select,textarea"))) return;
+    location.href = "index.html";
+  });
 
   window.Quiz = {
     prefs: prefs, setPref: setPref,
