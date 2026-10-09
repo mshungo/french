@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=12">
+<link rel="stylesheet" href="grammar.css?v=13">
 </head>
 <body>
 <div class="wrap">
@@ -32,12 +32,12 @@ function ptOf(x){if(x.pt!=null)return Math.min(4,x.pt);var run=x.run!=null?x.run
 (function(){
   if(window.Quiz&&!Quiz.requireLogin())return;
   var L=[
-    {no:1,t:"名詞と冠詞",d:"名詞の性・数／不定・部分・定冠詞／C'est・Il y a・Voici",n:108,c:"#cf8aa0",cw:"#faeef2"},
-    {no:2,t:"主語と限定詞",d:"主語人称代名詞／ce・mon など",n:61,c:"#d6a96f",cw:"#faf2e7"},
-    {no:3,t:"形容詞・否定・疑問",d:"形容詞／否定文・疑問文・答えかた",n:83,c:"#8db79b",cw:"#eef5f0"},
-    {no:4,t:"疑問詞と近接未来",d:"近接未来・近接過去／疑問代名詞・疑問副詞・quel／時刻と数",n:100,c:"#92a6cf",cw:"#eef1f8"},
-    {no:5,t:"補語人称代名詞",d:"直接・間接目的補語／強勢形／非人称構文・所有代名詞",n:84,c:"#b48aa8",cw:"#f6eef3"},
-    {no:6,t:"代名動詞と命令法",d:"代名動詞／命令法",n:89,c:"#c0a06a",cw:"#f8f1e4"}
+    {no:1,t:"名詞と冠詞",d:"名詞の性・数／不定・部分・定冠詞／C'est・Il y a・Voici",n:133,c:"#cf8aa0",cw:"#faeef2"},
+    {no:2,t:"主語と限定詞",d:"主語人称代名詞／ce・mon など",n:76,c:"#d6a96f",cw:"#faf2e7"},
+    {no:3,t:"形容詞・否定・疑問",d:"形容詞／否定文・疑問文・答えかた",n:103,c:"#8db79b",cw:"#eef5f0"},
+    {no:4,t:"疑問詞と近接未来",d:"近接未来・近接過去／疑問代名詞・疑問副詞・quel／時刻と数",n:120,c:"#92a6cf",cw:"#eef1f8"},
+    {no:5,t:"補語人称代名詞",d:"直接・間接目的補語／強勢形／非人称構文・所有代名詞",n:104,c:"#b48aa8",cw:"#f6eef3"},
+    {no:6,t:"代名動詞と命令法",d:"代名動詞／命令法",n:109,c:"#c0a06a",cw:"#f8f1e4"}
   ];
   function fmtDur(ms){var m=Math.round((ms||0)/60000);return m<60?m+"分":Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
   var who=(window.Quiz&&Quiz.user())?Quiz.user().id:"guest";

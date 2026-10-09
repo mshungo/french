@@ -12,10 +12,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=12">
+<link rel="stylesheet" href="grammar.css?v=13">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=26"></script>
+<script src="grammar.js?v=27"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -169,6 +169,34 @@ C("pres","« quatre » はいくつ？","4",["4","3","5","14"],"quatre＝4。",{
 C("pres","« six » はいくつ？","6",["6","7","16","5"],"six＝6。語末の x は［s］で読む（単独のとき）。",{cw:false});
 W("pres","3 ＝ ___","trois","trois［trwa］。s は読まない。");
 W("pres","10 ＝ ___","dix","dix［dis］。");
+
+/* ---------- 並べかえ（追加）：レア・ゆい・ユゴー・マルタン先生の小さな物語 ----------
+   あとから足した問題。問題IDは通し番号なので、ほかの問題の記録をずらさないよう、必ずいちばん最後に足す */
+B("n","【レアがスーツケースを開けて】ほら、ゆいにリヨンのおみやげがいくつかあるよ。","Voici des cadeaux de Lyon pour Yui.",["cadeaus","cadeau"],"-eau で終わる名詞の複数形は -eaux。cadeau → cadeaux。");
+B("n","【写真を見せて】この人はレア、リヨンから来た（女子）学生だよ。","C'est Léa, une étudiante de Lyon.",["un","étudiant"],"女性の学生は étudiante（男性形＋e）。冠詞も女性の une。");
+B("n","【パンフレットを開いて】ほら、京都のお祭りが三つあるよ。","Voici trois festivals de Kyoto.",["festivaux","festival"],"-al で終わっても festival は例外で、複数形はふつうに -s。");
+B("n","【リヨンの家で】ここにあるのは、レアのお兄さんのテレビゲームだよ。","Ce sont les jeux vidéo du frère de Léa.",["jeus","jeu"],"-eu で終わる名詞の複数形は -eux。jeu → jeux（vidéo は変わらない）。");
+B("n","【京都駅で】奈良行きのバスが二台あるよ。","Il y a deux bus pour Nara.",["buses","une"],"-s で終わる bus は複数でも同じ形。bus は男性名詞。");
+B("ind","【キャンパスで】あ、カフェの前に鹿が一頭いる！","Il y a un cerf devant le café !",["une","des"],"cerf（鹿）は男性名詞。「一頭の」は不定冠詞 un。");
+B("ind","奈良公園の中には、博物館がひとつある。","Dans le parc de Nara, il y a un musée.",["une","des"],"musée は -ée で終わるが男性名詞 → un。語尾にだまされないこと。");
+B("ind","【ゆいがスマホを見せて】ほら、レアの家族の写真だよ。","Voici une photo de la famille de Léa.",["un","des"],"photo は -o で終わるが女性名詞 → une。de la は縮約しない。");
+B("ind","【寮で】ゆいの部屋には、辞書が何冊かある。","Dans la chambre de Yui, il y a des dictionnaires.",["un","les"],"「何冊かの」→ 複数の不定冠詞 des。Il y a は複数でも同じ形。");
+B("ind","【ユゴーの宿をさがして】ほら、奈良駅の近くにホテルが一軒あるよ。","Voici un hôtel près de la gare de Nara.",["une","des"],"hôtel は無音の h で始まる男性名詞。母音の前でも un のまま。");
+B("part","ゆいのペットボトルには水が入っている。","Il y a de l'eau dans la bouteille de Yui.",["du","des"],"eau は母音で始まる、数えられない名詞 → de l'。");
+B("part","【レアがお礼に】マルタン先生、京都のお茶をどうぞ。","Madame Martin, voici du thé de Kyoto.",["la","des"],"お茶の量は数えない → 男性名詞 thé に部分冠詞 du。");
+B("part","【寮の冷蔵庫を開けて】レア、これってリヨンのチーズ？","Léa, c'est du fromage de Lyon ?",["la","des"],"fromage は男性名詞・量として → du。C'est のあとでも部分冠詞。");
+B("part","【寮の台所で】レア、みそ汁があるよ。","Léa, il y a de la soupe miso.",["du","des"],"soupe は女性名詞・数えられない → de la。");
+B("part","【リヨンへの荷物を詰めながら】ほら、ユゴーにあげる日本のお米だよ。","Voici du riz du Japon pour Hugo.",["de","des"],"お米の量 → 部分冠詞 du。du Japon は de＋le Japon の縮約。");
+B("def","【奈良公園で】これは奈良の鹿たちのおせんべいだよ。","Ce sont les biscuits des cerfs de Nara.",["du","aux"],"「鹿たちの」→ de＋les cerfs で des に縮約。複数なので Ce sont。");
+B("def","【レアの誕生日に】レアに、抹茶のケーキをどうぞ。","Voici un gâteau au thé vert pour Léa.",["à","du"],"「～味の」は à＋定冠詞。à＋le thé → au thé。");
+B("def","これはレアのりんごのタルトだよ。","C'est la tarte aux pommes de Léa.",["au","à"],"pommes は複数 → à＋les で aux。tarte aux pommes で覚えよう。");
+B("def","【リヨンのユゴーの部屋で】壁に日本の地図が貼ってある。","Il y a une carte du Japon sur le mur.",["de","la"],"国名にも定冠詞 → de＋le Japon で du Japon。");
+B("def","【寮の前で】あれがレアの部屋の窓だよ。","C'est la fenêtre de la chambre de Léa.",["du","le"],"chambre は女性名詞。de＋la は縮約しない（du にしない）。");
+B("pres","【奈良公園で】わあ、お寺の前に鹿が七頭いる！","Devant le temple, il y a sept cerfs !",["sont","est"],"「～がいる」は Il y a。数が複数でも Il y a の形は変わらない。");
+B("pres","【写真を見ながら】この人たちはマルタン先生の学生だよ。","Ce sont les étudiants de Madame Martin.",["est","étudiant"],"複数の人を示す → Ce sont。est を使うのは単数の C'est のときだけ。");
+B("pres","【バス停で】ほら、奈良公園行きのバスが来た！","Voilà le bus pour le parc de Nara !",["au","des"],"待っていたものが来た「ほら～だ」は Voilà。");
+B("pres","ゆいのクラスには、女子学生が十人いる。","Dans la classe de Yui, il y a dix étudiantes.",["est","étudiante"],"Il y a＋数＋複数名詞。dix のあとは名詞も複数形。");
+B("pres","【写真を見せて】こちらがユゴー、レアのお兄さんだよ。","Voici Hugo, le frère de Léa.",["du","la"],"人を紹介する「こちらが～」は Voici。frère は男性名詞 → le。");
 </script>
 </body>
 </html>

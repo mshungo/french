@@ -243,7 +243,7 @@
   }
   /* 成果カード：端末に残っている進み具合（文法の達成・会話の習得・ランク・バッジ）と、サーバーの集計から描く */
   function J(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
-  var LN={1:108,2:61,3:83,4:100,5:84,6:89};   // 各 Leçon の問題数（grammar.html と同じ）
+  var LN={1:133,2:76,3:103,4:120,5:104,6:109};   // 各 Leçon の問題数（grammar.html と同じ）
   /* 文法1問の達成ポイント（0〜4）。grammar.js と同じ数え方 */
   function ptOf(x){if(x.pt!=null)return Math.min(4,x.pt);var run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);
     return (!x.wk&&(((x.wrun||0)>=1&&run>=2)||x.m))?4:(!x.wk&&run>=2)?2:((x.c||0)>0&&x.last===1)?1:0;}

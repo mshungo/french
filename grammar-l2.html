@@ -12,10 +12,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=12">
+<link rel="stylesheet" href="grammar.css?v=13">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=26"></script>
+<script src="grammar.js?v=27"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -121,6 +121,24 @@ C("pos","12 は？","douze",["douze","deux","treize","onze"],"douze＝12。");
 C("pos","« dix-sept » はいくつ？","17",["17","7","16","70"],"dix-sept＝10＋7。",{cw:false});
 W("pos","20 ＝ ___","vingt","vingt［vɛ̃］。g と t は発音しない。");
 W("pos","13 ＝ ___","treize","treize。");
+
+/* ---------- 並べかえ（追加）：レア・ゆい・ユゴー・マルタン先生の小さな物語 ----------
+   あとから足した問題。問題IDは通し番号なので、ほかの問題の記録をずらさないよう、必ずいちばん最後に足す */
+B("pro","【ゆいがマルタン先生に】マルタン先生、先生はリヨンのご出身ですか？","Vous êtes de Lyon, Madame Martin ?",["tu","est"],"目上の人には vous。être は vous êtes。");
+B("pro","【レアの両親について】彼らは日本のお菓子が大好きだ。","Ils adorent les gâteaux du Japon.",["elles","adore"],"男女まざった複数（両親）→ ils。動詞は adorent。");
+B("pro","【ゆいがレアをさそう】レア、駅のカフェで食べようか？","Léa, on mange au café de la gare ?",["mangeons","manges"],"on は「私たち」の意味でも3人称単数あつかい → mange。");
+B("pro","【マルタン先生がメッセージで】レア、ゆい、二人とも奈良公園にいるの？","Léa et Yui, vous êtes au parc de Nara ?",["tu","es"],"親しい相手でも2人なら vous（être は vous êtes）。");
+B("pro","【ゆいの自己紹介】私は奈良の、公園の近くに住んでいます。","J'habite à Nara, près du parc.",["je","habite"],"母音で始まる動詞の前で je → j'。j'habite と1語にする。");
+B("dem","ユゴーはこのチョコレートケーキが大好きなんだ。","Hugo adore ce gâteau au chocolat !",["cet","cette"],"gâteau は子音で始まる男性名詞 → ce。au chocolat は à＋le。");
+B("dem","【キャンパスで】この女子学生はレアの友だちだよ。","Cette étudiante est une amie de Léa.",["cet","ce"],"女性名詞は母音で始まっても cette（cet にしない）。");
+B("dem","【奈良公園で】この鹿たち、ゆいのおせんべいを食べてる！","Ces cerfs mangent les biscuits de Yui !",["ce","mange"],"複数 → ces。主語が複数なので動詞も mangent。");
+B("dem","この夏、ユゴーが奈良に来る。","Cet été, Hugo arrive à Nara.",["ce","cette"],"été は母音で始まる男性名詞 → cet été（この夏）。");
+B("dem","【写真を見て】この男の人、レアのお兄さん？","Cet homme est le frère de Léa ?",["ce","cette"],"homme は無音の h で始まる男性名詞 → cet。");
+B("pos","【レアが話す】私の兄のユゴーはリヨンに住んでいる。","Mon frère Hugo habite à Lyon.",["ma","mes"],"frère は男性単数 → mon。");
+B("pos","【リヨンで】ユゴーは自分の車がとても気に入っている。","Hugo aime beaucoup sa voiture.",["son","ses"],"voiture は女性名詞 → sa。持ち主（ユゴー）の性は関係ない。");
+B("pos","【ゆいとクラスメートについて】彼女たちのフランス語の先生はリヨン出身だ。","Leur professeur de français est de Lyon.",["leurs","ses"],"「彼女たちの」＋単数名詞 → leur（複数名詞なら leurs）。");
+B("pos","【ゆいとレアが話す】私たちの寮は大学の近くにある。","Notre résidence est près de l'université.",["nos","du"],"単数 → notre。université は母音で始まる → de l'（du にしない）。");
+B("pos","【ゆいがレアに】お兄さんの写真、持ってる？","Tu as une photo de ton frère ?",["ta","a"],"frère は男性 → ton。avoir は tu as。");
 </script>
 </body>
 </html>

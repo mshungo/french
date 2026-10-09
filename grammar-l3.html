@@ -12,10 +12,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=12">
+<link rel="stylesheet" href="grammar.css?v=13">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=26"></script>
+<script src="grammar.js?v=27"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -140,6 +140,29 @@ W("rep","68 ＝ ___","soixante-huit","60＝soixante。");
 C("rep","« cinquante-deux » はいくつ？","52",["52","42","62","25"],"cinquante＝50。",{cw:false});
 B("adj","これは私の新しい携帯電話です。","C'est mon nouveau portable.",["nouvel","ma"],"nouveau は名詞の前。portable は子音で始まるので nouvel ではない。");
 B("adj","姉はまじめな学生です。","Ma sœur est une étudiante sérieuse.",["sérieux","Mon"],"女性名詞 → sérieuse。",{cap:true});
+
+/* ---------- 並べかえ（追加）：レア・ゆい・ユゴー・マルタン先生の小さな物語 ----------
+   あとから足した問題。問題IDは通し番号なので、ほかの問題の記録をずらさないよう、必ずいちばん最後に足す */
+B("adj","【カフェで】このカフェのタルトはどれもおいしい！","Les tartes de ce café sont délicieuses !",["délicieux","cette"],"tartes は女性複数 → délicieuses。café は男性なので ce。");
+B("adj","【奈良で】公園には大きなシカたちがいる。","Il y a de grands cerfs dans le parc.",["des","grandes"],"形容詞が複数名詞の前にくると des → de。cerf は男性。");
+B("adj","【リヨンで】ユゴーは古いアパルトマンに住んでいる。","Hugo habite dans un vieil appartement.",["vieux","vieille"],"母音で始まる男性単数名詞の前では vieux → vieil。");
+B("adj","レアには日本人の新しい友だち（女の子）がいる。","Léa a une nouvelle amie japonaise.",["nouvel","japonais"],"amie は女性なので母音の前でも nouvelle。国籍は名詞のあと。");
+B("adj","ゆいはかわいい黒のスカートをはいている。","Yui porte une jolie jupe noire.",["joli","noir"],"joli は名詞の前、色の noire はあと。jupe は女性。");
+B("neg","レアは朝、ぜったいにお米を食べない。","Le matin, Léa ne mange jamais de riz.",["du","des"],"ne ～ jamais でも部分冠詞 du は de になる。");
+B("neg","マルタン先生はもう車を持っていない。","Madame Martin n'a plus de voiture.",["une","des"],"ne ～ plus「もう～ない」。否定で une → de。");
+B("neg","【奈良公園で】あれはシカじゃないよ、犬だよ！","Ce n'est pas un cerf, c'est un chien !",["de","une"],"être のあとの冠詞は否定でも de にならない。");
+B("neg","土曜日は大学にだれもいない。","Le samedi, il n'y a personne à l'université.",["pas","aucun"],"ne ～ personne「だれも～ない」。pas はいっしょに使わない。");
+B("neg","ユゴーは緑茶が好きじゃない。","Hugo n'aime pas le thé vert.",["du","verte"],"aimer のあとの定冠詞は否定でもそのまま。thé は男性。");
+B("int","レアは日本料理が好きですか？（倒置で）","Léa aime-t-elle la cuisine japonaise ?",["-elle","japonais"],"名詞主語＋動詞＋-t-elle。母音で終わる動詞なので -t-。");
+B("int","【カフェで】チョコレートケーキにするの？（Est-ce que で）","Est-ce que tu choisis le gâteau au chocolat ?",["choisit","du"],"-ir動詞 tu → choisis。「チョコの」は à＋le → au。");
+B("int","レアとユゴーはリヨン出身ですか？（倒置で）","Léa et Hugo sont-ils de Lyon ?",["est","-elles"],"男女まざった名詞主語 → sont-ils で倒置。");
+B("int","ゆいは今日、授業がないの？（Est-ce que で）","Est-ce que Yui n'a pas de cours aujourd'hui ?",["des","qu'"],"否定の疑問文でも冠詞は de。Yui の前は que のまま。");
+B("int","【マルタン先生がレアに】お部屋には満足していますか？（倒置で）","Êtes-vous contente de votre chambre ?",["content","ta"],"相手は女性 → contente。vous で話すので votre。");
+B("rep","（レアは納豆が好きじゃないの？と聞かれて）ううん、大好きだよ！","Si, elle adore le natto !",["Oui","du"],"否定の疑問に肯定で答えるので si。好みには定冠詞。");
+B("rep","（ユゴーは日本語を話さないの？と聞かれて）うん、話さないよ。","Non, Hugo ne parle pas japonais.",["Oui","de"],"否定の疑問に否定で答えるので「うん」でも non。");
+B("rep","（マルタン先生の学生は60人？と聞かれて）いいえ、61人です。","Non, Madame Martin a soixante et un étudiants.",["soixante-un","Si"],"61 は soixante et un。肯定の疑問への「いいえ」は non。");
+B("rep","（ユゴーって26歳じゃないの？と聞かれて）ううん、26歳だよ。","Si, Hugo a vingt-six ans.",["Oui","est"],"否定の疑問への肯定の答えは si。年齢は avoir。");
+B("rep","（ゆいはまだ寮に住んでるの？と聞かれて）ううん、もう住んでないよ。","Non, Yui n'habite plus à la résidence.",["Si","au"],"肯定の疑問に否定で答える → non。ne ～ plus「もう～ない」。");
 </script>
 </body>
 </html>

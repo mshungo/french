@@ -12,10 +12,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=12">
+<link rel="stylesheet" href="grammar.css?v=13">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=26"></script>
+<script src="grammar.js?v=27"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -149,6 +149,29 @@ C("impp","（vous に）彼女に電話しないでください。","Ne lui tél
 B("impp","今夜は楽しもう。","Amusons-nous ce soir.",["amusez","-vous"],"代名動詞の nous の命令：Amusons-nous。");
 B("impp","（vous に）ゆっくり休んでください。","Reposez-vous bien.",["-nous","reposes"],"代名動詞の vous の命令：Reposez-vous。");
 B("impp","（tu に）彼に話しかけないで。","Ne lui parle pas.",["le","parles"],"否定命令：Ne＋lui＋命令形＋pas。");
+
+/* ---------- 並べかえ（追加）：レア・ゆい・ユゴー・マルタン先生の小さな物語 ----------
+   あとから足した問題。問題IDは通し番号なので、ほかの問題の記録をずらさないよう、必ずいちばん最後に足す */
+B("pr","【寮の朝】レアは朝、決して急がない。","Léa ne se dépêche jamais le matin.",["me","te"],"se dépêcher「急ぐ」。ne＋se＋動詞＋jamais。");
+B("pr","マルタン先生、先生は朝早く起きるのですか？（倒置で）","Vous levez-vous tôt, Madame Martin ?",["se","nous"],"倒置疑問文：再帰代名詞 vous＋動詞-vous。");
+B("pr","ユゴーは来年、結婚する予定だ。","Hugo va se marier l'année prochaine.",["me","lui"],"近接未来では、再帰代名詞は主語に合わせて不定詞の直前に。");
+B("pr","レアとゆいは奈良公園を散歩する。","Léa et Yui se promènent dans le parc de Nara.",["promène","s'"],"主語は複数 → se promènent（è に注意）。");
+B("pr","【明日は京都へ】今夜は遅く寝ないつもりだ。","Je ne vais pas me coucher tard ce soir.",["se","te"],"不定詞でも再帰代名詞は主語に合わせる：je → me coucher。");
+B("usage","レアとユゴーはよく手紙を書き合う。","Léa et Hugo s'écrivent souvent.",["se","leur"],"相互的用法「互いに～し合う」。母音の前で s'。");
+B("usage","鹿せんべいは奈良のいたるところで売られている。","Les biscuits pour les cerfs se vendent partout à Nara.",["vend","sont"],"受動的用法。主語が複数なので se vendent。");
+B("usage","レアは毎晩、歯をみがく。","Léa se brosse les dents tous les soirs.",["ses","sa"],"体の部分は定冠詞で：se brosser les dents。");
+B("usage","【リヨンで再会】ユゴー「ゆい、ぼくのこと覚えてる？」","Yui, tu te souviens de moi ?",["me","se"],"se souvenir de ～（本来的用法）。de のあとは強勢形 moi。");
+B("usage","【寮で】ゆいが毎朝レアを（→ 彼女を）起こしてあげる。","Yui la réveille tous les matins.",["se","lui"],"「人を起こす」は他動詞 réveiller。「彼女を」→ la。");
+B("imp","【奈良公園で】（tu に）鹿をこわがらないで！","N'aie pas peur des cerfs !",["ne","as"],"avoir の tu の命令形は aie。母音の前で n'。");
+B("imp","（tu に）寒いよ、コートを着て！","Il fait froid, mets ton manteau !",["met","ta"],"mettre の tu の命令形は mets（tu mets から）。");
+B("imp","【京都で】もう雨はやんだ。（nous で）出かけよう！","Il ne pleut plus, sortons !",["sortez","sortir"],"nous の命令形「～しよう」：sortons。");
+B("imp","【京都旅行の前】マルタン先生「（vous に）明日は遅れないでくださいね」","Ne soyez pas en retard demain !",["êtes","sois"],"être の vous の命令形は soyez。Ne＋命令形＋pas。");
+B("imp","【京都のお寺】（nous で）中では大きな声で話さないようにしよう。","Ne parlons pas fort dans le temple !",["parlez","n'"],"nous の否定命令：Ne＋parlons＋pas。");
+B("impp","【京都旅行の朝】（tu に）早く起きて、8時に出発だよ！","Lève-toi vite, on part à huit heures !",["te","lèves"],"代名動詞の肯定命令：te → toi。-er動詞なので s をとる。");
+B("impp","【子どものころの写真】ユゴー「（tu に）それ（cette photo）を彼女（ゆい）に見せないで！」","Ne la lui montre pas !",["leur","le"],"否定命令は平叙文と同じ語順：ne＋la＋lui＋命令形＋pas。");
+B("impp","（tu に）ゆい、京都駅の前で私を待っててね！","Yui, attends-moi devant la gare de Kyoto !",["me","-toi"],"肯定命令では me → moi：attends-moi。");
+B("impp","【リヨンの兄から電話】レア「（tu に）私のことは心配しないで！」","Ne t'inquiète pas pour moi !",["te","toi"],"代名動詞の否定命令は te のまま（母音の前で t'）。pour のあとは moi。");
+B("impp","【ユゴーがリヨンへ帰る】（tu に）ユゴー、リヨンから私たちに手紙を書いてね！","Hugo, écris-nous de Lyon !",["nous","écrit"],"肯定命令：命令形-nous。écrire の tu の命令形は écris。");
 </script>
 </body>
 </html>

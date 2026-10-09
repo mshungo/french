@@ -12,10 +12,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=12">
+<link rel="stylesheet" href="grammar.css?v=13">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=26"></script>
+<script src="grammar.js?v=27"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -160,6 +160,29 @@ W("heure","72 ＝ ___","soixante-douze","72＝60＋12。");
 W("heure","85 ＝ ___","quatre-vingt-cinq","85＝80＋5。vingt に s はつけない。");
 W("heure","300 ＝ ___",["trois cents","trois-cents"],"ちょうどの数なので cents。");
 W("heure","2000 ＝ ___",["deux mille","deux-mille"],"mille は複数でも s をつけない。");
+
+/* ---------- 並べかえ（追加）：レア・ゆい・ユゴー・マルタン先生の小さな物語 ----------
+   あとから足した問題。問題IDは通し番号なので、ほかの問題の記録をずらさないよう、必ずいちばん最後に足す */
+B("proche","今夜、ゆいは出かけないつもりだ。","Ce soir, Yui ne va pas sortir.",["vas","vient"],"近接未来の否定は aller を ne ～ pas ではさむ。");
+B("proche","レアとゆいはたった今、京都に着いたところだ！","Léa et Yui viennent d'arriver à Kyoto !",["vont","de"],"近接過去 venir de＋原形。母音の前で d'。");
+B("proche","【リヨンから】ユゴーが妹に会いに来る。","Hugo vient voir sa petite sœur.",["de","son"],"de のない venir＋原形は「～しに来る」。sœur は女性。");
+B("proche","私たち、ユゴーへのプレゼントを選ぶつもりなの。","Nous allons choisir un cadeau pour Hugo.",["allez","choisis"],"nous allons＋原形。aller のあとの動詞は活用しない。");
+B("proche","マルタン先生はカフェに来る予定なの？（Est-ce que で）","Est-ce que Madame Martin va venir au café ?",["vas","viens"],"近接未来 va＋原形 venir。à＋le → au。");
+B("pron","レアは明日、何をするつもり？（est-ce que を使って）","Qu'est-ce que Léa va faire demain ?",["qui","vais"],"「何を」→ qu'est-ce que＋主語＋aller＋原形。");
+B("pron","ゆいはだれと京都に行くの？","Avec qui Yui va-t-elle à Kyoto ?",["quoi","-elle"],"前置詞のあと、人なら qui。va のあとは -t-elle。");
+B("pron","【カフェで】デザートは何にする？（倒置で）","Que choisis-tu pour le dessert ?",["quoi","choisit"],"「何を」を倒置で聞くときは que＋動詞-主語。");
+B("pron","【ユゴーに】リヨンでは何がおいしいの？","Qu'est-ce qui est bon à Lyon ?",["que","bonne"],"人以外の主語「何が」→ qu'est-ce qui。形容詞は男性形。");
+B("pron","レアとゆいは何について話しているの？","De quoi Léa et Yui parlent-elles ?",["que","-ils"],"前置詞のあと、人以外なら quoi。女性2人 → -elles。");
+B("adv","公園にはシカが何頭いるの？","Combien de cerfs y a-t-il dans le parc ?",["des","-il"],"combien de＋名詞（冠詞なし）。Il y a の倒置は y a-t-il。");
+B("adv","京都ではどのお寺を訪ねるつもりですか？（倒置で）","Quels temples allez-vous visiter à Kyoto ?",["Quelles","vont"],"temple は男性名詞 → quels。-e で終わっても女性とは限らない。");
+B("adv","どうしてゆいはシカが好きじゃないの？（est-ce que を使って）","Pourquoi est-ce que Yui n'aime pas les cerfs ?",["des","qu'"],"疑問副詞＋est-ce que＋否定文。aimer のあとは定冠詞。");
+B("adv","ユゴーはいつ奈良に来るの？（倒置で）","Quand Hugo vient-il à Nara ?",["-t-il","viens"],"vient は t で終わるので -t- は不要。名詞主語＋vient-il。");
+B("adv","レアはパーティーにどのワンピースを選ぶの？（倒置で）","Quelle robe Léa choisit-elle pour la fête ?",["Quel","-t-elle"],"robe は女性 → quelle。choisit は t で終わるので -t- 不要。");
+B("heure","【大学で】フランス語の授業は9時15分に始まる。","Le cours de français commence à neuf heures et quart.",["moins","heure"],"15分＝et quart。2時以降は heures（複数）。");
+B("heure","レアとゆいは12時半にお昼を食べる予定だ。","Léa et Yui vont déjeuner à midi et demi.",["moins","va"],"midi のあとは et demi（男性形）。主語は複数 → vont。");
+B("heure","リヨンは今、何時？","Quelle heure est-il à Lyon ?",["Quel","-t-il"],"heure は女性 → quelle。est は t で終わるので -t- 不要。");
+B("heure","リヨンは5時45分だよ。","À Lyon, il est six heures moins le quart.",["cinq","et"],"45分は次の時刻から15分前 → six heures moins le quart。");
+B("heure","シカせんべいは200円です。","Les biscuits pour les cerfs coûtent deux cents yens.",["cent","coûte"],"200 ちょうどなので cents。主語が複数 → coûtent。");
 </script>
 </body>
 </html>

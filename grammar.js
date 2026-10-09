@@ -54,7 +54,7 @@ const PRON=/^(.+?)(-t-(?:il|elle|on)|-(?:vous|tu|moi|toi|on|je|il|elle|ils|elles
    固有名詞＝問題の正解文のどこかで、文の途中に大文字で出てくる語 */
 let PROPER=null;
 function properSet(){
-  if(PROPER)return PROPER;PROPER=new Set("Paris Lyon Tokyo Kyoto Osaka Nara Kobe Julie Marie Paul Pierre Luc Léa Chloé Marc Camille Isabelle Québec France Japon".split(" "));
+  if(PROPER)return PROPER;PROPER=new Set("Paris Lyon Tokyo Kyoto Osaka Nara Kobe Julie Marie Paul Pierre Luc Léa Chloé Marc Camille Isabelle Québec France Japon Yui Hugo Madame Martin".split(" "));
   ITEMS.forEach(it=>(it.a||[]).forEach(a=>String(a).trim().split(/\s+/).forEach((w,i)=>{
     const c=w.replace(/^[«"(]+|[»",.!?;:)]+$/g,"");if(i>0&&/^[A-ZÀ-Ý]/.test(c)&&!/^(Je|Il|Elle|Nous|Vous|Ils|Elles|On)$/.test(c))PROPER.add(c);})));
   return PROPER;
@@ -523,9 +523,23 @@ function showAfter(q){
   if(alts.length&&(it.t==="t"||it.t==="w"))extra+='<div class="ans-alt">＝ '+alts.map(esc).join(" ／ ")+'</div>';
   a.innerHTML='<div class="ans-fr">'+answerLine(q)+'</div>'+(it.ja&&it.t!=="b"?'<div class="ans-ja">'+jaHTML(it.ja)+'</div>':'')+extra+
     (it.ex?'<div class="ex"><span class="ex-h">ポイント</span>'+esc(it.ex)+'</div>':'')+
+    /* 書いて答えてまちがえたときは、正しい形を一度自分で書いてみる（写して覚える）。書かずに進むこともできる */
+    (!q.ok&&q.kind==="w"?'<div class="retype"><span class="rt-l">'+NLI.svg("pencil",15)+'正しい形を書いて覚えよう</span><input type="text" id="rtIn" class="write-input rt-in" autocomplete="off" autocapitalize="off" spellcheck="false"><span class="rt-ok" id="rtOk"></span></div>':'')+
     '<div class="btns nx"><button class="next-btn" id="nextBtn" aria-label="'+(idx+1<questions.length?"次へ":"結果を見る")+'">'+NLI.svg(idx+1<questions.length?"next":"flag",28)+'</button></div>';
   $("nextBtn").onclick=next;
   $("hintLine").textContent="";
+  const rt=$("rtIn");
+  if(rt){
+    setTimeout(()=>{try{rt.focus({preventScroll:true});}catch(e){}},80);
+    rt.addEventListener("keydown",e=>{
+      if(e.key!=="Enter")return;
+      e.preventDefault();e.stopPropagation();
+      if(judge(rt.value,it.a)>0){rt.classList.add("ok");rt.disabled=true;$("rtOk").innerHTML=NLI.svg("star",18);$("rtOk").classList.add("on");
+        if(typeof playCorrect==="function")try{playCorrect();}catch(er){}
+        setTimeout(()=>{const b=$("nextBtn");if(b)b.focus();},250);}
+      else{rt.classList.remove("shake");void rt.offsetWidth;rt.classList.add("shake");}
+    });
+  }
   if(q.ok&&!q.accent&&(!window.Quiz||!Quiz.autoNext||Quiz.autoNext()))autoNext=setTimeout(next,Quiz.nextDelay?Quiz.nextDelay(1000):1000);   // 間違えたときは自動では進まない
 }
 function next(){

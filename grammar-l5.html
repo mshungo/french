@@ -12,10 +12,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="grammar.css?v=12">
+<link rel="stylesheet" href="grammar.css?v=13">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="grammar.js?v=26"></script>
+<script src="grammar.js?v=27"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -143,6 +143,29 @@ W("imp","Ce n'est pas mon sac, c'est ___.（きみのもの）","le tien","sac �
 W("imp","Votre appartement est grand ; ___ est petit.（私たちのもの）","le nôtre","appartement は男性単数 → le nôtre。",{ja:"あなたのアパルトマンは広いが、私たちのは狭い。"});
 B("imp","ここでタバコを吸ってはいけない。","Il ne faut pas fumer ici.",["fait","vaut"],"il ne faut pas＋不定詞。");
 B("imp","今日はとても暑い。","Il fait très chaud aujourd'hui.",["est","a"],"天気は il fait＋形容詞。");
+
+/* ---------- 並べかえ（追加）：レア・ゆい・ユゴー・マルタン先生の小さな物語 ----------
+   あとから足した問題。問題IDは通し番号なので、ほかの問題の記録をずらさないよう、必ずいちばん最後に足す */
+B("cod","【奈良公園で】鹿たちに？ ゆいはもう彼らにせんべいをあげないよ。","Yui ne leur donne plus de biscuits.",["les","lui"],"à＋人・動物（複数）→ leur。ne＋leur＋動詞＋plus。");
+B("cod","【ユゴーが奈良に来る】レアは彼（ユゴー）をゆいに紹介するつもりだ。","Léa va le présenter à Yui.",["lui","la"],"「彼を」は直接目的 le。近接未来では不定詞の直前に置く。");
+B("cod","【リヨンの兄のこと】レアはたった今、彼（ユゴー）に電話したところだ。","Léa vient de lui téléphoner.",["le","leur"],"téléphoner à＋人 → lui。venir de のあと、不定詞の直前に。");
+B("cod","【マルタン先生の授業】それ（le cours）をおもしろいと思わないの？","Tu ne le trouves pas intéressant ?",["lui","la"],"cours は男性単数の直接目的 → le。ne＋le＋動詞＋pas。");
+B("cod","【明日はレアの誕生日】ゆいは彼女にケーキを作ってあげるつもりだ。","Yui va lui faire un gâteau.",["la","elle"],"「彼女に」は間接目的 lui。不定詞 faire の直前に置く。");
+B("ordre","【レアが辞書を探している】ゆい「それ（ce dictionnaire）、きみに貸してあげるよ」","Je vais te le prêter.",["toi","lui"],"te＋le の順で、不定詞 prêter の直前に置く。");
+B("ordre","【ユゴーの新しい車】ユゴーはそれ（sa voiture）を彼女（レア）に決して貸さない。","Hugo ne la lui prête jamais.",["le","leur"],"la（直接）＋lui（間接）の順。ne と jamais ではさむ。");
+B("ordre","【京都旅行の写真（les photos）】レア、それらを私たちに見せてくれる？","Léa, tu nous les montres ?",["leur","leurs"],"nous（間接）＋les（直接）の順。");
+B("ordre","【奈良のお茶（ce thé）】レアはそれをユゴーに送るつもりだ。","Léa va le lui envoyer.",["leur","la"],"le＋lui の順で、不定詞の直前に。");
+B("ordre","【小テスト】マルタン先生「答え（la réponse）？ あなたたちにそれは教えませんよ」","Je ne vous la donne pas !",["leur","le"],"vous＋la の順。ne と pas で代名詞と動詞をはさむ。");
+B("ton","【京都旅行】ユゴーは私たちといっしょに来るの？（倒置で）","Hugo vient-il avec nous ?",["on","notre"],"前置詞 avec のあとは強勢形 nous。名詞主語の倒置は -il。");
+B("ton","【レアの写真を見ながら】この人が、レアのお兄さん？","C'est lui, le frère de Léa ?",["il","eux"],"C'est のあとは強勢形。「彼」→ lui。");
+B("ton","レア「ゆいと私はね、京都へ出発するの」","Yui et moi, nous partons pour Kyoto.",["je","me"],"et で結ぶときは強勢形 moi。まとめて主語 nous で受ける。");
+B("ton","【レアの両親はリヨン在住】ユゴーは今も彼ら（両親）の家に住んでいるの？","Hugo habite toujours chez eux ?",["leur","ils"],"前置詞 chez のあとは強勢形。ils → eux。");
+B("ton","【奈良公園で】レア「私はね、鹿なんかこわくないよ」","Moi, je n'ai pas peur des cerfs.",["me","du"],"主語の強調は強勢形 moi。avoir peur de ～「～がこわい」。");
+B("imp","【奈良公園で】鹿たち？ 彼らにチョコレートをあげてはいけないよ。","Il ne faut pas leur donner de chocolat.",["les","lui"],"il ne faut pas＋不定詞。leur は不定詞の直前、否定で du → de。");
+B("imp","【京都で】雨が降っているから、ここにいたほうがいいね。","Il pleut, il vaut mieux rester ici.",["vaux","fait"],"天候の il pleut と、il vaut mieux＋不定詞「～したほうがよい」。");
+B("imp","【レアはやさしい】彼女（レア）と話すのは気楽だ。","Il est facile de parler avec elle.",["la","sa"],"il est＋形容詞＋de＋不定詞。avec のあとは強勢形 elle。");
+B("imp","【寮で】この傘（ce parapluie）はゆいのじゃない、私のだよ。","Ce parapluie n'est pas à Yui, c'est le mien.",["la","mon"],"être à＋人「～のものだ」。parapluie は男性単数 → le mien。");
+B("imp","レア「私の両親はリヨンに住んでるの。きみのご両親は？」","Mes parents habitent à Lyon, et les tiens ?",["tes","tiennes"],"parents は男性複数 → les tiens。");
 </script>
 </body>
 </html>
