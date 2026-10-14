@@ -106,3 +106,18 @@
 .vmove .mv-next{flex-basis:100%;text-align:center;font-size:12px;color:var(--ink-soft);margin-top:4px;}
 .rnext{display:block;font-size:11px;color:var(--accent-ink);margin-top:2px;}
 .review .spk.sm{width:26px;height:26px;vertical-align:-7px;}
+/* ヒントつきで書く：最初の文字と字数 */
+.vc-pat{margin-top:12px;display:flex;justify-content:center;align-items:flex-end;flex-wrap:wrap;gap:4px;font-size:22px;}
+.vc-pat b{font-weight:600;color:var(--accent-ink);min-width:12px;}
+.vc-pat i{display:inline-block;width:14px;height:2px;margin-bottom:6px;background:var(--ink-soft);opacity:.55;border-radius:1px;}
+.vc-pat i.sp{width:8px;background:none;}
+.vc-pat .pa{font-family:var(--sans,inherit);font-size:11px;color:var(--ink-soft);border:1px dashed var(--rule);border-radius:6px;padding:1px 6px;margin-right:4px;align-self:center;}
+/* 例文に入れる */
+.vc-cloze{font-family:var(--serif);font-size:24px;line-height:1.45;color:var(--ink);}
+.vc-cloze .gap{display:inline-block;min-width:70px;border-bottom:2px solid var(--accent);color:var(--accent-ink);font-family:inherit;}
+/* アクセント記号のボタン */
+.acc-keys{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:9px;}
+.acc-keys .acc{font-family:var(--serif);font-size:16px;min-width:32px;height:30px;padding:0 6px;border-radius:8px;border:1px solid var(--rule);background:var(--card,#fff);color:var(--ink);cursor:pointer;}
+.acc-keys .acc:active{background:var(--accent-wash);}
+@media (hover:none){.acc-keys{display:none;}}   /* スマホはキーボードの長押しで入る */
+.retype .acc-keys{margin-top:2px;}

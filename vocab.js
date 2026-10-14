@@ -6,9 +6,15 @@
      忘れかけたころにもう一度思い出すと、記憶が長もちする（エビングハウスの忘却曲線・分散学習）。
      まだ復習の日が来ていない単語は、正解しても箱は上がらない（間をあけることに意味があるので）。
    ・思い出す練習：答えを見る前に、まず自分で思い出す（テスト効果）
-   ・受容から産出へ：箱1 意味を選ぶ・聞いて選ぶ → 箱2 フランス語を選ぶ → 箱3から 書いて答える・聞いて書く
+   ・受容から産出へ。ただし産出（書く）は初日から入れる
+       新しい語：出会う → 3枚あとに 意味を選ぶ（または聞いて選ぶ）→ さらに4枚あとに ヒントつきで書く
+       （認識より再生のほうが記憶に残る・思い出す手間が大きいほど残る＝望ましい困難。ただしヒントで手間を調整して挫折させない）
+       復習：箱1 フランス語を選ぶ／ヒントつきで書く／聞いて選ぶ → 箱2 ヒントつき・ヒントなしで書く
+             → 箱3〜 書く・例文に入れる（文脈の中で形を思い出す）・聞いて書く
    ・その場で覚えなおす：まちがえた単語は箱1にもどり、3枚ほどあとにもう一度出る。正解するまで練習は終わらない
-   ・新しい単語は1回5語まで（1日25語まで）。同じテーマ（色・家族など）の新しい語はつづけて出さない（似た語どうしの混同を避ける）
+   ・新しい単語は1回5語まで（1日25語まで）。Leçon 1 から順に、数（0〜1000）を少しずつまぜて出す。
+     同じテーマ（色・家族など）の新しい語はつづけて出さない（似た語どうしの混同を避ける）
+   ・書く問題では、アクセント記号だけのちがいは正解にして、正しいつづりを見せる。冠詞を忘れたときは、まちがいにせず書きなおしてもらう
    ============================================================ */
 (function(){
 "use strict";
@@ -22,6 +28,15 @@ function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
 function today(){return Math.floor((Date.now()+9*3600e3)/864e5);}   // 日本時間の日の番号
+/* 新しい語を出す順：Leçon 1→6 の順に、数（N）をほぼ7語おきに1つずつまぜる */
+let ORDER=null;
+function order(){
+  if(ORDER)return ORDER;
+  const L=WORDS.filter(w=>w.u!=="N"),N=WORDS.filter(w=>w.u==="N"),step=Math.max(1,Math.floor(L.length/(N.length+1)));
+  ORDER=[];let k=0;L.forEach((w,i)=>{ORDER.push(w);if((i+1)%step===0&&k<N.length)ORDER.push(N[k++]);});
+  while(k<N.length)ORDER.push(N[k++]);
+  return ORDER;
+}
 
 /* ---------- 単語の形 ---------- */
 const VOW=/^[aeiouyhàâæéèêëîïôœûùü]/i;
@@ -104,7 +119,7 @@ function st(w){return store.it[w.id]||null;}   // {l:箱, d:次の復習の日, 
 function lv(w){const s=st(w);return s?s.l:0;}
 function isDue(w,d){const s=st(w);return !!s&&s.l>=1&&s.d<=d;}
 function newToday(){const d=today();return store.nd.d===d?store.nd.n:0;}
-function inScope(w,sc){return sc==="today"||sc==="weak"||sc==="extra"?true:w.u===sc;}
+function inScope(w,sc){return true;}   // 単元ごとには分けない（すべての語をひとつの流れで）
 function unitOf(k){return VOCAB_UNITS.find(u=>u.k===k)||{k,t:k,c:"#c0a06a",ci:"#9a7b45",cw:"#f8f1e4"};}
 function weakList(){return WORDS.filter(w=>{const s=st(w);return s&&s.w>=2&&s.l<5;}).sort((a,b)=>st(b).w-st(a).w);}
 function counts(sc){
@@ -125,11 +140,9 @@ let queue=[],pos=0,done=0,sess=null,cur=null,locked=false,autoNext=null,scope="t
 /* 新しい単語を選ぶ：単元の順に、同じテーマの語がつづかないように */
 function pickNew(sc,max){
   const out=[],tags=new Set();
-  const pool=WORDS.filter(w=>!st(w)&&inScope(w,sc));
-  const units=sc==="today"?VOCAB_UNITS.map(u=>u.k).filter(k=>pool.some(w=>w.u===k)):[sc];
-  const first=pool.filter(w=>w.u===units[0]);   // 「今日のカード」では、まだ新しい語が残っているいちばん前の単元から
-  for(const w of first){if(out.length>=max)break;if(!tags.has(w.tag)){out.push(w);tags.add(w.tag);}}
-  for(const w of first){if(out.length>=max)break;if(out.indexOf(w)<0)out.push(w);}
+  const near=order().filter(w=>!st(w)).slice(0,max*3);   // まだ出会っていない語のうち、順番の近いものから
+  for(const w of near){if(out.length>=max)break;if(!tags.has(w.tag)){out.push(w);tags.add(w.tag);}}
+  for(const w of near){if(out.length>=max)break;if(out.indexOf(w)<0)out.push(w);}
   return out;
 }
 function buildSession(sc){
@@ -158,14 +171,19 @@ function buildSession(sc){
 }
 function task(w,kind,fmt){return {w,kind,fmt:fmt||fmtFor(w,kind),rep:0};}
 function hasAudio(){return !!window.fetch;}
+/* 出題の形
+   intro 出会い / fj 意味を選ぶ / lj 聞いて意味を選ぶ / jf フランス語を選ぶ
+   wh ヒントつきで書く（最初の文字と字数）/ w 書く / ex 例文の空らんに書く / dw 聞いて書く */
+function roll(T){let r=Math.random(),acc=0;for(const [f,p] of T){acc+=p;if(r<acc)return f;}return T[T.length-1][0];}
 function fmtFor(w,kind){
   if(kind==="intro")return "intro";
-  if(kind==="test")return "fj";
-  const l=lv(w);
-  if(l<=1)return hasAudio()&&Math.random()<.4?"lj":"fj";
-  if(l===2)return "jf";
-  if(l>=4&&hasAudio()&&Math.random()<.35&&w.p!=="num")return "dw";
-  return "w";
+  if(kind==="test")return hasAudio()&&Math.random()<.3?"lj":"fj";   // 出会いのすぐあと：まず意味がわかるか
+  if(kind==="test2")return "wh";                                     // そのあと：ヒントつきで自分で書く
+  const l=lv(w),au=hasAudio(),num=w.p==="num";
+  if(l<=1)return roll([["jf",.35],["wh",.5],[au?"lj":"fj",.15]]);
+  if(l===2)return roll([["wh",.35],["w",.45],[au&&!num?"dw":"jf",.2]]);
+  if(l===3)return roll([["w",.45],["ex",.35],[au&&!num?"dw":"w",.2]]);
+  return roll([["ex",.4],["w",.35],[au&&!num?"dw":"ex",.25]]);
 }
 
 /* ---------- 選択肢 ---------- */
@@ -225,9 +243,6 @@ document.addEventListener("click",e=>{
 /* ---------- 画面 ---------- */
 const CARD_IC='<svg width="30" height="30" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="9" width="17" height="20" rx="2.5" transform="rotate(-8 13.5 19)"/><rect x="10" y="4" width="17" height="20" rx="2.5"/><path d="M14.5 11.5h8M14.5 15.5h5.5"/><path d="M22.6 19.2l.9 1.8 2 .3-1.4 1.4.3 2-1.8-.9-1.8.9.3-2-1.4-1.4 2-.3z" fill="currentColor" stroke="none"/></svg>';
 function shell(){
-  const units=VOCAB_UNITS.map(u=>'<button class="start-btn vu" data-u="'+u.k+'" style="--vc:'+u.c+';--vcw:'+u.cw+'"><i class="wk">'+esc(u.k==="N"?"#":u.k.slice(1))+'</i>'+
-    '<span class="sb-name">'+esc(u.t)+'<span class="sb-desc">'+esc(u.sub)+'</span><span class="gm" data-gm="'+u.k+'"></span></span>'+
-    '<span class="sb-prog" data-prog="'+u.k+'"></span></button>').join("");
   return ''+
 '<div class="wrap">'+
 '  <div class="crown"><div class="crest">'+CARD_IC+'</div><div class="eyebrow">Naralingo · Vocabulaire</div><h1>単語カード</h1><span class="verbs">mots · révision espacée</span></div>'+
@@ -242,7 +257,7 @@ function shell(){
 '    <button class="vtoday" id="todayBtn"><span class="vt-ic">'+CARD_IC+'</span><span class="vt-tx"><b>今日のカード</b><span id="todayInfo"></span></span>'+NLI.svg("next",24)+'</button>'+
 '    <div class="vt-sub" id="todaySub"></div>'+
 '    <div class="boxes" id="boxes"></div>'+
-'    <div class="sections vunits">'+units+'</div>'+
+
 '    <div class="extra-row">'+
 '      <button class="start-btn weak" id="weakBtn"><i>!</i><span class="sb-name">苦手<span class="sb-desc" id="weakCount"></span></span></button>'+
 '      <button class="start-btn summary" id="extraBtn"><i>'+NLI.svg("again",16)+'</i><span class="sb-name">前倒しで練習<span class="sb-desc">箱は上がりません</span></span></button>'+
@@ -257,7 +272,9 @@ function shell(){
 '        <p>答えを見て「わかった」と思うより、答えを見る前に自分で思い出そうとするほうが、記憶に残ります（テスト効果）。まちがえても大丈夫。思い出そうとした分だけ、正しい答えが頭に入りやすくなります。</p>'+
 '        <p>まちがえた単語は、3枚ほどあとにもう一度出ます。正解できるまで、その回の練習は終わりません。</p></div></details>'+
 '      <details class="memo"><summary>わかる → 言える・書ける</summary><div class="memo-body">'+
-'        <p>意味がわかること（受容）と、自分で言える・書けること（産出）は別の力です。箱1では意味を選び、箱2ではフランス語を選び、箱3からは書いて答えます。耳で聞いて書く問題もあります。</p>'+
+'        <p>意味がわかること（受容）と、自分で言える・書けること（産出）は別の力です。選ぶだけでは「書ける」ようにはなりにくいので、新しい単語も、その日のうちに一度は自分で書きます。</p>'+
+'        <p>出会う → 意味を選ぶ → <b>ヒントつきで書く</b>（最初の文字と字数）。箱が上がるにつれて、ヒントなしで書く・<b>例文の空らんに入れる</b>・聞いて書く、と少しずつ手ごたえのある問題になります。思い出すのに少し苦労したほうが、記憶には残ります。</p>'+
+'        <p>アクセント記号だけのまちがいは正解にして、正しいつづりを見せます。冠詞を忘れたときは、もう一度書きなおせます。</p>'+
 '        <p>名詞は<b>冠詞といっしょに</b>覚えましょう（le livre、la clé）。l\' がつく語は un / une で性をたしかめます。例文の中で覚えると、使い方もいっしょに身につきます。</p></div></details>'+
 '    </div>'+
 '  </div>'+
@@ -305,10 +322,13 @@ function boxesHTML(){
   for(let l=1;l<=6;l++)h+='<div class="bx b'+l+'"><div class="bx-col"><span class="bx-fill" style="height:'+Math.round(by[l]/mx*100)+'%"></span></div><b>'+by[l]+'</b><span>'+(l===6?"定着":"箱"+l)+'</span><small>'+(l===6?"":BOX_L[l])+'</small></div>';
   return h+'</div><div class="bx-new">まだ出会っていない語 <b>'+by[0]+'</b></div>';
 }
-/* バッジ：単元の単語がすべて箱4以上（2週間たっても思い出せた）→ 単元バッジ ／ 全部定着 → 勲章 */
+/* バッジ：箱4以上（2週間たっても思い出せた語）が 30・60・100・150・200・全部 になるたびに ／ 全部定着 → 勲章 */
 let fresh={};
+const MILE=[30,60,100,150,200,0],MILE_C=["#cf8aa0","#d6a96f","#8db79b","#92a6cf","#b48aa8","#c0a06a"];
+function firmN(){return WORDS.filter(w=>lv(w)>=4).length;}
 function badgeTargets(){
-  const out=VOCAB_UNITS.map(u=>{const L=WORDS.filter(w=>w.u===u.k);return {key:"u:"+u.k,kind:"sec",color:u.c,name:u.t,done:L.length&&L.every(w=>lv(w)>=4)};});
+  const f=firmN();
+  const out=MILE.map((m,i)=>{const n=m||WORDS.length;return {key:"m:"+n,kind:"sec",color:MILE_C[i],name:"しっかり覚えた語 "+n,done:f>=n};});
   out.push({key:"medal",kind:"medal",name:"全単語 定着",done:WORDS.every(w=>lv(w)>=6)});
   return out;
 }
@@ -316,11 +336,12 @@ function awardBadges(){const got=badgeTargets().filter(b=>b.done&&!store.badges[
 function renderShelf(){
   if(!window.Badge)return "";
   const B=store.badges||{};
-  const items=VOCAB_UNITS.map(u=>{const L=WORDS.filter(w=>w.u===u.k);return {kind:"sec",on:!!B["u:"+u.k],fresh:!!fresh["u:"+u.k],color:u.c,pct:L.filter(w=>lv(w)>=4).length/L.length,label:u.k==="N"?"#":u.k.slice(1),cap:u.k==="N"?"数":u.k.slice(1),title:u.t};});
+  const f=firmN();
+  const items=MILE.map((m,i)=>{const n=m||WORDS.length;return {kind:"sec",on:!!B["m:"+n],fresh:!!fresh["m:"+n],color:MILE_C[i],pct:Math.min(1,f/n),label:String(n),cap:"",title:"しっかり覚えた語 "+n};});
   const m=WORDS.filter(w=>lv(w)>=6).length;
   const big=[{kind:"medal",on:!!B.medal,fresh:!!fresh.medal,pct:m/WORDS.length,cap:"勲章",status:B.medal?"全単語 定着":"定着 "+m+" / "+WORDS.length}];
   fresh={};
-  return Badge.shelf({title:"単元バッジ（すべて箱4以上）",items,big});
+  return Badge.shelf({title:"しっかり覚えた語（箱4以上）",items,big});
 }
 function renderHome(){
   const c=counts("today");
@@ -331,13 +352,6 @@ function renderHome(){
   $("todayBtn").classList.toggle("quiet",!c.due&&!nNew);
   $("todaySub").innerHTML=(c.tom?'明日の復習 '+c.tom+'語':'')+(newToday()>=NEW_DAY?'　新しい語は1日'+NEW_DAY+'語まで（また明日）':'');
   $("boxes").innerHTML=boxesHTML();
-  VOCAB_UNITS.forEach(u=>{
-    const L=WORDS.filter(w=>w.u===u.k),k=counts(u.k);
-    const el=document.querySelector('[data-prog="'+u.k+'"]');if(!el)return;
-    el.innerHTML=(k.due?'<span class="vdue" title="今日の復習">'+k.due+'</span>':'')+'<span>'+k.firm+'/'+L.length+'</span>';
-    el.parentNode.classList.toggle("mastered",!!(store.badges||{})["u:"+u.k]);
-    const g=document.querySelector('[data-gm="'+u.k+'"]');if(g)g.innerHTML=meterHTML(L);
-  });
   const wk=weakList().length;$("weakCount").textContent=wk?wk:"";$("weakBtn").disabled=!wk;
   $("extraBtn").disabled=!WORDS.some(w=>lv(w)>=1);
   $("goal").innerHTML=renderShelf();
@@ -356,7 +370,8 @@ function startSession(sc){
   queue.slice(0,3).forEach(t=>preload(t.w));
   show(quizScreen);render();
 }
-const FMT_L={intro:"新しい単語",fj:"意味を選ぶ",lj:"聞いて意味を選ぶ",jf:"フランス語を選ぶ",w:"書いて答える",dw:"聞いて書く"};
+const FMT_L={intro:"新しい単語",fj:"意味を選ぶ",lj:"聞いて意味を選ぶ",jf:"フランス語を選ぶ",wh:"ヒントつきで書く",w:"書いて答える",ex:"例文に入れる",dw:"聞いて書く"};
+const WRITE_F={w:1,wh:1,ex:1,dw:1};
 function auIcon(){$("auBtn").innerHTML=NLI.svg("speaker",18);$("auBtn").classList.toggle("off",!store.au);}
 function render(){
   clearTimeout(autoNext);locked=false;
@@ -384,21 +399,52 @@ function render(){
   if(f==="fj"){card.innerHTML='<div class="vc-pos">'+posL+'</div><div class="vc-big fr">'+esc(head(w))+'</div>'+spk("sm",w.id,0,"もう一度聞く");if(store.au)play(w,false,200);}
   else if(f==="lj"||f==="dw"){card.innerHTML='<div class="vc-pos">'+(f==="lj"?"聞いて、意味を選ぼう":"聞こえたとおりに書こう")+'</div>'+spk("big",w.id,0,"聞く");
     const me=cur;play(w,false,250).then(ok=>{if(!ok&&cur===me&&me.ok==null){me.fmt=f==="lj"?"fj":"w";render();}});}   // 録音が読みこめないときは、文字で出す
-  else{card.innerHTML='<div class="vc-pos">'+posL+(w.p==="num"?'':'')+'</div><div class="vc-big ja">'+esc(w.ja)+'</div>'+
-    (f==="w"?'<div class="vc-hint">'+writeHint(w)+'</div>':'');}
+  else if(f==="ex"){
+    const parts=w.ex.split(/\[[^\]]+\]/);
+    card.innerHTML='<div class="vc-pos">空らんに入る形を書こう</div><div class="vc-cloze fr">'+esc(parts[0])+'<span class="gap">　？　</span>'+esc(parts[1]||"")+'</div>'+
+      '<div class="vc-exj">'+esc(w.exj)+'</div><div class="vc-hint">'+esc(w.ja)+'</div>';}
+  else{card.innerHTML='<div class="vc-pos">'+posL+'</div><div class="vc-big ja">'+esc(w.ja)+'</div>'+
+    (f==="w"?'<div class="vc-hint">'+writeHint(w)+'</div>':f==="wh"?'<div class="vc-hint">'+writeHint(w)+'</div><div class="vc-pat fr" aria-label="ヒント">'+patHTML(w)+'</div>':'');}
   if(f==="fj"||f==="lj"){
     cur.opts=jaOpts(w);optsHTML(cur.opts,o=>o===w.ja,true);
   }else if(f==="jf"){
     const ok=shortForm(w);cur.opts=frOpts(w);optsHTML(cur.opts,o=>nz(o)===nz(ok),false);
   }else{
     stg.innerHTML='<div class="write-box"><input type="text" id="writeInput" class="write-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="フランス語で">'+
-      '<button class="write-btn" id="writeBtn">解答</button></div><div class="hint" id="hintLine"></div>';
+      '<button class="write-btn" id="writeBtn">解答</button></div>'+accKeys("writeInput")+'<div class="hint" id="hintLine"></div>';
     const inp=$("writeInput");
     $("writeBtn").onclick=()=>checkWrite();
     inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();e.stopPropagation();if(!locked)checkWrite();}});
     setTimeout(()=>{try{inp.focus({preventScroll:true});}catch(e){}},40);
   }
 }
+/* ヒント：答えの最初の文字と字数（冠詞は書かない＝性は自分で思い出す）。例 l＿＿＿＿ */
+function patHTML(w){
+  const a=isN(w)&&!w.noArt?nForms(w)[0].s:w.fr;
+  let first=true;
+  return (isN(w)&&!w.noArt?'<span class="pa">冠詞</span> ':'')+a.split("").map(c=>{
+    if(c===" ")return '<i class="sp"></i>';if(c==="-"||c==="'")return '<b>'+esc(c)+'</b>';
+    if(first){first=false;return '<b>'+esc(c)+'</b>';}return '<i></i>';}).join("");
+}
+/* アクセント記号の入力ボタン（スマホは長押しでも入る。パソコン用） */
+const ACC="é è ê à â ç ô î û ë ï œ".split(" ");
+function accKeys(id){return '<div class="acc-keys" data-for="'+id+'">'+ACC.map(c=>'<button type="button" tabindex="-1" class="acc">'+c+'</button>').join("")+'</div>';}
+document.addEventListener("mousedown",e=>{const b=e.target.closest&&e.target.closest(".acc");if(b)e.preventDefault();});   // 入力欄からフォーカスを外さない
+document.addEventListener("click",e=>{
+  const b=e.target.closest&&e.target.closest(".acc");if(!b)return;
+  const inp=$(b.parentNode.dataset.for);if(!inp||inp.disabled)return;
+  const a=inp.selectionStart??inp.value.length,z=inp.selectionEnd??a;
+  inp.value=inp.value.slice(0,a)+b.textContent+inp.value.slice(z);inp.focus();try{inp.setSelectionRange(a+1,a+1);}catch(er){}
+});
+/* 例文の空らんの答え：[ ] の中の形 */
+function exAnswer(w){const m=/\[([^\]]+)\]/.exec(w.ex);return m?m[1]:w.fr;}
+function judgeEx(input,w){
+  const a=exAnswer(w),num=w.p==="num";
+  if(nz(a,true,num)===nz(input,true,num))return {r:2};
+  if(nz(a,false,num)===nz(input,false,num))return {r:1};
+  return {r:0};
+}
+function judgeCur(input,w,fmt){return fmt==="ex"?judgeEx(input,w):judgeW(input,w);}
 function writeHint(w){
   if(isN(w)&&!w.noArt)return "冠詞（le / la / un / une）もつけて";
   if(w.p==="a")return "男性形で（女性形でもOK）";
@@ -424,7 +470,7 @@ function optsHTML(opts,isOk,ja){
 function checkWrite(){
   if(locked)return;
   const inp=$("writeInput"),val=inp.value;if(!val.trim()){inp.focus();return;}
-  const j=judgeW(val,cur.w);
+  const j=judgeCur(val,cur.w,cur.fmt);
   if(!j.r&&j.why==="art"&&!cur.artAsked){   // 冠詞がないだけなら、もう一度書いてもらう（まちがいにはしない）
     cur.artAsked=true;$("hintLine").innerHTML='<span class="art-ask">'+NLI.svg("pencil",15)+' 冠詞もつけて書いてみよう（例：le / la / l\' / un / une）</span>';
     inp.classList.remove("shake");void inp.offsetWidth;inp.classList.add("shake");inp.focus();return;
@@ -434,8 +480,9 @@ function checkWrite(){
 }
 function introDone(){
   const w=cur.w;sess.order.push(w);
-  /* 出会ったら、3枚あとで思い出すテスト */
-  queue.splice(Math.min(pos+3,queue.length),0,task(w,"test"));
+  /* 出会ったら、3枚あとに「意味を選ぶ」、さらに4枚あとに「ヒントつきで書く」（だんだん間をあけて思い出す） */
+  const a=Math.min(pos+3,queue.length);queue.splice(a,0,task(w,"test"));
+  queue.splice(Math.min(a+5,queue.length),0,task(w,"test2"));
   done++;pos++;next0();
 }
 /* 採点。箱の動き：
@@ -457,7 +504,7 @@ function grade(r,chosen){
     s.l=1;s.d=d+INT[1];s.w=(s.w||0)+1;
     if(cur.kind==="test"&&before===0){if(store.nd.d!==d)store.nd={d,n:0};store.nd.n++;sess.newN++;}
     /* その場で覚えなおし：3枚あとにもう一度（同じ回のうちに4回まで） */
-    if(cur.rep<4){const t=task(w,"re",cur.fmt==="dw"?"w":cur.fmt==="lj"?"fj":cur.fmt);t.rep=cur.rep+1;queue.splice(Math.min(pos+4,queue.length),0,t);}
+    if(cur.rep<4){const t=task(w,"re",cur.fmt==="dw"?"w":cur.fmt==="lj"?"fj":cur.fmt==="ex"?"w":cur.fmt);t.rep=cur.rep+1;queue.splice(Math.min(pos+4,queue.length),0,t);}
   }
   s.t=d;store.it[w.id]=s;
   if(firstTry)sess.moved[w.id]={from:before,to:s.l,ok};
@@ -466,7 +513,7 @@ function grade(r,chosen){
   const fb=$("fb");
   if(ok){fb.className="fb show ok";fb.textContent=pick(["Bien !","Très bien !","Parfait !","Exact !","Bravo !"]);if(typeof playCorrect==="function")playCorrect();}
   else{fb.className="fb show no";fb.textContent=cur.why==="gender"?"性がちがう…":pick(["Pas tout à fait…","Presque !","Attention…"]);if(typeof playWrong==="function")playWrong();}
-  setTimeout(()=>flip(s,before),cur.fmt==="w"||cur.fmt==="dw"?60:380);
+  setTimeout(()=>flip(s,before),WRITE_F[cur.fmt]?60:380);
 }
 /* カードを裏返して、答え・性・例文・次の復習日を見せる */
 function backHTML(w,showLv,s,before){
@@ -493,20 +540,22 @@ function flip(s,before){
     card.className="vcard vback flip-in";
     card.innerHTML=backHTML(w,true,s,before);
     let h="";
-    if(cur.accent)h+='<div class="heard nl-badge">アクセント記号に注意：<b class="fr">'+esc(nearest(w,cur.chosen))+'</b></div>';
+    if(cur.accent)h+='<div class="heard nl-badge">アクセント記号に注意：<b class="fr">'+esc(cur.fmt==="ex"?exAnswer(w):nearest(w,cur.chosen))+'</b></div>';
     if(!cur.ok&&cur.chosen!=null)h+='<div class="heard nl-badge"><span style="color:var(--bad-ink)">'+NLI.svg("x",15)+'</span><s>'+esc(cur.chosen)+'</s>'+(cur.why==="gender"?'<span class="why">'+(nForms(w)[0].g==="m"?"男性名詞":"女性名詞")+'</span>':'')+'</div>';
     if(!cur.ok)h+='<div class="again-note">'+NLI.svg("again",15)+' このあと、もう一度出ます</div>';
-    if(!cur.ok&&(cur.fmt==="w"||cur.fmt==="dw"))h+='<div class="retype"><span class="rt-l">'+NLI.svg("pencil",15)+'正しい形を書いて覚えよう</span><input type="text" id="rtIn" class="write-input rt-in" autocomplete="off" autocapitalize="off" spellcheck="false"><span class="rt-ok" id="rtOk"></span></div>';
+    /* まちがえたら、正しい形を一度自分で書く（選ぶ問題でまちがえたときも） */
+    const rtA=cur.fmt==="ex"?exAnswer(w):shortForm(w);
+    if(!cur.ok&&cur.fmt!=="fj"&&cur.fmt!=="lj")h+='<div class="retype"><span class="rt-l">'+NLI.svg("pencil",15)+'<span class="fr">'+esc(rtA)+'</span> を書いて覚えよう</span><input type="text" id="rtIn" class="write-input rt-in" autocomplete="off" autocapitalize="off" spellcheck="false"><span class="rt-ok" id="rtOk"></span>'+accKeys("rtIn")+'</div>';
     const last=pos+1>=queue.length;
     h+='<div class="btns nx"><button class="next-btn" id="nextBtn" aria-label="'+(last?"結果を見る":"次へ")+'">'+NLI.svg(last?"flag":"next",28)+'</button></div>';
     const a=$("after");a.innerHTML=h;a.classList.remove("hidden");
     $("stage").innerHTML="";
     $("nextBtn").onclick=nextCard;
-    if(store.au&&cur.fmt!=="fj")play(w,false,320);
+    if(store.au&&cur.fmt!=="fj")play(w,cur.fmt==="ex",320);
     const rt=$("rtIn");
     if(rt){setTimeout(()=>{try{rt.focus({preventScroll:true});}catch(e){}},80);
       rt.addEventListener("keydown",e=>{if(e.key!=="Enter"||e.isComposing)return;e.preventDefault();e.stopPropagation();
-        if(judgeW(rt.value,w).r>0){rt.classList.add("ok");rt.disabled=true;$("rtOk").innerHTML=NLI.svg("star",18);$("rtOk").classList.add("on");
+        if(judgeCur(rt.value,w,cur.fmt).r>0){rt.classList.add("ok");rt.disabled=true;$("rtOk").innerHTML=NLI.svg("star",18);$("rtOk").classList.add("on");
           if(typeof playCorrect==="function")try{playCorrect();}catch(er){}
           setTimeout(()=>{const b=$("nextBtn");if(b)b.focus();},250);}
         else{rt.classList.remove("shake");void rt.offsetWidth;rt.classList.add("shake");}});}
@@ -560,7 +609,7 @@ window.FB_QUESTIONS=function(){
   if(!queue.length)return [];
   const out=[],seen=new Set();
   for(let i=Math.min(pos,queue.length-1);i>=0&&out.length<12;i--){const w=queue[i].w;if(seen.has(w.id))continue;seen.add(w.id);
-    out.push({label:head(w)+"（"+w.ja+"）",detail:"単語カード／"+unitOf(w.u).t+"（単語ID "+w.id+"）\n見出し："+head(w)+"\n意味："+w.ja+"\n例文："+w.ex.replace(/[\[\]]/g,"")+"／"+w.exj});}
+    out.push({label:head(w)+"（"+w.ja+"）",detail:"単語カード（単語ID "+w.id+"）\n見出し："+head(w)+"\n意味："+w.ja+"\n例文："+w.ex.replace(/[\[\]]/g,"")+"／"+w.exj});}
   return out;
 };
 function goHome(){clearTimeout(autoNext);playTok++;setAccent(null);renderHome();show(homeScreen);}
@@ -570,11 +619,10 @@ function init(){
   if(window.Quiz){if(!Quiz.requireLogin())return;Quiz.refresh();}
   WHO=(window.Quiz&&Quiz.user())?Quiz.user().id:"guest";
   KEY="vocabQuiz_v1_"+WHO;store=load();
-  if(!store.badges||!store.bInit){store.badges=store.badges||{};awardBadges();fresh={};store.bInit=1;save();}
+  if(!store.badges||store.bInit!==2){store.badges=store.badges||{};awardBadges();fresh={};store.bInit=2;save();}
   $("app").innerHTML=shell();
   homeScreen=$("homeScreen");quizScreen=$("quizScreen");resultScreen=$("resultScreen");
   $("todayBtn").onclick=()=>startSession("today");
-  document.querySelectorAll(".vunits .start-btn").forEach(b=>b.onclick=()=>startSession(b.dataset.u));
   $("weakBtn").onclick=()=>startSession("weak");$("extraBtn").onclick=()=>startSession("extra");
   $("againBtn").onclick=()=>startSession(counts("today").due&&scope!=="weak"?"today":scope);
   $("backBtn").onclick=goHome;$("toHomeBtn").onclick=goHome;
@@ -588,7 +636,7 @@ function init(){
   });
   const hm=/^#(today|weak|extra|L[1-6]|N)$/.exec(location.hash||"");
   renderHome();
-  if(hm){try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}startSession(hm[1]);return;}
+  if(hm){try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}startSession(/^(weak|extra)$/.test(hm[1])?hm[1]:"today");return;}
   show(homeScreen);
 }
 window.VOCAB={WORDS,judgeW,answers,head,shortForm,frOpts,jaOpts,buildSession,today,get queue(){return queue;},get pos(){return pos;},get cur(){return cur;},get store(){return store;}};
