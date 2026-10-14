@@ -149,3 +149,11 @@
 .vp-bar i.on{background:var(--b4);}
 .vp-v{width:38px;text-align:right;font-family:var(--serif);color:var(--ink-soft);}
 .vp-note{font-size:11px;color:var(--ink-faint);line-height:1.6;margin:6px 0 0;}
+/* 冠詞のボタン（名詞を書くとき、入力欄の上にいつも出す） */
+.art-chips{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;margin:0 0 9px;}
+.art-chips .ac-l{font-size:11px;color:var(--ink-soft);margin-right:2px;}
+.art-chips .ac{font-family:var(--serif);font-size:16px;min-width:40px;height:32px;padding:0 10px;border-radius:999px;border:1px solid var(--accent);background:var(--accent-wash);color:var(--accent-ink);cursor:pointer;}
+.art-chips .ac:active{transform:scale(.95);}
+.art-chips.pulse .ac{animation:acPulse .9s ease 2;}
+@keyframes acPulse{0%,100%{box-shadow:0 0 0 0 rgba(180,138,168,0)}50%{box-shadow:0 0 0 5px rgba(180,138,168,.35)}}
+.retype .art-chips{margin:2px 0 0;}

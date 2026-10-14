@@ -221,3 +221,6 @@ details.prefs[open] summary.prefs-h::after{transform:rotate(180deg);}
 .notice.fresh{box-shadow:0 0 0 2px rgba(201,138,160,.45),0 10px 24px -18px rgba(90,60,70,.6);}
 .notice .nnew{position:absolute;top:-8px;left:12px;padding:1px 8px;border-radius:999px;background:#c98aa0;color:#fff;font-size:10px;font-weight:700;letter-spacing:.08em;line-height:16px;animation:nnewPop .5s cubic-bezier(.3,1.8,.5,1) both;}
 @keyframes nnewPop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+/* メニューの「New!」（新しいコーナー。期限が来たら index.html の処理で消える） */
+.newtag{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:linear-gradient(135deg,#d98ba3,#c99b5e);color:#fff;font-family:var(--serif,inherit);font-style:italic;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:17px;vertical-align:2px;box-shadow:0 4px 10px -6px rgba(180,90,120,.8);animation:newTag 2.6s ease-in-out infinite;}
+@keyframes newTag{0%,100%{transform:none}50%{transform:translateY(-2px)}}

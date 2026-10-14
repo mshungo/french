@@ -425,7 +425,8 @@ function render(){
   }else if(f==="jf"){
     const ok=shortForm(w);cur.opts=frOpts(w);optsHTML(cur.opts,o=>nz(o)===nz(ok),false);
   }else{
-    stg.innerHTML='<div class="write-box"><input type="text" id="writeInput" class="write-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="フランス語で">'+
+    const needArt=isN(w)&&!w.noArt&&f!=="ex";   // 名詞：冠詞のボタンを入力欄の上にいつも出しておく（書き忘れ防止。どの名詞にも同じボタンなので、性のヒントにはならない）
+    stg.innerHTML=(needArt?artChips("writeInput",w):'')+'<div class="write-box"><input type="text" id="writeInput" class="write-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="'+(needArt?"冠詞＋単語（例：le livre）":"フランス語で")+'">'+
       '<button class="write-btn" id="writeBtn">解答</button></div>'+accKeys("writeInput")+'<div class="hint" id="hintLine"></div>';
     const inp=$("writeInput");
     if(PL){inp.placeholder="わかれば書いてみよう";$("hintLine").insertAdjacentHTML("beforebegin",'<button class="vp-idk" id="idkBtn" type="button">わからない</button>');}
@@ -444,6 +445,21 @@ function patHTML(w){
 }
 /* アクセント記号の入力ボタン（スマホは長押しでも入る。パソコン用） */
 const ACC="é è ê à â ç ô î û ë ï œ".split(" ");
+/* 冠詞のボタン：押すと、入力欄の頭の冠詞を入れかえる（書いた単語はそのまま） */
+const ART_RE=/^\s*(le |la |les |l'|l’|un |une |des )/i;
+function artChips(id,w){
+  const pl=w&&(w.p==="nmp"||w.p==="nfp");
+  const A=pl?["les","des"]:["le","la","l'","un","une"];
+  return '<div class="art-chips" data-for="'+id+'"><span class="ac-l">冠詞</span>'+A.map(a=>'<button type="button" tabindex="-1" class="ac" data-a="'+a+'">'+a+'</button>').join("")+'</div>';
+}
+document.addEventListener("mousedown",e=>{const b=e.target.closest&&e.target.closest(".ac");if(b)e.preventDefault();});
+document.addEventListener("click",e=>{
+  const b=e.target.closest&&e.target.closest(".ac");if(!b)return;
+  const box=b.parentNode,inp=$(box.dataset.for);if(!inp||inp.disabled)return;
+  const a=b.dataset.a,rest=inp.value.replace(ART_RE,"").replace(/^\s+/,"");
+  inp.value=a+(a.endsWith("'")?"":" ")+rest;inp.focus();try{inp.setSelectionRange(inp.value.length,inp.value.length);}catch(er){}
+  box.classList.remove("pulse");
+});
 function accKeys(id){return '<div class="acc-keys" data-for="'+id+'">'+ACC.map(c=>'<button type="button" tabindex="-1" class="acc">'+c+'</button>').join("")+'</div>';}
 document.addEventListener("mousedown",e=>{const b=e.target.closest&&e.target.closest(".acc");if(b)e.preventDefault();});   // 入力欄からフォーカスを外さない
 document.addEventListener("click",e=>{
@@ -491,8 +507,9 @@ function checkWrite(){
   const inp=$("writeInput"),val=inp.value;if(!val.trim()){inp.focus();return;}
   const j=judgeCur(val,cur.w,cur.fmt);
   if(PL){locked=true;placeAnswer(j.r>0||j.why==="art");return;}   // レベルチェック：冠詞ぬけは「知っている」に数える
-  if(!j.r&&j.why==="art"&&!cur.artAsked){   // 冠詞がないだけなら、もう一度書いてもらう（まちがいにはしない）
-    cur.artAsked=true;$("hintLine").innerHTML='<span class="art-ask">'+NLI.svg("pencil",15)+' 冠詞もつけて書いてみよう（例：le / la / l\' / un / une）</span>';
+  if(!j.r&&j.why==="art"){   // 冠詞を書き忘れただけなら、何度でも書きなおせる（まちがいにはしない）。冠詞のボタンを光らせる
+    $("hintLine").innerHTML='<span class="art-ask">'+NLI.svg("pencil",15)+' 単語は合っています。冠詞をつけよう（上のボタンでも入れられます）</span>';
+    const ch=document.querySelector('.art-chips[data-for="writeInput"]');if(ch){ch.classList.remove("pulse");void ch.offsetWidth;ch.classList.add("pulse");}
     inp.classList.remove("shake");void inp.offsetWidth;inp.classList.add("shake");inp.focus();return;
   }
   inp.disabled=true;$("writeBtn").disabled=true;inp.classList.add(j.r?"ok":"no");
@@ -565,7 +582,7 @@ function flip(s,before){
     if(!cur.ok)h+='<div class="again-note">'+NLI.svg("again",15)+' このあと、もう一度出ます</div>';
     /* まちがえたら、正しい形を一度自分で書く（選ぶ問題でまちがえたときも） */
     const rtA=cur.fmt==="ex"?exAnswer(w):shortForm(w);
-    if(!cur.ok&&cur.fmt!=="fj"&&cur.fmt!=="lj")h+='<div class="retype"><span class="rt-l">'+NLI.svg("pencil",15)+'<span class="fr">'+esc(rtA)+'</span> を書いて覚えよう</span><input type="text" id="rtIn" class="write-input rt-in" autocomplete="off" autocapitalize="off" spellcheck="false"><span class="rt-ok" id="rtOk"></span>'+accKeys("rtIn")+'</div>';
+    if(!cur.ok&&cur.fmt!=="fj"&&cur.fmt!=="lj")h+='<div class="retype"><span class="rt-l">'+NLI.svg("pencil",15)+'<span class="fr">'+esc(rtA)+'</span> を書いて覚えよう</span>'+(isN(w)&&!w.noArt&&cur.fmt!=="ex"?artChips("rtIn",w):'')+'<input type="text" id="rtIn" class="write-input rt-in" autocomplete="off" autocapitalize="off" spellcheck="false"><span class="rt-ok" id="rtOk"></span>'+accKeys("rtIn")+'</div>';
     const last=pos+1>=queue.length;
     h+='<div class="btns nx"><button class="next-btn" id="nextBtn" aria-label="'+(last?"結果を見る":"次へ")+'">'+NLI.svg(last?"flag":"next",28)+'</button></div>';
     const a=$("after");a.innerHTML=h;a.classList.remove("hidden");
@@ -578,7 +595,8 @@ function flip(s,before){
         if(judgeCur(rt.value,w,cur.fmt).r>0){rt.classList.add("ok");rt.disabled=true;$("rtOk").innerHTML=NLI.svg("star",18);$("rtOk").classList.add("on");
           if(typeof playCorrect==="function")try{playCorrect();}catch(er){}
           setTimeout(()=>{const b=$("nextBtn");if(b)b.focus();},250);}
-        else{rt.classList.remove("shake");void rt.offsetWidth;rt.classList.add("shake");}});}
+        else{rt.classList.remove("shake");void rt.offsetWidth;rt.classList.add("shake");
+          if(judgeCur(rt.value,w,cur.fmt).why==="art"){const ch=document.querySelector('.art-chips[data-for="rtIn"]');if(ch){ch.classList.remove("pulse");void ch.offsetWidth;ch.classList.add("pulse");}}}});}
     if(cur.ok&&!cur.accent&&window.Quiz&&Quiz.autoNext&&Quiz.autoNext())autoNext=setTimeout(nextCard,Quiz.nextDelay?Quiz.nextDelay(2200):2200);   // 例文を読む・聞く時間を少し長めに
   },170);
 }
