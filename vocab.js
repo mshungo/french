@@ -41,7 +41,7 @@ function order(){
 
 /* ---------- 単語の形 ---------- */
 const VOW=/^[aeiouyhàâæéèêëîïôœûùü]/i;
-const isN=w=>/^n/.test(w.p);
+const isN=w=>/^n[mf]/.test(w.p);   // 名詞（nm/nf/nmf/nmp/nfp）。数（num）はふくめない
 function stemOf(w){return w.fr.replace(/^(le |la |les |l')/,"");}
 function defArt(g,s){return g==="p"?"les ":VOW.test(s)?"l'":g==="m"?"le ":"la ";}
 function indArt(g){return g==="p"?"des ":g==="m"?"un ":"une ";}
@@ -255,6 +255,7 @@ function shell(){
 '      <div class="stat"><div class="n" id="hPct">0</div><div class="l">達成率</div></div>'+
 '      <div class="stat"><div class="n" id="hTime">0分</div><div class="l">勉強時間</div></div>'+
 '    </div>'+
+'    <div id="placeBox"></div>'+
 '    <button class="vtoday" id="todayBtn"><span class="vt-ic">'+CARD_IC+'</span><span class="vt-tx"><b>今日のカード</b><span id="todayInfo"></span></span>'+NLI.svg("next",24)+'</button>'+
 '    <div class="vt-sub" id="todaySub"></div>'+
 '    <div class="boxes" id="boxes"></div>'+
@@ -278,6 +279,7 @@ function shell(){
 '        <p>アクセント記号だけのまちがいは正解にして、正しいつづりを見せます。冠詞を忘れたときは、もう一度書きなおせます。</p>'+
 '        <p>名詞は<b>冠詞といっしょに</b>覚えましょう（le livre、la clé）。l\' がつく語は un / une で性をたしかめます。例文の中で覚えると、使い方もいっしょに身につきます。</p></div></details>'+
 '    </div>'+
+'    <button class="vp-redo hidden" id="placeRedo" type="button">'+NLI.svg("again",14)+' レベルチェックをやりなおす</button>'+
 '  </div>'+
 '  <div class="panel hidden" id="quizScreen">'+
 '    <div class="topbar"><button class="back" id="backBtn" aria-label="ホームに戻る">←</button>'+
@@ -355,6 +357,13 @@ function renderHome(){
   $("todayBtn").classList.toggle("quiet",!c.due&&!nNew);
   $("todaySub").innerHTML=(c.tom?'明日の復習 '+c.tom+'語':'')+(newToday()>=NEW_DAY?'　新しい語は1日'+NEW_DAY+'語まで（また明日）':'');
   $("boxes").innerHTML=boxesHTML();
+  const fresh0=!store.place&&!WORDS.some(w=>lv(w)>=1);
+  $("placeBox").innerHTML=fresh0?'<div class="vplace"><div class="vp-h">'+NLI.svg("flag",18)+' はじめに、レベルチェック</div>'+
+    '<p>知っている単語はとばして、ちょうどいいところから始めます。約5分・最大24問。わからない語は「わからない」でOK。</p>'+
+    '<div class="vp-btns"><button class="vp-go" id="placeGo" type="button">レベルチェックをする</button><button class="vp-skip" id="placeSkip" type="button">最初から順に始める</button></div></div>':"";
+  if(fresh0){$("placeGo").onclick=startPlacement;$("placeSkip").onclick=()=>startSession("today");}
+  $("todayBtn").classList.toggle("hidden",fresh0);
+  $("placeRedo").classList.toggle("hidden",fresh0);
   const wk=weakList().length;$("weakCount").textContent=wk?wk:"";$("weakBtn").disabled=!wk;
   $("extraBtn").disabled=!WORDS.some(w=>lv(w)>=1);
   $("goal").innerHTML=renderShelf();
@@ -385,6 +394,8 @@ function render(){
   $("qcount").textContent=(done+1)+" / "+total;
   $("fill").style.width=(done/total*100)+"%";
   $("qType").textContent=(cur.rep?"もう一度　":"")+FMT_L[f];
+  if(PL){const n=PL.segs.length;$("qcount").textContent="Leçon "+PL.segs[PL.i].k.slice(1)+"　"+(PL.i+1)+" / "+n;
+    $("fill").style.width=((PL.i+(pos-PL.start)/4)/n*100)+"%";$("qType").textContent="レベルチェック・"+FMT_L[f];}
   $("fb").className="fb";$("fb").textContent="";
   const a=$("after");a.classList.add("hidden");a.innerHTML="";
   const card=$("vcard"),stg=$("stage");
@@ -410,12 +421,14 @@ function render(){
     (f==="w"?'<div class="vc-hint">'+writeHint(w)+'</div>':f==="wh"?'<div class="vc-hint">'+writeHint(w)+'</div><div class="vc-pat fr" aria-label="ヒント">'+patHTML(w)+'</div>':'');}
   if(f==="fj"||f==="lj"){
     cur.opts=jaOpts(w);optsHTML(cur.opts,o=>o===w.ja,true);
+    if(PL)$("stage").insertAdjacentHTML("beforeend",'<button class="vp-idk" id="idkBtn" type="button">わからない</button>');
   }else if(f==="jf"){
     const ok=shortForm(w);cur.opts=frOpts(w);optsHTML(cur.opts,o=>nz(o)===nz(ok),false);
   }else{
     stg.innerHTML='<div class="write-box"><input type="text" id="writeInput" class="write-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="フランス語で">'+
       '<button class="write-btn" id="writeBtn">解答</button></div>'+accKeys("writeInput")+'<div class="hint" id="hintLine"></div>';
     const inp=$("writeInput");
+    if(PL){inp.placeholder="わかれば書いてみよう";$("hintLine").insertAdjacentHTML("beforebegin",'<button class="vp-idk" id="idkBtn" type="button">わからない</button>');}
     $("writeBtn").onclick=()=>checkWrite();
     inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();e.stopPropagation();if(!locked)checkWrite();}});
     setTimeout(()=>{try{inp.focus({preventScroll:true});}catch(e){}},40);
@@ -448,6 +461,8 @@ function judgeEx(input,w){
   return {r:0};
 }
 function judgeCur(input,w,fmt){return fmt==="ex"?judgeEx(input,w):judgeW(input,w);}
+/* わからない（レベルチェックのとき）：まちがいと同じあつかいで、すぐ次へ */
+document.addEventListener("click",e=>{if(e.target&&e.target.id==="idkBtn"&&PL&&!locked){locked=true;placeAnswer(false);}});
 function writeHint(w){
   if(isN(w)&&!w.noArt)return "冠詞（le / la / un / une）もつけて";
   if(w.p==="a")return "男性形で（女性形でもOK）";
@@ -464,6 +479,7 @@ function optsHTML(opts,isOk,ja){
     const b=document.createElement("button");b.className="opt";b.dataset.i=i;
     b.innerHTML=(long?'<span class="k">'+(i+1)+'</span>':'')+esc(o);
     b.onclick=()=>{if(locked)return;
+      if(PL){locked=true;b.classList.add("picked");placeAnswer(isOk(o));return;}   // レベルチェック：正誤は見せずに次へ
       box.querySelectorAll(".opt").forEach(x=>{x.disabled=true;const v=opts[+x.dataset.i];
         if(isOk(v))x.classList.add("correct");else if(x===b)x.classList.add("wrong");else x.classList.add("dim");});
       grade(isOk(o)?2:0,o);};
@@ -474,6 +490,7 @@ function checkWrite(){
   if(locked)return;
   const inp=$("writeInput"),val=inp.value;if(!val.trim()){inp.focus();return;}
   const j=judgeCur(val,cur.w,cur.fmt);
+  if(PL){locked=true;placeAnswer(j.r>0||j.why==="art");return;}   // レベルチェック：冠詞ぬけは「知っている」に数える
   if(!j.r&&j.why==="art"&&!cur.artAsked){   // 冠詞がないだけなら、もう一度書いてもらう（まちがいにはしない）
     cur.artAsked=true;$("hintLine").innerHTML='<span class="art-ask">'+NLI.svg("pencil",15)+' 冠詞もつけて書いてみよう（例：le / la / l\' / un / une）</span>';
     inp.classList.remove("shake");void inp.offsetWidth;inp.classList.add("shake");inp.focus();return;
@@ -567,7 +584,84 @@ function flip(s,before){
 }
 function nearest(w,input){const A=answers(w);return A.find(a=>nz(a)===nz(input))||A[0];}
 function nextCard(){clearTimeout(autoNext);if(!cur||cur.ok==null)return;done++;pos++;next0();}
-function next0(){if(pos<queue.length)render();else finish();}
+function next0(){if(pos<queue.length)render();else if(PL)placeNext();else finish();}
+
+/* ---------- レベルチェック（はじめての人向け。いつでもやりなおせる） ----------
+   Leçon 1→6 の順に（数はそれぞれの Leçon にまぜてある）、各 Leçon から4語：意味を選ぶ2問＋ヒントつきで書く2問。
+   正誤はその場では見せない。「わからない」も選べる（当てずっぽうを減らすため）。
+   4問中1問以下の Leçon が出たら、または2問以下が2つつづいたら、そこで終わる（長くしない）。
+   結果の置きかた（まだ出会っていない語だけ。すでに練習した語は変えない）：
+     ・書けた語 → 3段目（3〜10日後に復習）／ 選べた語 → 2段目（1〜5日後）／ わからなかった語 → そのまま（これから覚える）
+     ・テストしなかった語：その Leçon が 4/4 → 2段目（2〜14日後に少しずつ確かめる）、3/4 → 1段目（1〜10日後）、2以下 → そのまま
+   置いた語は、復習の日に「書く」問題で本当に使えるかを確かめる。まちがえたら1段目にもどり、ふつうに覚えなおす。 */
+let PL=null;
+function segments(){
+  const segs=[];let cur=null;
+  order().forEach(w=>{
+    if(w.u!=="N"){if(!cur||cur.k!==w.u){cur={k:w.u,ws:[]};segs.push(cur);}}
+    else if(!cur){cur={k:"L1",ws:[]};segs.push(cur);}
+    cur.ws.push(w);
+  });
+  return segs;
+}
+function segItems(seg){
+  const L=seg.ws,q=L.length/4,out=[];
+  for(let i=0;i<4;i++){const part=L.slice(Math.floor(i*q),Math.floor((i+1)*q));const w=pick(part.length?part:L);out.push(task(w,"place",i%2?"wh":"fj"));}
+  return out;
+}
+function startPlacement(){
+  scope="place";setAccent(null);
+  if(typeof ensureAudio==="function"){ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();}
+  PL={segs:segments(),i:0,start:0,res:[],ans:[],t0:performance.now()};
+  queue=segItems(PL.segs[0]);pos=0;done=0;t0=performance.now();
+  sess={first:{},order:[],moved:{},newN:0};
+  show(quizScreen);render();
+}
+function placeAnswer(ok){
+  PL.ans.push({w:cur.w,f:cur.fmt,ok,seg:PL.i});
+  cur.ok=ok;done++;pos++;
+  setTimeout(next0,ok?140:140);
+}
+function placeNext(){
+  const seg=PL.segs[PL.i],A=PL.ans.filter(a=>a.seg===PL.i),sc=A.filter(a=>a.ok).length;
+  PL.res.push({k:seg.k,sc,n:A.length,size:seg.ws.length});
+  const prev=PL.res.length>1?PL.res[PL.res.length-2].sc:4;
+  if(sc<=1||(sc<=2&&prev<=2)||PL.i+1>=PL.segs.length)return placeFinish();
+  PL.i++;PL.start=queue.length;queue=queue.concat(segItems(PL.segs[PL.i]));
+  render();
+}
+function placeFinish(){
+  const d=today(),time=performance.now()-PL.t0;
+  let up=0;
+  const put=(w,l,from,to)=>{const s=st(w);if(s&&s.l>=1)return;store.it[w.id]={l,d:d+from+Math.floor(Math.random()*(to-from+1)),w:0,t:d};up++;};
+  const tested=new Set(PL.ans.map(a=>a.w.id));
+  PL.ans.forEach(a=>{if(a.ok)put(a.w,a.f==="wh"?3:2,a.f==="wh"?3:1,a.f==="wh"?10:5);});
+  PL.res.forEach((r,i)=>{if(r.sc<3)return;PL.segs[i].ws.forEach(w=>{if(!tested.has(w.id))put(w,r.sc>=4?2:1,r.sc>=4?2:1,r.sc>=4?14:10);});});
+  const est=Math.round(PL.res.reduce((a,r)=>a+r.size*r.sc/4,0));
+  const N=PL.ans.length,C=PL.ans.filter(a=>a.ok).length;
+  store.place={d,est,res:PL.res.map(r=>[r.k,r.sc])};
+  store.tries++;store.answered+=N;store.correct+=C;store.timeMs=(store.timeMs||0)+Math.max(60000,Math.min(time,N*60000));
+  save();if(window.Quiz)Quiz.markToday();
+  const res=PL.res,segs=PL.segs;PL=null;scope="today";
+  /* 結果画面 */
+  const far=res.filter(r=>r.sc>=3).length;
+  $("rFace").textContent="◎";$("rFace").classList.remove("nl-pop");void $("rFace").offsetWidth;$("rFace").classList.add("nl-pop");
+  $("rScore").innerHTML='<small>約</small> '+est+'<small> 語</small>';$("rPct").textContent="わかる単語の目安";
+  $("rMsg").textContent=far?("Leçon "+res[far-1].k.slice(1)+" までの単語は、かなり知っています。知っていた語は階段の上の段に置きました。本当に書けるかは、復習の日に確かめます。"):
+    "はじめから順に、ていねいに進めましょう。知っていた語は上の段に置きました。";
+  const c=counts("today");
+  $("rMove").innerHTML=(up?'<span class="mv up">↑ 上の段に置いた語 <b>'+up+'</b></span>':'')+'<span class="mv nw">'+NLI.svg("star",14)+' これから覚える語 <b>'+WORDS.filter(w=>!st(w)).length+'</b></span>'+
+    '<div class="mv-next">'+(c.due?'今日の復習 <b>'+c.due+'</b> 語':'新しい単語は、まだ知らない語から出します')+'</div>';
+  $("againT").textContent="今日のカードへ";
+  let h='<div class="ttl">Leçon ごとの結果</div><div class="vp-res">';
+  segs.forEach((g,i)=>{const r=res[i];
+    h+='<div class="vp-row"><span class="vp-k">Leçon '+g.k.slice(1)+'</span><span class="vp-bar">'+[0,1,2,3].map(j=>'<i class="'+(r&&j<r.sc?"on":"")+'"></i>').join("")+'</span>'+
+      '<span class="vp-v">'+(r?r.sc+' / 4':'—')+'</span></div>';});
+  h+='</div><p class="vp-note">4問のうち、意味を選ぶ2問・ヒントつきで書く2問。「—」は、前の Leçon の結果からチェックを省いたところです。</p>';
+  $("review").innerHTML=h;
+  show(resultScreen);if(typeof playFanfare==="function")setTimeout(playFanfare,280);
+  if(window.Quiz)Quiz.submit("vocab",{section:"W-place",mode:"place",durMs:Math.round(time),score:C,total:N,timeAttack:false,timeMs:null,misses:[]});
+}
 
 /* ---------- 結果 ---------- */
 function finish(){
@@ -615,7 +709,7 @@ window.FB_QUESTIONS=function(){
     out.push({label:head(w)+"（"+w.ja+"）",detail:"単語カード（単語ID "+w.id+"）\n見出し："+head(w)+"\n意味："+w.ja+"\n例文："+w.ex.replace(/[\[\]]/g,"")+"／"+w.exj});}
   return out;
 };
-function goHome(){clearTimeout(autoNext);playTok++;setAccent(null);renderHome();show(homeScreen);}
+function goHome(){PL=null;clearTimeout(autoNext);playTok++;setAccent(null);renderHome();show(homeScreen);}
 
 /* ---------- 起動 ---------- */
 function init(){
@@ -629,16 +723,18 @@ function init(){
   $("weakBtn").onclick=()=>startSession("weak");$("extraBtn").onclick=()=>startSession("extra");
   $("againBtn").onclick=()=>startSession(counts("today").due&&scope!=="weak"?"today":scope);
   $("backBtn").onclick=goHome;$("toHomeBtn").onclick=goHome;
+  $("placeRedo").onclick=startPlacement;
   $("auBtn").onclick=()=>{store.au=store.au?0:1;save();auIcon();};auIcon();
   document.addEventListener("keydown",e=>{
     if(quizScreen.classList.contains("hidden")||!cur)return;
     if(cur.fmt==="intro"){if(e.key==="Enter"&&!locked){e.preventDefault();locked=true;introDone();}return;}
-    if(cur.ok!=null){if(e.key==="Enter"){e.preventDefault();nextCard();}return;}
+    if(cur.ok!=null){if(!PL&&e.key==="Enter"){e.preventDefault();nextCard();}return;}
     if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;
     if(/^[1-4]$/.test(e.key)){const b=document.querySelectorAll("#opts .opt")[+e.key-1];if(b&&!b.disabled)b.click();}
   });
-  const hm=/^#(today|weak|extra|L[1-6]|N)$/.exec(location.hash||"");
+  let hm=/^#(today|weak|extra|L[1-6]|N)$/.exec(location.hash||"");
   renderHome();
+  if(hm&&!store.place&&!WORDS.some(w=>lv(w)>=1))hm=null;   // はじめての人は、まずホーム（レベルチェックの案内）へ
   if(hm){try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}startSession(/^(weak|extra)$/.test(hm[1])?hm[1]:"today");return;}
   show(homeScreen);
 }
