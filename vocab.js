@@ -146,13 +146,23 @@ function pickNew(sc,max){
   for(const w of near){if(out.length>=max)break;if(out.indexOf(w)<0)out.push(w);}
   return out;
 }
+/* 復習の語を選ぶ：段ごとに分けて、各段から順番に1語ずつ（どの段も、復習日を長く過ぎている語から）。
+   復習がたまっていても、1回の練習に低い段の語ばかりが集まらないように（段に合った問題がまんべんなく出る） */
+function pickDue(list,max){
+  const by={};list.forEach(w=>{(by[lv(w)]=by[lv(w)]||[]).push(w);});
+  const ls=Object.keys(by).map(Number).sort((a,b)=>a-b);
+  ls.forEach(l=>by[l].sort((a,b)=>st(a).d-st(b).d||Math.random()-.5));
+  const out=[];
+  while(out.length<max&&ls.some(l=>by[l].length))ls.forEach(l=>{if(out.length<max&&by[l].length)out.push(by[l].shift());});
+  return out;
+}
 function buildSession(sc){
   const d=today();
   let due=[],fresh=[],extra=[];
   if(sc==="weak"){
     extra=weakList().slice(0,ROUND);
   }else{
-    due=WORDS.filter(w=>inScope(w,sc)&&isDue(w,d)).sort((a,b)=>st(a).d-st(b).d||st(a).l-st(b).l).slice(0,15);
+    due=pickDue(WORDS.filter(w=>inScope(w,sc)&&isDue(w,d)),15);
     if(sc!=="extra"){
       const room=Math.min(NEW_PER,Math.max(0,ROUND-due.length),Math.max(0,NEW_DAY-newToday()));
       fresh=pickNew(sc,room);
@@ -388,7 +398,7 @@ function auIcon(){$("auBtn").innerHTML=NLI.svg("speaker",18);$("auBtn").classLis
 function render(){
   clearTimeout(autoNext);locked=false;
   cur=queue[pos];
-  if((cur.fmt==="lj"||cur.fmt==="dw")&&!audioReady())cur.fmt=cur.fmt==="lj"?"fj":"w";   // 音が出せない状態なら、聞く問題は文字の問題に
+  if((cur.fmt==="lj"||cur.fmt==="dw")&&(!audioReady()||(sess&&sess.noAu)))cur.fmt=cur.fmt==="lj"?"fj":"w";   // 音が出せない（出せないと押した）なら、聞く問題は文字の問題に   // 音が出せない状態なら、聞く問題は文字の問題に
   const w=cur.w,f=cur.fmt;cur.t0=performance.now();
   const total=done+queue.length-pos;
   $("qcount").textContent=(done+1)+" / "+total;
@@ -412,7 +422,9 @@ function render(){
   const posL=POS_L[w.p]||"";
   if(f==="fj"){card.innerHTML='<div class="vc-pos">'+posL+'</div><div class="vc-big fr">'+esc(head(w))+'</div>'+spk("sm",w.id,0,"もう一度聞く");if(store.au)play(w,false,200);}
   else if(f==="lj"||f==="dw"){card.innerHTML='<div class="vc-pos">'+(f==="lj"?"聞いて、意味を選ぼう":"聞こえたとおりに書こう")+'</div>'+spk("big",w.id,0,"聞く");
-    const me=cur;play(w,false,250).then(ok=>{if(!ok&&cur===me&&me.ok==null){me.fmt=f==="lj"?"fj":"w";render();}});}   // 録音が読みこめないときは、文字で出す
+    const me=cur;play(w,false,250).then(ok=>{if(!ok&&cur===me&&me.ok==null){me.fmt=f==="lj"?"fj":"w";render();}});
+    card.insertAdjacentHTML("beforeend",'<button class="noau" id="noAuBtn" type="button">'+NLI.svg("x",13)+' 音が出せない（文字で答える）</button>');
+    $("noAuBtn").onclick=()=>{if(me.ok!=null)return;sess.noAu=true;playTok++;me.fmt=f==="lj"?"fj":"w";render();};}   // この回の練習では、もう聞く問題を出さない   // 録音が読みこめないときは、文字で出す
   else if(f==="ex"){
     const parts=w.ex.split(/\[[^\]]+\]/);
     card.innerHTML='<div class="vc-pos">空らんに入る形を書こう</div><div class="vc-cloze fr">'+esc(parts[0])+'<span class="gap">　？　</span>'+esc(parts[1]||"")+'</div>'+
@@ -426,7 +438,7 @@ function render(){
     const ok=shortForm(w);cur.opts=frOpts(w);optsHTML(cur.opts,o=>nz(o)===nz(ok),false);
   }else{
     const needArt=isN(w)&&!w.noArt&&f!=="ex";   // 名詞：冠詞のボタンを入力欄の上にいつも出しておく（書き忘れ防止。どの名詞にも同じボタンなので、性のヒントにはならない）
-    stg.innerHTML=(needArt?artChips("writeInput",w):'')+'<div class="write-box"><input type="text" id="writeInput" class="write-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="'+(needArt?"冠詞＋単語（例：le livre）":"フランス語で")+'">'+
+    stg.innerHTML=(needArt?artChips("writeInput",w):'')+'<div class="write-box"><input type="text" id="writeInput" class="write-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="'+(needArt?"冠詞＋単語（例：le chat）":"フランス語で")+'">'+
       '<button class="write-btn" id="writeBtn">解答</button></div>'+accKeys("writeInput")+'<div class="hint" id="hintLine"></div>';
     const inp=$("writeInput");
     if(PL){inp.placeholder="わかれば書いてみよう";$("hintLine").insertAdjacentHTML("beforebegin",'<button class="vp-idk" id="idkBtn" type="button">わからない</button>');}
@@ -480,7 +492,7 @@ function judgeCur(input,w,fmt){return fmt==="ex"?judgeEx(input,w):judgeW(input,w
 /* わからない（レベルチェックのとき）：まちがいと同じあつかいで、すぐ次へ */
 document.addEventListener("click",e=>{if(e.target&&e.target.id==="idkBtn"&&PL&&!locked){locked=true;placeAnswer(false);}});
 function writeHint(w){
-  if(isN(w)&&!w.noArt)return "冠詞（le / la / un / une）もつけて";
+  if(isN(w)&&!w.noArt)return '<b class="h-art">冠詞</b>（le / la / un / une）もつけて';
   if(w.p==="a")return "男性形で（女性形でもOK）";
   if(w.p==="v"&&/^(se |s')/.test(w.fr))return "代名動詞の不定詞で（se …）";
   if(w.p==="v")return "不定詞（原形）で";
