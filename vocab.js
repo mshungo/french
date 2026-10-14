@@ -1,17 +1,18 @@
 /* ============================================================
    単語カード（vocab.html）。単語は vocab-data.js。
    しくみ
-   ・間隔反復：単語ごとに「箱」1〜6。正解するたびに次の復習までの間をのばす
-       箱1→翌日 / 箱2→3日後 / 箱3→1週間後 / 箱4→2週間後 / 箱5→1か月後 / 箱6＝定着（2か月後にたしかめ）
+   ・間隔反復：単語ごとに「階段」1〜6段。正解するたびに1段のぼり、次の復習までの間がのびる
+       1段目→翌日 / 2段目→3日後 / 3段目→1週間後 / 4段目→2週間後 / 5段目→1か月後 / 6段目＝定着（2か月後にたしかめ）
      忘れかけたころにもう一度思い出すと、記憶が長もちする（エビングハウスの忘却曲線・分散学習）。
-     まだ復習の日が来ていない単語は、正解しても箱は上がらない（間をあけることに意味があるので）。
+     まだ復習の日が来ていない単語は、正解しても段は上がらない（間をあけることに意味があるので）。
+     （記録の l が段の数。画面では「段」と呼ぶ）
    ・思い出す練習：答えを見る前に、まず自分で思い出す（テスト効果）
    ・受容から産出へ。ただし産出（書く）は初日から入れる
        新しい語：出会う → 3枚あとに 意味を選ぶ（または聞いて選ぶ）→ さらに4枚あとに ヒントつきで書く
        （認識より再生のほうが記憶に残る・思い出す手間が大きいほど残る＝望ましい困難。ただしヒントで手間を調整して挫折させない）
-       復習：箱1 フランス語を選ぶ／ヒントつきで書く／聞いて選ぶ → 箱2 ヒントつき・ヒントなしで書く
-             → 箱3〜 書く・例文に入れる（文脈の中で形を思い出す）・聞いて書く
-   ・その場で覚えなおす：まちがえた単語は箱1にもどり、3枚ほどあとにもう一度出る。正解するまで練習は終わらない
+       復習：1段目 フランス語を選ぶ／ヒントつきで書く／聞いて選ぶ → 2段目 ヒントつき・ヒントなしで書く
+             → 3段目〜 書く・例文に入れる（文脈の中で形を思い出す）・聞いて書く
+   ・その場で覚えなおす：まちがえた単語は1段目にもどり、3枚ほどあとにもう一度出る。正解するまで練習は終わらない
    ・新しい単語は1回5語まで（1日25語まで）。Leçon 1 から順に、数（0〜1000）を少しずつまぜて出す。
      同じテーマ（色・家族など）の新しい語はつづけて出さない（似た語どうしの混同を避ける）
    ・書く問題では、アクセント記号だけのちがいは正解にして、正しいつづりを見せる。冠詞を忘れたときは、まちがいにせず書きなおしてもらう
@@ -20,7 +21,7 @@
 "use strict";
 const WORDS=[],SEQ={};
 window.V=function(u,p,fr,ja,ex,exj,tag,x){const n=SEQ[u]||0;SEQ[u]=n+1;WORDS.push(Object.assign({id:u+"-"+n,u,p,fr,ja,ex,exj,tag},x||{}));};
-const INT=[0,1,3,7,14,30,60];          // 箱ごとの、次の復習までの日数
+const INT=[0,1,3,7,14,30,60];          // 段ごとの、次の復習までの日数
 const BOX_L=["","翌日","3日後","1週間後","2週間後","1か月後","定着"];
 const NEW_PER=5,NEW_DAY=25,ROUND=10;
 const $=id=>document.getElementById(id);
@@ -115,7 +116,7 @@ function load(){
   return Object.assign({tries:0,answered:0,correct:0,timeMs:0,best:null,it:{},nd:{d:0,n:0},au:1,badges:{}},s);
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
-function st(w){return store.it[w.id]||null;}   // {l:箱, d:次の復習の日, w:まちがえた回数, t:最後に練習した日}
+function st(w){return store.it[w.id]||null;}   // {l:段, d:次の復習の日, w:まちがえた回数, t:最後に練習した日}
 function lv(w){const s=st(w);return s?s.l:0;}
 function isDue(w,d){const s=st(w);return !!s&&s.l>=1&&s.d<=d;}
 function newToday(){const d=today();return store.nd.d===d?store.nd.n:0;}
@@ -156,7 +157,7 @@ function buildSession(sc){
       const room=Math.min(NEW_PER,Math.max(0,ROUND-due.length),Math.max(0,NEW_DAY-newToday()));
       fresh=pickNew(sc,room);
     }
-    /* 復習も新しい語もないとき・少ないとき：前倒しの練習（箱は上がらない）で6語まで */
+    /* 復習も新しい語もないとき・少ないとき：前倒しの練習（段は上がらない）で6語まで */
     if(due.length+fresh.length<6){
       const cand=WORDS.filter(w=>inScope(w,sc)&&st(w)&&st(w).l>=1&&!isDue(w,d)&&st(w).t!==d)
         .sort((a,b)=>st(a).l-st(b).l||st(a).d-st(b).d);
@@ -260,20 +261,20 @@ function shell(){
 
 '    <div class="extra-row">'+
 '      <button class="start-btn weak" id="weakBtn"><i>!</i><span class="sb-name">苦手<span class="sb-desc" id="weakCount"></span></span></button>'+
-'      <button class="start-btn summary" id="extraBtn"><i>'+NLI.svg("again",16)+'</i><span class="sb-name">前倒しで練習<span class="sb-desc">箱は上がりません</span></span></button>'+
+'      <button class="start-btn summary" id="extraBtn"><i>'+NLI.svg("again",16)+'</i><span class="sb-name">前倒しで練習<span class="sb-desc">段は上がりません</span></span></button>'+
 '    </div>'+
 '    <div id="goal"></div>'+
 '    <div class="section-label">このカードのしくみ</div><div class="memos">'+
 '      <details class="memo"><summary>忘れかけたころに、もう一度</summary><div class="memo-body">'+
 '        <p>人は覚えたことを、1日後にはかなり忘れてしまいます（エビングハウスの忘却曲線）。でも、忘れかけたころに思い出しなおすと、次はもっと長く覚えていられます。</p>'+
-'        <p>そこで単語ごとに<b>箱</b>を用意しました。正解するたびに箱が1つ上がり、次の復習までの間が <b>翌日 → 3日後 → 1週間後 → 2週間後 → 1か月後</b> とのびていきます。箱6まで来たら<b>定着</b>です。</p>'+
-'        <p>まちがえた単語は箱1（翌日）にもどります。まだ復習の日が来ていない単語は、正解しても箱は上がりません。間をあけることに意味があるからです。</p></div></details>'+
+'        <p>そこで単語ごとに<b>階段</b>を用意しました。正解するたびに1段のぼり、次の復習までの間が <b>翌日 → 3日後 → 1週間後 → 2週間後 → 1か月後</b> とのびていきます。いちばん上（6段目）まで来たら<b>定着</b>です。</p>'+
+'        <p>まちがえた単語は1段目（翌日）にもどります。まだ復習の日が来ていない単語は、正解しても段は上がりません。間をあけることに意味があるからです。</p></div></details>'+
 '      <details class="memo"><summary>見るより、思い出す</summary><div class="memo-body">'+
 '        <p>答えを見て「わかった」と思うより、答えを見る前に自分で思い出そうとするほうが、記憶に残ります（テスト効果）。まちがえても大丈夫。思い出そうとした分だけ、正しい答えが頭に入りやすくなります。</p>'+
 '        <p>まちがえた単語は、3枚ほどあとにもう一度出ます。正解できるまで、その回の練習は終わりません。</p></div></details>'+
 '      <details class="memo"><summary>わかる → 言える・書ける</summary><div class="memo-body">'+
 '        <p>意味がわかること（受容）と、自分で言える・書けること（産出）は別の力です。選ぶだけでは「書ける」ようにはなりにくいので、新しい単語も、その日のうちに一度は自分で書きます。</p>'+
-'        <p>出会う → 意味を選ぶ → <b>ヒントつきで書く</b>（最初の文字と字数）。箱が上がるにつれて、ヒントなしで書く・<b>例文の空らんに入れる</b>・聞いて書く、と少しずつ手ごたえのある問題になります。思い出すのに少し苦労したほうが、記憶には残ります。</p>'+
+'        <p>出会う → 意味を選ぶ → <b>ヒントつきで書く</b>（最初の文字と字数）。階段をのぼるにつれて、ヒントなしで書く・<b>例文の空らんに入れる</b>・聞いて書く、と少しずつ手ごたえのある問題になります。思い出すのに少し苦労したほうが、記憶には残ります。</p>'+
 '        <p>アクセント記号だけのまちがいは正解にして、正しいつづりを見せます。冠詞を忘れたときは、もう一度書きなおせます。</p>'+
 '        <p>名詞は<b>冠詞といっしょに</b>覚えましょう（le livre、la clé）。l\' がつく語は un / une で性をたしかめます。例文の中で覚えると、使い方もいっしょに身につきます。</p></div></details>'+
 '    </div>'+
@@ -308,21 +309,23 @@ function setAccent(k){
 }
 function fmtDur(ms){const m=Math.round((ms||0)/60000);return m<60?m+"分":Math.floor(m/60)+"時間"+(m%60?m%60+"分":"");}
 function inDays(n){return n<=0?"今日":n===1?"明日":n<7?n+"日後":n<14?"1週間後":n<30?"2週間後":n<60?"1か月後":"2か月後";}
-/* 箱ごとの単語の数（積み上げの帯） */
+/* 段ごとの単語の数（積み上げの帯） */
 function meterHTML(list){
   const N=list.length||1,by=[0,0,0,0,0,0,0];list.forEach(w=>by[lv(w)]++);
   let h='<span class="vbar" role="img" aria-label="達成 '+pctOf(list)+'%">';
   for(let l=6;l>=1;l--)if(by[l])h+='<span class="vb b'+l+'" style="width:'+(by[l]/N*100)+'%"></span>';
   return h+'</span><span class="gm-v'+(pctOf(list)>=100?' full':'')+'">'+pctOf(list)+'<small>%</small></span>';
 }
+/* 単語の階段：段ごとに、いまそこにいる単語の数。右へ行くほど高い段＝次の復習までが長い */
 function boxesHTML(){
   const by=[0,0,0,0,0,0,0];WORDS.forEach(w=>by[lv(w)]++);
-  const mx=Math.max(1,...by.slice(1));
-  let h='<div class="bx-h"><span>記憶の箱</span><small>正解するたびに右の箱へ</small></div><div class="bx-row">';
-  for(let l=1;l<=6;l++)h+='<div class="bx b'+l+'"><div class="bx-col"><span class="bx-fill" style="height:'+Math.round(by[l]/mx*100)+'%"></span></div><b>'+by[l]+'</b><span>'+(l===6?"定着":"箱"+l)+'</span><small>'+(l===6?"":BOX_L[l])+'</small></div>';
-  return h+'</div><div class="bx-new">まだ出会っていない語 <b>'+by[0]+'</b></div>';
+  let h='<div class="bx-h"><span>単語の階段</span><small>正解するたびに1段のぼる</small></div><div class="stairs">';
+  for(let l=1;l<=6;l++)h+='<div class="stp s'+l+(by[l]?' has':'')+'"><b class="stp-n">'+by[l]+'</b>'+
+    '<div class="stp-blk">'+(l===6?'<span class="stp-flag">'+NLI.svg("flag",14)+'</span>':'')+'<span class="stp-l">'+(l===6?"定着":l+"段")+'</span></div>'+
+    '<small>'+(l===6?"":BOX_L[l])+'</small></div>';
+  return h+'</div><div class="bx-new">'+(by[0]?'まだ出会っていない語 <b>'+by[0]+'</b>　':'')+'<span class="nw">まちがえたら1段目へ</span></div>';
 }
-/* バッジ：箱4以上（2週間たっても思い出せた語）が 30・60・100・150・200・全部 になるたびに ／ 全部定着 → 勲章 */
+/* バッジ：4段目以上（2週間たっても思い出せた語）が 30・60・100・150・200・全部 になるたびに ／ 全部定着 → 勲章 */
 let fresh={};
 const MILE=[30,60,100,150,200,0],MILE_C=["#cf8aa0","#d6a96f","#8db79b","#92a6cf","#b48aa8","#c0a06a"];
 function firmN(){return WORDS.filter(w=>lv(w)>=4).length;}
@@ -341,7 +344,7 @@ function renderShelf(){
   const m=WORDS.filter(w=>lv(w)>=6).length;
   const big=[{kind:"medal",on:!!B.medal,fresh:!!fresh.medal,pct:m/WORDS.length,cap:"勲章",status:B.medal?"全単語 定着":"定着 "+m+" / "+WORDS.length}];
   fresh={};
-  return Badge.shelf({title:"しっかり覚えた語（箱4以上）",items,big});
+  return Badge.shelf({title:"しっかり覚えた語（4段目以上）",items,big});
 }
 function renderHome(){
   const c=counts("today");
@@ -485,11 +488,11 @@ function introDone(){
   queue.splice(Math.min(a+5,queue.length),0,task(w,"test2"));
   done++;pos++;next0();
 }
-/* 採点。箱の動き：
-   ・はじめての単語：出会いのあとのテストで正解 → 箱1（翌日に復習）
-   ・復習の日が来た単語：1回目で正解 → 箱を1つ上げ、次の復習日を先へ
-   ・まちがえた → 箱1へ（翌日に復習）。この回のうちに、3枚あとでもう一度
-   ・前倒し・苦手の練習で正解：箱はそのまま（まちがえたら箱1へ） */
+/* 採点。階段の動き：
+   ・はじめての単語：出会いのあとのテストで正解 → 1段目（翌日に復習）
+   ・復習の日が来た単語：1回目で正解 → 1段のぼり、次の復習日を先へ
+   ・まちがえた → 1段目へ（翌日に復習）。この回のうちに、3枚あとでもう一度
+   ・前倒し・苦手の練習で正解：段はそのまま（まちがえたら1段目へ） */
 function grade(r,chosen){
   if(locked)return;locked=true;
   const w=cur.w,d=today(),ok=r>0,firstTry=!(w.id in sess.first);
@@ -531,7 +534,7 @@ function backHTML(w,showLv,s,before){
 function lvHTML(s,before){
   const up=s.l>before,dn=s.l<before&&before>0;
   return '<div class="vc-lv'+(up?' up':dn?' dn':'')+'"><span class="lvb">'+[1,2,3,4,5,6].map(i=>'<i class="'+(i<=s.l?"on":"")+(up&&i===s.l?" new":"")+'"></i>').join("")+'</span>'+
-    '<span class="lvt">'+(s.l>=6?"定着！":"箱"+s.l)+'　次の復習：'+inDays(s.d-today())+'</span></div>';
+    '<span class="lvt">'+(s.l>=6?"定着！":s.l+"段目")+'　次の復習：'+inDays(s.d-today())+'</span></div>';
 }
 function flip(s,before){
   const w=cur.w,card=$("vcard");
@@ -584,7 +587,7 @@ function finish(){
   const c=counts("today");
   $("rMove").innerHTML=
     (nw?'<span class="mv nw">'+NLI.svg("star",14)+' 新しい語 <b>'+nw+'</b></span>':'')+
-    (up?'<span class="mv up">↑ 箱が上がった <b>'+up+'</b></span>':'')+
+    (up?'<span class="mv up">↑ 1段のぼった <b>'+up+'</b></span>':'')+
     (back?'<span class="mv dn">'+NLI.svg("again",14)+' 明日もう一度 <b>'+back+'</b></span>':'')+
     '<div class="mv-next">'+(c.due?'まだ今日の復習が <b>'+c.due+'</b> 語あります':c.tom?'明日の復習は <b>'+c.tom+'</b> 語。忘れかけたころに、また会いましょう':'')+'</div>';
   $("againT").textContent=c.due?"つづけて復習":"もう一度";
@@ -595,7 +598,7 @@ function finish(){
     h+='<div class="rrow'+(ok?' okrow':'')+'"><span class="mk '+(ok?'ok':'no')+'">'+(ok?'○':'✕')+'</span><span class="rtx">'+
       '<span class="rfr">'+gChip(w)+esc(head(w))+' '+spk("sm",w.id,0,"聞く")+'</span><span class="rja">'+esc(w.ja)+'</span>'+
       '<span class="rex">'+esc(w.ex.replace(/[\[\]]/g,""))+'　'+esc(w.exj)+'</span>'+
-      (s?'<span class="rnext">'+(s.l>=6?'定着':'箱'+s.l)+'・次の復習 '+inDays(s.d-d)+'</span>':'')+'</span></div>';});
+      (s?'<span class="rnext">'+(s.l>=6?'定着':s.l+'段目')+'・次の復習 '+inDays(s.d-d)+'</span>':'')+'</span></div>';});
   $("review").innerHTML=h;
   const newB=awardBadges();
   show(resultScreen);

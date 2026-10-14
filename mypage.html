@@ -9,7 +9,7 @@
 <script src="common.js?v=34"></script>
 <script src="streak.js?v=4"></script>
 <script src="feedback.js?v=2"></script>
-<script src="coach.js?v=8"></script>
+<script src="coach.js?v=9"></script>
 <script src="card.js?v=9"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -280,7 +280,7 @@
       if(p3>=4&&!y.wk)vb.m++;else if(p3>=2)vb.ch++;else if(p3>=1)vb.once++;}
     vb.tried=Math.min(vb.tried,vb.n);vb.pct=Math.floor(vb.pts/(vb.n*4)*100);
     badges+=Object.keys(vq.badges||{}).length;
-    /* 単語カード：記憶の箱 4〜6＝しっかり、2〜3＝練習中、1＝覚えはじめ */
+    /* 単語カード：単語の階段 4〜6段目＝しっかり、2〜3段目＝練習中、1段目＝覚えはじめ */
     var vc=J("vocabQuiz_v1_"+id)||{},vby=(vc.sum&&vc.sum.by)||[0,0,0,0,0,0,0],vw={n:(vc.sum&&vc.sum.n)||269,m:vby[4]+vby[5]+vby[6],ch:vby[2]+vby[3],once:vby[1],done:vby[6],pct:(vc.sum&&vc.sum.p)||0,rounds:vc.tries||0};
     badges+=Object.keys(vc.badges||{}).length;
     return {vocab:vw,gram:gram,talk:{n:100,m:tm,mid:tmid,low:tlow,pct:Math.floor(tpts/400*100),seen:Math.min(tseen,100),rounds:t.tries||0},dlg:dl,conj:{ranks:ranks,rounds:cj.tries||0},verb:vb,badges:badges};
@@ -307,7 +307,7 @@
     });
     var VW=P.vocab;
     h+='<div class="pg-h"><span>単語カード</span><b>'+VW.pct+'%</b><small>定着 '+VW.done+' / '+VW.n+'</small></div>'+
-      '<div class="pg-row"><span class="pg-l">記憶の箱</span>'+bar3(VW.m,VW.ch,VW.once,VW.n)+'<span class="pg-v"><b>'+VW.pct+'%</b></span></div>';
+      '<div class="pg-row"><span class="pg-l">単語の階段</span>'+bar3(VW.m,VW.ch,VW.once,VW.n)+'<span class="pg-v"><b>'+VW.pct+'%</b></span></div>';
     var T=P.talk;
     h+='<div class="pg-h"><span>会話フレーズ</span><b>'+T.pct+'%</b></div>'+
       '<div class="pg-row"><span class="pg-l">フレーズ</span>'+bar3(T.m,T.mid,T.low,100)+'<span class="pg-v"><b>'+T.pct+'%</b></span></div>';

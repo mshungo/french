@@ -20,15 +20,21 @@
 .boxes{margin:10px 0 16px;padding:14px 14px 10px;border:1px solid var(--rule);border-radius:18px;background:#fdfaf8;}
 .bx-h{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 10px;font-size:12.5px;font-weight:600;color:var(--ink);}
 .bx-h small{font-weight:400;font-size:11px;color:var(--ink-soft);}
-.bx-row{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
-.bx{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;color:var(--ink-soft);}
-.bx-col{position:relative;width:100%;max-width:44px;height:54px;border-radius:9px 9px 6px 6px;background:var(--bg-2);overflow:hidden;border:1px solid var(--rule);}
-.bx-fill{position:absolute;left:0;right:0;bottom:0;border-radius:6px 6px 0 0;transition:height .6s cubic-bezier(.3,1.3,.5,1);}
-.bx b{font-family:var(--serif);font-size:17px;color:var(--ink);line-height:1.2;}
-.bx small{font-size:9.5px;color:var(--ink-faint);white-space:nowrap;}
-.bx.b1 .bx-fill{background:var(--b1);}.bx.b2 .bx-fill{background:var(--b2);}.bx.b3 .bx-fill{background:var(--b3);}
-.bx.b4 .bx-fill{background:var(--b4);}.bx.b5 .bx-fill{background:var(--b5);}.bx.b6 .bx-fill{background:var(--b6);}
-.bx.b6 span{color:#9a7b45;font-weight:600;}
+/* 単語の階段 */
+.stairs{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;align-items:end;padding:0 2px;}
+.stp{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;}
+.stp-n{font-family:var(--serif);font-size:18px;line-height:1;color:var(--ink-faint);}
+.stp.has .stp-n{color:var(--ink);}
+.stp-blk{position:relative;width:100%;border-radius:7px 7px 3px 3px;background:var(--bg-2);border:1px solid var(--rule);display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;box-sizing:border-box;transition:background .4s;}
+.stp.s1 .stp-blk{height:22px;}.stp.s2 .stp-blk{height:34px;}.stp.s3 .stp-blk{height:46px;}
+.stp.s4 .stp-blk{height:58px;}.stp.s5 .stp-blk{height:70px;}.stp.s6 .stp-blk{height:82px;}
+.stp.has.s1 .stp-blk{background:var(--b1);border-color:transparent;}.stp.has.s2 .stp-blk{background:var(--b2);border-color:transparent;}
+.stp.has.s3 .stp-blk{background:var(--b3);border-color:transparent;}.stp.has.s4 .stp-blk{background:var(--b4);border-color:transparent;}
+.stp.has.s5 .stp-blk{background:var(--b5);border-color:transparent;}.stp.has.s6 .stp-blk{background:var(--b6);border-color:transparent;}
+.stp-l{font-size:10.5px;color:var(--ink-soft);white-space:nowrap;}
+.stp.has .stp-l{color:#fff;font-weight:600;text-shadow:0 1px 1px rgba(0,0,0,.12);}
+.stp-flag{position:absolute;top:8px;left:50%;transform:translateX(-50%);color:#fff;opacity:.9;}
+.stp small{font-size:9.5px;color:var(--ink-faint);white-space:nowrap;}
 .bx-new{text-align:center;font-size:11px;color:var(--ink-soft);margin-top:8px;}
 .bx-new b{font-family:var(--serif);font-size:14px;color:var(--ink);}
 
@@ -72,8 +78,10 @@
 
 /* 次の復習（箱） */
 .vc-lv{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px;font-size:12px;color:var(--ink-soft);}
-.lvb{display:inline-flex;gap:4px;}
-.lvb i{width:12px;height:12px;border-radius:3px;background:var(--rule);display:block;}
+.lvb{display:inline-flex;gap:3px;align-items:flex-end;}
+.lvb i{width:10px;border-radius:2px 2px 1px 1px;background:var(--rule);display:block;}
+.lvb i:nth-child(1){height:5px}.lvb i:nth-child(2){height:8px}.lvb i:nth-child(3){height:11px}
+.lvb i:nth-child(4){height:14px}.lvb i:nth-child(5){height:17px}.lvb i:nth-child(6){height:20px}
 .lvb i.on{background:var(--b4);}
 .vc-lv.up .lvb i.on{background:var(--good);}
 .vc-lv .lvb i.new{animation:lvPop .5s cubic-bezier(.3,1.8,.5,1);}
@@ -121,3 +129,4 @@
 .acc-keys .acc:active{background:var(--accent-wash);}
 @media (hover:none){.acc-keys{display:none;}}   /* スマホはキーボードの長押しで入る */
 .retype .acc-keys{margin-top:2px;}
+.bx-new .nw{white-space:nowrap;}
