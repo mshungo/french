@@ -6,15 +6,15 @@
 <title>学習記録 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=33"></script>
+<script src="common.js?v=34"></script>
 <script src="streak.js?v=4"></script>
 <script src="feedback.js?v=2"></script>
-<script src="coach.js?v=7"></script>
+<script src="coach.js?v=8"></script>
 <script src="card.js?v=9"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=17">
+<link rel="stylesheet" href="base.css?v=18">
 <style>
   /* 読み込み中 */
   .sync-note{margin:0 0 10px;font-size:11.5px;color:var(--ink-soft);text-align:center;}
@@ -133,12 +133,13 @@
   function $(id){return document.getElementById(id);}
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
   function dur(sec){var m=Math.round((sec||0)/60);return m<60?m+"分":Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
-  var APP={conj:"動詞活用",grammar:"文法練習",talk:"会話練習"};
+  var APP={conj:"動詞活用",grammar:"文法練習",talk:"会話練習",vocab:"単語カード"};
   var TALKSEC={s1:"第1–3週",s2:"第4–6週",s3:"第7–9週",s4:"第10–11週",s5:"第12–14週",mix:"総まとめ",weak:"苦手"};
   function secName(app,s){
     if(app==="grammar"&&/^V-/.test(s))return "いろいろな動詞";
     if(app==="grammar"){var m=/^L(\d+)-(.+)$/.exec(s);if(m)return "Leçon "+m[1]+(m[2]==="mix"?" 総まとめ":m[2]==="weak"?" 苦手":"");}
     if(app==="talk")return TALKSEC[s]||s;
+    if(app==="vocab"){var m2=/^W-(.+)$/.exec(s||""),k=m2?m2[1]:s;return {today:"今日のカード",weak:"苦手",extra:"前倒し",N:"数"}[k]||(/^L\d$/.test(k)?"Leçon "+k.slice(1):k);}
     return s;
   }
   if(window.Streak){Streak.mount($("stkCard"));Q.onStats(function(){Streak.mount($("stkCard"));});}
@@ -216,11 +217,11 @@
       else H.forEach(function(x){var a=by[x.app]=by[x.app]||{n:0,q:0,c:0,d:0};a.n++;a.q+=x.total;a.c+=x.score;a.d+=x.dur||0;days[x.t.slice(0,10)]=1;});
       var sum=[["学生ID",u.id],["保存した日",Q.todayJST()],["学習した日数",Object.keys(days).length],[],["教材","回数","解答数","正答率","学習時間（分）"]];
       var foot=["（「学習記録」シートは最近の "+H.length+" ラウンド。まとめは全期間）"];
-      ["conj","grammar","talk"].forEach(function(k){var a=by[k]||{n:0,q:0,c:0,d:0};sum.push([APP[k],a.n,a.q,a.q?Math.round(a.c/a.q*100)/100:"",Math.round(a.d/6)/10]);});
+      ["conj","grammar","talk","vocab"].forEach(function(k){var a=by[k]||{n:0,q:0,c:0,d:0};sum.push([APP[k],a.n,a.q,a.q?Math.round(a.c/a.q*100)/100:"",Math.round(a.d/6)/10]);});
       sum.push([]);sum.push(foot);
       var ws2=XLSX.utils.aoa_to_sheet(sum);
       ws2["!cols"]=[{wch:12},{wch:20},{wch:10},{wch:10},{wch:14}];
-      for(var j=6;j<=8;j++){var c2=ws2["D"+j];if(c2&&c2.t==="n")c2.z="0%";}
+      for(var j=6;j<=9;j++){var c2=ws2["D"+j];if(c2&&c2.t==="n")c2.z="0%";}
       var wb=XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb,ws2,"まとめ");XLSX.utils.book_append_sheet(wb,ws,"学習記録");
       var buf=XLSX.write(wb,{bookType:"xlsx",type:"array"});
@@ -279,7 +280,10 @@
       if(p3>=4&&!y.wk)vb.m++;else if(p3>=2)vb.ch++;else if(p3>=1)vb.once++;}
     vb.tried=Math.min(vb.tried,vb.n);vb.pct=Math.floor(vb.pts/(vb.n*4)*100);
     badges+=Object.keys(vq.badges||{}).length;
-    return {gram:gram,talk:{n:100,m:tm,mid:tmid,low:tlow,pct:Math.floor(tpts/400*100),seen:Math.min(tseen,100),rounds:t.tries||0},dlg:dl,conj:{ranks:ranks,rounds:cj.tries||0},verb:vb,badges:badges};
+    /* 単語カード：記憶の箱 4〜6＝しっかり、2〜3＝練習中、1＝覚えはじめ */
+    var vc=J("vocabQuiz_v1_"+id)||{},vby=(vc.sum&&vc.sum.by)||[0,0,0,0,0,0,0],vw={n:(vc.sum&&vc.sum.n)||269,m:vby[4]+vby[5]+vby[6],ch:vby[2]+vby[3],once:vby[1],done:vby[6],pct:(vc.sum&&vc.sum.p)||0,rounds:vc.tries||0};
+    badges+=Object.keys(vc.badges||{}).length;
+    return {vocab:vw,gram:gram,talk:{n:100,m:tm,mid:tmid,low:tlow,pct:Math.floor(tpts/400*100),seen:Math.min(tseen,100),rounds:t.tries||0},dlg:dl,conj:{ranks:ranks,rounds:cj.tries||0},verb:vb,badges:badges};
   }
   function cardData(d){
     var P=progress(),ca=d.byApp.conj;
@@ -301,6 +305,9 @@
       h+='<div class="pg-row"><span class="pg-l">Leçon '+l.no+'</span>'+bar3(l.m,l.ch,l.once,l.n)+
         '<span class="pg-v"><b>'+l.pct+'%</b></span></div>';
     });
+    var VW=P.vocab;
+    h+='<div class="pg-h"><span>単語カード</span><b>'+VW.pct+'%</b><small>定着 '+VW.done+' / '+VW.n+'</small></div>'+
+      '<div class="pg-row"><span class="pg-l">記憶の箱</span>'+bar3(VW.m,VW.ch,VW.once,VW.n)+'<span class="pg-v"><b>'+VW.pct+'%</b></span></div>';
     var T=P.talk;
     h+='<div class="pg-h"><span>会話フレーズ</span><b>'+T.pct+'%</b></div>'+
       '<div class="pg-row"><span class="pg-l">フレーズ</span>'+bar3(T.m,T.mid,T.low,100)+'<span class="pg-v"><b>'+T.pct+'%</b></span></div>';

@@ -27,11 +27,11 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-08h';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-14a';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
-const PROG_KEY_RE = /^(conjQuizStats_v4|talkQuiz_v1|gramQuiz_L[1-9]_v1|verbQuiz_v1|conjQuizDays|nlWelcome_v1|nlStamp_v1)$/;   // 端末の記録のうち、バックアップするもの
+const PROG_KEY_RE = /^(conjQuizStats_v4|talkQuiz_v1|gramQuiz_L[1-9]_v1|verbQuiz_v1|vocabQuiz_v1|conjQuizDays|nlWelcome_v1|nlStamp_v1)$/;   // 端末の記録のうち、バックアップするもの
 const PROG_MAX = 45000;      // 1件あたりの最大文字数（セルの上限は5万字）
 const BACKUP_FOLDER = 'Naralingo バックアップ';
 const BACKUP_KEEP = 30;   // 自動バックアップを何日分残すか
@@ -55,7 +55,7 @@ const LIMIT = {
 };
 const SECTION_LABEL = { 'être': 'être', aller: 'aller', avoir: 'avoir', faire: 'faire', mix: '総まとめ' };
 const MODE_LABEL = { choice: '選択式', write: '記述式' };
-const APP_LABEL = { conj: '動詞活用', grammar: '文法練習', talk: '会話練習' };
+const APP_LABEL = { conj: '動詞活用', grammar: '文法練習', talk: '会話練習', vocab: '単語カード' };
 const RESULT_HEADERS = ['日時', '日付', '学生ID', '氏名', '教材', 'セクション', '形式', '正解数', '問題数',
   '所要秒', 'タイムアタック', 'ランク', '誤答', 'rid', '学習秒'];
 const COL = { time: 1, date: 2, id: 3, name: 4, app: 5, section: 6, mode: 7, score: 8, total: 9,
@@ -661,7 +661,7 @@ function withLock_(ms, fn) {
   try { return fn(); } finally { LOCKED_ = false; lock.releaseLock(); }
 }
 function newData_(name) {
-  return { v: 2, name: name || '', apps: { conj: emptyStats_(), grammar: emptyStats_(), talk: emptyStats_() },
+  return { v: 2, name: name || '', apps: { conj: emptyStats_(), grammar: emptyStats_(), talk: emptyStats_(), vocab: emptyStats_() },
     dayCount: {}, hours: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     dur: 0, recent: [], rids: [], last: '' };
 }
@@ -680,7 +680,7 @@ function sdSheet_(ss) {
 const LABEL_TO_SEC_ = (function () { const o = {}; Object.keys(SECTION_LABEL).forEach(function (k) { o[SECTION_LABEL[k]] = k; }); return o; })();
 const LABEL_TO_APP_ = (function () { const o = {}; Object.keys(APP_LABEL).forEach(function (k) { o[APP_LABEL[k]] = k; }); return o; })();
 function sdApply_(d, e) {
-  const st = d.apps[e.app];
+  const st = d.apps[e.app] || (APP_LABEL[e.app] ? (d.apps[e.app] = emptyStats_()) : null);   // 単語カードより前に作られたデータにも足す
   if (!st) return;
   const day = Utilities.formatDate(e.t, TZ, 'yyyy-MM-dd');
   d.dayCount[day] = (d.dayCount[day] || 0) + 1;
@@ -819,11 +819,11 @@ function recordResult_(ss, user, v) {
 //  集計表（先生が見る「集計」シート）：計算式を使わず、値で書く
 // =====================================================================
 const SUMMARY_HEADERS = ['学生ID', '氏名', 'ラウンド数', '学習時間(分)', '学習日数', '直近7日の学習日数', '最終学習日', '累計解答数', '正答率',
-  '動詞活用(回)', '文法練習(回)', '会話練習(回)', '最速 être(秒)', '最速 aller(秒)', '最速 avoir(秒)', '最速 faire(秒)', '最速 総まとめ(秒)'];
-const SUMMARY_FORMATS = ['@', '@', '0', '0', '0', '0', '@', '0', '0%', '0', '0', '0', '0.0', '0.0', '0.0', '0.0', '0.0'];
+  '動詞活用(回)', '文法練習(回)', '会話練習(回)', '最速 être(秒)', '最速 aller(秒)', '最速 avoir(秒)', '最速 faire(秒)', '最速 総まとめ(秒)', '単語カード(回)'];
+const SUMMARY_FORMATS = ['@', '@', '0', '0', '0', '0', '@', '0', '0%', '0', '0', '0', '0.0', '0.0', '0.0', '0.0', '0.0', '0'];
 function summaryValues_(id, name, d) {
-  const a = d.apps, tries = a.conj.tries + a.grammar.tries + a.talk.tries;
-  const q = a.conj.answered + a.grammar.answered + a.talk.answered, c = a.conj.correct + a.grammar.correct + a.talk.correct;
+  const a = d.apps, v = a.vocab || emptyStats_(), tries = a.conj.tries + a.grammar.tries + a.talk.tries + v.tries;
+  const q = a.conj.answered + a.grammar.answered + a.talk.answered + v.answered, c = a.conj.correct + a.grammar.correct + a.talk.correct + v.correct;
   const today = Utilities.formatDate(new Date(), TZ, 'yyyy-MM-dd');
   const from = Utilities.formatDate(new Date(Date.now() - 6 * 86400000), TZ, 'yyyy-MM-dd');
   const days = Object.keys(d.dayCount);
@@ -831,7 +831,7 @@ function summaryValues_(id, name, d) {
   return [id, name || d.name || '', tries, Math.round(d.dur / 60), days.length,
     days.filter(function (x) { return x >= from && x <= today; }).length,
     d.last ? d.last.slice(0, 10) : '', q, q ? c / q : '',
-    a.conj.tries, a.grammar.tries, a.talk.tries, bt('être'), bt('aller'), bt('avoir'), bt('faire'), bt('mix')];
+    a.conj.tries, a.grammar.tries, a.talk.tries, bt('être'), bt('aller'), bt('avoir'), bt('faire'), bt('mix'), v.tries];
 }
 function summarySheet_(ss) {
   const sh = ensureSheet_(ss, SHEET.summary, null);

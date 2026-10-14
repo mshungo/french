@@ -118,6 +118,7 @@ body{
 .card.conj{--c:#b16880;--w:#faeef2;}
 .card.grammar{--c:#6c9a7f;--w:#eef5f0;}
 .card.talk{--c:#7186b4;--w:#eef1f8;}
+.card.vocab{--c:#b08a52;--w:#f8f1e4;}
 
 .sumgrid{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;margin:16px 0 4px;border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:#fdf9f6;}
 .sum{padding:12px 6px;text-align:center;}
@@ -213,3 +214,6 @@ details.prefs[open] summary.prefs-h::after{transform:rotate(180deg);}
 @media(prefers-reduced-motion:reduce){.nbell.urgent{animation:none}}
 .nm-box .nh-t{visibility:hidden;}
 .nm-box .nhead:not(:has(.nh-btn)){display:none;}
+
+/* メニューの「単語カード」：今日の復習の数 */
+.vdue-m{display:inline-block;padding:2px 9px;border-radius:10px;background:var(--c,#b08a52);color:#fff;font-size:11.5px;font-weight:700;white-space:nowrap;}
