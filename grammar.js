@@ -442,7 +442,7 @@ function render(){
   }else if(q.kind==="b"){
     stg.innerHTML=(it.t==="t"?'<div class="inst">'+esc(it.inst)+'</div><div class="src">'+esc(it.src)+'</div>':
       tagsHTML(it)+'<div class="prompt-ja">'+jaHTML(it.ja)+'</div>')+
-      '<div class="tile-note">※ 固有名詞のほかは、文の先頭の語も小文字にしてあります</div><div class="tray" id="tray"></div><div class="bank" id="bank"></div>'+
+      '<div class="tile-note">タップで入れる・もどす／ドラッグで並べかえ<br>※ 固有名詞のほかは、文頭の語も小文字</div><div class="tray" id="tray"></div><div class="bank" id="bank"></div>'+
       '<div class="build-ctl"><button class="mini ic-only" id="undoBtn" aria-label="1つ戻す" title="1つ戻す">'+NLI.svg("undo",17)+'</button><button class="mini ic-only" id="clearBtn" aria-label="やり直す" title="やり直す">'+NLI.svg("clear",17)+'</button></div>';
     q.picked=[];drawTiles(q);
     $("undoBtn").onclick=()=>{if(locked)return;q.picked.pop();drawTiles(q);};
@@ -464,14 +464,9 @@ function checkWrite(q){
   inp.disabled=true;$("writeBtn").disabled=true;inp.classList.add(r?"ok":"no");
   grade(r,val.trim());
 }
+/* 並べかえ：タップ・ドラッグ・意味の表示・「解答」ボタンは tiles.js（会話練習と共通）。全部ならべても自動では採点しない */
 function drawTiles(q){
-  const tray=$("tray"),bank=$("bank"),used=new Set(q.picked.map(t=>t.id));
-  tray.innerHTML=q.picked.map(t=>'<button class="tile" data-id="'+t.id+'">'+esc(t.w)+'</button>').join("")+
-    (q.picked.length?'<span class="end">'+esc(q.end)+'</span>':'<span class="tray-ph">ここに並びます</span>');
-  bank.innerHTML=q.tiles.filter(t=>!used.has(t.id)).map(t=>'<button class="tile" data-id="'+t.id+'">'+esc(t.w)+'</button>').join("");
-  tray.querySelectorAll(".tile").forEach(b=>b.onclick=()=>{if(locked)return;q.picked=q.picked.filter(t=>t.id!==+b.dataset.id);drawTiles(q);});
-  bank.querySelectorAll(".tile").forEach(b=>b.onclick=()=>{if(locked)return;q.picked.push(q.tiles.find(t=>t.id===+b.dataset.id));drawTiles(q);
-    if(q.picked.length===q.words.length)checkBuild(q);});
+  NLTiles.draw(q,{tray:$("tray"),bank:$("bank"),ctl:document.querySelector(".build-ctl"),locked:()=>locked,onCheck:()=>checkBuild(q)});
 }
 function checkBuild(q){
   const got=q.picked.map(t=>t.w).join(" "),want=q.words.join(" ");
