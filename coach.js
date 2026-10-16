@@ -165,8 +165,25 @@
       (s.fr ? '<span class="dc-fr">« ' + esc(s.fr) + ' »</span><span class="dc-ja">' + esc(s.ja) + '</span>' : '') +
       '<span class="dc-n">' + esc(s.n) + '</span></div>';
   }
+  /* 個別のお知らせ（先生がその生徒にだけ出したもの。メニューのお知らせ欄と同じもの）。
+     まだ読んでいなければ、鹿コーチがいちばん最初に伝える。「読んだ」はお知らせ欄の「既読」と共通（nlNoticeRead） */
+  const NREAD = "nlNoticeRead";
+  function nHash(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return h.toString(36); }   // index.html と同じ計算
+  function nKey(n) { return nHash(n.kind + "\u0001" + n.text); }
+  function readList() { try { return JSON.parse(localStorage.getItem(NREAD) || "[]") || []; } catch (e) { return []; } }
+  function myNotes() {
+    try { const all = window.Quiz && Quiz.user() && Quiz.myNotes ? Quiz.myNotes() : []; const r = readList(); return all.filter(n => n && n.text && r.indexOf(nKey(n)) < 0); } catch (e) { return []; }
+  }
+  function notesHTML() {
+    const L = myNotes();
+    if (!L.length) return "";
+    return '<p>' + "先生から、あなたにお知らせが届いているよ。" + '</p>' +
+      L.map(n => '<div class="dc-note"><span class="dc-lb me">あなたへ</span><span class="dc-nt">' + esc(n.text).replace(/\n/g, "<br>") + '</span>' +
+        '<button type="button" class="dc-read" data-k="' + nKey(n) + '">読んだ</button></div>').join("");
+  }
   function bodyHTML(d) {
-    const p = pickFor(d);
+    const p = pickFor(d), notes = turn === 0 ? notesHTML() : "";
+    if (notes) return notes;   // お知らせがあるときは、それだけを先に（ほかの話は「ほかの話も聞く」で）
     return (turn === 0 ? '<p>' + esc(greet(d)) + '</p>' : '') +
       '<div class="dc-tip"><span class="dc-lb' + (p.kind === "使い方" ? ' how' : '') + '">' + p.kind + '</span>' + esc(p.tip) + '</div>' + storyHTML(p.story);
   }
@@ -177,6 +194,9 @@
     '.deer-bub .dc-fr{display:block;font-family:var(--serif);font-size:17px;font-weight:600;line-height:1.4;color:var(--ink);margin:2px 0 1px;}' +
     '.deer-bub .dc-ja{display:block;font-size:12.5px;color:var(--ink);}' +
     '.deer-bub .dc-n{display:block;font-size:12px;color:var(--ink-soft);margin-top:2px;}' +
+    '.deer-bub .dc-note{margin-top:8px;padding:9px 11px 8px;border-radius:12px;background:#f8f0f6;border:1px solid #e2c6da;}' +
+    '.deer-bub .dc-lb.me{background:#a8668f;}.deer-bub .dc-nt{display:block;margin-top:2px;}' +
+    '.deer-bub .dc-read{display:block;margin:6px 0 0 auto;padding:3px 12px;border-radius:999px;border:1px solid #e2c6da;background:#fff;color:#8f667f;font:inherit;font-size:11.5px;cursor:pointer;}' +
     '.deer-bub .dc-more{margin-top:8px;border:none;background:none;color:#b08a3e;font:inherit;font-size:12px;text-decoration:underline;cursor:pointer;padding:0;}';
   let cssDone = false;
   function mount(el, d) {
@@ -186,6 +206,11 @@
     const draw = () => {
       box.innerHTML = bodyHTML(d) + '<button type="button" class="dc-more">ほかの話も聞く</button>';
       box.querySelector(".dc-more").onclick = () => { turn++; draw(); };
+      box.querySelectorAll(".dc-read").forEach(b => b.onclick = () => {   // 読んだ → お知らせ欄の「既読」と同じ扱い
+        const r = readList(); if (r.indexOf(b.dataset.k) < 0) r.push(b.dataset.k);
+        try { localStorage.setItem(NREAD, JSON.stringify(r.slice(-80))); } catch (e) {}
+        draw();
+      });
     };
     draw();
   }

@@ -6,11 +6,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="base.css?v=20">
+<link rel="stylesheet" href="base.css?v=21">
 <title>Naralingo — フランス語練習</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=34"></script>
+<script src="common.js?v=36"></script>
 <script src="streak.js?v=4"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=3"></script>
@@ -211,7 +211,7 @@
     function close(){try{localStorage.setItem(welcomeKey(),JSON.stringify({tries:1,at:Q.todayJST()}));}catch(e){}el.remove();if(Q.backup)Q.backup();}
     document.body.appendChild(el);draw();
   }
-  function showLogin(){menuPanel.classList.add("hidden");loginPanel.classList.remove("hidden");var fb=document.getElementById("fbCorner");if(fb)fb.remove();if(window.Feedback)Feedback.mount();}
+  function showLogin(){menuPanel.classList.add("hidden");loginPanel.classList.remove("hidden");try{renderNotices();}catch(e){}var fb=document.getElementById("fbCorner");if(fb)fb.remove();if(window.Feedback)Feedback.mount();}
   function note(t){var n=$("loginNote");n.textContent=t||"";n.classList.toggle("hidden",!t);}
 
   async function doLogin(){
@@ -243,7 +243,7 @@
   function nEsc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}).replace(/\n/g,"<br>");}
   /* お知らせ：1件ずつ「既読」にすると消える（この端末に記憶）。見出しで、まとめてたたむ／開くもできる。
      前回受け取ったお知らせを端末に残しておき、開いたらすぐ出す。最新はうしろで取りに行き、変わっていれば入れかえる。 */
-  var NREAD="nlNoticeRead",NCACHE="nlNoticeCache",NFOLD="nlNoticeFold",NSEEN="nlNoticeSeen",nList=[],showRead=false,nFresh={};
+  var NREAD="nlNoticeRead",NCACHE="nlNoticeCache",NFOLD="nlNoticeFold",NSEEN="nlNoticeSeen",nList=[],gList=[],showRead=false,nFresh={};
   function lsJ(k,d){try{var v=JSON.parse(localStorage.getItem(k)||"null");return v==null?d:v;}catch(e){return d;}}
   function lsP(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
   function nKey(n){return nHash(n.kind+"\u0001"+n.text);}
@@ -264,7 +264,7 @@
       return t;
     }).join("");
   }
-  var NCLS={"障害":"ng","注意":"warn","期間限定":"ltd","イベント":"evt"};   /* 種類ごとの色 */
+  var NCLS={"障害":"ng","注意":"warn","期間限定":"ltd","イベント":"evt","あなたへ":"me"};   /* 種類ごとの色 */
   /* ベル：未読の数を出す。障害・注意の未読があれば赤くしてゆらす */
   function updBell(unread){
     var b=$("nBell"),n=$("nBellN");if(!b)return;
@@ -290,7 +290,10 @@
     renderNotices();openNotices();
   }
   function renderNotices(list){
-    if(list)nList=list.filter(function(n){return n&&n.text;});
+    if(list)gList=list.filter(function(n){return n&&n.text;});
+    /* 個別のお知らせ（ログインしている生徒にだけ届いたもの）を先頭に */
+    var mine=(Q.user()&&Q.myNotes?Q.myNotes():[]).filter(function(n){return n&&n.text;});
+    nList=mine.concat(gList);
     var box=$("notices"),read=lsJ(NREAD,[]);
     /* 「期間限定」は既読にできない（先生が表示を外すまで出しつづける） */
     var unread=nList.filter(function(n){return n.kind==="期間限定"||read.indexOf(nKey(n))<0;}),done=nList.length-unread.length;
@@ -345,6 +348,7 @@
   })();
 
   $("guideBtn").addEventListener("click",openWelcome);
+  window.addEventListener("nl:mynotes",function(){renderNotices();popTry=0;setTimeout(maybePopNotices,400);});
   $("nBell").addEventListener("click",openNotices);$("nClose").addEventListener("click",closeNotices);
   $("nModal").addEventListener("click",function(e){if(e.target===this)closeNotices();});
   /* 今日の学習をはじめる！：動詞活用・いろいろな動詞・文法練習から、ランダムに1つ選んですぐ始める */

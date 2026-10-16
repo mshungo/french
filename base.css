@@ -224,3 +224,7 @@ details.prefs[open] summary.prefs-h::after{transform:rotate(180deg);}
 /* メニューの「New!」（新しいコーナー。期限が来たら index.html の処理で消える） */
 .newtag{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:linear-gradient(135deg,#d98ba3,#c99b5e);color:#fff;font-family:var(--serif,inherit);font-style:italic;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:17px;vertical-align:2px;box-shadow:0 4px 10px -6px rgba(180,90,120,.8);animation:newTag 2.6s ease-in-out infinite;}
 @keyframes newTag{0%,100%{transform:none}50%{transform:translateY(-2px)}}
+/* 個別のお知らせ（その生徒にだけ届いたもの） */
+.notice.me{background:#f8f0f6;border-color:#e2c6da;}
+.notice.me .nk{background:#a8668f;}
+.notice.me .nk::before{content:"✉ ";}

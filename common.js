@@ -120,6 +120,15 @@
     listeners.forEach(function (f) { try { f(stats); } catch (e) {} });
   }
   function onStats(f) { listeners.push(f); }
+  /* 個別のお知らせ（その生徒にだけ。ログイン・再同期の応答で届く）。端末に控えて、メニューのお知らせ欄に出す */
+  function setNotes(res) {
+    if (!user || !res || !Array.isArray(res.notes)) return;
+    var v = JSON.stringify(res.notes.slice(0, 5)), k = "nlMyNotes_" + user.id;
+    if (lsGet(k) === v) return;
+    lsSet(k, v);
+    try { window.dispatchEvent(new CustomEvent("nl:mynotes")); } catch (e) {}
+  }
+  function myNotes() { return user ? jget("nlMyNotes_" + user.id, []) : []; }
 
   /* ---- 未送信キュー（端末に保管。通信できなくても失われない） ---- */
   function pendKey() { return "conjQuizPending_" + who(); }
@@ -253,7 +262,7 @@
     if (Date.now() - Number(ssGet(syncKey()) || 0) < SYNC_GAP) return "skip";
     try {
       var res = await call(user, "sync");
-      if (res.ok) { setCached(res.stats); updName(res); markSynced(); return "ok"; }
+      if (res.ok) { setCached(res.stats); setNotes(res); updName(res); markSynced(); return "ok"; }
       if (res.error === "auth") return "auth";
       return "error";
     } catch (e) { return "error"; }
@@ -276,7 +285,7 @@
     if (!online()) return { ok: false, error: "noauth" };
     var r;
     try { r = await call(user, "history"); } catch (e) { return { ok: false, error: "network" }; }
-    if (r && r.ok) updName(r);   // 学習記録を開いたときも、表示名（ニックネーム）を最新にする
+    if (r && r.ok) { updName(r); setNotes(r); }   // 学習記録を開いたときも、表示名（ニックネーム）と個別のお知らせを最新にする
     if (r && r.ok) lsSet("nlHist_" + user.id, JSON.stringify({ at: Date.now(), history: r.history || [], agg: r.agg || null }));
     return r;
   }
@@ -341,7 +350,7 @@
       detail: (res.error || "") + (res.message ? ": " + res.message : "") };
     user = { id: id, name: (res.user && res.user.name) || id, pw: pw, practice: false };
     keep(user, remember);
-    setCached(res.stats); markSynced();
+    setCached(res.stats); setNotes(res); markSynced();
     var restored = 0; try { if (res.prog) { restored = restore(res.prog); lsSet("nlProgAt_" + id, String(Date.now())); } } catch (e) {}
     try { migrateVerbs(true); } catch (e) {}
     if (getPending().length) flush().then(function (st) { if (st === "ok") backup(); });   // 未送信の結果は裏で送る（ログインは待たせない）
@@ -582,7 +591,7 @@
     user: function () { return user; },
     isPractice: function () { return !!(user && user.practice); },
     todayJST: todayJST, days: days, markToday: markToday, streak: streak, chain: chain, streakHTML: streakHTML,
-    cached: cached, onStats: onStats,
+    cached: cached, onStats: onStats, myNotes: myNotes,
     pendingCount: function () { return getPending().length; },
     submit: submit, flush: flush, refresh: refresh, history: history, cachedHistory: cachedHistory, feedback: feedback, backup: backup, setNick: setNick, setPw: setPw,
     login: login, logout: logout, requireLogin: requireLogin, warmUp: warmUp

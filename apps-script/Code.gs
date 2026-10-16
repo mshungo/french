@@ -27,7 +27,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-14a';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-16b';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
@@ -176,6 +176,55 @@ function notices_() {
 }
 /* セルの文字装飾（太字・斜体・下線・取り消し線・文字色・リンク）を、区切りごとの小さな記録にする。
    送るのは文字と装飾の種類だけ（HTMLは送らない）。表示する側で安全に組み立てる */
+// ===== 個別のお知らせ（シート「個別のお知らせ」。その生徒がログインしたときだけ出す）=====
+// A列にチェック・B列に学生ID・C列に本文 → その生徒のお知らせ欄に「あなたへ」として出る（最初の1回は自動で開く）
+// D列に日付（例 2026-10-15。複数は , で区切る）→ その日を「学習した日」に足す（継続の記録用。A列のチェックがなくても足す）
+// ほかの生徒には送らない（ログインしたときの応答にだけ入れる）
+const PERSONAL_SHEET = '個別のお知らせ';
+const PERSONAL_HEADERS = ['表示する', '学生ID', '本文（その生徒にだけ出ます。装飾もそのまま）', '学習した日に足す（例 2026-10-15。複数は , で区切る）', 'メモ（表示されない）'];
+function personalSheet_(ss) {
+  let sh = ss.getSheetByName(PERSONAL_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(PERSONAL_SHEET);
+    sh.getRange(1, 1, 1, PERSONAL_HEADERS.length).setValues([PERSONAL_HEADERS]).setFontWeight('bold');
+    sh.setFrozenRows(1);
+    try { sh.getRange(2, 1, 40, 1).insertCheckboxes(); } catch (e) {}
+    sh.getRange(2, 2, 40, 1).setNumberFormat('@');
+    sh.getRange(2, 4, 40, 1).setNumberFormat('@');   // 日付を文字のまま持つ（自動で日付型にしない）
+    try { sh.setColumnWidth(3, 520); sh.setColumnWidth(4, 220); } catch (e) {}
+  }
+  return sh;
+}
+/* 全員分をまとめて1分間キャッシュ。{ID: {notes:[...], days:[...]}} */
+function personalAll_(ss) {
+  const cache = CacheService.getScriptCache(), c = cache.get('personal');
+  if (c) return JSON.parse(c);
+  const sh = ss.getSheetByName(PERSONAL_SHEET) || personalSheet_(ss), out = {};   // まだなければ、ここで作る
+  if (sh && sh.getLastRow() >= 2) {
+    const n = Math.min(sh.getLastRow() - 1, 300), vals = sh.getRange(2, 1, n, 4).getValues();
+    let rich = null;
+    try { rich = sh.getRange(2, 3, n, 1).getRichTextValues(); } catch (e) {}
+    vals.forEach(function (r, i) {
+      const id = normId_(r[1]);
+      if (!id) return;
+      const o = out[id] || (out[id] = { notes: [], days: [] });
+      String(Object.prototype.toString.call(r[3]) === '[object Date]' ? Utilities.formatDate(r[3], TZ, 'yyyy-MM-dd') : r[3] || '').split(/[,、\s]+/).forEach(function (d) {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(d) && o.days.indexOf(d) < 0) o.days.push(d);
+      });
+      const on = r[0] === true || String(r[0]).toUpperCase() === 'TRUE' || r[0] === '○';
+      if (!on || o.notes.length >= 3) return;
+      const runs = noticeRuns_(rich && rich[i] && rich[i][0], r[2], {});
+      const text = runs.map(function (x) { return x.t; }).join('').trim();
+      if (!text) return;
+      const item = { kind: 'あなたへ', text: text };
+      if (runs.some(function (x) { return Object.keys(x).length > 1; })) item.rich = runs;
+      o.notes.push(item);
+    });
+  }
+  try { cache.put('personal', JSON.stringify(out), 60); } catch (e) {}
+  return out;
+}
+function personalFor_(ss, id) { try { return personalAll_(ss)[id] || null; } catch (e) { return null; } }
 function noticeRuns_(rv, plain, def) {
   def = def || {};
   const clean = function (t) { return String(t || '').replace(/[\u0000-\u0009\u000b-\u001f]/g, ' '); };
@@ -278,9 +327,15 @@ function handle_(req) {
   if (req.action === 'sync' || req.action === 'history') {
     if (!rateOk_(cache, 'r:' + id, LIMIT.readPerMin, 60)) return { ok: false, error: 'rate' };
     try { touchLogin_(ss, cache, id); } catch (e) {}   // 失敗してもログインは止めない
-    if (req.action === 'history') { const h = historyFor_(ss, id); return { ok: true, user: pub, history: h.history, agg: h.agg }; }
+    if (req.action === 'history') {   // 学習記録ページ：鹿コーチが個別のお知らせも伝えるので、ここでも送る
+      const h = historyFor_(ss, id), ph = personalFor_(ss, id);
+      return { ok: true, user: pub, history: h.history, agg: h.agg, notes: ph ? ph.notes : [] };
+    }
     const res = { ok: true, user: pub, stats: statsFor_(ss, id) };
     if (req.prog === true) res.prog = loadProg_(ss, id);   // ログイン時：端末にない進み具合を戻すため
+    const per = personalFor_(ss, id);   // 個別のお知らせ・足した学習日（その生徒の分だけ）
+    res.notes = per ? per.notes : [];
+    if (per && per.days.length) res.stats.days = res.stats.days.concat(per.days.filter(function (d) { return res.stats.days.indexOf(d) < 0; })).sort();
     return res;
   }
   if (req.action === 'saveprog') {
@@ -965,6 +1020,7 @@ function refreshSummaryFromMenu() {
 
 // ===== 初期設定・ID発行 =====
 function onOpen() {
+  try { const ss0 = SpreadsheetApp.getActiveSpreadsheet(); if (!ss0.getSheetByName(PERSONAL_SHEET)) personalSheet_(ss0); } catch (e) {}   // 「個別のお知らせ」シートがなければ作る
   SpreadsheetApp.getUi().createMenu('活用クイズ')
     .addItem('初期設定（シート作成）', 'setup')
     .addItem('名簿の空欄にIDを発行', 'issueIds')
@@ -995,6 +1051,7 @@ function setup() {
   ensureSheet_(ss, SHEET.feedback, FEEDBACK_HEADERS);
   progSheet_(ss);
   noticeSheet_(ss);
+  personalSheet_(ss);
   rebuildAll_(ss);   // 生徒データと集計を作る（すでにあれば作り直す）
   ss.toast('シートを用意しました。名簿のB列に氏名、C列に名字のローマ字を入れて、メニューからIDを発行してください。');
 }
@@ -1169,6 +1226,7 @@ function onEdit(e) {
   try {
     const rng = e && e.range;
     if (rng && rng.getSheet().getName() === COACH_SHEET) { CacheService.getScriptCache().remove('coach'); return; }   // 鹿コーチを直したら、すぐ反映
+    if (rng && rng.getSheet().getName() === PERSONAL_SHEET) { CacheService.getScriptCache().remove('personal'); return; }   // 個別のお知らせも、すぐ反映
     if (rng && rng.getSheet().getName() === SHEET.roster) dropRosterCache_();   // 名簿を直したら、ログイン用のキャッシュを捨てる
     if (!rng || rng.getSheet().getName() !== SHEET.roster || rng.getColumn() !== 1 || rng.getRow() < 2) return;
     if (rng.getNumRows() !== 1 || rng.getNumColumns() !== 1) return;
