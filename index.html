@@ -175,6 +175,7 @@
     var vl=J("vocabQuiz_v1_"+who),vc=u?best(vl,"vocab"):vl;addTot(vc);
     var vdue=vocabDue(vl);
     $("stVocab").innerHTML=vdue?'<span class="vdue-m">復習 '+vdue+'</span>':(vc&&vc.tries?vc.tries+"回"+bTag(bN(vc)):"");
+    tot.time+=((Q.cached()||{}).extraSec||0)*1000;   /* 先生が足した勉強時間（個別のお知らせのシートF列） */
     $("sTime").textContent=fmtDur(tot.time);$("sAns").textContent=tot.ans;
     $("sAcc").textContent=tot.ans?Math.round(tot.cor/tot.ans*100)+"%":"—";
     renderStreak();

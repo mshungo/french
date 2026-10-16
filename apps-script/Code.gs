@@ -27,7 +27,7 @@
  */
 
 // ===== 以下は通常変更しない =====
-const VERSION = '2026-10-16b';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
+const VERSION = '2026-10-16c';   // 公開中のコードがどれか確認するための番号（ウェブアプリのURLを開くと表示）
 const TZ = 'Asia/Tokyo';
 const SHEET = { roster: '名簿', results: '結果', summary: '集計', feedback: 'フィードバック', progress: '進み具合', studentData: '生徒データ' };
 const PROG_HEADERS = ['学生ID', '教材データ', '更新日時', '解答数', 'データ（自動バックアップ・編集しない）'];
@@ -179,9 +179,10 @@ function notices_() {
 // ===== 個別のお知らせ（シート「個別のお知らせ」。その生徒がログインしたときだけ出す）=====
 // A列にチェック・B列に学生ID・C列に本文 → その生徒のお知らせ欄に「あなたへ」として出る（最初の1回は自動で開く）
 // D列に日付（例 2026-10-15。複数は , で区切る）→ その日を「学習した日」に足す（継続の記録用。A列のチェックがなくても足す）
+// F列に分（例 20）→ その生徒の勉強時間に足す（メニューと学習記録ページの表示用。A列のチェックがなくても足す。集計シートの数字は変えない）
 // ほかの生徒には送らない（ログインしたときの応答にだけ入れる）
 const PERSONAL_SHEET = '個別のお知らせ';
-const PERSONAL_HEADERS = ['表示する', '学生ID', '本文（その生徒にだけ出ます。装飾もそのまま）', '学習した日に足す（例 2026-10-15。複数は , で区切る）', 'メモ（表示されない）'];
+const PERSONAL_HEADERS = ['表示する', '学生ID', '本文（その生徒にだけ出ます。装飾もそのまま）', '学習した日に足す（例 2026-10-15。複数は , で区切る）', 'メモ（表示されない）', '勉強時間に足す（分）'];
 function personalSheet_(ss) {
   let sh = ss.getSheetByName(PERSONAL_SHEET);
   if (!sh) {
@@ -201,13 +202,16 @@ function personalAll_(ss) {
   if (c) return JSON.parse(c);
   const sh = ss.getSheetByName(PERSONAL_SHEET) || personalSheet_(ss), out = {};   // まだなければ、ここで作る
   if (sh && sh.getLastRow() >= 2) {
-    const n = Math.min(sh.getLastRow() - 1, 300), vals = sh.getRange(2, 1, n, 4).getValues();
+    if (!sh.getRange(1, 6).getValue()) sh.getRange(1, 6).setValue(PERSONAL_HEADERS[5]).setFontWeight('bold');   // 前の版で作ったシートにも見出しを足す
+    const n = Math.min(sh.getLastRow() - 1, 300), vals = sh.getRange(2, 1, n, 6).getValues();
     let rich = null;
     try { rich = sh.getRange(2, 3, n, 1).getRichTextValues(); } catch (e) {}
     vals.forEach(function (r, i) {
       const id = normId_(r[1]);
       if (!id) return;
-      const o = out[id] || (out[id] = { notes: [], days: [] });
+      const o = out[id] || (out[id] = { notes: [], days: [], min: 0 });
+      const m = Number(r[5]);
+      if (isFinite(m) && m > 0) o.min += Math.min(m, 600);   // 1行あたり600分まで
       String(Object.prototype.toString.call(r[3]) === '[object Date]' ? Utilities.formatDate(r[3], TZ, 'yyyy-MM-dd') : r[3] || '').split(/[,、\s]+/).forEach(function (d) {
         if (/^\d{4}-\d{2}-\d{2}$/.test(d) && o.days.indexOf(d) < 0) o.days.push(d);
       });
@@ -329,6 +333,11 @@ function handle_(req) {
     try { touchLogin_(ss, cache, id); } catch (e) {}   // 失敗してもログインは止めない
     if (req.action === 'history') {   // 学習記録ページ：鹿コーチが個別のお知らせも伝えるので、ここでも送る
       const h = historyFor_(ss, id), ph = personalFor_(ss, id);
+      if (ph && h.agg) {   // 先生が足した学習日・勉強時間を、学習記録ページの集計にも入れる
+        h.agg.dayCount = Object.assign({}, h.agg.dayCount);
+        ph.days.forEach(function (d) { if (!h.agg.dayCount[d]) h.agg.dayCount[d] = 1; });
+        if (ph.min > 0) h.agg.dur = (h.agg.dur || 0) + Math.round(ph.min * 60);
+      }
       return { ok: true, user: pub, history: h.history, agg: h.agg, notes: ph ? ph.notes : [] };
     }
     const res = { ok: true, user: pub, stats: statsFor_(ss, id) };
@@ -336,6 +345,7 @@ function handle_(req) {
     const per = personalFor_(ss, id);   // 個別のお知らせ・足した学習日（その生徒の分だけ）
     res.notes = per ? per.notes : [];
     if (per && per.days.length) res.stats.days = res.stats.days.concat(per.days.filter(function (d) { return res.stats.days.indexOf(d) < 0; })).sort();
+    if (per && per.min > 0) res.stats.extraSec = Math.round(per.min * 60);   // 先生が足した勉強時間（メニューの「勉強時間」に足す）
     return res;
   }
   if (req.action === 'saveprog') {
@@ -353,7 +363,9 @@ function handle_(req) {
     if (!submitAllowed_(cache, id)) return { ok: false, error: 'rate' };
     const v = validateResult_(req.result);
     if (!v) return { ok: false, error: 'bad_request' };
-    return { ok: true, user: pub, stats: recordResult_(ss, user, v) };
+    const st = recordResult_(ss, user, v), pm = personalFor_(ss, id);
+    if (st && pm && pm.min > 0) st.extraSec = Math.round(pm.min * 60);   // 送信のあとの集計にも、先生が足した勉強時間を入れておく
+    return { ok: true, user: pub, stats: st };
   }
   if (req.action === 'setpw') {   // 学生が自分のパスワードを変える（名簿のH列にハッシュだけを書く。H列を消すと共通パスワードに戻る）
     if (!rateOk_(cache, 'w:' + id, 5, 3600)) return { ok: false, error: 'rate' };
