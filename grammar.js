@@ -449,6 +449,16 @@ function render(){
     $("clearBtn").onclick=()=>{if(locked)return;q.picked=[];drawTiles(q);};
     hint.textContent="";
   }
+  /* 30秒なにも操作しなければ「時間切れ」で不正解（common.js の NLIdle） */
+  if(window.NLIdle)NLIdle.start(()=>timeUp(q),()=>questions[idx]===q&&q.ok===null&&!locked&&!quizScreen.classList.contains("hidden"));
+}
+function timeUp(q){
+  if(locked||q.ok!==null||questions[idx]!==q)return;
+  document.querySelectorAll("#opts .opt").forEach(x=>{x.disabled=true;x.classList.add(x.dataset.val===q.it.a[0]?"correct":"dim");});
+  const inp=$("writeInput");if(inp){inp.disabled=true;inp.classList.add("no");const wb=$("writeBtn");if(wb)wb.disabled=true;}
+  const tr=$("tray");if(q.kind==="b"&&tr)tr.classList.add("no");
+  q.t0+=NLIdle.idleMs();   // 勉強時間は、最後に操作したときまで
+  grade(0,"（時間切れ）");
 }
 function bindWrite(q){
   const inp=$("writeInput");
@@ -513,7 +523,7 @@ function showAfter(q){
     extra+='<div class="heard pt nl-badge">'+(q.fast?'<span class="fx-bolt">'+NLI.svg("bolt",18)+'</span>':'')+NLI.dots(pt,4,d)+
       (!d&&pt>=PT_CHOICE_MAX&&curMode==="choice"&&pt<4?'<span class="fx-pencil" title="記述式で答えると、さらに点が入ります">'+NLI.svg("pencil",17)+'</span>':'')+'</div>';}
   if(q.accent)extra+='<div class="heard nl-badge"><b>'+esc(it.a[0])+'</b></div>';
-  if(!q.ok&&q.chosen!=null)extra+='<div class="heard nl-badge"><span style="color:var(--bad-ink)">'+NLI.svg("x",15)+'</span><s>'+esc(q.chosen)+'</s></div>';
+  if(!q.ok&&q.chosen!=null)extra+='<div class="heard nl-badge"><span style="color:var(--bad-ink)">'+NLI.svg("x",15)+'</span>'+NLIdle.miss(q.chosen)+'</div>';
   const alts=it.a.slice(1);
   if(alts.length&&(it.t==="t"||it.t==="w"))extra+='<div class="ans-alt">＝ '+alts.map(esc).join(" ／ ")+'</div>';
   a.innerHTML='<div class="ans-fr">'+answerLine(q)+'</div>'+(it.ja&&it.t!=="b"?'<div class="ans-ja">'+jaHTML(it.ja)+'</div>':'')+extra+
@@ -544,11 +554,12 @@ function next(){
 }
 function finishRound(){
   clearInterval(timerHandle);
-  const N=questions.length,time=performance.now()-roundStart;
+  /* 勉強時間：問題を解いていた時間だけ（問題が出てから答えるまで）。解説を読んでいる時間・結果画面は数えない */
+  const N=questions.length,time=questions.reduce((a,q)=>a+(q.rt||0),0);
   const wasClear=store.answered>=CLEAR_ANS,wasAll=ITEMS.every(mastered)&&false;
   if(!retry){
     store.tries++;store.answered+=N;store.correct+=roundCorrect;
-    store.timeMs=(store.timeMs||0)+Math.max(60000,Math.min(time,N*90000));   // 1回は最低1分。放置した時間は数えすぎないよう1問90秒まで
+    store.timeMs=(store.timeMs||0)+Math.max(60000,time);   // 1回は最低1分
     if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
     save();if(window.Quiz)Quiz.markToday();
   }
@@ -575,7 +586,7 @@ function finishRound(){
       (q.it.t==="t"?'<span class="rja">'+esc(q.it.inst)+'：'+esc(q.it.src)+'</span>':q.it.t==="b"?'<span class="rja">'+jaHTML(q.it.ja)+'</span>':'')+
       '<span class="rfr">'+answerLine(q)+'</span>'+
       (q.it.ja&&q.it.t!=="b"?'<span class="rja">'+jaHTML(q.it.ja)+'</span>':'')+
-      (!q.ok&&q.chosen!=null&&q.chosen!==""?'<span class="rja rmy"><s>'+esc(q.chosen)+'</s></span>':'')+
+      (!q.ok&&q.chosen!=null&&q.chosen!==""?'<span class="rja rmy">'+NLIdle.miss(q.chosen)+'</span>':'')+
       (q.it.ex?'<span class="rex">'+esc(q.it.ex)+'</span>':'')+'</span></div>';
   });
   $("review").innerHTML=h;

@@ -597,3 +597,51 @@
     login: login, logout: logout, requireLogin: requireLogin, warmUp: warmUp
   };
 })();
+
+/* ============================================================
+   放置で不正解：問題が出たまま30秒、何も操作がなければ「時間切れ」で不正解にする
+   NLIdle.start(onTimeout, isPending)
+     onTimeout … 時間切れのときに呼ぶ（その問題を不正解にする処理）
+     isPending … まだ答えていない・その問題の画面が出ているあいだ true を返す
+   操作（タップ・キー入力・文字入力・スクロール）があるたびに30秒をはかりなおす。
+   残り時間は画面に出さない。時間切れのときだけ「長時間操作がなかったので不正解としました」と出す（NLIdle.miss / NLIdle.MSG）
+   勉強時間には、時間切れの問題は「最後に操作したとき」までしか数えない（NLIdle.idleMs() のぶんを差し引く）
+   ============================================================ */
+(function () {
+  "use strict";
+  var LIMIT = 30000, WARN = 10000;
+  var cur = null, last = 0, timer = 0, chip = null;
+  function touch() { last = Date.now(); if (chip) chip.classList.remove("on"); }
+  ["pointerdown", "keydown", "input", "touchstart", "wheel", "scroll"].forEach(function (ev) {
+    document.addEventListener(ev, touch, { capture: true, passive: true });
+  });
+  function ensureChip() {
+    if (chip) return chip;
+    var st = document.createElement("style");
+    st.textContent = ".nl-idle{position:fixed;left:50%;bottom:18px;transform:translate(-50%,12px);z-index:1500;padding:7px 14px;border-radius:999px;" +
+      "background:rgba(74,64,72,.86);color:#fff;font-size:12.5px;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;}" +
+      ".nl-idle.on{opacity:1;transform:translate(-50%,0);}.nl-idle b{font-size:15px;margin:0 2px;}.nl-idle{white-space:nowrap;}" +
+      ".nl-tout{display:inline-flex;align-items:center;gap:4px;color:var(--bad-ink,#b5524c);font-size:12.5px;}";
+    document.head.appendChild(st);
+    chip = document.createElement("div"); chip.className = "nl-idle"; chip.setAttribute("aria-live", "polite");
+    document.body.appendChild(chip);
+    return chip;
+  }
+  function stop() { clearInterval(timer); timer = 0; cur = null; if (chip) chip.classList.remove("on"); }
+  function tick() {
+    if (!cur) return stop();
+    var pend = false; try { pend = cur.isPending(); } catch (e) {}
+    if (!pend) return stop();
+    if (Date.now() - last >= LIMIT) { var f = cur.onTimeout; stop(); try { f(); } catch (e) {} }
+  }
+  var TAG = "（時間切れ）", MSG = "長時間操作がなかったので不正解としました";
+  function escH(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  window.NLIdle = {
+    LIMIT: LIMIT, TAG: TAG, MSG: MSG,
+    idleMs: function () { return Math.max(0, Date.now() - last); },   // 最後に操作してからの時間
+    /* まちがえた答えの表示：ふつうは取り消し線、時間切れなら「時間切れ」 */
+    miss: function (s) { ensureChip(); return s === TAG ? '<span class="nl-tout">⏱ ' + MSG + '</span>' : "<s>" + escH(s) + "</s>"; },
+    start: function (onTimeout, isPending) { stop(); cur = { onTimeout: onTimeout, isPending: isPending }; touch(); timer = setInterval(tick, 500); },
+    stop: stop
+  };
+})();

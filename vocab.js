@@ -446,6 +446,17 @@ function render(){
     inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();e.stopPropagation();if(!locked)checkWrite();}});
     setTimeout(()=>{try{inp.focus({preventScroll:true});}catch(e){}},40);
   }
+  /* 30秒なにも操作しなければ「時間切れ」で不正解（common.js の NLIdle）。レベルチェックでは「わからない」と同じ扱い */
+  if(window.NLIdle){const me=cur;NLIdle.start(()=>timeUp(me),()=>cur===me&&me.ok==null&&!locked&&!quizScreen.classList.contains("hidden"));}
+}
+function timeUp(me){
+  if(locked||cur!==me||me.ok!=null)return;
+  if(PL){locked=true;me.t0+=NLIdle.idleMs();placeAnswer(false);return;}
+  const w=me.w,isOk=me.fmt==="jf"?(o=>nz(o)===nz(shortForm(w))):(o=>o===w.ja);
+  document.querySelectorAll("#opts .opt").forEach(x=>{x.disabled=true;const v=me.opts?me.opts[+x.dataset.i]:null;x.classList.add(v!=null&&isOk(v)?"correct":"dim");});
+  const inp=$("writeInput");if(inp){inp.disabled=true;inp.classList.add("no");const wb=$("writeBtn");if(wb)wb.disabled=true;}
+  me.t0+=NLIdle.idleMs();   // 勉強時間は、最後に操作したときまで
+  grade(0,"（時間切れ）");
 }
 /* ヒント：答えの最初の文字と字数（冠詞は書かない＝性は自分で思い出す）。例 l＿＿＿＿ */
 function patHTML(w){
@@ -529,6 +540,7 @@ function checkWrite(){
 }
 function introDone(){
   const w=cur.w;sess.order.push(w);
+  sess.ms=(sess.ms||0)+Math.min(30000,Math.max(0,performance.now()-cur.t0));   // 新しい単語のカードを読む時間（30秒まで）
   /* 出会ったら、3枚あとに「意味を選ぶ」、さらに4枚あとに「ヒントつきで書く」（だんだん間をあけて思い出す） */
   const a=Math.min(pos+3,queue.length);queue.splice(a,0,task(w,"test"));
   queue.splice(Math.min(a+5,queue.length),0,task(w,"test2"));
@@ -541,6 +553,7 @@ function introDone(){
    ・前倒し・苦手の練習で正解：段はそのまま（まちがえたら1段目へ） */
 function grade(r,chosen){
   if(locked)return;locked=true;
+  sess.ms=(sess.ms||0)+Math.max(0,performance.now()-cur.t0);
   const w=cur.w,d=today(),ok=r>0,firstTry=!(w.id in sess.first);
   cur.ok=ok;cur.chosen=chosen;cur.accent=r===1;
   const s=store.it[w.id]||{l:0,d:d,w:0,t:0};
@@ -590,7 +603,7 @@ function flip(s,before){
     card.innerHTML=backHTML(w,true,s,before);
     let h="";
     if(cur.accent)h+='<div class="heard nl-badge">アクセント記号に注意：<b class="fr">'+esc(cur.fmt==="ex"?exAnswer(w):nearest(w,cur.chosen))+'</b></div>';
-    if(!cur.ok&&cur.chosen!=null)h+='<div class="heard nl-badge"><span style="color:var(--bad-ink)">'+NLI.svg("x",15)+'</span><s>'+esc(cur.chosen)+'</s>'+(cur.why==="gender"?'<span class="why">'+(nForms(w)[0].g==="m"?"男性名詞":"女性名詞")+'</span>':'')+'</div>';
+    if(!cur.ok&&cur.chosen!=null)h+='<div class="heard nl-badge"><span style="color:var(--bad-ink)">'+NLI.svg("x",15)+'</span>'+NLIdle.miss(cur.chosen)+(cur.why==="gender"?'<span class="why">'+(nForms(w)[0].g==="m"?"男性名詞":"女性名詞")+'</span>':'')+'</div>';
     if(!cur.ok)h+='<div class="again-note">'+NLI.svg("again",15)+' このあと、もう一度出ます</div>';
     /* まちがえたら、正しい形を一度自分で書く（選ぶ問題でまちがえたときも） */
     const rtA=cur.fmt==="ex"?exAnswer(w):shortForm(w);
@@ -648,6 +661,7 @@ function startPlacement(){
   show(quizScreen);render();
 }
 function placeAnswer(ok){
+  PL.ms=(PL.ms||0)+Math.max(0,performance.now()-cur.t0);   // 勉強時間：答えるまでの時間だけ
   PL.ans.push({w:cur.w,f:cur.fmt,ok,seg:PL.i});
   cur.ok=ok;done++;pos++;
   setTimeout(next0,ok?140:140);
@@ -661,7 +675,7 @@ function placeNext(){
   render();
 }
 function placeFinish(){
-  const d=today(),time=performance.now()-PL.t0;
+  const d=today(),time=PL.ms||0;
   let up=0;
   const put=(w,l,from,to)=>{const s=st(w);if(s&&s.l>=1)return;store.it[w.id]={l,d:d+from+Math.floor(Math.random()*(to-from+1)),w:0,t:d};up++;};
   const tested=new Set(PL.ans.map(a=>a.w.id));
@@ -670,7 +684,7 @@ function placeFinish(){
   const est=Math.round(PL.res.reduce((a,r)=>a+r.size*r.sc/4,0));
   const N=PL.ans.length,C=PL.ans.filter(a=>a.ok).length;
   store.place={d,est,res:PL.res.map(r=>[r.k,r.sc])};
-  store.tries++;store.answered+=N;store.correct+=C;store.timeMs=(store.timeMs||0)+Math.max(60000,Math.min(time,N*60000));
+  store.tries++;store.answered+=N;store.correct+=C;store.timeMs=(store.timeMs||0)+Math.max(60000,time);
   save();if(window.Quiz)Quiz.markToday();
   const res=PL.res,segs=PL.segs;PL=null;scope="today";
   /* 結果画面 */
@@ -695,11 +709,12 @@ function placeFinish(){
 
 /* ---------- 結果 ---------- */
 function finish(){
-  const time=performance.now()-t0,d=today();
+  /* 勉強時間：カードを解いていた時間だけ（問題が出てから答えるまで＋新しい単語のカードを読む時間 30秒まで）。答えのあとの画面・結果画面は数えない */
+  const time=sess.ms||0,d=today();
   const ids=Object.keys(sess.first),N=ids.length,C=ids.filter(k=>sess.first[k]).length;
   if(N){
     store.tries++;store.answered+=N;store.correct+=C;
-    store.timeMs=(store.timeMs||0)+Math.max(60000,Math.min(time,N*90000));
+    store.timeMs=(store.timeMs||0)+Math.max(60000,time);
     if(store.best===null||C>store.best)store.best=C;
     save();if(window.Quiz)Quiz.markToday();
   }
