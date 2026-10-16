@@ -605,13 +605,23 @@
      isPending … まだ答えていない・その問題の画面が出ているあいだ true を返す
    操作（タップ・キー入力・文字入力・スクロール）があるたびに30秒をはかりなおす。
    残り時間は画面に出さない。時間切れのときだけ「長時間操作がなかったので不正解としました」と出す（NLIdle.miss / NLIdle.MSG）
-   勉強時間には、時間切れの問題は「最後に操作したとき」までしか数えない（NLIdle.idleMs() のぶんを差し引く）
+   勉強時間の数え方は下の NLStudy（ページを開いているあいだ、操作と操作のあいだが60秒未満なら数える）
    ============================================================ */
 (function () {
   "use strict";
   var LIMIT = 30000, WARN = 10000;
   var cur = null, last = 0, timer = 0, chip = null;
-  function touch() { last = Date.now(); if (chip) chip.classList.remove("on"); }
+  /* 勉強時間（NLStudy）：操作と操作のあいだの時間を足していく。60秒以上なにもしなかったあいだは数えない。
+     問題・解説・結果・メニューなど、どの画面でも同じ。1回分を終えたときに take() で受け取り、0から数えなおす */
+  var GAP = 60000, sAcc = 0, sLast = Date.now();
+  function studyTick(now) { var g = now - sLast; if (g > 0 && g < GAP) sAcc += g; sLast = now; }
+  function touch() { var now = Date.now(); studyTick(now); last = now; if (chip) chip.classList.remove("on"); }
+  document.addEventListener("visibilitychange", function () { studyTick(Date.now()); });   // 別のタブに移ったところで区切る（戻ってきたとき、あいだが60秒以上なら数えない）
+  window.NLStudy = {
+    GAP: GAP,
+    take: function () { studyTick(Date.now()); var v = sAcc; sAcc = 0; return v; },   // ここまでの勉強時間（ミリ秒）を受け取って、0にもどす
+    peek: function () { var g = Date.now() - sLast; return sAcc + (g < GAP ? g : 0); }
+  };
   ["pointerdown", "keydown", "input", "touchstart", "wheel", "scroll"].forEach(function (ev) {
     document.addEventListener(ev, touch, { capture: true, passive: true });
   });

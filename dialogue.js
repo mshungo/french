@@ -532,7 +532,7 @@
   }
   function finishDlg() {
     clearInterval(tick); stopSpeak(); try { rec && rec.abort(); } catch (e) {}
-    const time = performance.now() - t0;
+    const time = window.NLStudy ? NLStudy.take() : performance.now() - t0;   // 勉強時間：操作していた時間（60秒以上なにもしなかったあいだは数えない）
     const live = steps.filter(x => !x.skip);
     let score = 0, total = 0;
     live.forEach(x => { total++; if (x.ok) score++; if (D.role === "ask" && !x.t.noQuiz) { total++; if (x.lq) score++; } });
@@ -540,7 +540,7 @@
     const ds = dstore(), r = ds[D.k] || { tries: 0, best: 0, total };
     r.tries++; r.total = total; if (score > r.best || r.tries === 1) r.best = Math.max(score, r.best || 0); r.last = score;
     ds[D.k] = r;
-    store.timeMs = (store.timeMs || 0) + Math.max(60000, Math.min(time, total * 90000));   // 1回は最低1分
+    store.timeMs = (store.timeMs || 0) + Math.max(60000, time);   // 1回は最低1分
     save(); if (Q) Q.markToday();
     const pct = Math.round(score / total * 100);
     let h = '<div class="result" style="padding-top:6px"><div class="face">' + (pct >= 80 ? "◎" : pct >= 50 ? "△" : "✕") + '</div>' +

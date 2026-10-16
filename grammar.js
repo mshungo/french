@@ -554,8 +554,8 @@ function next(){
 }
 function finishRound(){
   clearInterval(timerHandle);
-  /* 勉強時間：問題を解いていた時間だけ（問題が出てから答えるまで）。解説を読んでいる時間・結果画面は数えない */
-  const N=questions.length,time=questions.reduce((a,q)=>a+(q.rt||0),0);
+  /* 勉強時間：ページで操作していた時間（解説・結果・メニューもふくむ）。60秒以上なにもしなかったあいだは数えない（common.js の NLStudy） */
+  const N=questions.length,time=retry?NLStudy.peek():NLStudy.take();   // まちがえたところだけの練習は記録に入れないので、時間は次の回にまとめて数える
   const wasClear=store.answered>=CLEAR_ANS,wasAll=ITEMS.every(mastered)&&false;
   if(!retry){
     store.tries++;store.answered+=N;store.correct+=roundCorrect;

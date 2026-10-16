@@ -540,7 +540,6 @@ function checkWrite(){
 }
 function introDone(){
   const w=cur.w;sess.order.push(w);
-  sess.ms=(sess.ms||0)+Math.min(30000,Math.max(0,performance.now()-cur.t0));   // 新しい単語のカードを読む時間（30秒まで）
   /* 出会ったら、3枚あとに「意味を選ぶ」、さらに4枚あとに「ヒントつきで書く」（だんだん間をあけて思い出す） */
   const a=Math.min(pos+3,queue.length);queue.splice(a,0,task(w,"test"));
   queue.splice(Math.min(a+5,queue.length),0,task(w,"test2"));
@@ -553,7 +552,6 @@ function introDone(){
    ・前倒し・苦手の練習で正解：段はそのまま（まちがえたら1段目へ） */
 function grade(r,chosen){
   if(locked)return;locked=true;
-  sess.ms=(sess.ms||0)+Math.max(0,performance.now()-cur.t0);
   const w=cur.w,d=today(),ok=r>0,firstTry=!(w.id in sess.first);
   cur.ok=ok;cur.chosen=chosen;cur.accent=r===1;
   const s=store.it[w.id]||{l:0,d:d,w:0,t:0};
@@ -661,7 +659,6 @@ function startPlacement(){
   show(quizScreen);render();
 }
 function placeAnswer(ok){
-  PL.ms=(PL.ms||0)+Math.max(0,performance.now()-cur.t0);   // 勉強時間：答えるまでの時間だけ
   PL.ans.push({w:cur.w,f:cur.fmt,ok,seg:PL.i});
   cur.ok=ok;done++;pos++;
   setTimeout(next0,ok?140:140);
@@ -675,7 +672,7 @@ function placeNext(){
   render();
 }
 function placeFinish(){
-  const d=today(),time=PL.ms||0;
+  const d=today(),time=NLStudy.take();   // 勉強時間：操作していた時間（60秒以上なにもしなかったあいだは数えない）
   let up=0;
   const put=(w,l,from,to)=>{const s=st(w);if(s&&s.l>=1)return;store.it[w.id]={l,d:d+from+Math.floor(Math.random()*(to-from+1)),w:0,t:d};up++;};
   const tested=new Set(PL.ans.map(a=>a.w.id));
@@ -709,8 +706,8 @@ function placeFinish(){
 
 /* ---------- 結果 ---------- */
 function finish(){
-  /* 勉強時間：カードを解いていた時間だけ（問題が出てから答えるまで＋新しい単語のカードを読む時間 30秒まで）。答えのあとの画面・結果画面は数えない */
-  const time=sess.ms||0,d=today();
+  /* 勉強時間：ページで操作していた時間（答えのあとの画面・結果・ホームもふくむ）。60秒以上なにもしなかったあいだは数えない（common.js の NLStudy） */
+  const time=NLStudy.take(),d=today();
   const ids=Object.keys(sess.first),N=ids.length,C=ids.filter(k=>sess.first[k]).length;
   if(N){
     store.tries++;store.answered+=N;store.correct+=C;
