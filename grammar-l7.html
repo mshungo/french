@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 7 複合過去 — Naralingo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
+<script src="config.js?v=4"></script>
+<script src="common.js?v=40"></script>
+<script src="streak.js?v=4"></script>
+<script src="feedback.js?v=2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="grammar.css?v=13">
+<script src="sound.js?v=1"></script>
+<script src="badge.js?v=3"></script>
+<script src="tiles.js?v=1"></script>
+<script src="grammar.js?v=31"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== Leçon 7：pouvoir・devoir・vouloir、直説法複合過去（動詞の現在形の活用は verbs.html へ） ===== */
+window.LESSON={no:7,title:"複合過去",sub:"passé composé",
+  lead:"pouvoir・devoir・vouloir の使い方と、直説法複合過去（過去分詞、助動詞 avoir / être、否定・疑問、代名動詞の複合過去、過去分詞の一致）を練習します。動詞の活用は「動詞活用」で練習できます。",
+  sections:[
+  {k:"mod",t:"pouvoir・devoir・vouloir",d:"＋不定詞：できる・しなければ・したい（Grammaire 2）",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+   memo:'<p>不定詞の前に置いて、可能・義務・欲求などを表す。うしろの不定詞は活用しない。</p>'+
+   '<table><tr><th>pouvoir</th><th>devoir</th><th>vouloir</th></tr><tr><td class="fr">je peux</td><td class="fr">je dois</td><td class="fr">je veux</td></tr><tr><td class="fr">il peut</td><td class="fr">il doit</td><td class="fr">il veut</td></tr><tr><td class="fr">nous pouvons</td><td class="fr">nous devons</td><td class="fr">nous voulons</td></tr><tr><td class="fr">ils peuvent</td><td class="fr">ils doivent</td><td class="fr">ils veulent</td></tr></table>'+
+   '<p>devoir は「～しなければならない」のほか「～のはずだ、～にちがいない」も表す：<span class="fr">Il doit être fatigué.</span></p>'+
+   '<p>不定詞の目的語の代名詞は、不定詞の直前：<span class="fr">Je peux vous aider.</span></p>'+
+   '<p>pouvoir・vouloir の2人称の疑問文は依頼にもなる：<span class="fr">Peux-tu éteindre la lumière ? Voulez-vous venir avec moi ?</span>　倒置の je は <span class="fr">Puis-je ～ ?</span></p>'},
+  {k:"pp",t:"過去分詞の形",d:"-é・-i・-s・-u・-t（Grammaire 3）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
+   memo:'<p><b>-é</b>：-er 動詞と aller, être, naître：<span class="fr">chanter → chanté, aller → allé, être → été, naître → né</span></p>'+
+   '<p><b>-i</b>：-ir 動詞と partir, sortir：<span class="fr">choisir → choisi, partir → parti</span></p>'+
+   '<p><b>-s</b>：<span class="fr">prendre → pris, mettre → mis</span>（apprendre, comprendre, permettre も同じ）</p>'+
+   '<p><b>-u</b>：<span class="fr">avoir → eu, vouloir → voulu, pouvoir → pu, devoir → dû, attendre → attendu, lire → lu, vivre → vécu, connaître → connu, venir → venu, tenir → tenu</span></p>'+
+   '<p><b>-t</b>：<span class="fr">faire → fait, écrire → écrit, dire → dit, mourir → mort</span></p>'},
+  {k:"aux",t:"avoir か être か",d:"助動詞の選び方と、être のときの性数一致（Grammaire 3）",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8",
+   memo:'<p>複合過去＝助動詞（avoir または être）の現在形＋過去分詞。ほとんどの動詞は <b>avoir</b>。</p>'+
+   '<p><b>être</b> をとるのは代名動詞と、移動・変化を表す一部の自動詞：<span class="fr">aller / venir, partir / arriver, sortir / entrer, monter / descendre, naître / mourir, revenir, rentrer, retourner, rester, tomber, devenir</span></p>'+
+   '<p>être のとき、過去分詞は主語の性と数に一致する：<span class="fr">Elle est partie. Ils sont arrivés. Elles sont sorties.</span>（男女まざった複数は男性複数）</p>'},
+  {k:"pc",t:"複合過去の文",d:"肯定文・否定文・倒置疑問文（Grammaire 3）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
+   memo:'<p>「～した」「～したことがある」：<span class="fr">J\'ai habité deux ans dans cette ville.</span></p>'+
+   '<p>否定文：助動詞を ne ～ pas ではさむ：<span class="fr">Il n\'a pas pris son déjeuner. Paul n\'est pas encore revenu.</span></p>'+
+   '<p>倒置疑問文：助動詞-主語＋過去分詞：<span class="fr">As-tu lu ce roman ? Sont-ils venus au Japon ?</span>（母音で終わる a のあとは -t-：<span class="fr">A-t-il mangé ?</span>）</p>'},
+  {k:"pron",t:"代名動詞の複合過去",d:"助動詞は être（En plus 1）",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
+   memo:'<p>主語＋再帰代名詞＋être＋過去分詞：</p>'+
+   '<table><tr><td class="fr">je me suis promené(e)</td><td class="fr">nous nous sommes promené(e)s</td></tr><tr><td class="fr">tu t\'es promené(e)</td><td class="fr">vous vous êtes promené(e)(s)</td></tr><tr><td class="fr">il s\'est promené / elle s\'est promenée</td><td class="fr">ils se sont promenés / elles se sont promenées</td></tr></table>'+
+   '<p>再帰代名詞が直接目的補語のとき、過去分詞は主語に一致する。体の部分などが直接目的補語で、再帰代名詞が間接目的補語のときは一致しない：<span class="fr">Elle s\'est lavé les cheveux.</span></p>'+
+   '<p>否定：<span class="fr">Elle ne s\'est pas promenée.</span>　倒置疑問：<span class="fr">S\'est-elle promenée ?</span></p>'},
+  {k:"acc",t:"過去分詞の一致",d:"直接目的補語の代名詞が前にあるとき（En plus 2）",c:"#6fb0ad",ci:"#4c8e8b",cw:"#ebf5f4",
+   memo:'<p>avoir の複合過去でも、直接目的補語の代名詞（le, la, les, me, te, nous, vous）が過去分詞より前にあると、過去分詞はそれに一致する。</p>'+
+   '<p><span class="fr">J\'ai regardé ces films. → Je les ai regardés.</span>（films 男性複数）</p>'+
+   '<p><span class="fr">Elle me les a données.</span>（robes 女性複数）</p>'+
+   '<p>間接目的補語（lui, leur）のときは一致しない：<span class="fr">Je lui ai envoyé des messages.</span></p>'}
+]};
+
+/* ---------- pouvoir・devoir・vouloir ---------- */
+FROM(7,0);
+W("mod","Je ne ___ pas venir demain.（pouvoir）","peux","pouvoir：je peux。pouvoir＋不定詞「～できる」。",{ja:"明日は来られません。"});
+W("mod","Tu ___ m'aider ?（pouvoir）","peux","pouvoir：tu peux。2人称の疑問文で「～してくれる？」（依頼）にもなる。",{ja:"手伝ってくれる？"});
+W("mod","Nous ___ partir à six heures.（devoir）","devons","devoir：nous devons。devoir＋不定詞「～しなければならない」。",{ja:"私たちは6時に出発しなければならない。"});
+W("mod","Elle ___ apprendre le japonais.（vouloir）","veut","vouloir：elle veut。vouloir＋不定詞「～したい」。",{ja:"彼女は日本語を習いたがっている。"});
+W("mod","___-vous venir avec moi ?（vouloir）","Voulez","vouloir：vous voulez。Voulez-vous ～ ?「～してもらえますか」（依頼）。",{ja:"いっしょに来てもらえますか？"});
+W("mod","Ils ___ rentrer avant minuit.（devoir）","doivent","devoir：ils doivent。",{ja:"彼らは夜12時までに帰らなければならない。"});
+W("mod","Léa et Yui ___ visiter Kyoto.（vouloir）","veulent","vouloir：ils / elles veulent。",{ja:"レアとゆいは京都を訪れたい。"});
+W("mod","On ne ___ pas fumer ici.（pouvoir）","peut","on は3人称単数扱い：on peut。",{ja:"ここではタバコは吸えません。"});
+C("mod","Il ___ être fatigué.","doit",["doit","peut","veut"],"devoir＋不定詞は「～にちがいない、～のはずだ」（推量）も表す。",{ja:"彼は疲れているにちがいない。"});
+C("mod","___-je entrer ?","Puis",["Puis","Peux","Peut"],"倒置疑問文の je では peux の代わりに puis を使う：Puis-je ～ ?",{ja:"入ってもよろしいですか？"});
+C("mod","Je ___ le voir demain.","dois",["dois","doit","devons"],"je → dois。代名詞 le は不定詞 voir の直前に置く。",{ja:"明日彼に会わなければならない。"});
+C("mod","正しい文はどれ？（よろしければお手伝いしましょう）","Je peux vous aider, si vous voulez.",["Je peux vous aider, si vous voulez.","Je vous peux aider, si vous voulez.","Je peux aider vous, si vous voulez."],"不定詞の目的語の代名詞は、不定詞の直前に置く。",{cw:false});
+C("mod","正しい文はどれ？（明かりを消してもらえる？）","Peux-tu éteindre la lumière ?",["Peux-tu éteindre la lumière ?","Peux-tu éteins la lumière ?","Dois-tu éteindre la lumière ?"],"pouvoir の疑問文で依頼。うしろの不定詞は活用しない。",{cw:false});
+T("mod","否定文に","Je peux attendre.",["Je ne peux pas attendre."],"ne＋peux＋pas＋不定詞。");
+T("mod","否定文に","Elle veut sortir ce soir.",["Elle ne veut pas sortir ce soir."],"ne＋veut＋pas＋不定詞。");
+T("mod","ce film を代名詞に","Je veux voir ce film.",["Je veux le voir."],"不定詞の目的語の代名詞は、不定詞の直前：Je veux le voir.");
+T("mod","à Hugo を代名詞に","Nous devons téléphoner à Hugo.",["Nous devons lui téléphoner."],"à＋人 → lui。不定詞の直前に置く。");
+B("mod","明日、ユゴーはリヨンに帰らなければならない。","Demain, Hugo doit rentrer à Lyon.",["dois","rentre"],"devoir＋不定詞。うしろの動詞は不定詞のまま。");
+B("mod","ゆいはフランスで暮らしたい。","Yui veut vivre en France.",["veux","vit"],"vouloir＋不定詞：veut vivre。");
+B("mod","私はもう待てない。","Je ne peux plus attendre.",["pas","attends"],"ne ～ plus「もう～ない」。pouvoir＋不定詞。");
+B("mod","【カフェで】レア「ここで待っていてもらえる？」","Tu peux m'attendre ici ?",["me","peut"],"pouvoir の疑問文で依頼。代名詞 me は不定詞の直前（母音の前で m'）。");
+
+/* ---------- 過去分詞の形 ---------- */
+W("pp","chanter → ___","chanté","-er 動詞の過去分詞は -é。");
+W("pp","finir → ___","fini","-ir 動詞（finir 型）の過去分詞は -i。");
+W("pp","partir → ___","parti","partir, sortir も -i。");
+W("pp","prendre → ___","pris","prendre → pris（apprendre → appris, comprendre → compris も同じ）。");
+W("pp","mettre → ___","mis","mettre → mis（permettre → permis も同じ）。");
+W("pp","avoir → ___","eu","avoir → eu。");
+W("pp","être → ___","été","être → été。");
+W("pp","faire → ___","fait","faire → fait。");
+W("pp","écrire → ___","écrit","écrire → écrit。");
+W("pp","dire → ___","dit","dire → dit。");
+W("pp","lire → ___","lu","lire → lu。");
+W("pp","venir → ___","venu","venir → venu（revenir, devenir も同じ型）。");
+W("pp","vouloir → ___","voulu","vouloir → voulu。");
+W("pp","attendre → ___","attendu","-dre で終わる動詞の多くは -u：attendu, entendu, répondu。");
+W("pp","comprendre → ___","compris","prendre と同じ型：compris。");
+W("pp","choisir → ___","choisi","choisir → choisi。");
+C("pp","pouvoir → ___","pu",["pu","pouvu","peut"],"pouvoir → pu。");
+C("pp","devoir → ___","dû",["dû","devu","du"],"devoir → dû（du「～の」と区別するため û）。");
+C("pp","vivre → ___","vécu",["vécu","vivu","vivé"],"vivre → vécu。");
+C("pp","connaître → ___","connu",["connu","connaît","connaîtré"],"connaître → connu。");
+C("pp","naître → ___","né",["né","naît","naissu"],"naître → né（être を助動詞にとる）。");
+C("pp","mourir → ___","mort",["mort","mouru","meurt"],"mourir → mort（être を助動詞にとる）。");
+
+/* ---------- avoir か être か ---------- */
+C("aux","Hier, je ___ allé au cinéma.","suis",["suis","ai"],"aller は助動詞に être をとる。",{ja:"昨日、私は映画に行った。"});
+C("aux","Nous ___ mangé ensemble.","avons",["avons","sommes"],"manger は avoir。",{ja:"私たちはいっしょに食べた。"});
+C("aux","Elle ___ née en 2007.","est",["est","a"],"naître は être。",{ja:"彼女は2007年に生まれた。"});
+C("aux","Ils ___ restés à la maison.","sont",["sont","ont"],"rester は être。",{ja:"彼らは家にいた。"});
+C("aux","Tu ___ pris le métro ?","as",["as","es"],"prendre は avoir。",{ja:"地下鉄に乗ったの？"});
+C("aux","Léa est ___ à Nara en avril.","arrivée",["arrivée","arrivé","arrivés"],"être のとき過去分詞は主語に一致：Léa（女性単数）→ arrivée。",{ja:"レアは4月に奈良に着いた。"});
+C("aux","Léa et Yui sont ___ ensemble.","sorties",["sorties","sortis","sorti"],"女性の複数 → sorties。",{ja:"レアとゆいはいっしょに出かけた。"});
+C("aux","Hugo et Léa sont ___ à Lyon.","rentrés",["rentrés","rentrées","rentré"],"男女まざった複数は男性複数 → rentrés。",{ja:"ユゴーとレアはリヨンに帰った。"});
+C("aux","Madame Martin a ___ un livre.","écrit",["écrit","écrite","écrits"],"avoir のときは、過去分詞は主語に一致しない。",{ja:"マルタン先生は本を書いた。"});
+C("aux","Ses deux fils sont ___ artistes.","devenus",["devenus","devenu","devenues"],"devenir は être。fils（男性複数）→ devenus。",{ja:"彼の息子ふたりは芸術家になった。"});
+C("aux","être を助動詞にとるのはどれ？","venir",["venir","prendre","faire"],"être をとるのは代名動詞と、移動・変化を表す一部の自動詞（aller, venir, partir, arriver など）。",{cw:false});
+W("aux","Ma sœur ___ pour Paris l'année dernière.（partir）","est partie","partir は être。sœur（女性）→ partie。",{ja:"姉は去年パリへ発った。"});
+W("aux","Nous ___ trop tard.（arriver）",["sommes arrivés","sommes arrivées"],"arriver は être。nous → arrivés（女性だけなら arrivées）。",{ja:"私たちは着くのが遅すぎた。"});
+W("aux","Les enfants ___ dans l'escalier.（tomber）","sont tombés","tomber は être。enfants（男性複数）→ tombés。",{ja:"子どもたちは階段で転んだ。"});
+W("aux","Yui ___ deux heures à la bibliothèque.（rester）","est restée","rester は être。Yui（女性）→ restée。",{ja:"ゆいは図書館に2時間いた。"});
+W("aux","J'___ trois fois le premier prix.（avoir）","ai eu","avoir の複合過去：j'ai eu。",{ja:"私は1等賞を3回とったことがある。"});
+W("aux","Il ___ deux ans dans cette ville.（habiter）","a habité","habiter は avoir。",{ja:"彼はこの町に2年住んだ。"});
+B("aux","レアは昨日京都に行った。","Léa est allée à Kyoto hier.",["a","allé"],"aller は être。Léa（女性）→ allée。");
+B("aux","ユゴーは10時に着いた。","Hugo est arrivé à dix heures.",["a","arrivée"],"arriver は être。Hugo（男性）→ arrivé。");
+B("aux","【奈良公園で】ゆいとレアは公園に2時間いた。","Yui et Léa sont restées deux heures dans le parc.",["ont","restés"],"rester は être。女性ふたり → restées。");
+
+/* ---------- 複合過去の文 ---------- */
+W("pc","Hier, j'___ un film.（regarder）","ai regardé","avoir＋過去分詞。",{ja:"昨日、私は映画を見た。"});
+W("pc","Tu ___ ce roman ?（lire）","as lu","lire → lu。",{ja:"この小説、読んだ？"});
+W("pc","Nous ___ beaucoup hier soir.（manger）","avons mangé","manger → mangé。",{ja:"私たちは昨夜たくさん食べた。"});
+W("pc","Ils ___ le métro pour venir.（prendre）","ont pris","prendre → pris。",{ja:"彼らは地下鉄に乗って来た。"});
+W("pc","Elle ___ ses devoirs.（finir）","a fini","finir → fini。",{ja:"彼女は宿題を終えた。"});
+W("pc","J'___ aider mon grand-père.（devoir）","ai dû","devoir → dû。",{ja:"私は祖父の手伝いをしなければならなかった。"});
+W("pc","Qu'est-ce que tu ___ ce week-end ?（faire）","as fait","faire → fait。",{ja:"週末は何をしたの？"});
+W("pc","Hugo ___ son déjeuner.（prendre・否定文で）","n'a pas pris","否定文は助動詞を ne ～ pas ではさむ：n'a pas pris。",{ja:"ユゴーはお昼を食べなかった。"});
+T("pc","複合過去に","Léa visite le temple.",["Léa a visité le temple."],"visiter は avoir：a visité。");
+T("pc","複合過去に","Hugo part pour Paris.",["Hugo est parti pour Paris."],"partir は être：est parti。");
+T("pc","複合過去に","Nous prenons le bus.",["Nous avons pris le bus."],"prendre → pris。");
+T("pc","複合過去に","Yui sort avec ses amies.",["Yui est sortie avec ses amies."],"sortir は être。Yui（女性）→ sortie。");
+T("pc","否定文に","J'ai compris la question.",["Je n'ai pas compris la question."],"ne＋助動詞＋pas＋過去分詞。");
+T("pc","否定文に","Elle est venue à la fête.",["Elle n'est pas venue à la fête."],"ne＋est＋pas＋venue。");
+T("pc","否定文に","Ils ont fini le travail.",["Ils n'ont pas fini le travail."],"ne＋ont → n'ont。");
+T("pc","倒置疑問文に","Tu as lu ce livre.",["As-tu lu ce livre ?"],"助動詞-主語＋過去分詞。");
+T("pc","倒置疑問文に","Vous êtes allés à Nara.",["Êtes-vous allés à Nara ?"],"助動詞 êtes-vous＋過去分詞。");
+T("pc","倒置疑問文に","Il a mangé.",["A-t-il mangé ?"],"a と il の間に -t- を入れる。");
+C("pc","Hugo n'est pas encore ___.","revenu",["revenu","revenir","revient"],"ne＋est＋pas＋encore＋過去分詞「まだ～していない」。",{ja:"ユゴーはまだ戻ってきていない。"});
+C("pc","正しい否定文はどれ？","Je n'ai pas attendu Léa.",["Je n'ai pas attendu Léa.","Je n'ai attendu pas Léa.","Je ne pas ai attendu Léa."],"ne ～ pas は助動詞をはさむ。過去分詞は pas のあと。",{cw:false});
+B("pc","レアは昨日、日本語の授業に来なかった。","Hier, Léa n'est pas venue au cours de japonais.",["a","venu"],"venir は être。否定は助動詞を ne ～ pas ではさむ。");
+B("pc","この小説、読んだ？","Tu as lu ce roman ?",["es","lire"],"lire → lu。助動詞は avoir。");
+B("pc","マルタン先生は学生たちに手紙を書いた。","Madame Martin a écrit une lettre à ses étudiants.",["est","écrite"],"écrire は avoir：a écrit。主語には一致しない。");
+B("pc","週末は何をしたの？（倒置で）","Qu'as-tu fait ce week-end ?",["es","faire"],"Que＋as-tu＋fait。母音の前で que → qu'。");
+
+/* ---------- 代名動詞の複合過去 ---------- */
+W("pron","Ce matin, je ___ à six heures.（se réveiller）",["me suis réveillé","me suis réveillée"],"代名動詞の複合過去は être：je me suis réveillé(e)。",{ja:"今朝、私は6時に目が覚めた。"});
+W("pron","Léa ___ dans le parc.（se promener）","s'est promenée","se が直接目的補語 → 主語 Léa（女性）に一致：promenée。",{ja:"レアは公園を散歩した。"});
+W("pron","Nous ___ tard hier.（se coucher）",["nous sommes couchés","nous sommes couchées"],"nous nous sommes couché(e)s。",{ja:"私たちは昨日遅く寝た。"});
+W("pron","Hugo ___ vite.（s'habiller）","s'est habillé","il s'est habillé。",{ja:"ユゴーは急いで服を着た。"});
+W("pron","Elles ___ dans le bois.（se promener）","se sont promenées","elles se sont promenées（女性複数）。",{ja:"彼女たちは森を散歩した。"});
+W("pron","Tu ___ à quelle heure ?（se lever）",["t'es levé","t'es levée"],"tu t'es levé(e)。te → t'（母音の前）。",{ja:"何時に起きたの？"});
+T("pron","否定文に","Elle s'est couchée tôt.",["Elle ne s'est pas couchée tôt."],"ne＋再帰代名詞＋助動詞＋pas＋過去分詞。");
+T("pron","否定文に","Ils se sont promenés.",["Ils ne se sont pas promenés."],"ne＋se sont＋pas＋promenés。");
+T("pron","倒置疑問文に","Elle s'est promenée seule.",["S'est-elle promenée seule ?"],"再帰代名詞＋助動詞-主語＋過去分詞。");
+C("pron","Yui s'est ___ les mains.","lavé",["lavé","lavée","lavées"],"les mains が直接目的補語で、se は間接目的補語 → 一致しない。",{ja:"ゆいは手を洗った。"});
+C("pron","Yui s'est ___ avant le dîner.","lavée",["lavée","lavé","lavés"],"se（自分を）が直接目的補語 → 主語 Yui（女性）に一致。",{ja:"ゆいは夕食の前に体を洗った。"});
+C("pron","代名動詞の複合過去の助動詞は？","être",["être","avoir"],"代名動詞の複合過去は、いつも être。",{cw:false});
+B("pron","今朝、レアとゆいは公園を散歩した。","Ce matin, Léa et Yui se sont promenées dans le parc.",["ont","promenés"],"代名動詞は être。女性ふたり → promenées。");
+B("pron","ユゴーは昨夜遅く寝た。","Hugo s'est couché tard hier soir.",["a","couchée"],"se coucher は être：s'est couché。");
+B("pron","彼女は日曜日に早く起きなかった。","Elle ne s'est pas levée tôt dimanche.",["a","levé"],"否定：ne＋s'est＋pas＋過去分詞。女性 → levée。");
+
+/* ---------- 過去分詞の一致 ---------- */
+C("acc","Ces films ? Je les ai ___.","regardés",["regardés","regardé","regardées"],"直接目的補語 les（films：男性複数）が前にある → regardés。",{ja:"それらの映画？見たよ。"});
+C("acc","Ces robes ? Elle me les a ___.","données",["données","donné","donnés"],"les（robes：女性複数）→ données。",{ja:"このドレス？彼女がくれたの。"});
+C("acc","Ta lettre ? Je l'ai ___.","lue",["lue","lu","lus"],"l'（lettre：女性単数）→ lue。",{ja:"きみの手紙？読んだよ。"});
+C("acc","Je lui ai ___ plusieurs messages.","envoyé",["envoyé","envoyée","envoyés"],"lui は間接目的補語 → 一致しない（直接目的補語 messages はうしろ）。",{ja:"彼女に何通もメッセージを送った。"});
+C("acc","Les fraises ? Nous les avons ___.","mangées",["mangées","mangé","mangés"],"les（fraises：女性複数）→ mangées。",{ja:"いちご？私たちが食べちゃった。"});
+C("acc","Les clés ? Tu les as ___ où ?","mises",["mises","mis","mise"],"les（clés：女性複数）→ mises（mettre → mis）。",{ja:"鍵？どこに置いたの？"});
+W("acc","La tarte ? Yui l'a ___.（faire）","faite","l'（tarte：女性単数）→ faite。",{ja:"タルト？ゆいが作ったよ。"});
+T("acc","ce roman を代名詞に","J'ai lu ce roman.",["Je l'ai lu."],"le → l'（母音の前）。男性単数なので lu のまま。");
+T("acc","cette robe を代名詞に","Vous avez acheté cette robe ?",["Vous l'avez achetée ?"],"l'（robe：女性単数）→ achetée。");
+T("acc","les cadeaux を代名詞に","Léa a choisi les cadeaux.",["Léa les a choisis."],"les（cadeaux：男性複数）→ choisis。");
+T("acc","ces photos を代名詞に","Hugo a pris ces photos.",["Hugo les a prises."],"les（photos：女性複数）→ prises。発音も［プリーズ］に変わる。");
+B("acc","その写真（複数）は、レアが撮ったんだ。","Ces photos, Léa les a prises.",["pris","la"],"les（photos：女性複数）が前にある → prises。");
+B("acc","マルタン先生のメールは、もう読んだよ。","Le mail de Madame Martin, je l'ai déjà lu.",["lue","le"],"mail は男性単数 → lu のまま。副詞 déjà は過去分詞の直前。");
+</script>
+</body>
+</html>

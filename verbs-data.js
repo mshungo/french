@@ -39,7 +39,28 @@ window.LESSON={no:"V",label:"いろいろな動詞",eyebrow:"Conjugaison",title:
    '<p><span class="fr">écrire</span>：écris, écris, écrit, écrivons, écrivez, écrivent</p>'+
    '<p><span class="fr">attendre</span>：attends, attends, <b>attend</b>, attendons, attendez, attendent（3人称単数は d で終わる）</p>'+
    '<p><span class="fr">mettre</span>：mets, mets, met, mettons, mettez, mettent</p>'+
-   '<p>attendre と同じ型：entendre（聞く）、répondre（答える）、perdre（失う）、rendre（返す）、vendre（売る）、descendre（降りる）。mettre と同じ型：permettre、promettre。</p>'}
+   '<p>attendre と同じ型：entendre（聞く）、répondre（答える）、perdre（失う）、rendre（返す）、vendre（売る）、descendre（降りる）。mettre と同じ型：permettre、promettre。</p>'},
+  {k:"v7",t:"prendre・connaître・vivre・pouvoir・devoir・vouloir",d:"",c:"#c99b6a",ci:"#a57a48",cw:"#f9f1e8",
+   memo:'<p><span class="fr">prendre</span>：prends, prends, prend, prenons, prenez, <b>prennent</b>（apprendre, comprendre も同じ型）</p>'+
+   '<p><span class="fr">connaître</span>：connais, connais, <b>connaît</b>, connaissons, connaissez, connaissent</p>'+
+   '<p><span class="fr">vivre</span>：vis, vis, vit, vivons, vivez, vivent</p>'+
+   '<p><span class="fr">pouvoir</span>：peux, peux, peut, pouvons, pouvez, <b>peuvent</b></p>'+
+   '<p><span class="fr">devoir</span>：dois, dois, doit, devons, devez, <b>doivent</b></p>'+
+   '<p><span class="fr">vouloir</span>：veux, veux, veut, voulons, voulez, <b>veulent</b></p>'+
+   '<p>pouvoir・devoir・vouloir は、うしろに不定詞を置いて「～できる・～しなければならない・～したい」。</p>'},
+  {k:"pc",t:"複合過去",d:"avoir / être ＋過去分詞",c:"#9b8fc4",ci:"#7a6ea6",cw:"#f1eff8",
+   memo:'<p>助動詞（avoir または être）の現在形＋過去分詞。</p>'+
+   '<table><tr><td class="fr">j\'ai chanté</td><td class="fr">nous avons chanté</td></tr><tr><td class="fr">tu as chanté</td><td class="fr">vous avez chanté</td></tr><tr><td class="fr">il / elle a chanté</td><td class="fr">ils / elles ont chanté</td></tr></table>'+
+   '<table><tr><td class="fr">je suis allé(e)</td><td class="fr">nous sommes allé(e)s</td></tr><tr><td class="fr">tu es allé(e)</td><td class="fr">vous êtes allé(e)(s)</td></tr><tr><td class="fr">il est allé / elle est allée</td><td class="fr">ils sont allés / elles sont allées</td></tr></table>'+
+   '<p>être をとるのは代名動詞と、aller, venir, partir, arriver, sortir, entrer, monter, descendre, naître, mourir, revenir, rentrer, retourner, rester, tomber, devenir。être のときは過去分詞が主語の性数に一致する。</p>'+
+   '<p>代名動詞：<span class="fr">je me suis levé(e), elle s\'est levée, ils se sont levés</span></p>'},
+  {k:"imp",t:"半過去",d:"-ais, -ais, -ait, -ions, -iez, -aient",c:"#7fa7c9",ci:"#5c86aa",cw:"#edf3f8",
+   memo:'<p>語幹＝現在形の nous の形から -ons をとったもの＋語尾 <span class="fr">-ais, -ais, -ait, -ions, -iez, -aient</span></p>'+
+   '<table><tr><td class="fr">je parlais</td><td class="fr">nous parlions</td></tr><tr><td class="fr">tu parlais</td><td class="fr">vous parliez</td></tr><tr><td class="fr">il / elle parlait</td><td class="fr">ils / elles parlaient</td></tr></table>'+
+   '<p><span class="fr">avoir（nous avons）→ j\'avais　finir（nous finissons）→ je finissais　faire（nous faisons）→ je faisais</span></p>'+
+   '<p>例外は être：<span class="fr">j\'étais, tu étais, il était, nous étions, vous étiez, ils étaient</span></p>'+
+   '<p>manger → je mangeais（nous mangions）、commencer → je commençais（nous commencions）：a・o の前だけ e・ç が入る。</p>'+
+   '<p>pleuvoir → il pleuvait、falloir → il fallait。用法：過去の状態・進行中のこと、過去の習慣「～していた」。</p>'}
 ]};
 
 /* ---------- Leçon 2：-er動詞 ---------- */
@@ -189,3 +210,90 @@ C("v6","Nous ___ du train à Nara.（descendre）","descendons",["descendons","d
 C("v6","Elles ___ des lettres.（écrire）","écrivent",["écrivent","écrient","écrisent"],"écrire の複数形は v が入る。",{ja:"彼女たちは手紙を書く。"});
 C("v6","Il ___ de venir demain.（promettre）","promet",["promet","promets","promette"],"promettre は mettre と同じ型：il promet。",{ja:"彼は明日来ると約束する。"});
 B("v6","私は駅の前で友だちを待っている。","J'attends mon ami devant la gare.",["attend","à"],"attendre：j'attends。attendre は直接目的補語をとる（à は不要）。");
+
+/* ---------- Leçon 7：prendre・connaître・vivre・pouvoir・devoir・vouloir（新しく追加。番号は V7-） ---------- */
+FROM("V7",0);
+W("v7","Je ___ le train de huit heures.（prendre）","prends","prendre：je prends。",{ja:"私は8時の電車に乗る。"});
+W("v7","Qu'est-ce que vous ___ ?（prendre）","prenez","prendre：vous prenez。",{ja:"何になさいますか？"});
+W("v7","Il ___ un café.（prendre）","prend","prendre：il prend（d で終わる）。",{ja:"彼はコーヒーを飲む。"});
+W("v7","Nous ___ le japonais.（apprendre）","apprenons","apprendre は prendre と同じ型：nous apprenons。",{ja:"私たちは日本語を習っている。"});
+W("v7","Ils ___ le métro.（prendre）","prennent","prendre：ils prennent（n を重ねる）。",{ja:"彼らは地下鉄に乗る。"});
+W("v7","Tu ___ ?（comprendre）","comprends","comprendre：tu comprends。",{ja:"わかる？"});
+W("v7","Je ___ sa fille.（connaître）","connais","connaître：je connais。",{ja:"私は彼の娘を知っている。"});
+W("v7","Elle ___ bien Nara.（connaître）","connaît","connaître：elle connaît（î に注意）。",{ja:"彼女は奈良をよく知っている。"});
+W("v7","Vous ___ cette chanson ?（connaître）","connaissez","connaître：vous connaissez。",{ja:"この歌を知っていますか？"});
+W("v7","Mon oncle ___ en Italie.（vivre）","vit","vivre：il vit。",{ja:"おじはイタリアで暮らしている。"});
+W("v7","Nous ___ à la campagne.（vivre）","vivons","vivre：nous vivons。",{ja:"私たちは田舎で暮らしている。"});
+W("v7","Je ne ___ pas venir.（pouvoir）","peux","pouvoir：je peux。",{ja:"私は来られない。"});
+W("v7","Ils ne ___ pas rester longtemps.（pouvoir）","peuvent","pouvoir：ils peuvent。",{ja:"彼らは長くはいられない。"});
+W("v7","Tu ___ partir maintenant.（devoir）","dois","devoir：tu dois。",{ja:"きみはもう出発しなければならない。"});
+W("v7","Vous ___ vous lever tôt.（devoir）","devez","devoir：vous devez。",{ja:"あなたは早く起きなければならない。"});
+W("v7","Elle ___ écrire cette lettre ce soir.（devoir）","doit","devoir：elle doit。",{ja:"彼女は今夜この手紙を書かなければならない。"});
+W("v7","Il ___ vivre tout seul.（vouloir）","veut","vouloir：il veut。",{ja:"彼はひとりで暮らしたがっている。"});
+W("v7","Nous ___ aller à la mer.（vouloir）","voulons","vouloir：nous voulons。",{ja:"私たちは海に行きたい。"});
+C("v7","Elles ___ le bus.（prendre）","prennent",["prennent","prenent","prendent"],"prendre：ils / elles prennent（n を重ねる）。",{ja:"彼女たちはバスに乗る。"});
+C("v7","Nous ___ Hugo.（connaître）","connaissons",["connaissons","connaîtons","connons"],"connaître：nous connaissons。",{ja:"私たちはユゴーを知っている。"});
+C("v7","Ils ___ venir demain.（pouvoir）","peuvent",["peuvent","pouvent","peut"],"pouvoir：ils peuvent。",{ja:"彼らは明日来られる。"});
+C("v7","Ils ___ partir.（devoir）","doivent",["doivent","devent","doit"],"devoir：ils doivent。",{ja:"彼らは出発しなければならない。"});
+C("v7","Elles ___ apprendre le français.（vouloir）","veulent",["veulent","voulent","veut"],"vouloir：ils / elles veulent。",{ja:"彼女たちはフランス語を習いたい。"});
+C("v7","Mes cousins ___ à Lyon.（vivre）","vivent",["vivent","vient","vivont"],"vivre：ils vivent（vient は venir の形）。",{ja:"いとこたちはリヨンで暮らしている。"});
+B("v7","レアとゆいは京都行きの電車に乗る。","Léa et Yui prennent le train pour Kyoto.",["prenent","prend"],"prendre：ils / elles prennent。");
+B("v7","ゆいはユゴーのお母さんを知っている。","Yui connaît la mère de Hugo.",["connais","sait"],"connaître：elle connaît。");
+
+/* ---------- 複合過去（新しく追加。番号は PC-） ---------- */
+FROM("PC",0);
+W("pc","J'___ une chanson.（chanter）","ai chanté","avoir＋過去分詞：j'ai chanté。",{ja:"私は歌を1曲歌った。"});
+W("pc","Tu ___ tes devoirs ?（finir）","as fini","tu as fini。",{ja:"宿題は終わった？"});
+W("pc","Il ___ le bus.（prendre）","a pris","prendre → pris：il a pris。",{ja:"彼はバスに乗った。"});
+W("pc","Nous ___ une promenade.（faire）","avons fait","faire → fait：nous avons fait。",{ja:"私たちは散歩した。"});
+W("pc","Vous ___ à Léa ?（écrire）","avez écrit","écrire → écrit：vous avez écrit。",{ja:"レアに手紙を書きましたか？"});
+W("pc","Ils ___ deux ans à Paris.（vivre）","ont vécu","vivre → vécu：ils ont vécu。",{ja:"彼らはパリで2年暮らした。"});
+W("pc","J'___ de la chance.（avoir）","ai eu","avoir → eu：j'ai eu。",{ja:"私は運がよかった。"});
+W("pc","Il ___ malade.（être）","a été","être の複合過去は avoir＋été：il a été。",{ja:"彼は病気だった。"});
+W("pc","Elle ___ partir tôt.（devoir）","a dû","devoir → dû：elle a dû。",{ja:"彼女は早く出発しなければならなかった。"});
+W("pc","Ils ___ venir.（pouvoir・否定文で）","n'ont pas pu","否定文は ne ～ pas で助動詞をはさむ：ils n'ont pas pu。pouvoir → pu。",{ja:"彼らは来られなかった。"});
+W("pc","Je ___ au cinéma.（aller）",["suis allé","suis allée"],"aller は être：je suis allé(e)。",{ja:"私は映画に行った。"});
+W("pc","Elle ___ avec sa mère.（venir）","est venue","venir は être。elle → venue。",{ja:"彼女はお母さんと来た。"});
+W("pc","Nous ___ à huit heures.（partir）",["sommes partis","sommes parties"],"partir は être。nous → partis（女性だけなら parties）。",{ja:"私たちは8時に出発した。"});
+W("pc","Ils ___ en retard.（arriver）","sont arrivés","arriver は être。ils → arrivés。",{ja:"彼らは遅れて着いた。"});
+W("pc","Elles ___ hier soir.（sortir）","sont sorties","sortir は être。elles → sorties。",{ja:"彼女たちは昨夜出かけた。"});
+W("pc","Tu ___ à la maison ?（rester）",["es resté","es restée"],"rester は être：tu es resté(e)。",{ja:"家にいたの？"});
+W("pc","Je ___ à six heures.（se lever）",["me suis levé","me suis levée"],"代名動詞は être：je me suis levé(e)。",{ja:"私は6時に起きた。"});
+W("pc","Elle ___ tard.（se coucher）","s'est couchée","elle s'est couchée。",{ja:"彼女は遅く寝た。"});
+W("pc","Ils ___ dans le parc.（se promener）","se sont promenés","ils se sont promenés。",{ja:"彼らは公園を散歩した。"});
+C("pc","Elle ___ partie à midi.","est",["est","a"],"partir は être。",{ja:"彼女は正午に出発した。"});
+C("pc","Ils ___ pris le train.","ont",["ont","sont"],"prendre は avoir。",{ja:"彼らは電車に乗った。"});
+C("pc","Nous sommes ___ à Nara.（arriver・男性複数）","arrivés",["arrivés","arrivé","arrivées"],"être のとき過去分詞は主語に一致：男性複数 → arrivés。",{ja:"私たちは奈良に着いた。"});
+C("pc","Léa a ___ un gâteau.（faire）","fait",["fait","faite","faisé"],"avoir のときは主語に一致しない：a fait。",{ja:"レアはケーキを作った。"});
+C("pc","Vous avez ___ ?（comprendre）","compris",["compris","comprendu","comprit"],"comprendre → compris（prendre と同じ型）。",{ja:"わかりましたか？"});
+B("pc","ユゴーは昨日リヨンに帰った。","Hugo est rentré à Lyon hier.",["a","rentrée"],"rentrer は être：est rentré。");
+B("pc","私たちはいっしょに夕食を食べた。","Nous avons dîné ensemble.",["sommes","dînés"],"dîner は avoir：avons dîné。");
+
+/* ---------- 半過去（新しく追加。番号は IM-） ---------- */
+FROM("IM",0);
+W("imp","Je ___ avec Sophie.（parler）","parlais","nous parlons → parl-＋-ais：je parlais。",{ja:"私はソフィーと話していた。"});
+W("imp","Tu ___ à quelle heure ?（finir）","finissais","nous finissons → finiss-＋-ais：tu finissais。",{ja:"きみは何時に終わっていたの？"});
+W("imp","Il ___ beau.（faire）","faisait","nous faisons → fais-＋-ait：il faisait（発音は［フゼ］）。",{ja:"天気がよかった。"});
+W("imp","Nous ___ un chien.（avoir）","avions","nous avons → av-＋-ions：nous avions。",{ja:"私たちは犬を飼っていた。"});
+W("imp","Vous ___ à Kyoto ?（être）","étiez","être は例外の語幹 ét-：vous étiez。",{ja:"あなたは京都にいたのですか？"});
+W("imp","Elle ___ dans la cuisine.（être）","était","être：elle était。",{ja:"彼女は台所にいた。"});
+W("imp","Ils ___ souvent au parc.（aller）","allaient","nous allons → all-＋-aient：ils allaient。",{ja:"彼らはよく公園に行っていた。"});
+W("imp","Elle ___ le bus tous les matins.（prendre）","prenait","nous prenons → pren-＋-ait：elle prenait。",{ja:"彼女は毎朝バスに乗っていた。"});
+W("imp","Nous ___ des romans.（lire）","lisions","nous lisons → lis-＋-ions：nous lisions。",{ja:"私たちは小説を読んでいた。"});
+W("imp","Ils ne ___ pas venir.（pouvoir）","pouvaient","nous pouvons → pouv-＋-aient：ils pouvaient。",{ja:"彼らは来られなかった（来られない状態だった）。"});
+W("imp","Je ___ devenir médecin.（vouloir）","voulais","nous voulons → voul-＋-ais：je voulais。",{ja:"私は医者になりたかった。"});
+W("imp","Il ___ beaucoup.（pleuvoir）","pleuvait","pleuvoir → il pleuvait。",{ja:"雨がたくさん降っていた。"});
+W("imp","Il ___ partir.（falloir）","fallait","falloir → il fallait。",{ja:"出発しなければならなかった。"});
+W("imp","Je ___ trop.（manger）","mangeais","nous mangeons → mange-＋-ais：je mangeais（a の前で g の音を保つため e が残る）。",{ja:"私は食べすぎていた。"});
+W("imp","Nous ___ du riz.（manger）","mangions","-ions の前では e は不要：nous mangions。",{ja:"私たちはお米を食べていた。"});
+W("imp","Le cours ___ à neuf heures.（commencer）","commençait","a の前で c → ç：il commençait。",{ja:"授業は9時に始まっていた。"});
+W("imp","Tu ___ des lettres à ta grand-mère.（écrire）","écrivais","nous écrivons → écriv-＋-ais：tu écrivais。",{ja:"きみはおばあさんに手紙を書いていた。"});
+W("imp","Elle ___ chaque dimanche.（venir）","venait","nous venons → ven-＋-ait：elle venait。",{ja:"彼女は毎週日曜日に来ていた。"});
+W("imp","J'___ à Lyon.（habiter）","habitais","j'habitais（母音の前で je → j'）。",{ja:"私はリヨンに住んでいた。"});
+C("imp","Ils ___ toujours la vérité.（dire）","disaient",["disaient","dissaient","disent"],"nous disons → dis-＋-aient：ils disaient。",{ja:"彼らはいつも本当のことを言っていた。"});
+C("imp","Je ___ bien Léa.（connaître）","connaissais",["connaissais","connaîtais","connais"],"nous connaissons → connaiss-＋-ais：je connaissais。",{ja:"私はレアをよく知っていた。"});
+C("imp","Nous ___ le soir.（sortir）","sortions",["sortions","sortaions","sortons"],"nous sortons → sort-＋-ions：nous sortions。",{ja:"私たちは夜に出かけていた。"});
+C("imp","Vous ___ fatigués.（être）","étiez",["étiez","êtiez","étaiez"],"être の半過去：vous étiez。",{ja:"あなたたちは疲れていた。"});
+C("imp","Elles ___ deux enfants.（avoir）","avaient",["avaient","avait","avaiont"],"ils / elles → -aient：elles avaient。",{ja:"彼女たちには子どもが2人いた。"});
+B("imp","子どものころ、レアは毎週日曜日におばあさんの家に行っていた。","Quand elle était petite, Léa allait chez sa grand-mère chaque dimanche.",["allée","va"],"過去の習慣は半過去：allait。");
+B("imp","電話が鳴ったとき、ゆいは台所にいた。","Yui était dans la cuisine quand le téléphone a sonné.",["est","sonnait"],"そのとき続いていた状態は半過去（était）、起きた出来事は複合過去（a sonné）。");

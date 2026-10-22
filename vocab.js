@@ -369,7 +369,7 @@ function renderHome(){
   $("boxes").innerHTML=boxesHTML();
   const fresh0=!store.place&&!WORDS.some(w=>lv(w)>=1);
   $("placeBox").innerHTML=fresh0?'<div class="vplace"><div class="vp-h">'+NLI.svg("flag",18)+' はじめに、レベルチェック</div>'+
-    '<p>知っている単語はとばして、ちょうどいいところから始めます。約5分・最大24問。わからない語は「わからない」でOK。</p>'+
+    '<p>知っている単語はとばして、ちょうどいいところから始めます。約5分・最大28問。わからない語は「わからない」でOK。</p>'+
     '<div class="vp-btns"><button class="vp-go" id="placeGo" type="button">レベルチェックをする</button><button class="vp-skip" id="placeSkip" type="button">最初から順に始める</button></div></div>':"";
   if(fresh0){$("placeGo").onclick=startPlacement;$("placeSkip").onclick=()=>startSession("today");}
   $("todayBtn").classList.toggle("hidden",fresh0);
@@ -774,7 +774,7 @@ function init(){
     if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;
     if(/^[1-4]$/.test(e.key)){const b=document.querySelectorAll("#opts .opt")[+e.key-1];if(b&&!b.disabled)b.click();}
   });
-  let hm=/^#(today|weak|extra|L[1-6]|N)$/.exec(location.hash||"");
+  let hm=/^#(today|weak|extra|L[1-9]|N)$/.exec(location.hash||"");
   renderHome();
   if(hm&&!store.place&&!WORDS.some(w=>lv(w)>=1))hm=null;   // はじめての人は、まずホーム（レベルチェックの案内）へ
   if(hm){try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}startSession(/^(weak|extra)$/.test(hm[1])?hm[1]:"today");return;}

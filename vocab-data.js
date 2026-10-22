@@ -18,6 +18,7 @@ window.VOCAB_UNITS=[
   {k:"L4",t:"Leçon 4",sub:"行く・来る・疑問詞・時間",c:"#92a6cf",ci:"#7186b4",cw:"#eef1f8"},
   {k:"L5",t:"Leçon 5",sub:"あげる・貸す・天気・季節",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3"},
   {k:"L6",t:"Leçon 6",sub:"一日の動作・からだ・道案内",c:"#c0a06a",ci:"#9a7b45",cw:"#f8f1e4"},
+  {k:"L7",t:"Leçon 7",sub:"できる・したい・昨日のこと",c:"#9b8fc4",ci:"#7a6da6",cw:"#f1eff8"},
   {k:"N",t:"数",sub:"0〜1000",c:"#9aa3ad",ci:"#6f7881",cw:"#f1f3f5"}
 ];
 
@@ -267,6 +268,39 @@ V("L6","adv","partout","いたるところに","Il y a des cerfs [partout] à Na
 V("L6","v","se marier","結婚する","Ils vont [se marier] l'année prochaine.","彼らは来年結婚する予定だ。","day");
 V("L6","v","s'amuser","楽しむ；遊ぶ","[Amusons-nous] bien ce soir !","今晩は大いに楽しもう！","day");
 V("L6","v","passer","渡す；過ごす；通る","Le bus [passe] devant l'école.","バスは学校の前を通る。","verb");
+
+/* ---------- Leçon 7 ---------- */
+V("L7","v","prendre","取る；（乗りものに）乗る","Ce matin, Hugo a [pris] le bus.","今朝、ユゴーはバスに乗った。","verb");
+V("L7","adv","hier","昨日","[Hier], Yui a téléphoné à sa mère.","昨日、ゆいはお母さんに電話した。","time");
+V("L7","nm","le métro","地下鉄","À Paris, Léa prend souvent le [métro].","パリでは、レアはよく地下鉄に乗る。","vehicle");
+V("L7","v","pouvoir","～できる","Tu [peux] venir demain ?","明日来られる？","modal");
+V("L7","nf","la ville","町；都市","Léa a visité la [ville] avec Yui.","レアはゆいと町を見て回った。","place");
+V("L7","adv","déjà","もう；すでに","J'ai [déjà] mangé.","もう食べたよ。","time");
+V("L7","v","vouloir","～したい；～がほしい","Je [veux] voir les cerfs.","シカが見たい。","modal");
+V("L7","nm","le film","映画","Hier, on a vu un [film] français.","昨日、私たちはフランス映画を見た。","thing");
+V("L7","v","devoir","～しなければならない","Je [dois] partir maintenant.","もう行かなきゃ。","modal");
+V("L7","nf","la plage","浜辺；ビーチ","Hugo et Léa sont allés à la [plage].","ユゴーとレアは海辺へ行った。","nature");
+V("L7","v","comprendre","わかる；理解する","Je n'ai pas [compris] la question.","質問がわからなかった。","verb");
+V("L7","nf","la question","質問","Est-ce que je peux poser une [question] ?","質問してもいいですか？","thing");
+V("L7","adv","ce matin","今朝","[Ce matin], Léa s'est levée tôt.","今朝、レアは早く起きた。","time");
+V("L7","v","apprendre","学ぶ；習う","Hugo a [appris] le japonais à l'université.","ユゴーは大学で日本語を学んだ。","verb");
+V("L7","nf","la mer","海","La [mer] est belle aujourd'hui.","今日は海がきれいだ。","nature");
+V("L7","v","connaître","（人・場所を）知っている","Je [connais] bien Kyoto.","京都のことはよく知っている。","verb");
+V("L7","adv","longtemps","長い間","Léa a attendu [longtemps].","レアは長い間待った。","time");
+V("L7","v","vivre","暮らす；生きる","Hugo a [vécu] deux ans à Tokyo.","ユゴーは東京に2年住んだ。","verb");
+V("L7","nm","le journal","新聞；日記","Hugo lit le [journal] le matin.","ユゴーは朝、新聞を読む。","thing",{pl:"journaux"});
+V("L7","v","tomber","落ちる；転ぶ","Yui est [tombée] dans l'escalier.","ゆいは階段で転んだ。","move");
+V("L7","nm","l'escalier","階段","Attention à l'[escalier] !","階段に気をつけて！","thing");
+V("L7","v","monter","上がる；（乗りものに）乗る","Nous sommes [montés] dans le train.","私たちは電車に乗った。","move");
+V("L7","nm","le grand-père","祖父；おじいさん","Le [grand-père] de Yui habite à Osaka.","ゆいのおじいさんは大阪に住んでいる。","family",{pl:"grands-pères"});
+V("L7","v","descendre","降りる；下りる","Hugo est [descendu] du bus devant la gare.","ユゴーは駅前でバスを降りた。","move");
+V("L7","nf","la grand-mère","祖母；おばあさん","La [grand-mère] de Léa fait de bons gâteaux.","レアのおばあさんはおいしいお菓子を作る。","family",{pl:"grands-mères"});
+V("L7","v","naître","生まれる","Le bébé est [né] hier.","赤ちゃんは昨日生まれた。","move");
+V("L7","nf","la chanson","歌","Yui a chanté une [chanson] française.","ゆいはフランスの歌を歌った。","thing");
+V("L7","nm","le rendez-vous","会う約束；（病院などの）予約","J'ai un [rendez-vous] avec Hugo à midi.","正午にユゴーと会う約束がある。","thing",{pl:"rendez-vous"});
+V("L7","adv","pendant","（前置詞）～の間","Léa a dormi [pendant] le film.","レアは映画の間ずっと眠っていた。","time");
+V("L7","nf","la campagne","田舎","Les grands-parents de Léa habitent à la [campagne].","レアの祖父母は田舎に住んでいる。","nature");
+V("L7","a","dernier","最後の；この前の","La semaine [dernière], Yui est allée à Kyoto.","先週、ゆいは京都へ行った。","time",{f:"dernière"});
 
 /* ---------- 数 ---------- */
 V("N","num","zéro","0","Il fait [zéro] degré à Lyon.","リヨンは0度だ。","n1");
