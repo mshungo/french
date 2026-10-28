@@ -180,7 +180,7 @@
      端末に保存している記録を、変わったものだけサーバー（シート「進み具合」）に控える。
      ログインしたとき、端末にない・端末より進んでいる控えがあれば戻す（自分の控えだけ）。 */
   var PROG_KEYS = ["conjQuizStats_v4", "talkQuiz_v1", "gramQuiz_L1_v1", "gramQuiz_L2_v1", "gramQuiz_L3_v1",
-    "gramQuiz_L4_v1", "gramQuiz_L5_v1", "gramQuiz_L6_v1", "gramQuiz_L7_v1", "verbQuiz_v1", "vocabQuiz_v1", "conjQuizDays", "nlWelcome_v1", "nlStamp_v1"];
+    "gramQuiz_L4_v1", "gramQuiz_L5_v1", "gramQuiz_L6_v1", "gramQuiz_L7_v1", "gramQuiz_L8_v1", "verbQuiz_v1", "vocabQuiz_v1", "conjQuizDays", "nlWelcome_v1", "nlStamp_v1"];
   function hashStr(s) { var h = 5381; for (var i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return s.length + ":" + h.toString(36); }
   function bkKey(k) { return "conjQuizBk_" + k + "_" + user.id; }
   var backingUp = false;

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 8 半過去と受動態 — Naralingo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
+<script src="config.js?v=4"></script>
+<script src="common.js?v=41"></script>
+<script src="streak.js?v=4"></script>
+<script src="feedback.js?v=2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="grammar.css?v=13">
+<script src="sound.js?v=1"></script>
+<script src="badge.js?v=3"></script>
+<script src="tiles.js?v=1"></script>
+<script src="grammar.js?v=31"></script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ===== Leçon 8：savoir・voir・recevoir・boire、半過去、大過去、受動態、知覚動詞・使役動詞（テキスト p.48-53） ===== */
+window.LESSON={no:8,title:"半過去と受動態",sub:"imparfait・plus-que-parfait・passif",
+  lead:"savoir・voir・recevoir・boire の現在形、直説法半過去、大過去、受動態、そして En plus… の知覚動詞・使役動詞・se faire を練習します。時制の使い分けは、いろいろな文の中で「どれを選ぶか」を何度も考えると身につきます。",
+  sections:[
+  {k:"sv",t:"savoir・voir・recevoir・boire",d:"現在形と過去分詞（Grammaire 1）",c:"#c99b6a",ci:"#a57a48",cw:"#f9f1e8",
+   memo:'<table><tr><th>savoir</th><th>voir</th><th>recevoir</th><th>boire</th></tr>'+
+   '<tr><td class="fr">je sais</td><td class="fr">je vois</td><td class="fr">je reçois</td><td class="fr">je bois</td></tr>'+
+   '<tr><td class="fr">tu sais</td><td class="fr">tu vois</td><td class="fr">tu reçois</td><td class="fr">tu bois</td></tr>'+
+   '<tr><td class="fr">il sait</td><td class="fr">il voit</td><td class="fr">il reçoit</td><td class="fr">il boit</td></tr>'+
+   '<tr><td class="fr">nous savons</td><td class="fr">nous voyons</td><td class="fr">nous recevons</td><td class="fr">nous buvons</td></tr>'+
+   '<tr><td class="fr">vous savez</td><td class="fr">vous voyez</td><td class="fr">vous recevez</td><td class="fr">vous buvez</td></tr>'+
+   '<tr><td class="fr">ils savent</td><td class="fr">ils voient</td><td class="fr">ils reçoivent</td><td class="fr">ils boivent</td></tr></table>'+
+   '<p>過去分詞：<span class="fr">savoir → su, voir → vu, recevoir → reçu, boire → bu</span></p>'+
+   '<p>recevoir は c の下に ç（セディーユ）：o の前では ç、e の前では c。<span class="fr">je reçois / nous recevons</span></p>'+
+   '<p>voir と同じ型：<span class="fr">revoir（再会する）</span>。recevoir と同じ型：<span class="fr">s\'apercevoir de ～（～に気づく）、concevoir（思いつく）</span></p>'},
+  {k:"imp",t:"半過去のつくり方",d:"語幹（nous の形から -ons をとる）＋ -ais, -ais, -ait, -ions, -iez, -aient（Grammaire 2）",c:"#7fa7c9",ci:"#5c86aa",cw:"#edf3f8",
+   memo:'<p>語幹＝直説法現在 <b>nous</b> の形から -ons をとったもの：<span class="fr">parler（nous parlons）→ parl-</span></p>'+
+   '<table><tr><td class="fr">je parlais</td><td class="fr">nous parlions</td></tr><tr><td class="fr">tu parlais</td><td class="fr">vous parliez</td></tr><tr><td class="fr">il parlait</td><td class="fr">ils parlaient</td></tr></table>'+
+   '<p><span class="fr">finir（nous finissons）→ je finissais　faire（nous faisons）→ je faisais　avoir（nous avons）→ j\'avais</span></p>'+
+   '<p>例外は être だけ：語幹 ét-：<span class="fr">j\'étais, tu étais, il était, nous étions, vous étiez, ils étaient</span></p>'+
+   '<p><span class="fr">pleuvoir → il pleuvait、falloir → il fallait</span></p>'+
+   '<p>-ger・-cer の動詞：a・o の前だけ e・ç が入る：<span class="fr">je mangeais / nous mangions、je commençais / nous commencions</span></p>'+
+   '<p>voir・boire・savoir・recevoir：<span class="fr">nous voyions, nous buvions, nous savions, nous recevions</span>（語幹は nous の形から）</p>'},
+  {k:"use",t:"半過去の用法・複合過去との使い分け",d:"状態・進行中／習慣と、継続期間・完了（Grammaire 2）",c:"#8db79b",ci:"#6c9a7f",cw:"#eef5f0",
+   memo:'<p><b>① 過去の一時点での状態・進行中の行為</b>：<span class="fr">Elle était dans la cuisine quand le téléphone a sonné.</span>（背景は半過去、起きた出来事は複合過去）</p>'+
+   '<p><b>② 過去の反復する行為・習慣</b>：<span class="fr">J\'allais chez ma grand-mère chaque dimanche.</span></p>'+
+   '<p>継続的な状態でも、現在から見て<b>完了している</b>ときは複合過去：</p>'+
+   '<p><span class="fr">Il a habité deux ans à Lyon.</span>（継続期間が明らか）<br><span class="fr">Il a habité à Paris de 1996 à 2002.</span>（始まりと終わりが明らか）<br><span class="fr">Il habitait à Paris quand son fils est né.</span>（過去の一時点で継続中）</p>'},
+  {k:"pqp",t:"大過去",d:"助動詞の半過去＋過去分詞（Grammaire 3）",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
+   memo:'<p>助動詞（avoir または être）の<b>半過去</b>＋過去分詞。avoir か être かの選び方、être のときの一致は複合過去と同じ。</p>'+
+   '<table><tr><td class="fr">j\'avais fini</td><td class="fr">nous avions fini</td></tr><tr><td class="fr">tu avais fini</td><td class="fr">vous aviez fini</td></tr><tr><td class="fr">il avait fini</td><td class="fr">ils avaient fini</td></tr></table>'+
+   '<table><tr><td class="fr">j\'étais venu(e)</td><td class="fr">nous étions venu(e)s</td></tr><tr><td class="fr">il était venu / elle était venue</td><td class="fr">ils étaient venus / elles étaient venues</td></tr></table>'+
+   '<p>代名動詞：<span class="fr">je m\'étais couché(e), elle s\'était couchée, ils s\'étaient couchés</span></p>'+
+   '<p>用法：過去のある時点より<b>前に完了していた</b>こと（「～してしまっていた」）：<span class="fr">Quand je suis arrivé chez lui, il était déjà parti.</span></p>'+
+   '<p>否定は助動詞をはさむ：<span class="fr">Il n\'avait pas fini.</span>　déjà などの副詞は過去分詞の直前：<span class="fr">Il était déjà parti.</span></p>'},
+  {k:"tps",t:"時制の使い分け",d:"半過去・複合過去・大過去を、文脈から選ぶ",c:"#d6a96f",ci:"#b88a4f",cw:"#faf2e7",
+   memo:'<p>出来事の順番と背景で決める：</p>'+
+   '<p>・<b>半過去</b>：そのとき続いていた状態・進行中の行為・習慣（背景）</p>'+
+   '<p>・<b>複合過去</b>：過去に起きた（完了した）出来事（前景）</p>'+
+   '<p>・<b>大過去</b>：その出来事より<b>前に</b>終わっていたこと</p>'+
+   '<p><span class="fr">Quand il est arrivé（複合過去）, elle dormait（半過去）. Elle s\'était couchée（大過去）à neuf heures.</span></p>'},
+  {k:"pas",t:"受動態",d:"être の活用形＋過去分詞＋ par / de ～（Grammaire 4）",c:"#cf8aa0",ci:"#b16880",cw:"#faeef2",
+   memo:'<p><b>être の活用形＋過去分詞＋ par / de ～</b>：「～される」。過去分詞は主語の性と数に一致する。</p>'+
+   '<p><span class="fr">Marie est invitée par ses anciens élèves.</span>（← Ses anciens élèves invitent Marie.）</p>'+
+   '<p>受動態になれるのは、<b>直接目的補語をとる他動詞</b>だけ。</p>'+
+   '<p>「～によって」は多くは <b>par</b>。状態・継続的・習慣的な動作を表す動詞では <b>de</b>：<span class="fr">Paul est aimé de tout le monde. Cette ville est entourée de montagnes.</span></p>'+
+   '<p>動作主が一般の人々（on）の場合や、自明な場合は省略される：<span class="fr">Le magasin est fermé après sept heures du soir.</span></p>'+
+   '<p>時制は être の部分で表す：<span class="fr">Vous étiez attendu(e)(s). Cette société a été fondée par mon grand-père.</span></p>'},
+  {k:"per",t:"知覚動詞・使役動詞・se faire",d:"voir, entendre / laisser, faire / se faire（En plus…）",c:"#6fb0ad",ci:"#4c8e8b",cw:"#ebf5f4",
+   memo:'<p><b>知覚動詞</b>（voir, regarder, entendre, écouter, sentir）：「～が…するのを見る・聞く」</p>'+
+   '<p><span class="fr">Nous regardons nos enfants nager.</span> ／ <span class="fr">J\'ai vu mon frère porter un grand colis.</span></p>'+
+   '<p>直接目的補語が代名詞のとき、現在形では知覚動詞の直前、複合過去では助動詞 avoir の前。過去分詞は<b>直接目的補語に一致する</b>：<span class="fr">Il a entendu sa mère fermer la porte. → Il l\'a entendue fermer la porte.</span></p>'+
+   '<p><b>laisser</b>「～させておく」：語順も一致も知覚動詞と同じ：<span class="fr">Je l\'ai laissée dessiner.</span></p>'+
+   '<p><b>faire</b>「～させる」：<span class="fr">Ce film a fait pleurer Sylvie.</span>　代名詞にしたとき、過去分詞 fait は<b>一致しない</b>：<span class="fr">Le professeur l\'a fait entrer.</span></p>'+
+   '<p><span class="fr">faire＋不定詞＋名詞B（par / à）</span>：「Bに A を…させる」：<span class="fr">J\'ai fait réparer ma voiture par mon frère. Je fais regarder cette émission à mon père.</span></p>'+
+   '<p><b>se faire＋不定詞</b>「…してもらう、…される」：<span class="fr">Je me suis fait renverser par une voiture. Elle se fait couper les cheveux.</span>（過去分詞 fait は一致しない）</p>'}
+]};
+
+/* ---------- savoir・voir・recevoir・boire ---------- */
+FROM(8,0);
+W("sv","Tu ___ où habite Hugo ?（savoir）","sais","savoir：tu sais。",{ja:"ユゴーがどこに住んでいるか知ってる？"});
+W("sv","Vous ___ le latin ?（savoir）","savez","savoir：vous savez。",{ja:"ラテン語ができますか？"});
+W("sv","Je ne ___ pas son nom.（savoir）","sais","savoir：je sais。",{ja:"私は彼の名前を知らない。"});
+W("sv","De cette fenêtre, nous ___ bien la mer.（voir）","voyons","voir：nous voyons（y が入る）。",{ja:"この窓から海がよく見える。"});
+W("sv","Léa ___ souvent ses cousins.（voir）","voit","voir：elle voit。",{ja:"レアはよくいとこたちに会う。"});
+W("sv","Ils ___ le mont Fuji de ce pont.（voir）","voient","voir：ils voient。",{ja:"彼らはこの橋から富士山が見える。"});
+W("sv","Hugo ___ beaucoup d'amis pour son anniversaire.（recevoir）","reçoit","recevoir：il reçoit（o の前なので ç）。",{ja:"ユゴーは誕生日にたくさんの友だちを迎える。"});
+W("sv","Nous ___ souvent des lettres de Léa.（recevoir）","recevons","recevoir：nous recevons（e の前なので c）。",{ja:"私たちはよくレアから手紙を受け取る。"});
+W("sv","Je ___ ton message.（recevoir）","reçois","recevoir：je reçois。",{ja:"きみのメッセージを受け取ったよ。"});
+W("sv","Ils ___ des invités ce soir.（recevoir）","reçoivent","recevoir：ils reçoivent。",{ja:"彼らは今夜、客を迎える。"});
+W("sv","Yui ne ___ pas de lait.（boire）","boit","boire：elle boit。",{ja:"ゆいは牛乳を飲まない。"});
+W("sv","Nous ___ du thé vert.（boire）","buvons","boire：nous buvons（語幹が buv-）。",{ja:"私たちは緑茶を飲む。"});
+W("sv","Qu'est-ce que vous ___ ?（boire）","buvez","boire：vous buvez。",{ja:"何をお飲みになりますか？"});
+W("sv","Ils ___ du café le matin.（boire）","boivent","boire：ils boivent（語幹が boiv-）。",{ja:"彼らは朝、コーヒーを飲む。"});
+C("sv","Tu ___ de l'eau ?（boire）","bois",["bois","boit","boies"],"boire：tu bois。",{ja:"水を飲む？"});
+C("sv","Elle ___ un mail de Hugo.（recevoir）","reçoit",["reçoit","recoit","reçevoit"],"recevoir：elle reçoit。o の前の c は ç にする。",{ja:"彼女はユゴーからメールを受け取る。"});
+C("sv","Je ___ qu'il est malade.","sais",["sais","connais","vois"],"「～ということを知っている」は savoir。（connaître は人・場所などを知っている）",{ja:"彼が病気だということは知っている。"});
+C("sv","avoir → eu のように、recevoir の過去分詞は？","reçu",["reçu","recevé","reçoivé"],"recevoir → reçu。（savoir → su, voir → vu, boire → bu）",{cw:false});
+C("sv","Tu as ___ ce film ?（voir）","vu",["vu","voi","vois"],"voir → vu。",{ja:"この映画、見た？"});
+C("sv","Nous avons ___ du thé.（boire）","bu",["bu","buvu","boi"],"boire → bu。",{ja:"私たちはお茶を飲んだ。"});
+T("sv","主語を nous に","Je reçois un colis.",["Nous recevons un colis."],"recevoir：nous recevons。");
+T("sv","主語を ils に","Tu bois du thé.",["Ils boivent du thé."],"boire：ils boivent。");
+B("sv","きみはユゴーがどこに住んでいるか知ってる？","Tu sais où habite Hugo ?",["sait","habites"],"savoir：tu sais。");
+B("sv","ゆいは窓から海を見る。","Yui voit la mer de sa fenêtre.",["voient","vois"],"voir：elle voit。");
+
+/* ---------- 半過去のつくり方 ---------- */
+W("imp","Quand Hugo ___ lycéen, il jouait au rugby.（être）","était","être の半過去は語幹 ét-：il était。",{ja:"ユゴーは高校生のころ、ラグビーをしていた。"});
+W("imp","Nous ___ souvent au Jardin du Luxembourg.（aller）","allions","nous allons → all-＋-ions：nous allions。",{ja:"私たちはよくリュクサンブール公園に行っていた。"});
+W("imp","J'___ à Lyon à cette époque.（habiter）","habitais","habiter → j'habitais（母音の前で je → j'）。",{ja:"当時、私はリヨンに住んでいた。"});
+W("imp","Yui ___ de longs cheveux.（avoir）","avait","nous avons → av-＋-ait：elle avait。",{ja:"ゆいは長い髪をしていた。"});
+W("imp","Tu ___ le journal chaque matin.（lire）","lisais","nous lisons → lis-＋-ais：tu lisais。",{ja:"きみは毎朝新聞を読んでいた。"});
+W("imp","Vous ___ la radio.（écouter）","écoutiez","nous écoutons → écout-＋-iez：vous écoutiez。",{ja:"あなたたちはラジオを聞いていた。"});
+W("imp","Ils ___ les Beatles à l'époque.（écouter）","écoutaient","ils → -aient：ils écoutaient。",{ja:"彼らは当時ビートルズを聞いていた。"});
+W("imp","Léa ___ sa grand-mère le dimanche.（voir）","voyait","nous voyons → voy-＋-ait：elle voyait。",{ja:"レアは日曜日におばあさんに会っていた。"});
+W("imp","Nous ___ du lait le matin.（boire）","buvions","nous buvons → buv-＋-ions：nous buvions。",{ja:"私たちは朝、牛乳を飲んでいた。"});
+W("imp","Mon oncle ___ souvent.（voyager）","voyageait","voyager → il voyageait（-ait の前なので e が残る）。",{ja:"おじはよく旅行していた。"});
+W("imp","Je ___ trop vite.（manger）","mangeais","manger → je mangeais（a の前で g の音を保つため e が残る）。",{ja:"私は食べるのが速すぎた。"});
+W("imp","Nous ___ à neuf heures.（commencer）","commencions","-ions の前では ç は不要：nous commencions。",{ja:"私たちは9時に始めていた。"});
+W("imp","Il ___ toute la journée.（pleuvoir）","pleuvait","pleuvoir → il pleuvait。",{ja:"一日じゅう雨が降っていた。"});
+C("imp","Ils ___ à six heures.（finir）","finissaient",["finissaient","finisaient","finissent"],"nous finissons → finiss-＋-aient。",{ja:"彼らは6時に終わっていた。"});
+C("imp","Je ___ la vaisselle.（faire）","faisais",["faisais","fesais","faisait"],"nous faisons → fais-＋-ais。",{ja:"私は皿洗いをしていた。"});
+C("imp","Nous ___ la mer de notre chambre.（voir）","voyions",["voyions","voions","voyons"],"nous voyons → voy-＋-ions：nous voyions。",{ja:"私たちは部屋から海が見えていた。"});
+C("imp","Elles ___ ce qu'il fallait faire.（savoir）","savaient",["savaient","sauvaient","savent"],"nous savons → sav-＋-aient。",{ja:"彼女たちは何をすべきか知っていた。"});
+C("imp","Je ___ beaucoup de lettres.（recevoir）","recevais",["recevais","reçevais","reçois"],"nous recevons → recev-＋-ais。ç は a・o・u の前だけ。e の前は c。",{ja:"私はたくさん手紙を受け取っていた。"});
+T("imp","半過去に","Il pleut beaucoup.",["Il pleuvait beaucoup."],"pleuvoir → il pleuvait。");
+T("imp","半過去に","Nous mangeons au restaurant.",["Nous mangions au restaurant."],"nous mangeons → mang-＋-ions：-ions の前では e は入れない（mangions）。");
+T("imp","半過去に","Elle est lycéenne.",["Elle était lycéenne."],"être の半過去：elle était。");
+B("imp","子どものころ、私は海の近くに住んでいた。","Quand j'étais petite, j'habitais près de la mer.",["étais","habitait"],"どちらも半過去：j'étais, j'habitais。");
+
+/* ---------- 半過去の用法・複合過去との使い分け ---------- */
+C("use","Quand je suis arrivée, Hugo ___ dans la cuisine.","était",["était","a été","avait été"],"そのとき続いていた状態は半過去。arrivée（出来事）は複合過去。",{ja:"私が着いたとき、ユゴーは台所にいた。"});
+C("use","Il ___ deux ans à Lyon.","a habité",["a habité","habitait","avait habité"],"「2年間」と期間が区切られ、現在から見て完了している → 複合過去。",{ja:"彼はリヨンに2年住んでいた。"});
+C("use","Il ___ à Paris quand son fils est né.","habitait",["habitait","a habité","est habité"],"息子が生まれた一時点で続いていた状態 → 半過去。",{ja:"息子が生まれたとき、彼はパリに住んでいた。"});
+C("use","Chaque dimanche, j'___ chez ma grand-mère.","allais",["allais","suis allée","étais allée"],"chaque dimanche（毎週日曜日）は過去の習慣 → 半過去。",{ja:"毎週日曜日、私はおばあさんの家に行っていた。"});
+C("use","Il ___ à Paris de 1996 à 2002.","a habité",["a habité","habitait","avait habité"],"1996年から2002年と、始まりと終わりがはっきりしている → 複合過去。",{ja:"彼は1996年から2002年までパリに住んだ。"});
+C("use","Le téléphone ___ quand Yui était sous la douche.","a sonné",["a sonné","sonnait","avait sonné"],"途中で起きた出来事 → 複合過去。「シャワーを浴びていた」（était）が背景。",{ja:"ゆいがシャワーを浴びているとき、電話が鳴った。"});
+W("use","À deux heures du matin, Hugo ___ encore avec Yui.（parler）","parlait","そのとき続いていた行為 → 半過去。",{ja:"午前2時、ユゴーはまだゆいと話していた。"});
+W("use","Hier soir, Léa ___ à minuit.（se coucher）","s'est couchée","一回の出来事 → 複合過去。代名動詞は être、Léa（女性）→ couchée。",{ja:"昨夜、レアは夜12時に寝た。"});
+W("use","Ma grand-mère ___ trois ans à Osaka.（habiter・期間が区切られている）","a habité","期間が区切られた完了済みの状態 → 複合過去。",{ja:"祖母は大阪に3年住んだ。"});
+W("use","Quand Yui ___ petite, elle aimait la mer.（être）","était","過去の状態 → 半過去：elle était。",{ja:"ゆいは小さいころ、海が好きだった。"});
+T("use","過去の習慣（半過去）に","Léa va chez sa grand-mère le dimanche.",["Léa allait chez sa grand-mère le dimanche."],"過去の習慣 → 半過去：elle allait。");
+T("use","過去の習慣（半過去）に","Hugo ne mange pas de poisson.",["Hugo ne mangeait pas de poisson."],"否定は ne ～ pas で動詞をはさむ。mangeait。");
+T("use","過去の状態（半過去）に","Il pleut quand nous sortons.",["Il pleuvait quand nous sortions."],"どちらも半過去：il pleuvait, nous sortions。");
+B("use","電話が鳴ったとき、レアは台所にいた。","Quand le téléphone a sonné, Léa était dans la cuisine.",["sonnait","a été"],"出来事（a sonné）は複合過去、背景（était）は半過去。");
+B("use","彼はリヨンに2年住んだ。","Il a habité deux ans à Lyon.",["habitait","as"],"期間が区切られた完了済みの状態 → 複合過去。");
+B("use","1996年、あなたはどこに住んでいましたか。","En 1996, où habitiez-vous ?",["habitez","habitiez-tu"],"過去の状態の疑問：habitiez-vous（半過去の倒置）。");
+
+/* ---------- 大過去 ---------- */
+W("pqp","J'___ déjà fini mes devoirs.（avoir）","avais","大過去＝avoir の半過去＋過去分詞：j'avais fini。",{ja:"私はもう宿題を終えていた。"});
+W("pqp","Quand Yui a téléphoné, Hugo ___ son travail.（terminer）","avait terminé","terminer は avoir：il avait terminé。",{ja:"ゆいが電話したとき、ユゴーは仕事を終えていた。"});
+W("pqp","Elle est arrivée à deux heures, mais sa mère ___.（partir）",["était partie","était déjà partie"],"partir は être：sa mère（女性）→ était partie。",{ja:"彼女は2時に着いたが、母親はもう出かけていた。"});
+W("pqp","Il est retourné chez lui parce qu'il ___ ses clés.（oublier）","avait oublié","oublier は avoir：il avait oublié。",{ja:"彼は鍵を忘れたので、家に引き返した。"});
+W("pqp","Mes frères ___ avant mon retour.（se coucher）","s'étaient couchés","代名動詞は être：ils s'étaient couchés。",{ja:"私が帰る前に、兄弟は寝てしまっていた。"});
+W("pqp","Je ___ la mer avant ce voyage.（ne jamais voir）","n'avais jamais vu","否定は助動詞を ne ～ jamais ではさむ：je n'avais jamais vu。",{ja:"この旅行の前、私は一度も海を見たことがなかった。"});
+W("pqp","Léa ___ à Nara avant moi.（arriver）","était arrivée","arriver は être。Léa（女性）→ arrivée。",{ja:"レアは私より先に奈良に着いていた。"});
+W("pqp","Quand je suis arrivé, ils ___ déjà.（partir）",["étaient partis","étaient déjà partis"],"partir は être。ils → partis。déjà を入れるなら過去分詞の直前。",{ja:"私が着いたとき、彼らはもう出発していた。"});
+W("pqp","Vous ___ le journal avant le dîner.（lire）","aviez lu","lire は avoir：vous aviez lu。",{ja:"あなたたちは夕食の前に新聞を読んでいた。"});
+W("pqp","Hugo et Léa ___ au Japon l'été précédent.（venir）","étaient venus","venir は être。男女まざった複数 → venus。",{ja:"ユゴーとレアは前の夏に日本に来ていた。"});
+W("pqp","Elle était malade. Elle ___ la grippe.（attraper）","avait attrapé","病気だった（半過去）より前のこと → 大過去：elle avait attrapé。",{ja:"彼女は病気だった。インフルエンザにかかっていたのだ。"});
+C("pqp","Quand je suis arrivé chez lui, il ___ déjà parti.","était",["était","avait","a été"],"partir は être の助動詞。大過去は être の半過去：il était parti。",{ja:"私が彼の家に着いたとき、彼はもう出かけていた。"});
+C("pqp","Nous nous ___ déjà rencontrés l'été dernier.","étions",["étions","avions","sommes"],"代名動詞の大過去：être の半過去（étions）＋過去分詞。",{ja:"私たちは去年の夏にもう会っていた。"});
+C("pqp","Elles s'étaient ___ avant minuit.（se coucher）","couchées",["couchées","couché","couchés"],"se が直接目的補語 → 主語（elles：女性複数）に一致：couchées。",{ja:"彼女たちは夜12時前に寝てしまっていた。"});
+C("pqp","Léa était ___ avant midi.（sortir）","sortie",["sortie","sorti","sorties"],"être のとき過去分詞は主語に一致：Léa（女性単数）→ sortie。",{ja:"レアは正午前に出かけていた。"});
+C("pqp","J'avais déjà ___ le chinois quand je suis parti.（commencer）","commencé",["commencé","commencée","commençais"],"大過去：avais＋過去分詞（commencé）。主語に一致しない。",{ja:"私は出発したとき、もう中国語を始めていた。"});
+T("pqp","大過去に","Elle a fini le travail.",["Elle avait fini le travail."],"avoir の半過去＋過去分詞：elle avait fini。");
+T("pqp","大過去に","Léa est allée à Nara.",["Léa était allée à Nara."],"être の半過去＋過去分詞：était allée。");
+T("pqp","大過去に","Nous nous sommes levés tôt.",["Nous nous étions levés tôt."],"代名動詞：nous nous étions levés。");
+T("pqp","否定文に","Il avait fini.",["Il n'avait pas fini."],"ne ＋ avait ＋ pas ＋ 過去分詞。");
+B("pqp","ゆいが着いたとき、ユゴーはもう出かけていた。","Quand Yui est arrivée, Hugo était déjà parti.",["avait","partie"],"Hugo（男性）→ parti。partir は être。déjà は過去分詞の直前。");
+B("pqp","ユゴーは一度も海を見たことがなかった。","Hugo n'avait jamais vu la mer.",["a","vue"],"ne ～ jamais は助動詞をはさむ。vu は avoir のときは一致しない。");
+
+/* ---------- 時制の使い分け ---------- */
+W("tps","Je ___ Yui quand il a commencé à pleuvoir.（attendre）","attendais","雨が降り始めた（出来事）とき続いていた行為 → 半過去。",{ja:"雨が降り始めたとき、私はゆいを待っていた。"});
+W("tps","Hugo ___ au lit quand le téléphone a sonné.（être）","était","背景 → 半過去：il était。",{ja:"電話が鳴ったとき、ユゴーはベッドにいた。"});
+W("tps","Hier soir, Hugo ___ chez moi pendant que je dînais.（arriver）","est arrivé","出来事 → 複合過去。arriver は être。",{ja:"昨夜、私が夕食を食べている間にユゴーが家に来た。"});
+W("tps","Ils ___ quand je leur ai téléphoné.（se coucher・電話の前に終わっていた）","s'étaient couchés","電話した時点より前に済んでいた → 大過去。",{ja:"私が電話したとき、彼らはもう寝ていた。"});
+W("tps","Quand Yui ___ de chez elle, il pleuvait.（sortir）","est sortie","出来事 → 複合過去。sortir は être。Yui（女性）→ sortie。",{ja:"ゆいが家を出たとき、雨が降っていた。"});
+W("tps","Hier, Yui ___ à huit heures.（sortir）","est sortie","出来事 → 複合過去。",{ja:"昨日、ゆいは8時に出かけた。"});
+W("tps","Il ___ beau et l'air était frais.（faire）","faisait","天候の描写（背景）→ 半過去。",{ja:"天気がよく、空気はすがすがしかった。"});
+W("tps","Soudain, elle ___ un grand bruit.（entendre）","a entendu","soudain（突然）＝出来事 → 複合過去。",{ja:"突然、彼女は大きな音を聞いた。"});
+W("tps","Une voiture ___ une dame pendant qu'elle traversait la rue.（renverser）","a renversé","出来事 → 複合過去。traversait は背景の半過去。",{ja:"通りを渡っていた女性を車がはねた。"});
+C("tps","Quand Hugo est rentré, Léa ___ déjà mangé.","avait",["avait","a","était"],"帰ってきた時点より前に済んでいた → 大過去（avait mangé）。",{ja:"ユゴーが帰ってきたとき、レアはもう食べ終えていた。"});
+C("tps","Quand elle ___ au Japon, elle ne parlait pas japonais.（arriver）","est arrivée",["est arrivée","arrivait","était arrivée"],"「着いたとき」の出来事 → 複合過去。",{ja:"日本に着いたとき、彼女は日本語を話せなかった。"});
+C("tps","Je ___ répéter parce qu'ils n'avaient pas compris.（devoir）","ai dû",["ai dû","devais","avais dû"],"理解していなかった（大過去）ので、繰り返す必要が生じた（出来事）→ 複合過去 ai dû。",{ja:"彼らが理解していなかったので、繰り返さなければならなかった。"});
+B("tps","彼が着いたとき、レアは眠っていた。","Léa dormait quand il est arrivé.",["a dormi","arrivait"],"背景（dormait）は半過去、出来事（est arrivé）は複合過去。");
+B("tps","今朝、私が家を出たとき、雨が降っていた。","Quand je suis sorti de chez moi ce matin, il pleuvait.",["sortais","a plu"],"出来事 → 複合過去（je suis sorti）、背景 → 半過去（il pleuvait）。");
+B("tps","彼が駅に着いたとき、電車はもう出ていた。","Quand il est arrivé à la gare, le train était déjà parti.",["avait","partait"],"着いた時点より前に出発済み → 大過去。");
+B("tps","彼らは毎年夏をノルマンディーで過ごしていた。","Ils passaient chaque été en Normandie.",["ont passé","passait"],"chaque été（毎夏）は過去の習慣 → 半過去。");
+
+/* ---------- 受動態 ---------- */
+W("pas","Marie ___ par ses anciens élèves.（inviter・現在形の受動態）","est invitée","être＋過去分詞。主語 Marie（女性）→ invitée。",{ja:"マリーは昔の教え子たちに招かれる。"});
+W("pas","Paul ___ de tout le monde.（aimer・現在形の受動態）","est aimé","être＋過去分詞。Paul（男性）→ aimé。状態を表すので de。",{ja:"ポールはみんなに好かれている。"});
+W("pas","Cette ville ___ de montagnes.（entourer・現在形の受動態）","est entourée","ville（女性）→ entourée。",{ja:"この町は山に囲まれている。"});
+W("pas","Ces photos ___ par Léa.（prendre・現在形の受動態）","sont prises","photos（女性複数）→ prises。",{ja:"これらの写真はレアが撮ったものだ。"});
+W("pas","Le bureau ___ jusqu'à vendredi.（fermer・現在形の受動態）","est fermé","bureau（男性単数）→ fermé。",{ja:"事務所は金曜日まで閉まっている。"});
+W("pas","Cette maison ___ par mon père.（construire・複合過去の受動態）","a été construite","複合過去は être の部分で表す：a été＋過去分詞。maison（女性）→ construite。",{ja:"この家は父が建てた。"});
+W("pas","Yui ___ à la fête par Léa.（inviter・複合過去の受動態）","a été invitée","a été＋過去分詞。Yui（女性）→ invitée。",{ja:"ゆいはレアにパーティーに招かれた。"});
+W("pas","Les clés ___ par Hugo.（trouver・複合過去の受動態）","ont été trouvées","clés（女性複数）→ trouvées。",{ja:"鍵はユゴーに見つけられた。"});
+W("pas","Vous ___ .（attendre・半過去の受動態）",["étiez attendu","étiez attendue","étiez attendus","étiez attendues"],"半過去は être の部分で表す：étiez＋過去分詞。主語に一致（vous は性と数による）。",{ja:"お待ちしていました。"});
+C("pas","Les lettres sont ___ par Madame Martin.（écrire）","écrites",["écrites","écrit","écrite"],"lettres（女性複数）→ écrites。",{ja:"手紙はマルタン先生によって書かれる。"});
+C("pas","La porte a été ___ par Hugo.（ouvrir）","ouverte",["ouverte","ouvert","ouvertes"],"porte（女性単数）→ ouverte。",{ja:"ドアはユゴーによって開けられた。"});
+C("pas","La fenêtre a été cassée ___ Hugo.","par",["par","de","à"],"一回の動作の動作主は par。",{ja:"窓はユゴーに割られた。"});
+C("pas","Paul est aimé ___ tout le monde.","de",["de","par","en"],"状態・継続的な内容を表す動詞は de。",{ja:"ポールはみんなに好かれている。"});
+C("pas","受動態を作るときの助動詞は？","être",["être","avoir","aller"],"受動態＝être＋過去分詞（＋ par / de ～）。",{cw:false});
+C("pas","受動態にできるのは？","直接目的補語をとる他動詞",["直接目的補語をとる他動詞","自動詞だけ","代名動詞だけ"],"受動態の主語になるのは、能動態の直接目的補語。",{cw:false});
+T("pas","受動態に","Hugo invite Yui.",["Yui est invitée par Hugo."],"能動態の目的語が主語になり、être＋過去分詞（主語に一致）＋ par ～。");
+T("pas","受動態に","Léa a pris ces photos.",["Ces photos ont été prises par Léa."],"複合過去の受動態：ont été＋過去分詞（photos：女性複数）。");
+T("pas","受動態に","On ferme le bureau le soir.",["Le bureau est fermé le soir."],"on（一般の人々）は省略する。");
+T("pas","受動態に","Tout le monde connaît cette chanson.",["Cette chanson est connue de tout le monde.","Cette chanson est connue par tout le monde."],"connaître → connu。chanson（女性）→ connue。状態なので de が自然。");
+T("pas","受動態に","Le président reçoit les ambassadeurs.",["Les ambassadeurs sont reçus par le président."],"recevoir → reçu。ambassadeurs（男性複数）→ reçus。");
+B("pas","この家は父が建てた。","Cette maison a été construite par mon père.",["est","construit"],"複合過去の受動態：a été＋過去分詞（construite：女性単数）。");
+B("pas","彼女は生徒たちに好かれている。","Elle est adorée de ses élèves.",["adore","adorées"],"être＋過去分詞（adorée：女性単数）。");
+B("pas","近所の人たちは警察に事情を聞かれた。","Les voisins ont été interrogés par la police.",["sont","interrogées"],"複合過去の受動態：ont été＋過去分詞（interrogés：男性複数）。");
+
+/* ---------- 知覚動詞・使役動詞・se faire ---------- */
+T("per","代名詞（直接目的補語）に","Il entend sa mère fermer la porte.",["Il l'entend fermer la porte."],"現在形では、代名詞は知覚動詞の直前。");
+T("per","代名詞（直接目的補語）に","Il a entendu sa mère fermer la porte.",["Il l'a entendue fermer la porte."],"複合過去では avoir の前。過去分詞は直接目的補語（sa mère）に一致：entendue。");
+T("per","代名詞（直接目的補語）に","J'ai vu mon frère porter un grand colis.",["Je l'ai vu porter un grand colis."],"frère（男性単数）→ vu のまま。");
+T("per","代名詞（直接目的補語）に","J'ai vu ma sœur porter un grand colis.",["Je l'ai vue porter un grand colis."],"sœur（女性単数）→ vue。");
+W("per","Hugo a regardé Yui courir. → Hugo l'a ___ courir.（regarder）","regardée","直接目的補語 l'（Yui）が前 → regardée。",{ja:"ユゴーはゆいが走るのを見ていた。"});
+W("per","Léa a entendu ses voisines chanter. → Léa les a ___ chanter.（entendre）","entendues","les（voisines：女性複数）→ entendues。",{ja:"レアは隣人たちが歌うのを聞いた。"});
+W("per","Ce film a fait pleurer Yui. → Ce film l'a ___ pleurer.（faire）","fait","faire＋不定詞のときは、過去分詞 fait は一致しない。",{ja:"この映画はゆいを泣かせた。"});
+C("per","J'ai laissé ma fille dessiner. → Je l'ai ___ dessiner.","laissée",["laissée","laissé","laisser"],"laisser は知覚動詞と同じで、直接目的補語（ma fille）に一致：laissée。",{ja:"私は娘に絵を描かせておいた。"});
+C("per","Le professeur a fait entrer Sylvie. → Le professeur l'a ___ entrer.","fait",["fait","faite","faites"],"faire＋不定詞：fait は一致しない。",{ja:"先生はシルヴィを入らせた。"});
+C("per","Yui a vu Hugo traverser la rue. → Yui l'a ___ traverser la rue.","vu",["vu","vue","vus"],"l'（Hugo：男性単数）→ vu。",{ja:"ゆいはユゴーが通りを渡るのを見た。"});
+W("per","J'ai laissé mes enfants jouer. → Je les ai ___ jouer.（laisser）","laissés","les（enfants：男性複数）→ laissés。",{ja:"私は子どもたちを遊ばせておいた。"});
+C("per","J'ai fait réparer ma voiture ___ mon frère.","par",["par","avec","sur"],"faire＋他動詞の不定詞＋名詞A＋par / à＋名詞B：「Bに A を…させる」。",{ja:"私は弟に車を修理してもらった。"});
+C("per","Je fais regarder cette émission ___ mon père.","à",["à","sur","pour"],"faire＋不定詞＋名詞A＋par / à＋名詞B。",{ja:"私は父にその番組を見させる。"});
+T("per","「Léa が Hugo に車を修理させる」文に","Hugo répare la voiture.",["Léa fait réparer la voiture par Hugo.","Léa fait réparer la voiture à Hugo."],"faire＋不定詞＋名詞A（voiture）＋par / à＋名詞B（Hugo）。");
+T("per","「その映画がゆいを泣かせる」文に","Yui pleure.（ce film）",["Ce film fait pleurer Yui."],"faire＋自動詞の不定詞＋名詞A（Yui）。");
+W("per","Elle ___ couper les cheveux.（se faire・現在形）","se fait","se faire＋不定詞＋名詞：「～を…してもらう」。",{ja:"彼女は髪を切ってもらう。"});
+W("per","Hugo ___ voler son portefeuille dans le métro.（se faire・複合過去）","s'est fait","se faire は être の複合過去。過去分詞 fait は一致しない。",{ja:"ユゴーは地下鉄で財布を盗まれた。"});
+C("per","Yui s'est ___ renverser par une voiture.","fait",["fait","faite","faits"],"se faire＋不定詞：fait は一致しない。",{ja:"ゆいは車にはねられた。"});
+C("per","Je me suis fait ___ par une voiture.（私は車にはねられた）","renverser",["renverser","renversé","renverse"],"se faire のあとは不定詞。",{ja:"私は車にはねられた。"});
+C("per","Il s'est fait voler son portefeuille. の意味は？","財布を盗まれた",["財布を盗まれた","財布を盗んだ","財布を盗ませた"],"se faire＋不定詞は「…される・…してもらう」。",{cw:false});
+C("per","Nous avons ___ les voisins se disputer.（私たちは隣人がけんかするのが聞こえた）","entendu",["entendu","fait","laissé"],"「聞こえた」は知覚動詞 entendre。",{ja:"私たちは隣人たちが言い争うのが聞こえた。"});
+W("per","Dans mon rêve, Yui ___ des anges danser.（voir・半過去）","voyait","半過去 → voyait。voir は知覚動詞。",{ja:"夢の中で、ゆいは天使が踊るのを見ていた。"});
+B("per","私たちは子どもたちが泳ぐのを眺める。","Nous regardons nos enfants nager.",["regardent","nagent"],"知覚動詞＋直接目的補語＋不定詞。");
+B("per","彼は彼女が門を閉めるのを聞いた。","Il l'a entendue fermer la porte.",["entendu","la"],"代名詞 l'（彼女）が前 → entendue。");
+B("per","レアは髪を切ってもらった。","Léa s'est fait couper les cheveux.",["a","coupés"],"se faire は être の複合過去。fait は一致しない。");
+B("per","私は弟に車を修理してもらった。","J'ai fait réparer ma voiture par mon frère.",["fais","à"],"faire＋不定詞（réparer）＋名詞A（ma voiture）＋par＋名詞B（mon frère）。");
+B("per","ゆいは地下鉄で財布を盗まれた。","Yui s'est fait voler son portefeuille dans le métro.",["a","volé"],"se faire＋不定詞（voler）。");
+</script>
+</body>
+</html>
