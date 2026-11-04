@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="grammar.css?v=13">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="tiles.js?v=1"></script>
+<script src="tiles.js?v=2"></script>
 <script src="grammar.js?v=31"></script>
 </head>
 <body>
@@ -75,7 +75,7 @@ C("cod","Vous nous invitez ? ― Oui, nous ___ invitons.","vous",["vous","nous",
 C("cod","Il ___ donne un cadeau.（私に）","me",["me","moi","je"],"「私に」（間接目的補語）→ me。",{ja:"彼は私にプレゼントをくれる。"});
 C("cod","Ces fleurs ? Je ___ achète pour ma mère.","les",["les","leur","la"],"ces fleurs（複数・直接目的）→ les。",{h:["ces fleurs を指す"],ja:"この花？ 母のために買うの。"});
 C("cod","Tu ne regardes pas ce match ? ― Non, je ne ___ regarde pas.","le",["le","lui","l'"],"ce match（男性単数・直接目的）→ le。",{h:["ce match を指す"],ja:"この試合見ないの？ ― うん、見ない。"});
-C("cod","彼女に電話するつもりだ。","Je vais lui téléphoner.",["Je vais lui téléphoner.","Je lui vais téléphoner.","Je vais téléphoner lui."],"代名詞は不定詞の直前。",{cw:false});
+C("cod","彼女に電話するつもりだ。","Je vais lui téléphoner.",["Je vais lui téléphoner.","Je lui vais téléphoner.","Je vais téléphoner lui."],"aller＋不定詞（近接未来「～するつもりだ」）では、代名詞は不定詞の直前。",{cw:false});
 C("cod","それ（la clé）が見つからない。","Je ne la trouve pas.",["Je ne la trouve pas.","Je la ne trouve pas.","Je ne trouve pas la."],"ne＋代名詞＋動詞＋pas。",{cw:false});
 B("cod","私は毎日彼に電話する。","Je lui téléphone tous les jours.",["le","leur"],"téléphoner à＋人 → lui を動詞の前に。");
 B("cod","私たちはそれ（cette voiture）を買わない。","Nous ne l'achetons pas.",["la","lui"],"la → 母音の前で l'。ne＋代名詞＋動詞＋pas。");
@@ -151,11 +151,11 @@ B("cod","【奈良公園で】鹿たちに？ ゆいはもう彼らにせんべ�
 B("cod","【ユゴーが奈良に来る】レアは彼（ユゴー）をゆいに紹介するつもりだ。","Léa va le présenter à Yui.",["lui","la"],"「彼を」は直接目的 le。近接未来では不定詞の直前に置く。");
 B("cod","【リヨンの兄のこと】レアはたった今、彼（ユゴー）に電話したところだ。","Léa vient de lui téléphoner.",["le","leur"],"téléphoner à＋人 → lui。venir de のあと、不定詞の直前に。");
 B("cod","【マルタン先生の授業】それ（le cours）をおもしろいと思わないの？","Tu ne le trouves pas intéressant ?",["lui","la"],"cours は男性単数の直接目的 → le。ne＋le＋動詞＋pas。");
-B("cod","【明日はレアの誕生日】ゆいは彼女にケーキを作ってあげるつもりだ。","Yui va lui faire un gâteau.",["la","elle"],"「彼女に」は間接目的 lui。不定詞 faire の直前に置く。");
-B("ordre","【レアが辞書を探している】ゆい「それ（ce dictionnaire）、きみに貸してあげるよ」","Je vais te le prêter.",["toi","lui"],"te＋le の順で、不定詞 prêter の直前に置く。");
+B("cod","【明日はレアの誕生日】ゆいは彼女にケーキを作ってあげるつもりだ。","Yui va lui faire un gâteau.",["la","elle"],"va faire は aller＋不定詞（近接未来「～するつもりだ」）。「彼女に」は間接目的 lui。不定詞 faire の直前に置く。");
+B("ordre","【レアが辞書を探している】ゆい「それ（ce dictionnaire）、きみに貸してあげるよ」","Je vais te le prêter.",["toi","lui"],"vais は aller（je vais）。aller＋不定詞で「これから～する・～するよ」（近接未来）。代名詞は te＋le の順で、不定詞 prêter の直前に置く。");
 B("ordre","【ユゴーの新しい車】ユゴーはそれ（sa voiture）を彼女（レア）に決して貸さない。","Hugo ne la lui prête jamais.",["le","leur"],"la（直接）＋lui（間接）の順。ne と jamais ではさむ。");
 B("ordre","【京都旅行の写真（les photos）】レア、それらを私たちに見せてくれる？","Léa, tu nous les montres ?",["leur","leurs"],"nous（間接）＋les（直接）の順。");
-B("ordre","【奈良のお茶（ce thé）】レアはそれをユゴーに送るつもりだ。","Léa va le lui envoyer.",["leur","la"],"le＋lui の順で、不定詞の直前に。");
+B("ordre","【奈良のお茶（ce thé）】レアはそれをユゴーに送るつもりだ。","Léa va le lui envoyer.",["leur","la"],"va envoyer は aller＋不定詞（近接未来「～するつもりだ」）。代名詞は le＋lui の順で、不定詞の直前に。");
 B("ordre","【小テスト】マルタン先生「答え（la réponse）？ あなたたちにそれは教えませんよ」","Je ne vous la donne pas !",["leur","le"],"vous＋la の順。ne と pas で代名詞と動詞をはさむ。");
 B("ton","【京都旅行】ユゴーは私たちといっしょに来るの？（倒置で）","Hugo vient-il avec nous ?",["on","notre"],"前置詞 avec のあとは強勢形 nous。名詞主語の倒置は -il。");
 B("ton","【レアの写真を見ながら】この人が、レアのお兄さん？","C'est lui, le frère de Léa ?",["il","eux"],"C'est のあとは強勢形。「彼」→ lui。");
