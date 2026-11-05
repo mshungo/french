@@ -274,8 +274,8 @@
     var cj=J("conjQuizStats_v4_"+id)||{},ranks={};
     ["être","aller","avoir","faire","mix"].forEach(function(v){ranks[v]=rankOf((cj.bestTimes||{})[v]);});
     badges+=Object.keys(cj.badges||{}).length;
-    /* いろいろな動詞（動詞活用ページ。もとは文法練習にあった129問＋Leçon 7 の動詞・複合過去・半過去の78問） */
-    var vq=J("verbQuiz_v1_"+id)||{},vb={n:207,m:0,ch:0,once:0,pts:0,tried:0,rounds:vq.tries||0};
+    /* いろいろな動詞（動詞活用ページ。もとは文法練習にあった129問＋Leçon 7 の動詞・複合過去・半過去の78問＋Leçon 9 の dormir・sentir・ouvrir・conduire の44問） */
+    var vq=J("verbQuiz_v1_"+id)||{},vb={n:251,m:0,ch:0,once:0,pts:0,tried:0,rounds:vq.tries||0};
     for(var k3 in (vq.it||{})){var y=vq.it[k3];if(!((y.c||0)+(y.w||0)))continue;vb.tried++;var p3=ptOf(y);vb.pts+=p3;
       if(p3>=4&&!y.wk)vb.m++;else if(p3>=2)vb.ch++;else if(p3>=1)vb.once++;}
     vb.tried=Math.min(vb.tried,vb.n);vb.pct=Math.floor(vb.pts/(vb.n*4)*100);

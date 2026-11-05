@@ -48,6 +48,14 @@ window.LESSON={no:"V",label:"いろいろな動詞",eyebrow:"Conjugaison",title:
    '<p><span class="fr">devoir</span>：dois, dois, doit, devons, devez, <b>doivent</b></p>'+
    '<p><span class="fr">vouloir</span>：veux, veux, veut, voulons, voulez, <b>veulent</b></p>'+
    '<p>pouvoir・devoir・vouloir は、うしろに不定詞を置いて「～できる・～しなければならない・～したい」。</p>'},
+  {k:"v9",t:"dormir・sentir・ouvrir・conduire",d:"Leçon 9（p.54）",c:"#8aa77a",ci:"#68875a",cw:"#f0f5ec",
+   memo:'<table><tr><td class="fr">je dors</td><td class="fr">nous dormons</td></tr><tr><td class="fr">tu dors</td><td class="fr">vous dormez</td></tr><tr><td class="fr">il / elle dort</td><td class="fr">ils / elles dorment</td></tr></table>'+
+   '<p><span class="fr">dormir</span> と <span class="fr">sentir</span> は partir・sortir と同じ型：単数は m・t を落として -s, -s, -t、複数で m・t がもどる。<span class="fr">sentir</span>：sens, sens, sent, sentons, sentez, sentent。同じ型：<span class="fr">servir（仕える、出す）</span></p>'+
+   '<table><tr><td class="fr">j\'ouvre</td><td class="fr">nous ouvrons</td></tr><tr><td class="fr">tu ouvres</td><td class="fr">vous ouvrez</td></tr><tr><td class="fr">il / elle ouvre</td><td class="fr">ils / elles ouvrent</td></tr></table>'+
+   '<p><span class="fr">ouvrir</span> は -ir で終わるのに、<b>-er 動詞と同じ語尾</b>（-e, -es, -e, -ons, -ez, -ent）。同じ型：<span class="fr">couvrir（覆う）、découvrir（発見する）、offrir（贈る）、souffrir（苦しむ）</span></p>'+
+   '<table><tr><td class="fr">je conduis</td><td class="fr">nous conduisons</td></tr><tr><td class="fr">tu conduis</td><td class="fr">vous conduisez</td></tr><tr><td class="fr">il / elle conduit</td><td class="fr">ils / elles conduisent</td></tr></table>'+
+   '<p><span class="fr">conduire</span>：複数で s が入る（lire と同じ型）。同じ型：<span class="fr">construire（建てる）、introduire（紹介する、導入する）、produire（生産する）、traduire（翻訳する）</span></p>'+
+   '<p>過去分詞：<span class="fr">dormir → dormi, sentir → senti, ouvrir → ouvert, conduire → conduit</span></p>'},
   {k:"pc",t:"複合過去",d:"avoir / être ＋過去分詞",c:"#9b8fc4",ci:"#7a6ea6",cw:"#f1eff8",
    memo:'<p>助動詞（avoir または être）の現在形＋過去分詞。</p>'+
    '<table><tr><td class="fr">j\'ai chanté</td><td class="fr">nous avons chanté</td></tr><tr><td class="fr">tu as chanté</td><td class="fr">vous avez chanté</td></tr><tr><td class="fr">il / elle a chanté</td><td class="fr">ils / elles ont chanté</td></tr></table>'+
@@ -297,3 +305,50 @@ C("imp","Vous ___ fatigués.（être）","étiez",["étiez","êtiez","étaiez"],
 C("imp","Elles ___ deux enfants.（avoir）","avaient",["avaient","avait","avaiont"],"ils / elles → -aient：elles avaient。",{ja:"彼女たちには子どもが2人いた。"});
 B("imp","子どものころ、レアは毎週日曜日におばあさんの家に行っていた。","Quand elle était petite, Léa allait chez sa grand-mère chaque dimanche.",["allée","va"],"過去の習慣は半過去：allait。");
 B("imp","電話が鳴ったとき、ゆいは台所にいた。","Yui était dans la cuisine quand le téléphone a sonné.",["est","sonnait"],"そのとき続いていた状態は半過去（était）、起きた出来事は複合過去（a sonné）。");
+
+/* ---------- Leçon 9：dormir・sentir・ouvrir・conduire（新しく追加。番号は V9-） ---------- */
+FROM("V9",0);
+W("v9","Je ___ huit heures par nuit.（dormir）","dors","dormir：je dors（m が落ちる）。",{ja:"私は毎晩8時間眠る。"});
+W("v9","Tu ___ bien ?（dormir）","dors","dormir：tu dors。",{ja:"よく眠れてる？"});
+W("v9","Le bébé ___ dans sa chambre.（dormir）","dort","dormir：il dort（t で終わる）。",{ja:"赤ちゃんは部屋で眠っている。"});
+W("v9","Nous ___ peu pendant les examens.（dormir）","dormons","dormir：nous dormons（複数では m がもどる）。",{ja:"試験の間、私たちはあまり眠らない。"});
+W("v9","Vous ___ tard le dimanche ?（dormir）","dormez","dormir：vous dormez。",{ja:"日曜日は遅くまで寝ていますか？"});
+W("v9","Les cerfs ___ dans le parc.（dormir）","dorment","dormir：ils dorment。",{ja:"シカたちは公園で眠っている。"});
+W("v9","Je ___ une bonne odeur.（sentir）","sens","sentir：je sens（t が落ちる）。",{ja:"いいにおいがする。"});
+W("v9","Tu ___ le vent ?（sentir）","sens","sentir：tu sens。",{ja:"風を感じる？"});
+W("v9","Ce gâteau ___ bon !（sentir）","sent","sentir：il sent。sentir bon で「いいにおいがする」。",{ja:"このケーキ、いいにおい！"});
+W("v9","Nous ___ le printemps arriver.（sentir）","sentons","sentir：nous sentons。",{ja:"私たちは春が来るのを感じる。"});
+C("v9","Comment vous ___-vous aujourd'hui ?（se sentir）","sentez",["sentez","sentes","sentons"],"se sentir：vous vous sentez。倒置で sentez-vous。",{ja:"今日の気分はいかがですか？"});
+W("v9","Elles ___ la fatigue.（sentir）","sentent","sentir：elles sentent。",{ja:"彼女たちは疲れを感じている。"});
+W("v9","J'___ la fenêtre.（ouvrir）","ouvre","ouvrir：j'ouvre（-er 動詞と同じ語尾 -e）。",{ja:"私は窓を開ける。"});
+W("v9","Tu ___ la porte, s'il te plaît ?（ouvrir）","ouvres","ouvrir：tu ouvres。",{ja:"ドアを開けてくれる？"});
+W("v9","La boulangerie ___ à sept heures.（ouvrir）","ouvre","ouvrir：elle ouvre。",{ja:"パン屋は7時に開く。"});
+W("v9","Nous ___ nos livres à la page 54.（ouvrir）","ouvrons","ouvrir：nous ouvrons。",{ja:"私たちは教科書の54ページを開く。"});
+W("v9","Vous ___ le cadeau ?（ouvrir）","ouvrez","ouvrir：vous ouvrez。",{ja:"プレゼントを開けますか？"});
+W("v9","Les magasins ___ à dix heures.（ouvrir）","ouvrent","ouvrir：ils ouvrent。",{ja:"お店は10時に開く。"});
+W("v9","Je ne ___ pas.（conduire）","conduis","conduire：je conduis。",{ja:"私は運転しない。"});
+W("v9","Tu ___ trop vite !（conduire）","conduis","conduire：tu conduis。",{ja:"きみ、運転が速すぎるよ！"});
+W("v9","Hugo ___ la voiture de son père.（conduire）","conduit","conduire：il conduit（t で終わる）。",{ja:"ユゴーは父親の車を運転する。"});
+W("v9","Nous ___ prudemment.（conduire）","conduisons","conduire：nous conduisons（複数では s が入る）。",{ja:"私たちは慎重に運転する。"});
+W("v9","Vous ___ depuis longtemps ?（conduire）","conduisez","conduire：vous conduisez。",{ja:"運転歴は長いのですか？"});
+W("v9","Mes parents ___ une petite voiture.（conduire）","conduisent","conduire：ils conduisent。",{ja:"両親は小さな車を運転している。"});
+C("v9","Ils ___ bien.（dormir）","dorment",["dorment","dorent","dormont"],"dormir：ils dorment。複数では m がもどる。",{ja:"彼らはよく眠る。"});
+C("v9","Elle ___ toute la nuit.（dormir）","dort",["dort","dors","dorme"],"dormir：il / elle dort（t で終わる）。",{ja:"彼女は一晩じゅう眠る。"});
+C("v9","Ça ___ le café !（sentir）","sent",["sent","sens","sente"],"sentir：il sent。",{ja:"コーヒーのにおいがする！"});
+C("v9","Il ___ la fenêtre.（ouvrir）","ouvre",["ouvre","ouvrent","ouvert"],"ouvrir：il ouvre（-er 動詞と同じ語尾）。ouvert は過去分詞。",{ja:"彼は窓を開ける。"});
+C("v9","Elles ___ la porte.（ouvrir）","ouvrent",["ouvrent","ouvrissent","ouvront"],"ouvrir：elles ouvrent。",{ja:"彼女たちはドアを開ける。"});
+C("v9","Nous ___ la voiture.（conduire）","conduisons",["conduisons","conduions","conduirons"],"conduire：nous conduisons（s が入る）。",{ja:"私たちが車を運転する。"});
+C("v9","Ils ___ un bus.（conduire）","conduisent",["conduisent","conduient","conduisont"],"conduire：ils conduisent。",{ja:"彼らはバスを運転する。"});
+C("v9","Le serveur ___ le café.（servir）","sert",["sert","servent","sers"],"servir は dormir・sentir と同じ型：il sert。",{ja:"ウエーターがコーヒーを出す。"});
+C("v9","Léa ___ des fleurs à sa mère.（offrir）","offre",["offre","offrent","offert"],"offrir は ouvrir と同じ型：elle offre。",{ja:"レアは母親に花を贈る。"});
+C("v9","Ils ___ une maison.（construire）","construisent",["construisent","construient","construisont"],"construire は conduire と同じ型：ils construisent。",{ja:"彼らは家を建てる。"});
+C("v9","Je ___ ce texte en japonais.（traduire）","traduis",["traduis","traduit","traduisons"],"traduire は conduire と同じ型：je traduis。",{ja:"私はこの文章を日本語に訳す。"});
+C("v9","ouvrir の過去分詞は？","ouvert",["ouvert","ouvri","ouvru"],"ouvrir → ouvert（couvrir → couvert, offrir → offert）。",{cw:false});
+W("v9","Hier, j'ai bien ___.（dormir）","dormi","dormir の過去分詞：dormi。",{ja:"昨日はよく眠れた。"});
+W("v9","Hugo a ___ jusqu'à Kyoto.（conduire）","conduit","conduire の過去分詞：conduit。",{ja:"ユゴーは京都まで運転した。"});
+T("v9","主語を nous に","Je dors bien.",["Nous dormons bien."],"dormir：nous dormons。",{extra:["dorons","dormmons"]});
+T("v9","主語を ils に","Il ouvre la fenêtre.",["Ils ouvrent la fenêtre."],"ouvrir：ils ouvrent。",{extra:["ouvrissent","ouvre"]});
+T("v9","主語を vous に","Tu conduis bien.",["Vous conduisez bien."],"conduire：vous conduisez。",{extra:["conduiez","conduis"]});
+B("v9","ゆいは毎朝窓を開ける。","Yui ouvre la fenêtre tous les matins.",["ouvrent","ouvert"],"ouvrir：elle ouvre。");
+B("v9","レアとユゴーは車を運転しない。","Léa et Hugo ne conduisent pas.",["conduient","conduit"],"conduire：ils conduisent。");
+B("v9","私は気分がいい。","Je me sens bien.",["sent","sente"],"se sentir：je me sens。");

@@ -356,7 +356,7 @@
   $("goBtn").addEventListener("click",function(){
     var b=this;if(b.classList.contains("rolling"))return;
     var c=[];["être","aller","avoir","faire","mix"].forEach(function(v){c.push("conjugation.html#play:"+encodeURIComponent(v));});
-    ["er","ea","ir","v4","v5","v6","v7","pc","imp","mix"].forEach(function(k){c.push("verbs.html#"+k);});
+    ["er","ea","ir","v4","v5","v6","v7","v9","pc","imp","mix"].forEach(function(k){c.push("verbs.html#"+k);});
     for(var n=1;n<=8;n++)c.push("grammar-l"+n+".html#mix");
     c.push("vocab.html#today");
     try{if(vocabDue(JSON.parse(localStorage.getItem("vocabQuiz_v1_"+((Q.user()||{}).id||"guest")))))c.push("vocab.html#today","vocab.html#today");}catch(e){}   /* 単語の復習がたまっている日は、出やすく */
