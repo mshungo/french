@@ -48,6 +48,17 @@ window.LESSON={no:"V",label:"いろいろな動詞",eyebrow:"Conjugaison",title:
    '<p><span class="fr">devoir</span>：dois, dois, doit, devons, devez, <b>doivent</b></p>'+
    '<p><span class="fr">vouloir</span>：veux, veux, veut, voulons, voulez, <b>veulent</b></p>'+
    '<p>pouvoir・devoir・vouloir は、うしろに不定詞を置いて「～できる・～しなければならない・～したい」。</p>'},
+  {k:"v8",t:"savoir・voir・recevoir・boire",d:"Leçon 8",c:"#b79a6e",ci:"#94784c",cw:"#f8f2e8",
+   memo:'<table><tr><th>savoir</th><th>voir</th><th>recevoir</th><th>boire</th></tr>'+
+   '<tr><td class="fr">je sais</td><td class="fr">je vois</td><td class="fr">je reçois</td><td class="fr">je bois</td></tr>'+
+   '<tr><td class="fr">tu sais</td><td class="fr">tu vois</td><td class="fr">tu reçois</td><td class="fr">tu bois</td></tr>'+
+   '<tr><td class="fr">il sait</td><td class="fr">il voit</td><td class="fr">il reçoit</td><td class="fr">il boit</td></tr>'+
+   '<tr><td class="fr">nous savons</td><td class="fr">nous voyons</td><td class="fr">nous recevons</td><td class="fr">nous buvons</td></tr>'+
+   '<tr><td class="fr">vous savez</td><td class="fr">vous voyez</td><td class="fr">vous recevez</td><td class="fr">vous buvez</td></tr>'+
+   '<tr><td class="fr">ils savent</td><td class="fr">ils voient</td><td class="fr">ils reçoivent</td><td class="fr">ils boivent</td></tr></table>'+
+   '<p>過去分詞：<span class="fr">su, vu, reçu, bu</span></p>'+
+   '<p>recevoir は a・o・u の前で c → ç：<span class="fr">je reçois / nous recevons</span>。voir は nous・vous で i → y：<span class="fr">nous voyons</span>。boire は nous・vous で語幹が buv-。</p>'+
+   '<p>同じ型：<span class="fr">revoir（再会する）、apercevoir（見える）</span></p>'},
   {k:"v9",t:"dormir・sentir・ouvrir・conduire",d:"Leçon 9（p.54）",c:"#8aa77a",ci:"#68875a",cw:"#f0f5ec",
    memo:'<table><tr><td class="fr">je dors</td><td class="fr">nous dormons</td></tr><tr><td class="fr">tu dors</td><td class="fr">vous dormez</td></tr><tr><td class="fr">il / elle dort</td><td class="fr">ils / elles dorment</td></tr></table>'+
    '<p><span class="fr">dormir</span> と <span class="fr">sentir</span> は partir・sortir と同じ型：単数は m・t を落として -s, -s, -t、複数で m・t がもどる。<span class="fr">sentir</span>：sens, sens, sent, sentons, sentez, sentent。同じ型：<span class="fr">servir（仕える、出す）</span></p>'+
@@ -68,7 +79,13 @@ window.LESSON={no:"V",label:"いろいろな動詞",eyebrow:"Conjugaison",title:
    '<p><span class="fr">avoir（nous avons）→ j\'avais　finir（nous finissons）→ je finissais　faire（nous faisons）→ je faisais</span></p>'+
    '<p>例外は être：<span class="fr">j\'étais, tu étais, il était, nous étions, vous étiez, ils étaient</span></p>'+
    '<p>manger → je mangeais（nous mangions）、commencer → je commençais（nous commencions）：a・o の前だけ e・ç が入る。</p>'+
-   '<p>pleuvoir → il pleuvait、falloir → il fallait。用法：過去の状態・進行中のこと、過去の習慣「～していた」。</p>'}
+   '<p>pleuvoir → il pleuvait、falloir → il fallait。用法：過去の状態・進行中のこと、過去の習慣「～していた」。</p>'},
+  {k:"pq",t:"大過去",d:"助動詞の半過去＋過去分詞",c:"#b48aa8",ci:"#8f667f",cw:"#f6eef3",
+   memo:'<p>助動詞（avoir / être）の<b>半過去</b>＋過去分詞。avoir か être かの選び方と、過去分詞の一致は複合過去と同じ。</p>'+
+   '<table><tr><td class="fr">j\'avais fini</td><td class="fr">nous avions fini</td></tr><tr><td class="fr">tu avais fini</td><td class="fr">vous aviez fini</td></tr><tr><td class="fr">il avait fini</td><td class="fr">ils avaient fini</td></tr></table>'+
+   '<table><tr><td class="fr">j\'étais parti(e)</td><td class="fr">nous étions parti(e)s</td></tr><tr><td class="fr">tu étais parti(e)</td><td class="fr">vous étiez parti(e)(s)</td></tr><tr><td class="fr">il était parti / elle était partie</td><td class="fr">ils étaient partis / elles étaient parties</td></tr></table>'+
+   '<p>代名動詞：<span class="fr">je m\'étais levé(e), elle s\'était levée, ils s\'étaient levés</span></p>'+
+   '<p>否定：<span class="fr">je n\'avais pas fini</span>（助動詞を ne ～ pas ではさむ）</p>'}
 ]};
 
 /* ---------- Leçon 2：-er動詞 ---------- */
@@ -352,3 +369,79 @@ T("v9","主語を vous に","Tu conduis bien.",["Vous conduisez bien."],"conduir
 B("v9","ゆいは毎朝窓を開ける。","Yui ouvre la fenêtre tous les matins.",["ouvrent","ouvert"],"ouvrir：elle ouvre。");
 B("v9","レアとユゴーは車を運転しない。","Léa et Hugo ne conduisent pas.",["conduient","conduit"],"conduire：ils conduisent。");
 B("v9","私は気分がいい。","Je me sens bien.",["sent","sente"],"se sentir：je me sens。");
+/* ---------- Leçon 9 の動詞：ほかの時制（番号は V9- の続き） ---------- */
+C("v9","Hier, Yui ___ dix heures.（dormir・複合過去）","a dormi",["a dormi","est dormie","a dormu"],"dormir は avoir。過去分詞は dormi。",{ja:"昨日、ゆいは10時間眠った。"});
+C("v9","Nous ___ toutes les fenêtres.（ouvrir・複合過去）","avons ouvert",["avons ouvert","avons ouvri","sommes ouverts"],"ouvrir の過去分詞は ouvert。",{ja:"私たちは窓を全部開けた。"});
+C("v9","J'___ un livre à Léa.（offrir・複合過去）","ai offert",["ai offert","ai offri","ai offrit"],"offrir は ouvrir と同じ型：過去分詞 offert。",{ja:"私はレアに本を贈った。"});
+C("v9","Ils ___ une maison l'année dernière.（construire・複合過去）","ont construit",["ont construit","ont construi","ont construisé"],"construire は conduire と同じ型：過去分詞 construit。",{ja:"彼らは去年、家を建てた。"});
+C("v9","Je n'ai rien ___.（sentir・複合過去）","senti",["senti","sentu","sens"],"sentir の過去分詞は senti。",{ja:"私は何も感じなかった。"});
+C("v9","Le bébé ___ quand je suis rentrée.（dormir・半過去）","dormait",["dormait","dorait","dormissait"],"nous dormons → dorm-＋-ait：il dormait。",{ja:"私が帰ったとき、赤ちゃんは眠っていた。"});
+C("v9","Hugo ___ quand j'ai téléphoné.（conduire・半過去）","conduisait",["conduisait","conduait","conduirait"],"nous conduisons → conduis-＋-ait：il conduisait。",{ja:"私が電話したとき、ユゴーは運転していた。"});
+C("v9","En été, vous ___ les fenêtres le matin.（ouvrir・半過去）","ouvriez",["ouvriez","ouvraient","ouvrissiez"],"nous ouvrons → ouvr-＋-iez：vous ouvriez。",{ja:"夏、あなたたちは朝、窓を開けていた。"});
+
+/* ---------- Leçon 8：savoir・voir・recevoir・boire（番号は V8-） ---------- */
+FROM("V8",0);
+W("v8","Je ne ___ pas nager.（savoir）","sais","savoir：je sais。",{ja:"私は泳げない。"});
+W("v8","Tu ___ où est mon portable ?（savoir）","sais","savoir：tu sais。",{ja:"私のスマホがどこにあるか知ってる？"});
+W("v8","Hugo ___ faire la cuisine.（savoir）","sait","savoir：il sait。",{ja:"ユゴーは料理ができる。"});
+W("v8","Nous ne ___ pas où il habite.（savoir）","savons","savoir：nous savons。",{ja:"私たちは彼がどこに住んでいるか知らない。"});
+W("v8","Vous ___ conduire ?（savoir）","savez","savoir：vous savez。",{ja:"運転できますか？"});
+W("v8","Ils ___ que Léa est malade.（savoir）","savent","savoir：ils savent。",{ja:"彼らはレアが病気だと知っている。"});
+W("v8","Je ___ souvent Hugo à la bibliothèque.（voir）","vois","voir：je vois。",{ja:"私は図書館でよくユゴーを見かける。"});
+W("v8","Tu ___ ce bâtiment blanc ?（voir）","vois","voir：tu vois。",{ja:"あの白い建物が見える？"});
+W("v8","On ___ bien la mer d'ici.（voir）","voit","voir：on voit。",{ja:"ここから海がよく見える。"});
+W("v8","Nous ___ nos grands-parents le dimanche.（voir）","voyons","voir：nous voyons（i → y）。",{ja:"私たちは日曜日に祖父母に会う。"});
+W("v8","Vous ___ cette rue ?（voir）","voyez","voir：vous voyez（i → y）。",{ja:"あの通りが見えますか？"});
+W("v8","Elles ___ un film ce soir.（voir）","voient","voir：elles voient。",{ja:"彼女たちは今晩、映画を見る。"});
+W("v8","Je ___ beaucoup de messages.（recevoir）","reçois","recevoir：je reçois（o の前で ç）。",{ja:"私はたくさんメッセージを受け取る。"});
+W("v8","Tu ___ des lettres de Yui ?（recevoir）","reçois","recevoir：tu reçois。",{ja:"ゆいから手紙が来る？"});
+W("v8","Léa ___ ses amis chez elle.（recevoir）","reçoit","recevoir：elle reçoit。",{ja:"レアは友だちを家に迎える。"});
+W("v8","Nous ___ un colis chaque mois.（recevoir）","recevons","recevoir：nous recevons（e の前は c）。",{ja:"私たちは毎月小包を受け取る。"});
+W("v8","Vous ___ beaucoup d'invités ?（recevoir）","recevez","recevoir：vous recevez。",{ja:"お客さんをたくさん迎えるのですか？"});
+W("v8","Ils ___ le journal chaque matin.（recevoir）","reçoivent","recevoir：ils reçoivent。",{ja:"彼らは毎朝新聞を受け取る。"});
+W("v8","Je ___ du café le matin.（boire）","bois","boire：je bois。",{ja:"私は朝、コーヒーを飲む。"});
+W("v8","Tu ___ du thé ou du café ?（boire）","bois","boire：tu bois。",{ja:"紅茶を飲む？ コーヒーを飲む？"});
+W("v8","Le chat ___ du lait.（boire）","boit","boire：il boit。",{ja:"猫は牛乳を飲む。"});
+W("v8","Nous ___ de l'eau.（boire）","buvons","boire：nous buvons（語幹 buv-）。",{ja:"私たちは水を飲む。"});
+W("v8","Vous ___ du thé vert ?（boire）","buvez","boire：vous buvez。",{ja:"緑茶を飲みますか？"});
+W("v8","Les enfants ___ du jus d'orange.（boire）","boivent","boire：ils boivent（語幹 boiv-）。",{ja:"子どもたちはオレンジジュースを飲む。"});
+C("v8","Nous ___ la tour Eiffel.（voir）","voyons",["voyons","voions","voirons"],"voir：nous voyons。",{ja:"エッフェル塔が見える。"});
+C("v8","Ils ___ un cadeau.（recevoir）","reçoivent",["reçoivent","recevent","reçoient"],"recevoir：ils reçoivent。",{ja:"彼らはプレゼントを受け取る。"});
+C("v8","Vous ___ trop de café.（boire）","buvez",["buvez","boivez","boiez"],"boire：vous buvez。",{ja:"コーヒーを飲みすぎですよ。"});
+C("v8","Ils ne ___ pas la réponse.（savoir）","savent",["savent","saient","savont"],"savoir：ils savent。",{ja:"彼らは答えを知らない。"});
+C("v8","J'ai ___ un mail de Hugo.（recevoir）","reçu",["reçu","recevé","reçoit"],"recevoir の過去分詞：reçu。",{ja:"ユゴーからメールを受け取った。"});
+C("v8","Tu as ___ ce film ?（voir）","vu",["vu","voi","voyé"],"voir の過去分詞：vu。",{ja:"この映画、見た？"});
+C("v8","Nous avons ___ du thé.（boire）","bu",["bu","buvu","boi"],"boire の過去分詞：bu。",{ja:"私たちはお茶を飲んだ。"});
+C("v8","Je n'ai pas ___ répondre.（savoir）","su",["su","savu","sait"],"savoir の過去分詞：su。",{ja:"私は答えられなかった。"});
+T("v8","主語を nous に","Je bois du thé.",["Nous buvons du thé."],"boire：nous buvons。",{extra:["boivons","boit"]});
+T("v8","主語を ils に","Il reçoit une lettre.",["Ils reçoivent une lettre."],"recevoir：ils reçoivent。",{extra:["recevent","reçoit"]});
+T("v8","主語を vous に","Tu vois la mer ?",["Vous voyez la mer ?"],"voir：vous voyez。",{extra:["voiez","vois"]});
+B("v8","私たちは日曜日に祖父母に会う。","Nous voyons nos grands-parents le dimanche.",["voions","voient"],"voir：nous voyons。");
+B("v8","彼らはレアが病気だと知っている。","Ils savent que Léa est malade.",["sait","savons"],"savoir：ils savent。");
+
+/* ---------- 大過去（番号は PQ-） ---------- */
+FROM("PQ",0);
+W("pq","J'___ mes devoirs.（finir・大過去）","avais fini","avoir の半過去＋過去分詞：j'avais fini。",{ja:"私は宿題を終えていた。"});
+W("pq","Tu ___ ce livre ?（lire・大過去）","avais lu","tu avais lu。",{ja:"きみはこの本を読んでいたの？"});
+W("pq","Hugo ___ son parapluie.（oublier・大過去）","avait oublié","il avait oublié。",{ja:"ユゴーは傘を忘れていた。"});
+W("pq","Nous ___ le dîner.（préparer・大過去）","avions préparé","nous avions préparé。",{ja:"私たちは夕食を用意してあった。"});
+W("pq","Vous ___ la nouvelle ?（apprendre・大過去）","aviez appris","vous aviez appris。",{ja:"あなたはその知らせを聞いていたのですか？"});
+W("pq","Ils ___ un taxi.（prendre・大過去）","avaient pris","ils avaient pris。",{ja:"彼らはタクシーに乗っていた。"});
+W("pq","Léa ___ avant midi.（partir・大過去）","était partie","partir は être。Léa（女性）→ partie。",{ja:"レアは正午前に出発していた。"});
+W("pq","Hugo ___ à Nara la veille.（arriver・大過去）","était arrivé","arriver は être。Hugo（男性）→ arrivé。",{ja:"ユゴーは前の日に奈良に着いていた。"});
+W("pq","Nous ___ très tôt.（sortir・大過去）",["étions sortis","étions sorties"],"sortir は être。nous → sortis（全員女性なら sorties）。",{ja:"私たちはとても早く出かけていた。"});
+W("pq","Elles ___ au Japon l'année précédente.（venir・大過去）","étaient venues","venir は être。elles → venues。",{ja:"彼女たちは前の年に日本に来ていた。"});
+W("pq","Yui ___ tôt ce matin-là.（se lever・大過去）","s'était levée","代名動詞は être。Yui（女性）→ levée。",{ja:"ゆいはその朝、早く起きていた。"});
+W("pq","Ils ___ à dix heures.（se coucher・大過去）","s'étaient couchés","ils s'étaient couchés。",{ja:"彼らは10時に寝ていた。"});
+W("pq","Je ___ mon travail.（ne pas finir・大過去）","n'avais pas fini","ne ＋ avais ＋ pas ＋ 過去分詞。",{ja:"私は仕事を終えていなかった。"});
+C("pq","Elle n'était pas encore ___.（arriver・大過去）","arrivée",["arrivée","arrivé","arriver"],"être のとき過去分詞は主語に一致：elle → arrivée。",{ja:"彼女はまだ着いていなかった。"});
+C("pq","Nous ___ déjà mangé.（大過去の助動詞）","avions",["avions","étions","avons"],"manger は avoir：nous avions mangé。",{ja:"私たちはもう食べ終えていた。"});
+C("pq","Elle ___ déjà sortie.（大過去の助動詞）","était",["était","avait","est"],"sortir は être：elle était sortie。",{ja:"彼女はもう出かけていた。"});
+C("pq","Ils s'___ déjà rencontrés.（大過去の助動詞）","étaient",["étaient","avaient","sont"],"代名動詞は être：ils s'étaient rencontrés。",{ja:"彼らはもう知り合っていた。"});
+C("pq","Elles étaient ___ à Kyoto.（aller）","allées",["allées","allé","allés"],"être：主語 elles（女性複数）→ allées。",{ja:"彼女たちは京都に行っていた。"});
+C("pq","Yui avait ___ ses clés.（perdre）","perdu",["perdu","perdue","perdus"],"avoir のとき、過去分詞は主語に一致しない → perdu。",{ja:"ゆいは鍵をなくしていた。"});
+T("pq","大過去に","J'ai vu ce film.",["J'avais vu ce film."],"ai → avais。",{extra:["étais","vue"]});
+T("pq","大過去に","Elle est rentrée tard.",["Elle était rentrée tard."],"est → était。",{extra:["avait","rentré"]});
+T("pq","大過去に","Nous nous sommes promenés.",["Nous nous étions promenés."],"sommes → étions。",{extra:["avions","promené"]});
+B("pq","ユゴーは傘を忘れていた。","Hugo avait oublié son parapluie.",["était","oubliée"],"oublier は avoir：avait oublié。");
+B("pq","レアはもう出発していた。","Léa était déjà partie.",["avait","parti"],"partir は être。déjà は過去分詞の直前。Léa（女性）→ partie。");
