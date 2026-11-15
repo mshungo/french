@@ -10,10 +10,31 @@
 <title>Naralingo — フランス語練習</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M10.2%205.9%207.4%204.6M12.6%209.2c-.6-1.8-.1-3.4%201-4.6%22/%3E%3Cpath%20d%3D%22M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7M21.8%205.9l2.8-1.3M19.4%209.2c.6-1.8.1-3.4-1-4.6%22/%3E%3Cpath%20d%3D%22M11.4%2011.6%206.6%2010.4c.9%201.9%202.6%203%204.9%203.1%22/%3E%3Cpath%20d%3D%22M20.6%2011.6l4.8-1.2c-.9%201.9-2.6%203-4.9%203.1%22/%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Ccircle%20cx%3D%2213.9%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Ccircle%20cx%3D%2218.1%22%20cy%3D%2214.8%22%20r%3D%22.7%22%20fill%3D%22%239a7b45%22%20stroke%3D%22none%22/%3E%3Cpath%20d%3D%22M15%2024.3h2%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=42"></script>
-<script src="streak.js?v=4"></script>
+<script src="common.js?v=43"></script>
+<script src="streak.js?v=5"></script>
 <script src="feedback.js?v=2"></script>
 <script src="badge.js?v=3"></script>
+<style>
+/* 今日の1回（継続カードのすぐ下） */
+.tdy{display:flex;align-items:center;gap:12px;margin:12px 0 0;padding:14px 16px;border-radius:18px;text-decoration:none;color:inherit;
+  background:#fff;border:1.5px solid #cfe0d6;box-shadow:0 10px 22px -18px rgba(90,140,110,.7);transition:transform .15s,border-color .15s;}
+.tdy:hover{transform:translateY(-1px);border-color:#8db79b;}
+.tdy-ic{flex:none;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,#8db79b,#6c9a7f);}
+.tdy-tx{flex:1;min-width:0;}
+.tdy-tx b{display:block;font-size:15.5px;font-weight:700;color:var(--ink);}
+.tdy-tx small{display:block;font-size:11.5px;color:var(--ink-soft);margin-top:3px;line-height:1.6;}
+.tdy-due{display:inline-block;margin-left:6px;vertical-align:1px;padding:0 8px;border-radius:10px;background:#6c9a7f;color:#fff;font-size:11px;font-weight:700;white-space:nowrap;}
+.tdy-go{flex:none;font-size:12.5px;font-weight:700;color:#fff;background:#6c9a7f;border-radius:999px;padding:8px 14px;white-space:nowrap;}
+.tdy.done{border-color:var(--rule);background:#fdfaf8;box-shadow:none;}
+.tdy.done .tdy-ic{background:linear-gradient(135deg,#f6cf6b,#d99a2b);}
+.tdy.done .tdy-go{background:none;color:var(--accent-ink);border:1px solid var(--rule);}
+.tdy.back{border-color:#ecc9a6;box-shadow:0 10px 22px -18px rgba(200,120,70,.7);}
+.tdy.back .tdy-ic{background:linear-gradient(135deg,#f0b27a,#e08a5a);}
+.tdy.back .tdy-go{background:#e08a5a;}
+.tdy-sub{display:block;margin:7px 4px 0;text-align:right;font-size:11.5px;color:#5f8f76;text-decoration:none;}
+a.tdy-sub:hover{text-decoration:underline;}
+@media(max-width:460px){.tdy-ic{display:none}.tdy{padding:13px 14px}}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -73,6 +94,7 @@
     </div>
     <div class="note" id="who"></div>
     <div id="stkCard"></div>
+    <div id="todayCard"></div>
     <div class="go-row">
       <button class="go-btn" id="goBtn" type="button"><svg class="go-ill" width="54" height="54" viewBox="0 0 64 64" aria-hidden="true">
           <g class="go-spark"><path d="M8 14l1.6 3.6L13 19l-3.4 1.4L8 24l-1.6-3.6L3 19l3.4-1.4z" fill="#fff3c4"/><path d="M55 6l1 2.3 2.3 1-2.3 1-1 2.3-1-2.3-2.3-1 2.3-1z" fill="#fff"/><circle cx="57" cy="50" r="2" fill="#fff3c4"/></g>
@@ -142,6 +164,44 @@
   /* 新しいコーナーの「New!」：data-until の日（日本時間）を過ぎたら消える */
   (function(){var t=new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
     document.querySelectorAll(".newtag[data-until]").forEach(function(e){if(t>e.getAttribute("data-until"))e.remove();});})();
+  /* 今日の1回：文法（Leçon 1〜9）と「いろいろな動詞」から、いま進めている課で10問（復習の日が来た問題を先に出す）。
+     何日か空いたあとは「おかえり」。前に正解できた問題を5問だけ。 */
+  var GRAM_MAX=9;   // 文法の課の数（課を足したら、ここも増やす）
+  var TDY_IC={go:'<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
+    done:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    back:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10v9h11v-9"/><path d="M10 19v-5h4v5"/></svg>'};
+  function renderToday(){
+    var el=$("todayCard");if(!el)return;
+    var u=Q.user(),who=u?u.id:"guest",c=Q.chain(),list=[];
+    function J(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
+    for(var n=1;n<=GRAM_MAX;n++)list.push({url:"grammar-l"+n+".html",name:"Leçon "+n,g:J("gramQuiz_L"+n+"_v1_"+who)});
+    list.push({url:"verbs.html",name:"いろいろな動詞",g:J("verbQuiz_v1_"+who)});
+    var due=0,top=null,cur=null;
+    list.forEach(function(x){
+      var g=x.g||{},it=g.it||{},lt=0;for(var k in it)if(it[k]&&it[k].t>lt)lt=it[k].t;
+      x.lt=lt;x.due=Q.dueCount(x.g);due+=x.due;
+      var open=!(g.sum&&g.sum.n&&g.sum.m>=g.sum.n);            // まだ習得していない問題がある
+      if(x.due&&(!top||x.due>top.due))top=x;                   // 復習がいちばん多い課
+      if(lt&&(open||x.due)&&(!cur||lt>cur.lt))cur=x;           // いちばん最近やった課
+    });
+    var studied=!!cur;
+    if(!cur)cur=top||list[GRAM_MAX-1];                         // まだなら、いちばん新しい課から
+    var left=Math.min(due,Q.revLeft()),h,sub="";
+    if(!c.doneToday&&c.away>=3&&studied){
+      h='<a class="tdy back" href="'+cur.url+'#back"><span class="tdy-ic">'+TDY_IC.back+'</span><span class="tdy-tx"><b>おかえりなさい！</b>'+
+        '<small>前にできた問題を5問だけ'+(c.rest?'<br>今日やれば、継続 '+c.n+'日のまま':'')+'</small></span><span class="tdy-go">はじめる</span></a>';
+    }else if(c.doneToday){
+      h='<a class="tdy done" href="'+cur.url+'#today"><span class="tdy-ic">'+TDY_IC.done+'</span><span class="tdy-tx"><b>今日の1回 クリア！</b>'+
+        '<small>'+(left?'復習があと '+left+'問あります':'また明日。もう1回やってもOK')+'</small></span><span class="tdy-go">もう1回</span></a>';
+    }else{
+      h='<a class="tdy" href="'+cur.url+'#today"><span class="tdy-ic">'+TDY_IC.go+'</span><span class="tdy-tx"><b>今日の1回</b>'+
+        '<small>'+cur.name+'・10問・約3分'+(left?'<span class="tdy-due">復習 '+left+'問</span>':'')+'</small></span><span class="tdy-go">はじめる</span></a>';
+    }
+    if(left&&top)sub='<a class="tdy-sub" href="'+top.url+'#rev">復習だけする（'+top.name+'） ›</a>';
+    else if(due)sub='<span class="tdy-sub">今日の復習は完了！</span>';
+    el.innerHTML=h+sub;
+  }
+  window.addEventListener("pageshow",function(e){if(e.persisted&&!menuPanel.classList.contains("hidden"))renderMenu();});   // 「戻る」で開き直したときも、最新の表示に
   function renderMenu(){
     var u=Q.user();
     $("hello").textContent=u?u.name:"メニュー";
@@ -179,6 +239,7 @@
     $("sTime").textContent=fmtDur(tot.time);$("sAns").textContent=tot.ans;
     $("sAcc").textContent=tot.ans?Math.round(tot.cor/tot.ans*100)+"%":"—";
     renderStreak();
+    renderToday();
   }
   function showMenu(){loginPanel.classList.add("hidden");menuPanel.classList.remove("hidden");renderMenu();var fb=document.getElementById("fbCorner");if(fb)fb.remove();if(window.Feedback)Feedback.mount();maybeWelcome();if(window.Streak)Streak.loginBonus();popTry=0;setTimeout(maybePopNotices,1200);}
   /* はじめてログインしたときだけの案内（見終わったら、この人の記録に「見た」と残す。進み具合のバックアップで別の端末にも伝わる） */

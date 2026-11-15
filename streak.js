@@ -72,6 +72,7 @@
   function isMile(n) { return MILES.indexOf(n) >= 0 || (n > 100 && n % 50 === 0); }
   function message(c, everStudied) {
     if (c.doneToday) return { t: "今日もクリア！", w: false };
+    if (c.rest) return c.risk ? { t: "お休みは今日まで！", s: "今日やれば、つながります", w: true } : { t: "お休み中", s: "今日やれば、つながります", w: false };
     if (c.risk) return { t: "今日がラスト！", w: true };
     if (c.n) return { t: "今日やれば " + (c.n + 1) + "日！", w: false };
     return { t: "1問解いてスタート", w: false };
@@ -82,23 +83,25 @@
     css();
     var c = Q.chain(), study = {}, t = Q.todayJST(), st = stampSet();
     Q.days().forEach(function (d) { study[d] = 1; });
+    var rs = {}; (c.restDays || []).forEach(function (d) { rs[d] = 1; });   // 「お休み」でつないだ日
     var cells = "";
     for (var i = 13; i >= 0; i--) {
       var d = addDays(t, -i), wd = new Date(d + "T00:00:00Z").getUTCDay();
-      var cls = study[d] ? "on" : st[d] ? "lg" : "";
+      var cls = study[d] ? "on" : rs[d] && i ? "rs" : st[d] ? "lg" : "";
       if (!i) cls += " today";
-      cells += '<div class="stk-c ' + cls + '" title="' + Number(d.slice(5, 7)) + '/' + Number(d.slice(8)) + '（' + WD.charAt(wd) + '）' + (study[d] ? "　学習した日" : st[d] ? "　ログインした日" : "") + '">' +
-        '<i>' + (study[d] || st[d] ? deer(16) : "") + '</i></div>';
+      cells += '<div class="stk-c ' + cls + '" title="' + Number(d.slice(5, 7)) + '/' + Number(d.slice(8)) + '（' + WD.charAt(wd) + '）' + (study[d] ? "　学習した日" : rs[d] && i ? "　お休み（継続はつながっています）" : st[d] ? "　ログインした日" : "") + '">' +
+        '<i>' + (study[d] ? deer(16) : rs[d] && i ? "休" : st[d] ? deer(16) : "") + '</i></div>';
     }
     var nm = nextMile(c.n), pct = Math.round((c.n - nm.from) / (nm.to - nm.from) * 100), msg = message(c, Q.days().length > 0);
     var total = Object.keys(st).length;
     return '<div class="stk' + (c.doneToday ? " done" : "") + '">' +
       '<div class="stk-top"><div class="stk-fl' + (c.n ? (c.doneToday ? " hot" : " warm") : "") + '">' + FLAME + '</div>' +
       '<div class="stk-num"><b>' + c.n + '</b><span>日<br>継続</span></div>' +
-      '<div class="stk-msg' + (msg.w ? " warn" : "") + '">' + esc(msg.t) + '</div></div>' +
+      '<div class="stk-msg' + (msg.w ? " warn" : "") + '">' + esc(msg.t) + (msg.s ? '<small>' + esc(msg.s) + '</small>' : '') + '</div></div>' +
       '<div class="stk-days">' + cells + '</div>' +
       '<div class="stk-foot"><span class="stk-nx">' + (c.n ? 'あと' + (nm.to - c.n) + '日で' + nm.to + '日継続！' : 'まずは' + nm.to + '日続けよう！') + '<span class="stk-bar"><i style="width:' + pct + '%"></i></span></span>' +
       '<span class="stk-tot" title="スタンプの数">' + deer(14) + '<b>' + total + '</b></span></div>' +
+      '<div class="stk-rule">1日あいてもOK。2〜3日あいても、週1回まで「お休み」でつながります</div>' +
       '</div>';
   }
   function mount(el) { if (el) el.innerHTML = card(); }
@@ -153,7 +156,7 @@
       '<div class="stk-h">スタンプ <b>' + n + '</b> 個目</div>' +
       '<div class="stk-sheet">' + sheet + '</div>' +
       (slot === 10 ? '<div class="stk-comp">カード ' + (n / 10) + '枚目コンプリート！</div>' : '') +
-      '<div class="stk-pmsg' + (msg.w ? " warn" : "") + '">' + esc(msg.t) + '</div>' +
+      '<div class="stk-pmsg' + (msg.w ? " warn" : "") + '">' + esc(msg.t) + (msg.s ? '（' + esc(msg.s) + '）' : '') + '</div>' +
       '<div class="stk-word"><small>今日のひとこと</small><b lang="fr">' + esc(w[0]) + '</b><span>' + esc(w[1]) + '</span></div>',
       "よし、やろう");
   }
@@ -186,7 +189,10 @@
         try { if (typeof window.playFanfare === "function") window.playFanfare(); } catch (er) {}
       });
     } else {
-      toast('<span class="stk-ti">' + deer(20) + '</span><span><b>今日のスタンプ ゲット！</b><small>' + c.n + '日継続</small></span>');
+      var back = c.n === 1 && Q.days().length > 1;                                   // 連続が切れたあとの再開
+      var rest = !back && (c.restDays || []).indexOf(addDays(t, -1)) >= 0;           // 「お休み」でつながった
+      toast('<span class="stk-ti">' + deer(20) + '</span><span><b>' + (back ? 'おかえりなさい！' : '今日のスタンプ ゲット！') + '</b><small>' +
+        (back ? '今日からまた1日目' : c.n + '日継続' + (rest ? '（お休みでつながりました）' : '')) + '</small></span>');
     }
   });
 
@@ -210,6 +216,8 @@
       '.stk-c{display:flex;flex-direction:column;align-items:center;gap:2px;}' +
       '.stk-c i{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px dashed #e3d4cb;color:#d6c3b8;background:#fffdfb;}' +
       '.stk-c.lg i{border:1.5px solid #e8d6c4;color:#c9a98e;background:#fff8ef;}' +
+      '.stk-c.rs i{border:1.5px solid #cfe0d6;color:#6f9a82;background:#f1f7f3;font-style:normal;font-size:11px;font-weight:600;}' +
+      '.stk-rule{margin-top:8px;font-size:10.5px;color:var(--ink-faint);line-height:1.5;}' +
       '.stk-c.on i{border:none;color:#fff;background:radial-gradient(circle at 35% 30%,#f6cf6b,#d99a2b);box-shadow:0 2px 6px -2px rgba(200,140,40,.6);}' +
       '.stk-c.today i{outline:2px solid var(--accent);outline-offset:2px;}' +
       '.stk-c.today:not(.on) i{animation:stkPulse 1.8s ease-in-out infinite;}' +

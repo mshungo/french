@@ -275,6 +275,11 @@
   .extra-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:11px;}
   @media(max-width:430px){.extra-row{grid-template-columns:1fr;}}
   .start-btn:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none;}
+  /* 復習（間隔をあけて、もう一度）：復習の日が来た問題があるときだけ出る */
+  .start-btn.rev{width:100%;margin-top:11px;border-color:#cfe0d6;background:linear-gradient(135deg,#f4f9f5,#fdfaf8);}
+  .start-btn.rev i{font-style:normal;font-family:"Noto Sans JP";font-size:19px;color:#5f8f76;background:#e6f1ea;}
+  .start-btn.rev:hover{border-color:#8db79b;}
+  .start-btn.rev .sb-desc{color:#5f8f76;}
   .start-btn.weak i{font-style:normal;font-family:"Noto Sans JP";font-size:16px;color:#b16a66;background:#f8eeed;}
   .vnote{font-size:11px;color:var(--ink-faint);line-height:1.6;margin-top:14px;text-align:center;}
   .lvdots{margin-left:10px;letter-spacing:2px;font-size:11px;color:var(--gold);vertical-align:middle;}

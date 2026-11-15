@@ -80,22 +80,66 @@
     if (!had) setTimeout(function () { try { window.dispatchEvent(new CustomEvent("nl:firststudy", { detail: chain() })); } catch (e) {} }, 400);
     return out;
   }
-  /* 継続：1日あいてもつながる（2日あくと切れる）。n＝つながっている学習日の数
-     gap … 最後に学習した日が 0＝今日 / 1＝きのう / 2＝おととい（今日がラストチャンス） */
+  /* 継続：1日あいてもつながる。2〜3日あいたときは、週に1回まで「お休み」でつながる（それより長くあくと切れる）。
+     n＝つながっている学習日の数
+     gap … 最後に学習した日が 0＝今日 / 1＝きのう / 2＝おととい / 3・4＝お休み中（つながっていないときは -1）
+     risk … 今日やらないと切れる　rest … いま「お休み」でつないでいる　restDays … お休みでつないだ日
+     away … 最後に学習してからの日数（一度も学習していなければ -1） */
+  var REST_EVERY = 7, REST_MAX = 4;
+  function dayDiff(a, b) { return Math.round((Date.parse(a + "T00:00:00Z") - Date.parse(b + "T00:00:00Z")) / 864e5); }
+  function between(a, b, out) { for (var d = addDays(a, 1); d < b; d = addDays(d, 1)) out.push(d); }
   function chain() {
-    var set = {}; days().forEach(function (d) { set[d] = 1; });
-    var t = todayJST(), cur = null, gap = -1;
-    for (var g = 0; g <= 2; g++) if (set[addDays(t, -g)]) { cur = addDays(t, -g); gap = g; break; }
-    var n = 0;
-    while (cur) { n++; cur = set[addDays(cur, -1)] ? addDays(cur, -1) : set[addDays(cur, -2)] ? addDays(cur, -2) : null; }
-    return { n: n, gap: gap, doneToday: gap === 0, risk: gap === 2 };
+    var t = todayJST(), list = days().filter(function (d) { return d <= t; }).sort();
+    var none = { n: 0, gap: -1, doneToday: false, risk: false, rest: false, restDays: [], away: -1 };
+    if (!list.length) return none;
+    var n = 0, prev = null, lastRest = null, rd = [];   // lastRest＝いちばん新しい「お休み」が明けた日
+    function restOk(day, slack) { return lastRest === null || dayDiff(day, lastRest) + (slack || 0) >= REST_EVERY; }
+    list.forEach(function (d) {
+      var k = prev === null ? 0 : dayDiff(d, prev);
+      if (prev === null) n = 1;
+      else if (k <= 2) n++;
+      else if (k <= REST_MAX && restOk(d)) { n++; between(prev, d, rd); lastRest = d; }
+      else { n = 1; rd = []; }
+      prev = d;
+    });
+    var gap = dayDiff(t, prev);
+    none.away = gap;
+    if (gap <= 2) return { n: n, gap: gap, doneToday: gap === 0, risk: gap === 2 && !restOk(t, 1), rest: false, restDays: rd, away: gap };
+    if (gap <= REST_MAX && restOk(t)) { between(prev, t, rd); return { n: n, gap: gap, doneToday: false, risk: gap === REST_MAX, rest: true, restDays: rd, away: gap }; }
+    return none;
   }
   function streakHTML() {
-    var c = chain(), tip = ' title="1日あいてもつながります（2日あくとリセット）"';
+    var c = chain(), tip = ' title="1日あいてもつながります。2〜3日あいたときも、週に1回まで「お休み」でつながります"';
     if (!c.n) return '<span' + tip + '>継続 0日</span>';
+    var hot = ' style="color:#c0662b;font-weight:600"';
     return '<span' + tip + '>継続 ' + c.n + '日</span> ' + (c.doneToday ? '<small>今日済</small>' :
-      c.risk ? '<small style="color:#c0662b;font-weight:600">今日がラスト！</small>' : '<small>今日はまだ</small>');
+      c.rest ? '<small' + (c.risk ? hot : '') + '>' + (c.risk ? 'お休みは今日まで！' : 'お休み中') + '</small>' :
+      c.risk ? '<small' + hot + '>今日がラスト！</small>' : '<small>今日はまだ</small>');
   }
+  /* ---- 文法・いろいろな動詞の「復習」（間隔をあけて、もう一度） ----
+     問題ごとの記録 s から、次に復習する日（日本時間の通し日）を返す。まだ解いていなければ null。
+     この版より前の記録（due がない）は、最後に解いた日と習得の度合いから決める。 */
+  var REV_QUOTA = 20;   // 1日に数える復習の数（たまっていても、その日の分はここまで）
+  function dayNum(ms) { return Math.floor(((ms == null ? Date.now() : ms) + 9 * 3600e3) / 864e5); }
+  function dueDay(s) {
+    if (!s || !((s.c || 0) + (s.w || 0))) return null;
+    if (s.due != null) return s.due;
+    if (!s.t) return 0;
+    var pt = s.pt != null ? s.pt : (s.m === true ? 4 : s.run >= 2 ? 2 : 0);
+    return dayNum(s.t) + (s.wk ? 1 : pt >= 4 ? 7 : pt >= 2 ? 3 : 1);
+  }
+  /* 学習の記録（gramQuiz_L<n>_v1 など）のうち、今日までに復習する問題の数 */
+  function dueCount(g) {
+    if (!g) return 0;
+    var t = dayNum(), n = 0, k;
+    if (g.sum && g.sum.dq) { for (k in g.sum.dq) if (Number(k) <= t) n += g.sum.dq[k]; return n; }
+    if (g.it) for (k in g.it) { var d = dueDay(g.it[k]); if (d != null && d <= t) n++; }
+    return n;
+  }
+  function revKey() { return "nlRevDay_" + who(); }
+  function revDoneToday() { var o = jget(revKey(), null); return o && o.d === todayJST() ? Number(o.n) || 0 : 0; }
+  function revDone(k) { lsSet(revKey(), JSON.stringify({ d: todayJST(), n: revDoneToday() + (k || 1) })); }
+  function revLeft() { return Math.max(0, REV_QUOTA - revDoneToday()); }
   function streak() {
     var set = {}; days().forEach(function (d) { set[d] = 1; });
     var cur = todayJST(), doneToday = !!set[cur];
@@ -591,6 +635,7 @@
     user: function () { return user; },
     isPractice: function () { return !!(user && user.practice); },
     todayJST: todayJST, days: days, markToday: markToday, streak: streak, chain: chain, streakHTML: streakHTML,
+    dayNum: dayNum, dueDay: dueDay, dueCount: dueCount, revDone: revDone, revLeft: revLeft,
     cached: cached, onStats: onStats, myNotes: myNotes,
     pendingCount: function () { return getPending().length; },
     submit: submit, flush: flush, refresh: refresh, history: history, cachedHistory: cachedHistory, feedback: feedback, backup: backup, setNick: setNick, setPw: setPw,

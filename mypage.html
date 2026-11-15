@@ -6,8 +6,8 @@
 <title>学習記録 — Naralingo</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%239a7b45%22%20stroke-width%3D%221.6%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M11.3%2011.2c.3-1.4%202.2-2.1%204.7-2.1s4.4.7%204.7%202.1l-1.1%208.2c-.5%203.6-1.9%206.4-3.6%206.4s-3.1-2.8-3.6-6.4z%22/%3E%3Cpath%20d%3D%22M11.5%209.5C9.6%207.3%209.2%205.1%2010%202.8M20.5%209.5c1.9-2.2%202.3-4.4%201.5-6.7%22/%3E%3C/svg%3E">
 <script src="config.js?v=4"></script>
-<script src="common.js?v=42"></script>
-<script src="streak.js?v=4"></script>
+<script src="common.js?v=43"></script>
+<script src="streak.js?v=5"></script>
 <script src="feedback.js?v=2"></script>
 <script src="coach.js?v=10"></script>
 <script src="card.js?v=9"></script>
@@ -137,7 +137,7 @@
   var TALKSEC={s1:"第1–3週",s2:"第4–6週",s3:"第7–9週",s4:"第10–11週",s5:"第12–14週",mix:"総まとめ",weak:"苦手"};
   function secName(app,s){
     if(app==="grammar"&&/^V-/.test(s))return "いろいろな動詞";
-    if(app==="grammar"){var m=/^L(\d+)-(.+)$/.exec(s);if(m)return "Leçon "+m[1]+(m[2]==="mix"?" 総まとめ":m[2]==="weak"?" 苦手":"");}
+    if(app==="grammar"){var m=/^L(\d+)-(.+)$/.exec(s);if(m)return "Leçon "+m[1]+({mix:" 総まとめ",weak:" 苦手",today:" 今日の1回",rev:" 復習",back:" おかえり復習"}[m[2]]||"");}
     if(app==="talk")return TALKSEC[s]||s;
     if(app==="vocab"){var m2=/^W-(.+)$/.exec(s||""),k=m2?m2[1]:s;return {today:"今日のカード",weak:"苦手",extra:"前倒し",place:"レベルチェック",N:"数"}[k]||(/^L\d$/.test(k)?"Leçon "+k.slice(1):k);}
     return s;

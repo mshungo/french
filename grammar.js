@@ -101,6 +101,15 @@ function choiceDone(it){return st(it).pt>=PT_CHOICE_MAX;}
 function partOf(it){return Math.min(PT_MAX,st(it).pt)/PT_MAX;}
 /* 苦手：間違えたら付き、2回連続で正解するまで消えない */
 function weak(it){return !!st(it).wk;}
+/* 復習（間隔をあけて、もう一度）：復習の日に正解するたびに、次までの日数がのびる（1→3→7→14→30→60日）。間違えたら翌日から。
+   s.rv＝段、s.due＝次に出す日（日本時間の通し日）。この版より前の記録は common.js の Quiz.dueDay が、最後に解いた日から決める */
+const REV_DAYS=[1,3,7,14,30,60],REV_IN_TODAY=5,BACK_N=5;
+function today(){return Quiz.dayNum();}
+function dueOf(it){return Quiz.dueDay(store.it[it.id]);}
+function isDue(it){const d=dueOf(it);return d!=null&&d<=today();}
+function dueList(pool){return pool.filter(isDue).sort((a,b)=>(weak(b)-weak(a))||(dueOf(a)-dueOf(b)));}
+const XSEC={mix:"総まとめ",weak:"苦手を復習",today:"今日の1回",rev:"今日の復習",back:"おかえり復習"};
+function isAll(sec){return sec==="mix"||sec==="today"||sec==="rev"||sec==="back";}
 function fmtDur(ms){const m=Math.round((ms||0)/60000);if(m<60)return m+"分";return Math.floor(m/60)+"時間"+(m%60?(m%60)+"分":"");}
 function pctOf(list){return list.length?Math.floor(list.reduce((a,it)=>a+partOf(it),0)/list.length*100):0;}
 function pctMastered(){return pctOf(ITEMS);}
@@ -115,7 +124,8 @@ function meterHTML(list){
     '<span class="gm-v'+(p>=100?' full':'')+'">'+p+'<small>%</small></span>';
 }
 /* 学習記録ページ（成果カード）用に、達成の数を控えておく */
-function saveSum(){store.sum={n:ITEMS.length,m:ITEMS.filter(mastered).length,c:ITEMS.filter(it=>choiceDone(it)&&!mastered(it)).length,pts:ITEMS.reduce((a,it)=>a+Math.min(PT_MAX,st(it).pt),0),p:pctMastered()};save();}
+function saveSum(){store.sum={n:ITEMS.length,m:ITEMS.filter(mastered).length,c:ITEMS.filter(it=>choiceDone(it)&&!mastered(it)).length,pts:ITEMS.reduce((a,it)=>a+Math.min(PT_MAX,st(it).pt),0),p:pctMastered(),dq:dueHist(),lt:ITEMS.reduce((a,it)=>Math.max(a,(store.it[it.id]||{}).t||0),0)};save();}
+function dueHist(){const t=today(),h={};ITEMS.forEach(it=>{const d=dueOf(it);if(d==null)return;const k=Math.max(d,t-1);h[k]=(h[k]||0)+1;});return h;}
 /* ---------- バッジ ----------
    項目（セクション）の問題をすべて習得 → 項目バッジ ／ 累計300問 → クリア ／ 全問習得 → 勲章
    一度もらったバッジは、あとで苦手が付いても消えない */
@@ -150,7 +160,7 @@ function renderShelf(){
 }
 
 function itemsOf(sec){
-  if(sec==="mix")return ITEMS.slice();
+  if(isAll(sec))return ITEMS.slice();
   if(sec==="weak")return ITEMS.filter(weak);
   return ITEMS.filter(it=>it.sec===sec);
 }
@@ -181,6 +191,7 @@ function shell(){
 '      <button class="mode-btn mp" data-mode="choice"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"4\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"10\" width=\"17\" height=\"4.5\" rx=\"2\"/><rect x=\"3.5\" y=\"16\" width=\"17\" height=\"4.5\" rx=\"2\"/><path d=\"M6.5 12.2l1.3 1.2 2.4-2.6\"/></svg></span><b>選択式</b><span class="mp-dots">'+NLI.dots(2,4)+'</span></button>'+
 '      <button class="mode-btn mp" data-mode="write"><span class="mp-ic"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z\"/><path d=\"M14.5 7.5l3 3\"/><path d=\"M12 20h8\"/></svg></span><b>記述式</b><span class="mp-dots">'+NLI.dots(4,4)+'</span></button></div></div>'+
 '    <div class="sections">'+secBtns+'</div>'+
+'    <button class="start-btn rev hidden" id="revBtn"><i>↻</i><span class="sb-name">復習<span class="sb-desc" id="revCount"></span></span></button>'+
 '    <div class="extra-row">'+
 '      <button class="start-btn summary" id="mixBtn"><i>★</i><span class="sb-name">総まとめ<span class="sb-desc" id="mixProg"></span><span class="gm" data-gm="mix"></span></span></button>'+
 '      <button class="start-btn weak" id="weakBtn"><i>!</i><span class="sb-name">苦手<span class="sb-desc" id="weakCount"></span></span></button>'+
@@ -215,11 +226,12 @@ function shell(){
 
 /* ---------- 状態 ---------- */
 let questions=[],idx=0,roundCorrect=0,locked=false,curSec="mix",curMode="choice";
+let fromTop=false;   // トップページの「今日の1回」「復習」から開いた
 let retry=false;   // 間違えたところだけの練習中（成績・習得・記録には入れない）
 let roundStart=0,timerHandle=null,autoNext=null;
 let homeScreen,quizScreen,resultScreen;
 function show(el){[homeScreen,quizScreen,resultScreen].forEach(s=>s.classList.add("hidden"));el.classList.remove("hidden");try{window.scrollTo(0,0);}catch(e){}}
-function secInfo(k){return L.sections.find(s=>s.k===k)||{t:k==="mix"?"総まとめ":"苦手を復習",c:"#c0a06a",ci:"#9a7b45",cw:"#f8f1e4"};}
+function secInfo(k){return L.sections.find(s=>s.k===k)||{t:XSEC[k]||k,c:"#c0a06a",ci:"#9a7b45",cw:"#f8f1e4"};}
 function setAccent(k){
   const s=k?secInfo(k):null,b=document.body.style;
   if(!s){b.removeProperty("--accent");b.removeProperty("--accent-ink");b.removeProperty("--accent-wash");return;}
@@ -248,6 +260,9 @@ function renderHome(){
   saveSum();
   const wk=itemsOf("weak").length;
   $("weakCount").textContent=wk?wk:"";$("weakBtn").disabled=wk<1;
+  const due=dueList(ITEMS).length,left=Quiz.revLeft();   // 復習：今日までに出す問題があるときだけ
+  $("revBtn").classList.toggle("hidden",due<1);
+  $("revCount").textContent=due?(left>0?"今日は "+Math.min(due,left)+"問":"今日の分は完了（つづけてもOK）"):"";
   document.querySelectorAll(".mode-btn[data-mode]").forEach(b=>b.classList.toggle("on",b.dataset.mode===curMode));
   const sEl=$("streak");
   if(sEl&&window.Quiz){const r=Quiz.streak();sEl.innerHTML=Quiz.streakHTML();}
@@ -267,6 +282,13 @@ function buildRound(sec){
   const recent=it=>{const t=st(it).t;return t&&now-t<REST_MS;};
   const older=(a,b)=>(st(a).t||0)-(st(b).t||0);
   function take(list,max){for(const it of list){if(out.length>=ROUND||max<=0)break;if(used.has(it.id))continue;used.add(it.id);out.push(it);max--;}}
+  if(sec==="rev"){take(dueList(pool),ROUND);return shuffle(out.map(makeQ));}   // 今日の復習：復習の日が来た問題だけ
+  if(sec==="back"){   // おかえり復習：前に正解できた問題から、少しだけ
+    take(shuffle(pool.filter(it=>{const s=st(it);return s.c>0&&s.last===1&&!s.wk;})).sort((a,b)=>st(b).pt-st(a).pt),BACK_N);
+    take(shuffle(pool.filter(it=>attempts(it)>0)),BACK_N-out.length);
+    if(out.length)return shuffle(out.map(makeQ));
+  }
+  if(sec==="today"||sec==="back")take(dueList(pool),REV_IN_TODAY);   // 今日の1回：復習を先に入れ、残りはいつもの順
   const wk=shuffle(pool.filter(it=>weak(it)&&!recent(it)));
   take(wk,sec==="weak"?ROUND:3);
   take(shuffle(pool.filter(it=>attempts(it)===0)),ROUND);
@@ -374,6 +396,7 @@ const KIND_LABEL={c:"選んで答える",w:"書いて答える",t:"書きかえ"
 
 function startRound(sec){
   retry=false;curSec=sec;setAccent(sec);
+  if(sec==="back")curMode="choice";   // おかえり復習は選択式で（設定は変えない）
   if(typeof ensureAudio==="function"){ensureAudio();if(actx&&actx.state==="suspended")actx.resume();playStart();}
   questions=buildRound(sec);if(!questions.length)return;
   idx=0;roundCorrect=0;
@@ -494,6 +517,8 @@ function grade(r,chosen){
   q.fast=false;
   if(q.ok)roundCorrect++;
   if(!retry){   // 間違えたところだけの練習では、習得・苦手を動かさない
+    const td=today(),wasDue=isDue(q.it),first=!((s.c||0)+(s.w||0));
+    if(s.rv==null)s.rv=first?0:s.pt>=PT_MAX?2:s.pt>=PT_CHOICE_MAX?1:0;
     s.t=Date.now();
     if(q.ok){
       s.c++;s.last=1;s.run=(s.run||0)+1;if(curMode==="write")s.wrun=(s.wrun||0)+1;
@@ -501,7 +526,9 @@ function grade(r,chosen){
       if(curMode==="write")s.pt=Math.min(PT_MAX,s.pt+2);else if(s.pt<PT_CHOICE_MAX)s.pt++;
       if(s.wk&&s.run>=2)s.wk=false;                       // 苦手は2回連続正解で解除
       if(!s.wk&&(q.kind==="w"||q.kind==="t")&&q.rt<=FAST_MS){if(s.pt<PT_MAX)q.fast=true;s.m=true;s.pt=PT_MAX;}  // 記述で8秒以内 → 即習得
-    }else{s.w++;s.last=0;s.run=0;s.wrun=0;s.wk=true;s.m=false;s.pt=Math.max(0,s.pt-1);}
+      if(first||wasDue||s.due==null){s.rv=Math.min(REV_DAYS.length,Math.max(s.rv+1,s.pt>=PT_MAX?2:1));s.due=td+REV_DAYS[s.rv-1];}   // 復習の日に正解 → 次はもっと先
+    }else{s.w++;s.last=0;s.run=0;s.wrun=0;s.wk=true;s.m=false;s.pt=Math.max(0,s.pt-1);s.rv=0;s.due=td+1;}
+    if(wasDue)Quiz.revDone(1);
     store.it[q.it.id]=s;save();
   }
   const fb=$("fb");
@@ -561,7 +588,7 @@ function finishRound(){
     store.tries++;store.answered+=N;store.correct+=roundCorrect;
     store.timeMs=(store.timeMs||0)+Math.max(60000,time);   // 1回は最低1分
     if(store.best===null||roundCorrect>store.best)store.best=roundCorrect;
-    save();if(window.Quiz)Quiz.markToday();
+    saveSum();if(window.Quiz)Quiz.markToday();
   }
   const pct=Math.round(roundCorrect/N*100);
   $("rScore").innerHTML=roundCorrect+'<small> / '+N+'</small>';
@@ -574,7 +601,7 @@ function finishRound(){
   $("rMastery").innerHTML=retry?"":'<span class="gm r-gm">'+meterHTML(list)+'</span>';   // この項目の達成メーター
   /* 選択式でよくできたら、記述式へさそう */
   const nd=$("nudge");nd.innerHTML="";
-  if(!retry&&curMode==="choice"&&pct>=80){   // 選択式でよくできたら、記述式へ（鉛筆のボタンだけ）
+  if(!retry&&curMode==="choice"&&pct>=80&&curSec!=="back"){   // 選択式でよくできたら、記述式へ（鉛筆のボタンだけ）
     nd.innerHTML='<button class="play nd-go" id="ndGo" aria-label="記述式で挑戦" title="記述式で挑戦"><span class="nl-badge">'+NLI.svg("pencil",22)+'<span class="btn-t">記述式で挑戦</span>'+NLI.svg("next",20)+'</span></button>';
     $("ndGo").onclick=()=>{curMode="write";store.mode="write";save();startRound(curSec);};
   }
@@ -612,6 +639,7 @@ window.FB_QUESTIONS=function(){
   return out;
 };
 function goHome(){clearInterval(timerHandle);clearTimeout(autoNext);
+  if(fromTop){location.href="index.html";return;}   // トップの「今日の1回」から来たときは、トップへ戻る
   if(L.home){location.href=L.home;return;}   // 動詞活用ページから開いたときは、そこへ戻る
   setAccent(null);renderHome();show(homeScreen);}
 
@@ -628,9 +656,13 @@ function init(){
   document.querySelectorAll(".sections .start-btn").forEach(b=>b.onclick=()=>startRound(b.dataset.sec));
   $("mixBtn").onclick=()=>startRound("mix");
   $("weakBtn").onclick=()=>startRound("weak");
+  $("revBtn").onclick=()=>startRound("rev");
   document.querySelectorAll(".mode-btn[data-mode]").forEach(b=>b.onclick=()=>{curMode=b.dataset.mode;store.mode=curMode;save();renderHome();});
   $("retryBtn").onclick=startRetry;
-  $("againBtn").onclick=()=>{if(curSec==="weak"&&!itemsOf("weak").length){goHome();return;}startRound(curSec);};
+  $("againBtn").onclick=()=>{
+    if(curSec==="weak"&&!itemsOf("weak").length){goHome();return;}
+    if(curSec==="rev"&&!dueList(ITEMS).length){goHome();return;}
+    startRound(curSec==="back"?"today":curSec);};
   $("backBtn").onclick=goHome;$("toHomeBtn").onclick=goHome;
   document.addEventListener("keydown",e=>{
     if(quizScreen.classList.contains("hidden"))return;
@@ -641,11 +673,13 @@ function init(){
   });
   /* #項目:答え方（例 #er:write）つきで開いたら、すぐにその項目の問題を始める */
   const hm=/^#([a-z0-9]+)(?::(choice|write))?$/.exec(location.hash||"");
-  if(hm&&(hm[1]==="mix"||hm[1]==="weak"||L.sections.some(x=>x.k===hm[1]))){
+  if(hm&&(Object.prototype.hasOwnProperty.call(XSEC,hm[1])||L.sections.some(x=>x.k===hm[1]))){
+    fromTop=hm[1]==="today"||hm[1]==="rev"||hm[1]==="back";
     if(hm[2]){curMode=hm[2];store.mode=curMode;save();}
     try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}   // 読み込み直しで、また始まらないように
     renderHome();
     if(hm[1]==="weak"&&!itemsOf("weak").length){goHome();return;}
+    if(hm[1]==="rev"&&!dueList(ITEMS).length){goHome();return;}
     startRound(hm[1]);return;
   }
   if(L.home){location.replace(L.home);return;}
