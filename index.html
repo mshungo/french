@@ -34,6 +34,24 @@
 .tdy-sub{display:block;margin:7px 4px 0;text-align:right;font-size:11.5px;color:#5f8f76;text-decoration:none;}
 a.tdy-sub:hover{text-decoration:underline;}
 @media(max-width:460px){.tdy-ic{display:none}.tdy{padding:13px 14px}}
+/* 自分の目標（動詞活用の達成率） */
+.gol{display:block;margin:12px 0 0;padding:14px 16px 13px;border-radius:18px;text-decoration:none;color:inherit;background:#fff;
+  border:1.5px solid #ead9c0;box-shadow:0 10px 22px -18px rgba(192,160,106,.8);transition:transform .15s,border-color .15s;}
+.gol:hover{transform:translateY(-1px);border-color:var(--gold);}
+.gol-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+.gol-t{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--gold);}
+.gol-t span{margin-left:6px;letter-spacing:0;font-weight:500;color:var(--ink-soft);}
+.gol-p{font-size:26px;font-weight:700;color:var(--ink);line-height:1;}
+.gol-p small{font-size:13px;margin-left:1px;}
+.gol-bar{position:relative;height:12px;margin:12px 0 18px;border-radius:6px;background:#f3ece4;}
+.gol-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,#e7c27a,#c0a06a);}
+.gol-mk{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 0 1px #d9c7aa;}
+.gol-mk b{position:absolute;top:19px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:600;color:var(--ink-soft);white-space:nowrap;}
+.gol-mk.on b{color:#a8823f;}
+.gol-msg{font-size:13px;font-weight:700;color:var(--ink);}
+.gol-sub{font-size:11.5px;color:var(--ink-soft);margin-top:3px;line-height:1.6;}
+.gol.won{border-color:var(--gold);background:linear-gradient(135deg,#fffaf0,#fdf3e3);}
+</style>
 </style>
 </head>
 <body>
@@ -93,6 +111,7 @@ a.tdy-sub:hover{text-decoration:underline;}
       <p class="hello" id="hello" style="margin:0"></p>
     </div>
     <div class="note" id="who"></div>
+    <div id="goalCard"></div>
     <div id="stkCard"></div>
     <div id="todayCard"></div>
     <div class="go-row">
@@ -164,6 +183,35 @@ a.tdy-sub:hover{text-decoration:underline;}
   /* 新しいコーナーの「New!」：data-until の日（日本時間）を過ぎたら消える */
   (function(){var t=new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
     document.querySelectorAll(".newtag[data-until]").forEach(function(e){if(t>e.getAttribute("data-until"))e.remove();});})();
+  /* 自分の目標：動詞活用（いろいろな動詞）の達成率。動詞活用ページの「ミックス」と同じ数え方（1問4点）。
+     11月中に50%、12月31日までに80%を目指す（100%までいったら偉い！）。期限を過ぎたら出さない */
+  var GOAL={n:320,steps:[{d:"2026-11-30",p:50,t:"11月中に50%"},{d:"2026-12-31",p:80,t:"12月31日までに80%"}]};
+  function verbPt(x){if(x.pt!=null)return Math.min(4,x.pt);var run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);
+    return (!x.wk&&(((x.wrun||0)>=1&&run>=2)||x.m))?4:(!x.wk&&run>=2)?2:((x.c||0)>0&&x.last===1)?1:0;}
+  function renderGoal(){
+    var el=$("goalCard");if(!el)return;
+    var t=Q.todayJST(),last=GOAL.steps[GOAL.steps.length-1];
+    if(t>last.d){el.innerHTML="";return;}
+    var u=Q.user(),who=u?u.id:"guest",v=null;
+    try{v=JSON.parse(localStorage.getItem("verbQuiz_v1_"+who));}catch(e){}
+    var it=(v&&v.it)||{},pts=0,m=0;
+    for(var k in it){var y=it[k];if(!y||!((y.c||0)+(y.w||0)))continue;var q=verbPt(y);pts+=q;if(q>=4&&!y.wk)m++;}
+    var pct=Math.min(100,Math.floor(pts/(GOAL.n*4)*100));
+    var st=GOAL.steps.filter(function(x){return t<=x.d;})[0];       // いま目指している段
+    if(st.p<=pct&&st!==last)st=last;                                  // 11月の目標を超えたら、次は80%
+    var left=Math.round((Date.parse(st.d+"T00:00:00Z")-Date.parse(t+"T00:00:00Z"))/864e5)+1;   // 今日をふくめた残り日数
+    var msg,sub,won=false;
+    if(pct>=100){msg="100%達成！ 偉い！";sub="すべての動詞をマスターしました";won=true;}
+    else if(pct>=last.p){msg="目標達成！ 100%までいったら偉い！";sub="100%まで あと "+(100-pct)+"%";won=true;}
+    else{
+      msg=(st===last&&pct>=GOAL.steps[0].p&&t<=GOAL.steps[0].d?"11月の目標クリア！ 次は12月中に80%":st.t)+"　あと "+(st.p-pct)+"%";
+      sub=left>1?"残り "+left+"日（1日 +"+Math.ceil((st.p-pct)/left)+"% で届きます）":"今日が期限です";}
+    var mk=function(p,lab){return '<span class="gol-mk'+(pct>=p?' on':'')+'" style="left:'+p+'%"><b>'+lab+'</b></span>';};
+    el.innerHTML='<a class="gol'+(won?' won':'')+'" href="conjugation.html"><div class="gol-h"><span class="gol-t">わたしの目標<span>動詞活用 '+GOAL.n+'問</span></span>'+
+      '<span class="gol-p">'+pct+'<small>%</small></span></div>'+
+      '<div class="gol-bar"><i style="width:'+pct+'%"></i>'+mk(50,"50%（11月）")+mk(80,"80%（12月）")+'</div>'+
+      '<div class="gol-msg">'+msg+'</div><div class="gol-sub">'+sub+'　<span style="white-space:nowrap">習得 '+m+'/'+GOAL.n+'問</span></div></a>';
+  }
   /* 今日の1回：文法（Leçon 1〜9）と「いろいろな動詞」から、いま進めている課で10問（復習の日が来た問題を先に出す）。
      何日か空いたあとは「おかえり」。前に正解できた問題を5問だけ。 */
   var GRAM_MAX=9;   // 文法の課の数（課を足したら、ここも増やす）
@@ -240,6 +288,7 @@ a.tdy-sub:hover{text-decoration:underline;}
     $("sAcc").textContent=tot.ans?Math.round(tot.cor/tot.ans*100)+"%":"—";
     renderStreak();
     renderToday();
+    renderGoal();
   }
   function showMenu(){loginPanel.classList.add("hidden");menuPanel.classList.remove("hidden");renderMenu();var fb=document.getElementById("fbCorner");if(fb)fb.remove();if(window.Feedback)Feedback.mount();maybeWelcome();if(window.Streak)Streak.loginBonus();popTry=0;setTimeout(maybePopNotices,1200);}
   /* はじめてログインしたときだけの案内（見終わったら、この人の記録に「見た」と残す。進み具合のバックアップで別の端末にも伝わる） */
