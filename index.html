@@ -134,7 +134,7 @@ a.tdy-sub:hover{text-decoration:underline;}
       </a>
       <a class="card grammar" href="grammar.html">
         <div class="ico"><svg width="28" height="28" aria-hidden="true" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7.5c-1.2 5.5-1.3 11.4.8 15.6 2 4 10.4 4 12.4 0 2.1-4.2 2-10.1.8-15.6-3.1 2-10.9 2-14 0z"/><circle cx="12.8" cy="14.6" r="2.7"/><circle cx="19.2" cy="14.6" r="2.7"/><circle cx="12.8" cy="14.6" r=".8" fill="currentColor" stroke="none"/><circle cx="19.2" cy="14.6" r=".8" fill="currentColor" stroke="none"/><path d="M15.2 18.2l.8 1.5.8-1.5"/><path d="M12 23.2c1.3.8 2.7.8 4 0 1.3.8 2.7.8 4 0"/></svg></div>
-        <div class="tx"><div class="ti">文法練習</div><div class="de">Leçon 1〜9</div></div>
+        <div class="tx"><div class="ti">文法練習</div><div class="de">Leçon 1〜10</div></div>
         <div class="st" id="stGram"></div>
       </a>
       <a class="card vocab" href="vocab.html">
@@ -184,8 +184,9 @@ a.tdy-sub:hover{text-decoration:underline;}
   (function(){var t=new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
     document.querySelectorAll(".newtag[data-until]").forEach(function(e){if(t>e.getAttribute("data-until"))e.remove();});})();
   /* 自分の目標：動詞活用（いろいろな動詞）の達成率。動詞活用ページの「ミックス」と同じ数え方（1問4点）。
+     目標はこれまでの320問（Leçon 10 で足した V10-・FS-・FA- の問題は数えない）。
      11月中に50%、12月31日までに80%を目指す（100%までいったら偉い！）。期限を過ぎたら出さない */
-  var GOAL={n:320,steps:[{d:"2026-11-30",p:50,t:"11月中に50%"},{d:"2026-12-31",p:80,t:"12月31日までに80%"}]};
+  var GOAL={n:320,skip:/^(V10|FS|FA)-/,steps:[{d:"2026-11-30",p:50,t:"11月中に50%"},{d:"2026-12-31",p:80,t:"12月31日までに80%"}]};
   function verbPt(x){if(x.pt!=null)return Math.min(4,x.pt);var run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);
     return (!x.wk&&(((x.wrun||0)>=1&&run>=2)||x.m))?4:(!x.wk&&run>=2)?2:((x.c||0)>0&&x.last===1)?1:0;}
   function renderGoal(){
@@ -195,7 +196,7 @@ a.tdy-sub:hover{text-decoration:underline;}
     var u=Q.user(),who=u?u.id:"guest",v=null;
     try{v=JSON.parse(localStorage.getItem("verbQuiz_v1_"+who));}catch(e){}
     var it=(v&&v.it)||{},pts=0,m=0;
-    for(var k in it){var y=it[k];if(!y||!((y.c||0)+(y.w||0)))continue;var q=verbPt(y);pts+=q;if(q>=4&&!y.wk)m++;}
+    for(var k in it){if(GOAL.skip.test(k))continue;var y=it[k];if(!y||!((y.c||0)+(y.w||0)))continue;var q=verbPt(y);pts+=q;if(q>=4&&!y.wk)m++;}
     var pct=Math.min(100,Math.floor(pts/(GOAL.n*4)*100));
     var st=GOAL.steps.filter(function(x){return t<=x.d;})[0];       // いま目指している段
     if(st.p<=pct&&st!==last)st=last;                                  // 11月の目標を超えたら、次は80%
@@ -212,9 +213,9 @@ a.tdy-sub:hover{text-decoration:underline;}
       '<div class="gol-bar"><i style="width:'+pct+'%"></i>'+mk(50,"50%（11月）")+mk(80,"80%（12月）")+'</div>'+
       '<div class="gol-msg">'+msg+'</div><div class="gol-sub">'+sub+'　<span style="white-space:nowrap">習得 '+m+'/'+GOAL.n+'問</span></div></a>';
   }
-  /* 今日の1回：文法（Leçon 1〜9）と「いろいろな動詞」から、いま進めている課で10問（復習の日が来た問題を先に出す）。
+  /* 今日の1回：文法（Leçon 1〜10）と「いろいろな動詞」から、いま進めている課で10問（復習の日が来た問題を先に出す）。
      何日か空いたあとは「おかえり」。前に正解できた問題を5問だけ。 */
-  var GRAM_MAX=9;   // 文法の課の数（課を足したら、ここも増やす）
+  var GRAM_MAX=10;   // 文法の課の数（課を足したら、ここも増やす）
   var TDY_IC={go:'<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>',
     done:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
     back:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5"/><path d="M6.5 10v9h11v-9"/><path d="M10 19v-5h4v5"/></svg>'};
@@ -272,9 +273,9 @@ a.tdy-sub:hover{text-decoration:underline;}
     var t=J("talkQuiz_v1_"+who);if(u)t=best(t,"talk");addTot(t);
     if(t&&t.tries){var m=0;for(var k in (t.lv||{}))if(t.lv[k]>=4)m++;
       $("stTalk").innerHTML=t.tries+"回"+bTag(bN(t));}else{$("stTalk").innerHTML="";}
-    // 文法練習（Leçon 1〜9）
+    // 文法練習（Leçon 1〜10）
     var gT=0,clr=0,gt=0,gb=0,gA=0,gC=0;
-    for(var n=1;n<=9;n++){var g=J("gramQuiz_L"+n+"_v1_"+who);addTot(g);gb+=bN(g);if(g&&g.tries){gT+=g.tries;gt+=g.timeMs||0;gA+=g.answered||0;gC+=g.correct||0;if(g.answered>=300)clr++;}}
+    for(var n=1;n<=10;n++){var g=J("gramQuiz_L"+n+"_v1_"+who);addTot(g);gb+=bN(g);if(g&&g.tries){gT+=g.tries;gt+=g.timeMs||0;gA+=g.answered||0;gC+=g.correct||0;if(g.answered>=300)clr++;}}
     /* いろいろな動詞（動詞活用ページ）。サーバーには文法練習として記録されるので、合計の比べ合わせに含める */
     var vT=vq.tries||0,vt=vq.timeMs||0;addTot(vq);
     var sg=SV.grammar;if(u&&sg&&sg.tries>gT+vT){tot.time+=(sg.timeMs||0)-gt-vt;tot.tries+=sg.tries-gT-vT;tot.ans+=sg.answered-gA-(vq.answered||0);tot.cor+=sg.correct-gC-(vq.correct||0);gT=sg.tries-vT;gt=Math.max(0,(sg.timeMs||0)-vt);}
@@ -466,8 +467,8 @@ a.tdy-sub:hover{text-decoration:underline;}
   $("goBtn").addEventListener("click",function(){
     var b=this;if(b.classList.contains("rolling"))return;
     var c=[];["être","aller","avoir","faire","mix"].forEach(function(v){c.push("conjugation.html#play:"+encodeURIComponent(v));});
-    ["er","ea","ir","v4","v5","v6","v7","v8","v9","pc","imp","pq","mix"].forEach(function(k){c.push("verbs.html#"+k);});
-    for(var n=1;n<=9;n++)c.push("grammar-l"+n+".html#mix");
+    ["er","ea","ir","v4","v5","v6","v7","v8","v9","v10","pc","imp","pq","fs","fa","mix"].forEach(function(k){c.push("verbs.html#"+k);});
+    for(var n=1;n<=10;n++)c.push("grammar-l"+n+".html#mix");
     c.push("vocab.html#today");
     try{if(vocabDue(JSON.parse(localStorage.getItem("vocabQuiz_v1_"+((Q.user()||{}).id||"guest")))))c.push("vocab.html#today","vocab.html#today");}catch(e){}   /* 単語の復習がたまっている日は、出やすく */
     var to=c[Math.floor(Math.random()*c.length)];

@@ -67,6 +67,19 @@ window.LESSON={no:"V",label:"いろいろな動詞",eyebrow:"Conjugaison",title:
    '<table><tr><td class="fr">je conduis</td><td class="fr">nous conduisons</td></tr><tr><td class="fr">tu conduis</td><td class="fr">vous conduisez</td></tr><tr><td class="fr">il / elle conduit</td><td class="fr">ils / elles conduisent</td></tr></table>'+
    '<p><span class="fr">conduire</span>：複数で s が入る（lire と同じ型）。同じ型：<span class="fr">construire（建てる）、introduire（紹介する、導入する）、produire（生産する）、traduire（翻訳する）</span></p>'+
    '<p>過去分詞：<span class="fr">dormir → dormi, sentir → senti, ouvrir → ouvert, conduire → conduit</span></p>'},
+  {k:"v10",t:"peindre・disparaître・plaire・croire",d:"Leçon 10（p.60）",c:"#c48f7a",ci:"#a36e59",cw:"#f9efea",
+   memo:'<table><tr><th>peindre</th><th>disparaître</th><th>plaire</th><th>croire</th></tr>'+
+   '<tr><td class="fr">je peins</td><td class="fr">je disparais</td><td class="fr">je plais</td><td class="fr">je crois</td></tr>'+
+   '<tr><td class="fr">tu peins</td><td class="fr">tu disparais</td><td class="fr">tu plais</td><td class="fr">tu crois</td></tr>'+
+   '<tr><td class="fr">il peint</td><td class="fr">il disparaît</td><td class="fr">il plaît</td><td class="fr">il croit</td></tr>'+
+   '<tr><td class="fr">nous peignons</td><td class="fr">nous disparaissons</td><td class="fr">nous plaisons</td><td class="fr">nous croyons</td></tr>'+
+   '<tr><td class="fr">vous peignez</td><td class="fr">vous disparaissez</td><td class="fr">vous plaisez</td><td class="fr">vous croyez</td></tr>'+
+   '<tr><td class="fr">ils peignent</td><td class="fr">ils disparaissent</td><td class="fr">ils plaisent</td><td class="fr">ils croient</td></tr></table>'+
+   '<p>過去分詞：<span class="fr">peint, disparu, plu, cru</span></p>'+
+   '<p>peindre は複数で <b>-gn-</b>。同じ型：<span class="fr">craindre（恐れる）、atteindre（達する）、rejoindre（合流する）</span></p>'+
+   '<p>disparaître は複数で <b>-ss-</b>、il の形は t の前の i に ^。同じ型：<span class="fr">connaître、paraître（～に見える）、apparaître（現れる）、reconnaître（見分ける）</span></p>'+
+   '<p>plaire à ～「～の気に入る」：<span class="fr">Ce film me plaît.</span>（この映画が私の気に入る＝私はこの映画が好き）</p>'+
+   '<p>croire は nous・vous で i → y（voir と同じ）。</p>'},
   {k:"pc",t:"複合過去",d:"avoir / être ＋過去分詞",c:"#9b8fc4",ci:"#7a6ea6",cw:"#f1eff8",
    memo:'<p>助動詞（avoir または être）の現在形＋過去分詞。</p>'+
    '<table><tr><td class="fr">j\'ai chanté</td><td class="fr">nous avons chanté</td></tr><tr><td class="fr">tu as chanté</td><td class="fr">vous avez chanté</td></tr><tr><td class="fr">il / elle a chanté</td><td class="fr">ils / elles ont chanté</td></tr></table>'+
@@ -85,7 +98,22 @@ window.LESSON={no:"V",label:"いろいろな動詞",eyebrow:"Conjugaison",title:
    '<table><tr><td class="fr">j\'avais fini</td><td class="fr">nous avions fini</td></tr><tr><td class="fr">tu avais fini</td><td class="fr">vous aviez fini</td></tr><tr><td class="fr">il avait fini</td><td class="fr">ils avaient fini</td></tr></table>'+
    '<table><tr><td class="fr">j\'étais parti(e)</td><td class="fr">nous étions parti(e)s</td></tr><tr><td class="fr">tu étais parti(e)</td><td class="fr">vous étiez parti(e)(s)</td></tr><tr><td class="fr">il était parti / elle était partie</td><td class="fr">ils étaient partis / elles étaient parties</td></tr></table>'+
    '<p>代名動詞：<span class="fr">je m\'étais levé(e), elle s\'était levée, ils s\'étaient levés</span></p>'+
-   '<p>否定：<span class="fr">je n\'avais pas fini</span>（助動詞を ne ～ pas ではさむ）</p>'}
+   '<p>否定：<span class="fr">je n\'avais pas fini</span>（助動詞を ne ～ pas ではさむ）</p>'},
+  {k:"fs",t:"単純未来",d:"不定詞＋-ai, -as, -a, -ons, -ez, -ont（Leçon 10）",c:"#6fb0ad",ci:"#4c8e8b",cw:"#ebf5f4",
+   memo:'<p>不定詞（-re で終わる動詞は e をとる）＋語尾 <span class="fr">-ai, -as, -a, -ons, -ez, -ont</span></p>'+
+   '<table><tr><td class="fr">je parlerai</td><td class="fr">nous parlerons</td></tr><tr><td class="fr">tu parleras</td><td class="fr">vous parlerez</td></tr><tr><td class="fr">il / elle parlera</td><td class="fr">ils / elles parleront</td></tr></table>'+
+   '<p><span class="fr">finir → je finirai　prendre → je prendrai　dire → je dirai</span></p>'+
+   '<table><tr><td class="fr">avoir → j\'aurai</td><td class="fr">être → je serai</td><td class="fr">aller → j\'irai</td></tr>'+
+   '<tr><td class="fr">faire → je ferai</td><td class="fr">venir → je viendrai</td><td class="fr">tenir → je tiendrai</td></tr>'+
+   '<tr><td class="fr">voir → je verrai</td><td class="fr">savoir → je saurai</td><td class="fr">pouvoir → je pourrai</td></tr>'+
+   '<tr><td class="fr">vouloir → je voudrai</td><td class="fr">devoir → je devrai</td><td class="fr">recevoir → je recevrai</td></tr>'+
+   '<tr><td class="fr">envoyer → j\'enverrai</td><td class="fr">falloir → il faudra</td><td class="fr">pleuvoir → il pleuvra</td></tr></table>'+
+   '<p>つづりに注意：<span class="fr">acheter → j\'achèterai　appeler → j\'appellerai　se lever → je me lèverai</span></p>'},
+  {k:"fa",t:"前未来",d:"助動詞の単純未来＋過去分詞（Leçon 10）",c:"#c99b6a",ci:"#a57a48",cw:"#f9f1e8",
+   memo:'<p>助動詞（avoir / être）の<b>単純未来</b>＋過去分詞。avoir か être かの選び方と、過去分詞の一致は複合過去と同じ。</p>'+
+   '<table><tr><td class="fr">j\'aurai fini</td><td class="fr">nous aurons fini</td></tr><tr><td class="fr">tu auras fini</td><td class="fr">vous aurez fini</td></tr><tr><td class="fr">il aura fini</td><td class="fr">ils auront fini</td></tr></table>'+
+   '<table><tr><td class="fr">je serai parti(e)</td><td class="fr">nous serons parti(e)s</td></tr><tr><td class="fr">tu seras parti(e)</td><td class="fr">vous serez parti(e)(s)</td></tr><tr><td class="fr">il sera parti / elle sera partie</td><td class="fr">ils seront partis / elles seront parties</td></tr></table>'+
+   '<p>代名動詞：<span class="fr">je me serai levé(e), ils se seront levés</span></p>'}
 ]};
 
 /* ---------- Leçon 2：-er動詞 ---------- */
@@ -445,3 +473,104 @@ T("pq","大過去に","Elle est rentrée tard.",["Elle était rentrée tard."],"
 T("pq","大過去に","Nous nous sommes promenés.",["Nous nous étions promenés."],"sommes → étions。",{extra:["avions","promené"]});
 B("pq","ユゴーは傘を忘れていた。","Hugo avait oublié son parapluie.",["était","oubliée"],"oublier は avoir：avait oublié。");
 B("pq","レアはもう出発していた。","Léa était déjà partie.",["avait","parti"],"partir は être。déjà は過去分詞の直前。Léa（女性）→ partie。");
+
+/* ---------- Leçon 10：peindre・disparaître・plaire・croire（番号は V10-） ---------- */
+FROM("V10",0);
+W("v10","Je ___ le mur de ma chambre en bleu.（peindre）","peins","peindre：je peins（d が落ちる）。",{ja:"私は部屋の壁を青く塗る。"});
+W("v10","Tu ___ souvent des paysages ?（peindre）","peins","peindre：tu peins。",{ja:"よく風景を描くの？"});
+W("v10","Ma grand-mère ___ des fleurs.（peindre）","peint","peindre：elle peint。",{ja:"祖母は花の絵を描く。"});
+W("v10","Nous ___ la cuisine ce week-end.（peindre）","peignons","peindre：nous peignons（複数は -gn-）。",{ja:"私たちは今週末、キッチンを塗る。"});
+W("v10","Vous ___ à l'huile ?（peindre）","peignez","peindre：vous peignez。",{ja:"油絵を描くのですか？"});
+W("v10","Les enfants ___ des œufs pour Pâques.（peindre）","peignent","peindre：ils peignent。",{ja:"子どもたちは復活祭の卵に色を塗る。"});
+W("v10","Je ne ___ pas les gros chiens.（craindre）","crains","craindre は peindre と同じ型：je crains。",{ja:"私は大きな犬はこわくない。"});
+W("v10","Hugo ___ le froid.（craindre）","craint","craindre：il craint。",{ja:"ユゴーは寒さに弱い。"});
+W("v10","Nous ___ un peu l'examen.（craindre）","craignons","craindre：nous craignons。",{ja:"私たちは試験が少し心配だ。"});
+W("v10","Je te ___ au café à midi.（rejoindre）","rejoins","rejoindre も peindre と同じ型：je rejoins。",{ja:"お昼にカフェで合流するね。"});
+W("v10","Ils nous ___ à la gare.（rejoindre）","rejoignent","rejoindre：ils rejoignent。",{ja:"彼らは駅で私たちと合流する。"});
+C("v10","Ce train ___ 300 kilomètres à l'heure.（atteindre）","atteint",["atteint","atteind","atteignent"],"atteindre：il atteint。",{ja:"この列車は時速300キロに達する。"});
+W("v10","Je ___ toujours quand il faut faire la vaisselle.（disparaître）","disparais","disparaître：je disparais。",{ja:"私は皿洗いの時間になるといつも姿を消す。"});
+W("v10","Tu ___ souvent le week-end !（disparaître）","disparais","disparaître：tu disparais。",{ja:"きみは週末よくいなくなるね！"});
+W("v10","Le soleil ___ derrière les nuages.（disparaître）",["disparaît","disparait"],"disparaître：il disparaît（t の前の i に ^）。",{ja:"太陽が雲の後ろに隠れる。"});
+W("v10","Les oiseaux ___ en hiver.（disparaître）","disparaissent","disparaître：ils disparaissent（複数は -ss-）。",{ja:"冬になると鳥たちはいなくなる。"});
+W("v10","Vous ___ toujours au bon moment !（disparaître）","disparaissez","disparaître：vous disparaissez。",{ja:"あなたはいつもちょうどいいときに消えますね！"});
+W("v10","Elle ___ fatiguée aujourd'hui.（paraître）",["paraît","parait"],"paraître は disparaître と同じ型：elle paraît。",{ja:"彼女は今日、疲れているように見える。"});
+W("v10","Ces fruits ___ très frais.（paraître）","paraissent","paraître：ils paraissent。",{ja:"この果物はとても新鮮に見える。"});
+W("v10","Tu me ___ ?（reconnaître）","reconnais","reconnaître も同じ型：tu reconnais。",{ja:"私のことわかる？"});
+W("v10","Nous ___ cette chanson.（reconnaître）","reconnaissons","reconnaître：nous reconnaissons。",{ja:"私たちはこの歌に聞き覚えがある。"});
+C("v10","Une étoile ___ dans le ciel.（apparaître）","apparaît",["apparaît","apparaissent","apparais"],"apparaître も同じ型：elle apparaît。",{ja:"空に星がひとつ現れる。",a:["apparaît","apparait"]});
+W("v10","Ce film me ___ beaucoup.（plaire）",["plaît","plait"],"plaire à ～「～の気に入る」。il plaît（t の前の i に ^）。",{ja:"この映画、とても気に入っている。"});
+W("v10","Ces chaussures te ___ ?（plaire）","plaisent","主語は ces chaussures：ils plaisent。",{ja:"この靴、気に入った？"});
+W("v10","Je ne ___ pas à son chat.（plaire）","plais","plaire：je plais。",{ja:"私は彼の猫に好かれていない。"});
+W("v10","Tu ___ beaucoup à Léa.（plaire）","plais","plaire：tu plais。",{ja:"レアはきみのことをすごく気に入ってるよ。"});
+W("v10","Vous ___ beaucoup à mes parents.（plaire）","plaisez","plaire：vous plaisez。",{ja:"私の両親はあなたのことをとても気に入っています。"});
+W("v10","Je ___ que tu as raison.（croire）","crois","croire：je crois。",{ja:"きみが正しいと思う。"});
+W("v10","Tu ___ cette histoire ?（croire）","crois","croire：tu crois。",{ja:"その話を信じる？"});
+W("v10","Yui ___ aux fantômes.（croire）","croit","croire à ～「～の存在を信じる」。elle croit。",{ja:"ゆいはおばけを信じている。"});
+W("v10","Nous ___ en toi.（croire）","croyons","croire：nous croyons（i → y）。",{ja:"私たちはきみを信じている。"});
+W("v10","Vous ___ qu'il va neiger ?（croire）","croyez","croire：vous croyez（i → y）。",{ja:"雪が降ると思いますか？"});
+W("v10","Ils ne me ___ pas.（croire）","croient","croire：ils croient（ここは y にならない）。",{ja:"彼らは私の言うことを信じない。"});
+C("v10","Nous ___ la porte en vert.（peindre・複合過去）","avons peint",["avons peint","avons peindu","sommes peints"],"過去分詞は peint：nous avons peint。",{ja:"私たちはドアを緑に塗った。"});
+C("v10","Mon chat ___ depuis hier.（disparaître・複合過去）","a disparu",["a disparu","est disparu","a disparaît"],"過去分詞は disparu。助動詞は avoir。",{ja:"うちの猫が昨日からいなくなった。"});
+C("v10","Ce restaurant m'___ beaucoup.（plaire・複合過去）","a plu",["a plu","a plaît","est plu"],"過去分詞は plu。",{ja:"このレストランはとても気に入った。"});
+C("v10","Personne ne m'___ .（croire・複合過去）","a cru",["a cru","a croit","est cru"],"過去分詞は cru。",{ja:"誰も私を信じなかった。"});
+C("v10","Elle ___ sa sœur dans la foule.（reconnaître・複合過去）","a reconnu",["a reconnu","a reconnaît","est reconnue"],"過去分詞は reconnu。",{ja:"彼女は人ごみの中で姉を見つけた。"});
+
+/* ---------- 単純未来（番号は FS-） ---------- */
+FROM("FS",0);
+W("fs","Je ___ à ma mère ce soir.（parler）","parlerai","je → 不定詞＋-ai：je parlerai。",{ja:"今晩、母と話すつもり。"});
+W("fs","Tu ___ à Léa demain ?（parler）","parleras","tu → -as：tu parleras。",{ja:"明日レアと話す？"});
+W("fs","Hugo ___ de son voyage.（parler）","parlera","il → -a：il parlera。",{ja:"ユゴーは旅行の話をするだろう。"});
+W("fs","Nous ___ français en France.（parler）","parlerons","nous → -ons：nous parlerons。",{ja:"フランスではフランス語を話そう。"});
+W("fs","Vous ___ au directeur ?（parler）","parlerez","vous → -ez：vous parlerez。",{ja:"部長と話しますか？"});
+W("fs","Ils ___ de ce problème lundi.（parler）","parleront","ils → -ont：ils parleront。",{ja:"彼らは月曜日にその問題について話すだろう。"});
+W("fs","Je ___ ce livre ce week-end.（finir）","finirai","-ir 動詞：不定詞＋-ai：je finirai。",{ja:"週末にこの本を読み終えるつもり。"});
+W("fs","Nous ___ avant six heures.（finir）","finirons","nous finirons。",{ja:"私たちは6時前に終えるだろう。"});
+W("fs","Les cours ___ en juillet.（finir）","finiront","ils finiront。",{ja:"授業は7月に終わる。"});
+W("fs","Tu ___ le bus ou le métro ?（prendre）","prendras","-re の動詞は e をとる：prendr-as。",{ja:"バスに乗る？それとも地下鉄？"});
+W("fs","Vous ___ un café ?（prendre）","prendrez","vous prendrez。",{ja:"コーヒーにしますか？"});
+W("fs","Je te ___ la vérité.（dire）","dirai","dire → dir-ai。",{ja:"きみに本当のことを言うよ。"});
+W("fs","J'___ le temps demain.（avoir）","aurai","avoir の語幹は aur-：j'aurai。",{ja:"明日は時間があるだろう。"});
+W("fs","Ils ___ beaucoup de travail.（avoir）","auront","ils auront。",{ja:"彼らは仕事がたくさんあるだろう。"});
+W("fs","Je ___ chez moi ce soir.（être）","serai","être の語幹は ser-：je serai。",{ja:"今晩は家にいるよ。"});
+W("fs","Tu ___ libre samedi ?（être）","seras","tu seras。",{ja:"土曜日はひま？"});
+W("fs","Nous ___ en retard.（être）","serons","nous serons。",{ja:"私たちは遅れるだろう。"});
+W("fs","J'___ à Kyoto en avril.（aller）","irai","aller の語幹は ir-：j'irai。",{ja:"4月に京都に行くつもり。"});
+W("fs","Elle ___ chez le dentiste demain.（aller）","ira","elle ira。",{ja:"彼女は明日歯医者に行く。"});
+W("fs","Vous ___ à la fête ?（aller）","irez","vous irez。",{ja:"パーティーに行きますか？"});
+W("fs","Je ___ la cuisine ce soir.（faire）","ferai","faire の語幹は fer-：je ferai。",{ja:"今晩は私が料理するよ。"});
+W("fs","Ils ___ du ski en février.（faire）","feront","ils feront。",{ja:"彼らは2月にスキーをするだろう。"});
+W("fs","Tu ___ avec nous ?（venir）","viendras","venir の語幹は viendr-：tu viendras。",{ja:"いっしょに来る？"});
+W("fs","Nous ___ te voir dimanche.（venir）","viendrons","nous viendrons。",{ja:"日曜日にきみに会いに行くよ。"});
+W("fs","Je ___ ma promesse.（tenir）","tiendrai","tenir の語幹は tiendr-：je tiendrai。",{ja:"約束は守るよ。"});
+W("fs","Je ___ ce film la semaine prochaine.（voir）","verrai","voir の語幹は verr-：je verrai。",{ja:"来週その映画を見るつもり。"});
+W("fs","On ___ bien !（voir）","verra","on verra「そのうちわかるさ」。",{ja:"まあ、様子を見よう！"});
+W("fs","Je ___ t'aider demain.（pouvoir）","pourrai","pouvoir の語幹は pourr-（r が2つ）。",{ja:"明日なら手伝えるよ。"});
+W("fs","Elles ___ sûrement venir.（vouloir）","voudront","vouloir の語幹は voudr-：elles voudront。",{ja:"彼女たちはきっと来たがるだろう。"});
+W("fs","Tu ___ travailler plus.（devoir）","devras","devoir の語幹は devr-：tu devras。",{ja:"きみはもっと勉強しなければならないだろう。"});
+W("fs","Vous ___ la réponse demain.（savoir）","saurez","savoir の語幹は saur-：vous saurez。",{ja:"明日答えがわかりますよ。"});
+W("fs","Il ___ ta lettre lundi.（recevoir）","recevra","recevoir の語幹は recevr-：il recevra。",{ja:"彼は月曜日にきみの手紙を受け取るだろう。"});
+W("fs","J'___ les photos ce soir.（envoyer）","enverrai","envoyer の語幹は enverr-：j'enverrai。",{ja:"今晩写真を送るね。"});
+W("fs","Il ___ partir tôt.（falloir）","faudra","falloir：il faudra。",{ja:"早く出発しなければならないだろう。"});
+W("fs","Il ___ demain matin.（pleuvoir）","pleuvra","pleuvoir：il pleuvra。",{ja:"明日の朝は雨が降るだろう。"});
+W("fs","Nous ___ du pain en rentrant.（acheter）","achèterons","acheter：è が入る：nous achèterons。",{ja:"帰りにパンを買おう。"});
+W("fs","Tu m'___ ce soir ?（appeler）","appelleras","appeler：l を重ねる：tu appelleras。",{ja:"今晩電話してくれる？"});
+W("fs","Je me ___ tôt demain.（lever）","lèverai","se lever：è が入る：je me lèverai。",{ja:"明日は早く起きるつもり。"});
+
+/* ---------- 前未来（番号は FA-） ---------- */
+FROM("FA",0);
+C("fa","J'___ mes devoirs avant le dîner.（finir・前未来）","aurai fini",["aurai fini","serai fini","avais fini"],"avoir の単純未来＋過去分詞：j'aurai fini。",{ja:"夕食までに宿題を終えているだろう。"});
+C("fa","Tu ___ ce roman avant les vacances ?（lire・前未来）","auras lu",["auras lu","auras lisé","seras lu"],"lire の過去分詞は lu：tu auras lu。",{ja:"休みまでにこの小説を読み終えてる？"});
+C("fa","Hugo ___ son train.（prendre・前未来）","aura pris",["aura pris","aura prendu","sera pris"],"prendre の過去分詞は pris。",{ja:"ユゴーは電車に乗っているだろう。"});
+C("fa","Nous ___ la maison avant l'hiver.（vendre・前未来）","aurons vendu",["aurons vendu","aurons vendé","serons vendus"],"vendre の過去分詞は vendu。",{ja:"冬までに家を売っているだろう。"});
+C("fa","Vous ___ ce film avant samedi ?（voir・前未来）","aurez vu",["aurez vu","aurez voyé","serez vu"],"voir の過去分詞は vu。",{ja:"土曜日までにその映画を見ていますか？"});
+C("fa","Ils ___ leur travail à midi.（faire・前未来）","auront fait",["auront fait","seront faits","auront faire"],"faire の過去分詞は fait。",{ja:"彼らはお昼には仕事を終えているだろう。"});
+C("fa","Je ___ à la gare avant huit heures.（arriver・前未来）","serai arrivé",["serai arrivé","aurai arrivé","suis arrivé"],"arriver は être：je serai arrivé(e)。",{ja:"8時前には駅に着いているだろう。",a:["serai arrivé","serai arrivée"]});
+C("fa","Elle ___ quand tu rentreras.（partir・前未来）","sera partie",["sera partie","sera parti","aura parti"],"partir は être。主語 elle → partie。",{ja:"きみが帰ってくるころには、彼女は出発しているだろう。"});
+C("fa","Nous ___ avant minuit.（rentrer・前未来）","serons rentrés",["serons rentrés","aurons rentré","serons rentré"],"rentrer は être。主語 nous（男性複数）→ rentrés。",{ja:"私たちは夜12時までに帰っているだろう。"});
+C("fa","Les invités ___ à sept heures.（venir・前未来）","seront venus",["seront venus","auront venu","seront venu"],"venir は être。過去分詞 venu を主語に一致 → venus。",{ja:"お客さんたちは7時には来ているだろう。"});
+C("fa","Je me ___ avant ton arrivée.（habiller・前未来）","serai habillé",["serai habillé","aurai habillé","suis habillé"],"代名動詞は être：je me serai habillé(e)。",{ja:"きみが来る前に着替えておくよ。",a:["serai habillé","serai habillée"]});
+C("fa","Ils se ___ à Paris.（rencontrer・前未来）","seront rencontrés",["seront rencontrés","auront rencontré","seront rencontré"],"代名動詞は être。主語 ils → rencontrés。",{ja:"彼らはパリで出会っているだろう。"});
+T("fa","前未来に","Je mangerai.",["J'aurai mangé."],"助動詞 avoir の単純未来（aurai）＋過去分詞。",{extra:["serai","mangerai"]});
+T("fa","前未来に","Elles sortiront.",["Elles seront sorties."],"sortir は être。elles → sorties。",{extra:["auront","sorti"]});
+T("fa","前未来に","Tu écriras la lettre.",["Tu auras écrit la lettre."],"écrire の過去分詞は écrit。",{extra:["seras","écriras"]});
+B("fa","明日には、彼は答えを受け取っているだろう。","Il aura reçu la réponse demain.",["sera","recevra"],"recevoir の過去分詞は reçu。");

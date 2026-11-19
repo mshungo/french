@@ -16,7 +16,7 @@ window.VDATA={ids:{}};
 (function(){let p=0,n=0;const f=sec=>{(VDATA.ids[sec]=VDATA.ids[sec]||[]).push(p+"-"+(n++));};
   window.C=window.W=window.T=window.B=f;window.FROM=(a,b)=>{p=a;n=b;};window.SKIP=k=>{n+=k;};})();
 </script>
-<script src="verbs-data.js?v=5"></script>
+<script src="verbs-data.js?v=6"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -853,7 +853,7 @@ function renderHome(){
 /* いろいろな動詞（verbs.html で出題）の一覧と達成率。1問4点（grammar.js と同じ数え方） */
 function verbPt(x){if(x.pt!=null)return Math.min(4,x.pt);const run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);
   return (!x.wk&&(((x.wrun||0)>=1&&run>=2)||x.m))?4:(!x.wk&&run>=2)?2:((x.c||0)>0&&x.last===1)?1:0;}
-const VSHORT={er:"-er",ea:"être",ir:"-ir",v4:"aller",v5:"faire",v6:"lire",v7:"vivre",v8:"voir",v9:"dors",pc:"p.c.",imp:"imp.",pq:"p.q.p"};
+const VSHORT={er:"-er",ea:"être",ir:"-ir",v4:"aller",v5:"faire",v6:"lire",v7:"vivre",v8:"voir",v9:"dors",pc:"p.c.",imp:"imp.",pq:"p.q.p",v10:"croire",fs:"fut.",fa:"f.a."};
 function renderVerbs(){
   const el=document.getElementById("vGroup"),L=window.LESSON;if(!el||!L||!window.VDATA)return;
   let v=null;try{v=JSON.parse(localStorage.getItem("verbQuiz_v1_"+((window.Quiz&&Quiz.user())?Quiz.user().id:"guest")));}catch(e){}
