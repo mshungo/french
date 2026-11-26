@@ -229,6 +229,31 @@ let questions=[],idx=0,roundCorrect=0,locked=false,curSec="mix",curMode="choice"
 let fromTop=false;   // トップページの「今日の1回」「復習」から開いた
 let retry=false;   // 間違えたところだけの練習中（成績・習得・記録には入れない）
 let roundStart=0,timerHandle=null,autoNext=null;
+
+/* ---------- 答えの音声（audio/grammar/ と audio/verbs/ の録音。ファイル名は問題ID） ----------
+   答えたあと、正しい文を読み上げる。設定（トップの「答えの音声」）で自動再生を止められる。
+   録音のない問題（あとから足した問題など）は、ボタンを出さない */
+const vBufs={};let vSrc=null,vTok=0;
+function vFile(it){return "audio/"+(L.secPrefix==="V-"?"verbs":"grammar")+"/"+it.id+".mp3";}
+function voiceAuto(){return !(window.Quiz&&Quiz.prefs&&Quiz.prefs().voiceOff);}
+function vStop(){vTok++;try{if(vSrc){if(vSrc.stop)vSrc.stop();else vSrc.pause();}}catch(e){}vSrc=null;}
+function vLoad(f){
+  if(!vBufs[f])vBufs[f]=fetch(f).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer();}).then(ab=>new Promise((res,rej)=>actx.decodeAudioData(ab,res,rej)));
+  return vBufs[f].catch(e=>{delete vBufs[f];throw e;});
+}
+/* 鳴らせたら、鳴り終わるまでの秒数を返す。録音がなければ -1、鳴らせなければ 0 */
+function voice(it,delay){
+  vStop();const tok=vTok,f=vFile(it);
+  return new Promise(done=>setTimeout(()=>{
+    if(tok!==vTok)return done(0);
+    if(typeof ensureAudio==="function")ensureAudio();
+    if(typeof actx!=="undefined"&&actx&&window.fetch){
+      vLoad(f).then(b=>{if(tok!==vTok)return done(0);if(actx.state==="suspended")actx.resume();
+        const s=actx.createBufferSource();s.buffer=b;s.connect(actx.destination);vSrc=s;s.start(actx.currentTime+.02);done(b.duration);}).catch(()=>done(-1));
+    }else{try{const a=new Audio(f);vSrc=a;a.onerror=()=>done(-1);a.play().then(()=>done(a.duration||2),()=>done(0));}catch(e){done(0);}}
+  },delay||0));
+}
+function preVoice(it){if(typeof actx!=="undefined"&&actx&&window.fetch)vLoad(vFile(it)).catch(()=>{});}
 let homeScreen,quizScreen,resultScreen;
 function show(el){[homeScreen,quizScreen,resultScreen].forEach(s=>s.classList.add("hidden"));el.classList.remove("hidden");try{window.scrollTo(0,0);}catch(e){}}
 function secInfo(k){return L.sections.find(s=>s.k===k)||{t:XSEC[k]||k,c:"#c0a06a",ci:"#9a7b45",cw:"#f8f1e4"};}
@@ -424,6 +449,7 @@ function promptHTML(q,filled){
   return esc(it.q).replace("___",blank);
 }
 function render(){
+  if(questions[idx])preVoice(questions[idx].it);   // 答える前に、答えの音声を読みこんでおく
   clearTimeout(autoNext);
   const q=questions[idx],it=q.it;q.t0=performance.now();locked=false;
   const N=questions.length;
@@ -534,6 +560,7 @@ function grade(r,chosen){
   const fb=$("fb");
   if(q.ok){fb.className="fb show ok";fb.textContent=pick(["Bien !","Très bien !","Parfait !","Exact !","Bravo !"]);if(typeof playCorrect==="function")playCorrect();}
   else{fb.className="fb show no";fb.textContent=pick(["Pas tout à fait…","Presque !","Attention…"]);if(typeof playWrong==="function")playWrong();}
+  q.voice=voiceAuto()?voice(q.it,q.ok?520:420):null;   // 効果音のあとに、正しい文を読み上げる
   showAfter(q);
 }
 function resultMsg(p){return p===100?"全問正解！":p>=80?"クリア！":p>=50?"あと少し！":"もう一回やってみよう";}
@@ -553,12 +580,17 @@ function showAfter(q){
   if(!q.ok&&q.chosen!=null)extra+='<div class="heard nl-badge"><span style="color:var(--bad-ink)">'+NLI.svg("x",15)+'</span>'+NLIdle.miss(q.chosen)+'</div>';
   const alts=it.a.slice(1);
   if(alts.length&&(it.t==="t"||it.t==="w"))extra+='<div class="ans-alt">＝ '+alts.map(esc).join(" ／ ")+'</div>';
-  a.innerHTML='<div class="ans-fr">'+answerLine(q)+'</div>'+(it.ja&&it.t!=="b"?'<div class="ans-ja">'+jaHTML(it.ja)+'</div>':'')+extra+
+  a.innerHTML='<div class="ans-fr">'+answerLine(q)+'<button class="g-spk" id="spkBtn" type="button" aria-label="音声" title="音声をもう一度">'+NLI.svg("speaker",18)+'</button></div>'+(it.ja&&it.t!=="b"?'<div class="ans-ja">'+jaHTML(it.ja)+'</div>':'')+extra+
     (it.ex?'<div class="ex"><span class="ex-h">ポイント</span>'+esc(it.ex)+'</div>':'')+
     /* 書いて答えてまちがえたときは、正しい形を一度自分で書いてみる（写して覚える）。書かずに進むこともできる */
     (!q.ok&&q.kind==="w"?'<div class="retype"><span class="rt-l">'+NLI.svg("pencil",15)+'正しい形を書いて覚えよう</span><input type="text" id="rtIn" class="write-input rt-in" autocomplete="off" autocapitalize="off" spellcheck="false"><span class="rt-ok" id="rtOk"></span></div>':'')+
     '<div class="btns nx"><button class="next-btn" id="nextBtn" aria-label="'+(idx+1<questions.length?"次へ":"結果を見る")+'">'+NLI.svg(idx+1<questions.length?"next":"flag",28)+'</button></div>';
   $("nextBtn").onclick=next;
+  const sb=$("spkBtn");
+  sb.onclick=()=>{clearTimeout(autoNext);sb.classList.remove("ring");void sb.offsetWidth;sb.classList.add("ring");
+    voice(it,0).then(d=>{if(d<0)sb.remove();});};
+  if(q.voice)q.voice.then(d=>{if(d<0&&sb.isConnected)sb.remove();});
+  else if(typeof actx!=="undefined"&&actx&&window.fetch)vLoad(vFile(it)).catch(()=>{if(sb.isConnected)sb.remove();});
   $("hintLine").textContent="";
   const rt=$("rtIn");
   if(rt){
@@ -572,10 +604,15 @@ function showAfter(q){
       else{rt.classList.remove("shake");void rt.offsetWidth;rt.classList.add("shake");}
     });
   }
-  if(q.ok&&!q.accent&&(!window.Quiz||!Quiz.autoNext||Quiz.autoNext()))autoNext=setTimeout(next,Quiz.nextDelay?Quiz.nextDelay(1000):1000);   // 間違えたときは自動では進まない
+  if(q.ok&&!q.accent&&(!window.Quiz||!Quiz.autoNext||Quiz.autoNext())){   // 間違えたときは自動では進まない
+    const wait=Quiz.nextDelay?Quiz.nextDelay(1000):1000,t0=Date.now();
+    if(!q.voice)autoNext=setTimeout(next,wait);
+    else q.voice.then(d=>{if(questions[idx]!==q)return;clearTimeout(autoNext);   // 読み上げが終わってから次へ
+      autoNext=setTimeout(next,Math.max(0,Math.max(wait,d>0?520+d*1000+350:0)-(Date.now()-t0)));});
+  }
 }
 function next(){
-  clearTimeout(autoNext);
+  clearTimeout(autoNext);vStop();
   const q=questions[idx];if(!q||q.ok===null)return;
   idx++;if(idx<questions.length)render();else finishRound();
 }
@@ -638,7 +675,7 @@ window.FB_QUESTIONS=function(){
   }
   return out;
 };
-function goHome(){clearInterval(timerHandle);clearTimeout(autoNext);
+function goHome(){clearInterval(timerHandle);clearTimeout(autoNext);vStop();
   if(fromTop){location.href="index.html";return;}   // トップの「今日の1回」から来たときは、トップへ戻る
   if(L.home){location.href=L.home;return;}   // 動詞活用ページから開いたときは、そこへ戻る
   setAccent(null);renderHome();show(homeScreen);}

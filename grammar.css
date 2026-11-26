@@ -330,6 +330,12 @@
   .micmsg{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:12px;min-height:1.2em;}
   .after{margin-top:16px;background:#fbf5f1;border:1px solid var(--rule);border-radius:16px;padding:16px 18px;text-align:center;}
   .after .ans-fr{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--ink);line-height:1.35;}
+  /* 答えの音声（もう一度聞く） */
+  .after .g-spk{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-left:8px;vertical-align:4px;padding:0;
+    border:1px solid var(--rule);border-radius:50%;background:#fff;color:var(--accent-ink);cursor:pointer;}
+  .after .g-spk:hover{border-color:var(--accent);}
+  .after .g-spk.ring{animation:gSpk .5s;}
+  @keyframes gSpk{0%{box-shadow:0 0 0 0 rgba(192,160,106,.45);}100%{box-shadow:0 0 0 10px rgba(192,160,106,0);}}
   .after .ans-ja{font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
   .after .ans-alt{font-size:12px;color:var(--ink-soft);margin-top:6px;}
   .after .heard{font-size:12.5px;color:var(--ink-soft);margin-top:8px;}
