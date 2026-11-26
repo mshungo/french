@@ -15,8 +15,8 @@
 <link rel="stylesheet" href="grammar.css?v=15">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="tiles.js?v=2"></script>
-<script src="grammar.js?v=33"></script>
+<script src="tiles.js?v=3"></script>
+<script src="grammar.js?v=34"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -100,7 +100,7 @@ C("neg","Il n'habite ___ ici.","plus",NEG,"ne ～ plus「もう～ない」。",
 C("neg","Elle ne mange ___ le matin.","rien",NEG,"ne ～ rien「何も～ない」。",{ja:"彼女は朝は何も食べない。"});
 C("neg","Il n'y a ___ dans la classe.","personne",NEG,"ne ～ personne「だれも～ない」。",{ja:"教室にはだれもいない。"});
 C("neg","Il n'a ___ ami.","aucun",NEG,"ne ～ aucun(e)＋名詞「ひとつ（ひとり）も～ない」。ami は男性 → aucun。",{ja:"彼には友だちがひとりもいない。"});
-B("neg","冷蔵庫にはもう牛乳がない。","Il n'y a plus de lait dans le frigo.",["du","pas"],"ne ～ plus「もう～ない」。否定なので du → de。");
+B("neg","冷蔵庫にはもう牛乳がない。","Il n'y a plus de lait dans le frigo.",["du","pas"],"ne ～ plus「もう～ない」。否定なので du → de。",{ch:["dans le frigo"]});
 B("neg","私には兄弟がいない。","Je n'ai pas de frères.",["des","suis"],"否定文で des → de。");
 
 /* ---------- 疑問文 ---------- */
@@ -145,7 +145,7 @@ B("adj","姉はまじめな学生です。","Ma sœur est une étudiante sérieu
 /* ---------- 並べかえ（追加）：レア・ゆい・ユゴー・マルタン先生の小さな物語 ----------
    あとから足した問題。問題IDは通し番号なので、ほかの問題の記録をずらさないよう、必ずいちばん最後に足す */
 B("adj","【カフェで】このカフェのタルトはどれもおいしい！","Les tartes de ce café sont délicieuses !",["délicieux","cette"],"tartes は女性複数 → délicieuses。café は男性なので ce。");
-B("adj","【奈良で】公園には大きなシカたちがいる。","Il y a de grands cerfs dans le parc.",["des","grandes"],"形容詞が複数名詞の前にくると des → de。cerf は男性。");
+B("adj","【奈良で】公園には大きなシカたちがいる。","Il y a de grands cerfs dans le parc.",["des","grandes"],"形容詞が複数名詞の前にくると des → de。cerf は男性。",{ch:["dans le parc"]});
 B("adj","【リヨンで】ユゴーは古いアパルトマンに住んでいる。","Hugo habite dans un vieil appartement.",["vieux","vieille"],"母音で始まる男性単数名詞の前では vieux → vieil。");
 B("adj","レアには日本人の新しい友だち（女の子）がいる。","Léa a une nouvelle amie japonaise.",["nouvel","japonais"],"amie は女性なので母音の前でも nouvelle。国籍は名詞のあと。");
 B("adj","ゆいはかわいい黒のスカートをはいている。","Yui porte une jolie jupe noire.",["joli","noir"],"joli は名詞の前、色の noire はあと。jupe は女性。");

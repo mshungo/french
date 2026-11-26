@@ -15,8 +15,8 @@
 <link rel="stylesheet" href="grammar.css?v=15">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="tiles.js?v=2"></script>
-<script src="grammar.js?v=33"></script>
+<script src="tiles.js?v=3"></script>
+<script src="grammar.js?v=34"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -125,7 +125,7 @@ W("aux","J'___ trois fois le premier prix.（avoir）","ai eu","avoir の複合�
 W("aux","Il ___ deux ans dans cette ville.（habiter）","a habité","habiter は avoir。",{ja:"彼はこの町に2年住んだ。"});
 B("aux","レアは昨日京都に行った。","Léa est allée à Kyoto hier.",["a","allé"],"aller は être。Léa（女性）→ allée。");
 B("aux","ユゴーは10時に着いた。","Hugo est arrivé à dix heures.",["a","arrivée"],"arriver は être。Hugo（男性）→ arrivé。");
-B("aux","【奈良公園で】ゆいとレアは公園に2時間いた。","Yui et Léa sont restées deux heures dans le parc.",["ont","restés"],"rester は être。女性ふたり → restées。");
+B("aux","【奈良公園で】ゆいとレアは公園に2時間いた。","Yui et Léa sont restées deux heures dans le parc.",["ont","restés"],"rester は être。女性ふたり → restées。",{ch:["deux heures", "dans le parc"]});
 
 /* ---------- 複合過去の文 ---------- */
 W("pc","Hier, j'___ un film.（regarder）","ai regardé","avoir＋過去分詞。",{ja:"昨日、私は映画を見た。"});
@@ -148,9 +148,9 @@ T("pc","倒置疑問文に","Vous êtes allés à Nara.",["Êtes-vous allés à 
 T("pc","倒置疑問文に","Il a mangé.",["A-t-il mangé ?"],"a と il の間に -t- を入れる。");
 C("pc","Hugo n'est pas encore ___.","revenu",["revenu","revenir","revient"],"ne＋est＋pas＋encore＋過去分詞「まだ～していない」。",{ja:"ユゴーはまだ戻ってきていない。"});
 C("pc","正しい否定文はどれ？","Je n'ai pas attendu Léa.",["Je n'ai pas attendu Léa.","Je n'ai attendu pas Léa.","Je ne pas ai attendu Léa."],"ne ～ pas は助動詞をはさむ。過去分詞は pas のあと。",{cw:false});
-B("pc","レアは昨日、日本語の授業に来なかった。","Hier, Léa n'est pas venue au cours de japonais.",["a","venu"],"venir は être。否定は助動詞を ne ～ pas ではさむ。");
+B("pc","レアは昨日、日本語の授業に来なかった。","Hier, Léa n'est pas venue au cours de japonais.",["a","venu"],"venir は être。否定は助動詞を ne ～ pas ではさむ。",{ch:["au cours de japonais"]});
 B("pc","この小説、読んだ？","Tu as lu ce roman ?",["es","lire"],"lire → lu。助動詞は avoir。");
-B("pc","マルタン先生は学生たちに手紙を書いた。","Madame Martin a écrit une lettre à ses étudiants.",["est","écrite"],"écrire は avoir：a écrit。主語には一致しない。");
+B("pc","マルタン先生は学生たちに手紙を書いた。","Madame Martin a écrit une lettre à ses étudiants.",["est","écrite"],"écrire は avoir：a écrit。主語には一致しない。",{ch:["Madame Martin", "à ses étudiants"]});
 B("pc","週末は何をしたの？（倒置で）","Qu'as-tu fait ce week-end ?",["es","faire"],"Que＋as-tu＋fait。母音の前で que → qu'。");
 
 /* ---------- 代名動詞の複合過去 ---------- */
@@ -166,7 +166,7 @@ T("pron","倒置疑問文に","Elle s'est promenée seule.",["S'est-elle promen�
 C("pron","Yui s'est ___ les mains.","lavé",["lavé","lavée","lavées"],"les mains が直接目的補語で、se は間接目的補語 → 一致しない。",{ja:"ゆいは手を洗った。"});
 C("pron","Yui s'est ___ avant le dîner.","lavée",["lavée","lavé","lavés"],"se（自分を）が直接目的補語 → 主語 Yui（女性）に一致。",{ja:"ゆいは夕食の前に体を洗った。"});
 C("pron","代名動詞の複合過去の助動詞は？","être",["être","avoir"],"代名動詞の複合過去は、いつも être。",{cw:false});
-B("pron","今朝、レアとゆいは公園を散歩した。","Ce matin, Léa et Yui se sont promenées dans le parc.",["ont","promenés"],"代名動詞は être。女性ふたり → promenées。");
+B("pron","今朝、レアとゆいは公園を散歩した。","Ce matin, Léa et Yui se sont promenées dans le parc.",["ont","promenés"],"代名動詞は être。女性ふたり → promenées。",{ch:["Ce matin", "Léa et Yui", "dans le parc"]});
 B("pron","ユゴーは昨夜遅く寝た。","Hugo s'est couché tard hier soir.",["a","couchée"],"se coucher は être：s'est couché。");
 B("pron","彼女は日曜日に早く起きなかった。","Elle ne s'est pas levée tôt dimanche.",["a","levé"],"否定：ne＋s'est＋pas＋過去分詞。女性 → levée。");
 
@@ -183,7 +183,7 @@ T("acc","cette robe を代名詞に","Vous avez acheté cette robe ?",["Vous l'a
 T("acc","les cadeaux を代名詞に","Léa a choisi les cadeaux.",["Léa les a choisis."],"les（cadeaux：男性複数）→ choisis。");
 T("acc","ces photos を代名詞に","Hugo a pris ces photos.",["Hugo les a prises."],"les（photos：女性複数）→ prises。発音も［プリーズ］に変わる。");
 B("acc","その写真（複数）は、レアが撮ったんだ。","Ces photos, Léa les a prises.",["pris","la"],"les（photos：女性複数）が前にある → prises。");
-B("acc","マルタン先生のメールは、もう読んだよ。","Le mail de Madame Martin, je l'ai déjà lu.",["lue","le"],"mail は男性単数 → lu のまま。副詞 déjà は過去分詞の直前。");
+B("acc","マルタン先生のメールは、もう読んだよ。","Le mail de Madame Martin, je l'ai déjà lu.",["lue","le"],"mail は男性単数 → lu のまま。副詞 déjà は過去分詞の直前。",{ch:["Le mail de Madame Martin"]});
 </script>
 </body>
 </html>

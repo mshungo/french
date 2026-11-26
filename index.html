@@ -40,7 +40,7 @@ a.tdy-sub:hover{text-decoration:underline;}
 .gol:hover{transform:translateY(-1px);border-color:var(--gold);}
 .gol-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
 .gol-t{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--gold);}
-.gol-t span{margin-left:6px;letter-spacing:0;font-weight:500;color:var(--ink-soft);}
+.gol-t span{margin-left:6px;letter-spacing:0;font-weight:500;color:var(--ink-soft);white-space:nowrap;}
 .gol-p{font-size:26px;font-weight:700;color:var(--ink);line-height:1;}
 .gol-p small{font-size:13px;margin-left:1px;}
 .gol-bar{position:relative;height:12px;margin:12px 0 18px;border-radius:6px;background:#f3ece4;}
@@ -51,6 +51,11 @@ a.tdy-sub:hover{text-decoration:underline;}
 .gol-msg{font-size:13px;font-weight:700;color:var(--ink);}
 .gol-sub{font-size:11.5px;color:var(--ink-soft);margin-top:3px;line-height:1.6;}
 .gol.won{border-color:var(--gold);background:linear-gradient(135deg,#fffaf0,#fdf3e3);}
+.gol-opt{display:flex;align-items:center;gap:10px;margin:7px 6px 0;font-size:11.5px;color:var(--ink-soft);text-decoration:none;}
+.gol-opt span:first-child{white-space:nowrap;}
+.gol-obar{flex:1;height:5px;border-radius:3px;background:#f3ece4;position:relative;overflow:hidden;}
+.gol-obar i{position:absolute;left:0;top:0;bottom:0;background:#d8c6a6;border-radius:3px;}
+.gol-opt b{font-weight:600;min-width:2.6em;text-align:right;}
 </style>
 </style>
 </head>
@@ -185,10 +190,11 @@ a.tdy-sub:hover{text-decoration:underline;}
   /* 新しいコーナーの「New!」：data-until の日（日本時間）を過ぎたら消える */
   (function(){var t=new Date(Date.now()+9*3600e3).toISOString().slice(0,10);
     document.querySelectorAll(".newtag[data-until]").forEach(function(e){if(t>e.getAttribute("data-until"))e.remove();});})();
-  /* 自分の目標：動詞活用（いろいろな動詞）の達成率。動詞活用ページの「ミックス」と同じ数え方（1問4点）。
-     目標はこれまでの320問（Leçon 10 で足した V10-・FS-・FA- の問題は数えない）。
-     11月中に50%、12月31日までに80%を目指す（100%までいったら偉い！）。期限を過ぎたら出さない */
-  var GOAL={n:320,skip:/^(V10|FS|FA)-/,steps:[{d:"2026-11-30",p:50,t:"11月中に50%"},{d:"2026-12-31",p:80,t:"12月31日までに80%"}]};
+  /* 自分の目標（11月・12月チャレンジ）：動詞活用の「複合過去」（PC-）と「半過去」（IM-）52問の達成率。
+     動詞活用ページの「ミックス」と同じ数え方（1問4点）。11月中に50%、12月31日までに80%を目指す（100%までいったら偉い！）。
+     ほかの活用（いろいろな動詞の残り）は任意なので、目標や期限はつけず、下に小さく別のゲージで見せるだけ。期限を過ぎたら出さない */
+  var GOAL={only:/^(PC|IM)-/,n:52,other:360,   // other＝いろいろな動詞のうち、複合過去・半過去以外の問題数（問題を足したら、ここも増やす）
+    steps:[{d:"2026-11-30",p:50,t:"11月中に50%"},{d:"2026-12-31",p:80,t:"12月31日までに80%"}]};
   function verbPt(x){if(x.pt!=null)return Math.min(4,x.pt);var run=x.run!=null?x.run:(x.last===1?Math.min(x.c,1):0);
     return (!x.wk&&(((x.wrun||0)>=1&&run>=2)||x.m))?4:(!x.wk&&run>=2)?2:((x.c||0)>0&&x.last===1)?1:0;}
   function renderGoal(){
@@ -197,23 +203,25 @@ a.tdy-sub:hover{text-decoration:underline;}
     if(t>last.d){el.innerHTML="";return;}
     var u=Q.user(),who=u?u.id:"guest",v=null;
     try{v=JSON.parse(localStorage.getItem("verbQuiz_v1_"+who));}catch(e){}
-    var it=(v&&v.it)||{},pts=0,m=0;
-    for(var k in it){if(GOAL.skip.test(k))continue;var y=it[k];if(!y||!((y.c||0)+(y.w||0)))continue;var q=verbPt(y);pts+=q;if(q>=4&&!y.wk)m++;}
-    var pct=Math.min(100,Math.floor(pts/(GOAL.n*4)*100));
+    var it=(v&&v.it)||{},pts=0,m=0,opts=0;
+    for(var k in it){var y=it[k];if(!y||!((y.c||0)+(y.w||0)))continue;var q=verbPt(y);
+      if(GOAL.only.test(k)){pts+=q;if(q>=4&&!y.wk)m++;}else opts+=q;}
+    var pct=Math.min(100,Math.floor(pts/(GOAL.n*4)*100)),opct=Math.min(100,Math.floor(opts/(GOAL.other*4)*100));
     var st=GOAL.steps.filter(function(x){return t<=x.d;})[0];       // いま目指している段
     if(st.p<=pct&&st!==last)st=last;                                  // 11月の目標を超えたら、次は80%
     var left=Math.round((Date.parse(st.d+"T00:00:00Z")-Date.parse(t+"T00:00:00Z"))/864e5)+1;   // 今日をふくめた残り日数
     var msg,sub,won=false;
-    if(pct>=100){msg="100%達成！ 偉い！";sub="すべての動詞をマスターしました";won=true;}
+    if(pct>=100){msg="100%達成！ 偉い！";sub="複合過去・半過去をすべてマスターしました";won=true;}
     else if(pct>=last.p){msg="目標達成！ 100%までいったら偉い！";sub="100%まで あと "+(100-pct)+"%";won=true;}
     else{
       msg=(st===last&&pct>=GOAL.steps[0].p&&t<=GOAL.steps[0].d?"11月の目標クリア！ 次は12月中に80%":st.t)+"　あと "+(st.p-pct)+"%";
       sub=left>1?"残り "+left+"日（1日 +"+Math.ceil((st.p-pct)/left)+"% で届きます）":"今日が期限です";}
     var mk=function(p,lab){return '<span class="gol-mk'+(pct>=p?' on':'')+'" style="left:'+p+'%"><b>'+lab+'</b></span>';};
-    el.innerHTML='<a class="gol'+(won?' won':'')+'" href="conjugation.html"><div class="gol-h"><span class="gol-t">わたしの目標<span>動詞活用 '+GOAL.n+'問</span></span>'+
+    el.innerHTML='<a class="gol'+(won?' won':'')+'" href="conjugation.html"><div class="gol-h"><span class="gol-t">'+(t<="2026-11-30"?"11月":"12月")+'チャレンジ<span>複合過去・半過去 '+GOAL.n+'問</span></span>'+
       '<span class="gol-p">'+pct+'<small>%</small></span></div>'+
       '<div class="gol-bar"><i style="width:'+pct+'%"></i>'+mk(50,"50%（11月）")+mk(80,"80%（12月）")+'</div>'+
-      '<div class="gol-msg">'+msg+'</div><div class="gol-sub">'+sub+'　<span style="white-space:nowrap">習得 '+m+'/'+GOAL.n+'問</span></div></a>';
+      '<div class="gol-msg">'+msg+'</div><div class="gol-sub">'+sub+'　<span style="white-space:nowrap">習得 '+m+'/'+GOAL.n+'問</span></div></a>'+
+      '<a class="gol-opt" href="conjugation.html"><span>ほかの活用（自由）</span><span class="gol-obar"><i style="width:'+opct+'%"></i></span><b>'+opct+'%</b></a>';
   }
   /* 今日の1回：文法（Leçon 1〜10）と「いろいろな動詞」から、いま進めている課で10問（復習の日が来た問題を先に出す）。
      何日か空いたあとは「おかえり」。前に正解できた問題を5問だけ。 */

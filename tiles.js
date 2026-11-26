@@ -107,7 +107,7 @@ function ctl(q,o){
     go.onclick=function(){if(o.locked()||q.picked.length!==q.words.length)return;go.disabled=true;o.onCheck();};}
   var n=q.words.length,k=q.picked.length;
   go.disabled=k!==n||o.locked();
-  go.textContent=k<n?"あと "+(n-k)+" 語":k>n?(k-n)+" 語多い":"解答";
+  go.textContent=k<n?"あと "+(n-k)+" 枚":k>n?(k-n)+" 枚多い":"解答";
 }
 var drag=null;
 function bind(el,from,q,o){

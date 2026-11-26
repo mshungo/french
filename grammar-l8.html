@@ -15,8 +15,8 @@
 <link rel="stylesheet" href="grammar.css?v=15">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="tiles.js?v=2"></script>
-<script src="grammar.js?v=33"></script>
+<script src="tiles.js?v=3"></script>
+<script src="grammar.js?v=34"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -104,7 +104,7 @@ C("sv","Tu as ___ ce film ?（voir）","vu",["vu","voi","vois"],"voir の過去�
 C("sv","Nous avons ___ du thé.（boire）","bu",["bu","buvu","boi"],"boire の過去分詞は bu。",{ja:"私たちはお茶を飲んだ。"});
 T("sv","主語を nous に","Je reçois un colis.",["Nous recevons un colis."],"recevoir：nous recevons。e の前なので c のまま。",{extra:["reçevons","recevont"]});
 T("sv","主語を ils に","Tu bois du thé.",["Ils boivent du thé."],"boire：ils boivent。",{extra:["buvent","boient"]});
-B("sv","ゆいは自分の部屋の窓から海を見る。","Yui voit la mer de la fenêtre de sa chambre.",["voient","vois"],"voir：elle voit。");
+B("sv","ゆいは自分の部屋の窓から海を見る。","Yui voit la mer de la fenêtre de sa chambre.",["voient","vois"],"voir：elle voit。",{ch:["de la fenêtre de sa chambre"]});
 
 /* ---------- 半過去のつくり方 ---------- */
 C("imp","Quand Hugo ___ lycéen, il jouait au rugby.（être）","était",["était","étais","été"],"être の半過去は語幹 ét-：il était（-ait）。été は過去分詞。",{ja:"ユゴーは高校生のころ、ラグビーをしていた。"});
@@ -128,7 +128,7 @@ C("imp","Autrefois, je ___ beaucoup de lettres.（recevoir）","recevais",["rece
 T("imp","半過去に","Il pleut beaucoup.",["Il pleuvait beaucoup."],"pleuvoir → il pleuvait。",{extra:["pleuvais","plu"]});
 T("imp","半過去に","Nous mangeons au restaurant.",["Nous mangions au restaurant."],"nous mangeons → mang-＋-ions：i の前では e は入れない。",{extra:["mangeions","mangons"]});
 T("imp","半過去に","Elle est lycéenne.",["Elle était lycéenne."],"être の半過去：elle était。",{extra:["étais","été"]});
-B("imp","子どものころ、私は海の近くに住んでいた。","Quand j'étais petite, j'habitais près de la mer.",["suis","habite"],"どちらも半過去：j'étais, j'habitais。");
+B("imp","子どものころ、私は海の近くに住んでいた。","Quand j'étais petite, j'habitais près de la mer.",["suis","habite"],"どちらも半過去：j'étais, j'habitais。",{a:["Quand j'étais petite, j'habitais près de la mer.", "J'habitais près de la mer quand j'étais petite."]});
 
 /* ---------- 半過去の用法・複合過去との使い分け ---------- */
 C("use","Quand je suis arrivée, Hugo ___ dans la cuisine.（être）","était",["était","a été","avait été"],"そのとき続いていた状態は半過去。「着いた」（出来事）は複合過去。",{ja:"私が着いたとき、ユゴーは台所にいた。"});
@@ -144,8 +144,8 @@ C("use","Quand Yui ___ petite, elle aimait la mer.（être）","était",["était
 C("use","Avant, Yui ___ du café, mais maintenant elle boit du thé.（boire）","buvait",["buvait","a bu","avait bu"],"以前の習慣 → 半過去。",{ja:"以前ゆいはコーヒーを飲んでいたが、今は紅茶を飲む。"});
 T("use","過去の習慣（半過去）に","Léa va chez sa grand-mère le dimanche.",["Léa allait chez sa grand-mère le dimanche."],"過去の習慣 → 半過去：elle allait。",{extra:["est allée","allais"]});
 T("use","過去の習慣（半過去）に","Hugo ne mange pas de poisson.",["Hugo ne mangeait pas de poisson."],"ne ～ pas で動詞をはさむ。a の前なので mangeait（e が残る）。",{extra:["mangait","a mangé"]});
-T("use","過去の習慣（半過去）に","Il pleut quand nous sortons.",["Il pleuvait quand nous sortions."],"どちらも半過去：il pleuvait, nous sortions（「出かけるといつも雨だった」）。",{extra:["a plu","sortons"]});
-B("use","電話が鳴ったとき、レアは台所にいた。","Quand le téléphone a sonné, Léa était dans la cuisine.",["sonnait","été"],"出来事（a sonné）は複合過去、背景（était）は半過去。");
+T("use","過去の習慣（半過去）に","Il pleut quand nous sortons.",["Il pleuvait quand nous sortions.","Quand nous sortions, il pleuvait."],"どちらも半過去：il pleuvait, nous sortions（「出かけるといつも雨だった」）。",{extra:["a plu","sortons"]});
+B("use","電話が鳴ったとき、レアは台所にいた。","Quand le téléphone a sonné, Léa était dans la cuisine.",["sonnait","été"],"出来事（a sonné）は複合過去、背景（était）は半過去。",{ch:["le téléphone", "dans la cuisine"],a:["Quand le téléphone a sonné, Léa était dans la cuisine.", "Léa était dans la cuisine quand le téléphone a sonné."]});
 B("use","彼はリヨンに2年間住んだ。","Il a habité deux ans à Lyon.",["habitait","est"],"期間が区切られ、終わっている → 複合過去。");
 B("use","1996年、あなたはどこに住んでいましたか。","En 1996, où habitiez-vous ?",["habitez","avez"],"過去の状態 → 半過去。倒置疑問：habitiez-vous。");
 
@@ -171,7 +171,7 @@ T("pqp","大過去に","Léa est allée à Nara.",["Léa était allée à Nara."
 T("pqp","大過去に","Nous nous sommes levés tôt.",["Nous nous étions levés tôt."],"代名動詞：nous nous étions levés。",{extra:["avions","levé"]});
 T("pqp","主語を elles に","Il s'était couché tôt.",["Elles s'étaient couchées tôt."],"elles（女性複数）→ s'étaient couchées。",{extra:["couchés","s'était"]});
 T("pqp","否定文に","Il avait fini.",["Il n'avait pas fini."],"ne ＋ avait ＋ pas ＋ 過去分詞。",{extra:["ne","a"]});
-B("pqp","ゆいが着いたとき、ユゴーはもう出かけていた。","Quand Yui est arrivée, Hugo était déjà parti.",["avait","partie"],"partir は être。Hugo（男性）→ parti。déjà は過去分詞の直前。");
+B("pqp","ゆいが着いたとき、ユゴーはもう出かけていた。","Quand Yui est arrivée, Hugo était déjà parti.",["avait","partie"],"partir は être。Hugo（男性）→ parti。déjà は過去分詞の直前。",{a:["Quand Yui est arrivée, Hugo était déjà parti.", "Hugo était déjà parti quand Yui est arrivée."]});
 B("pqp","ユゴーはそれまで一度も海を見たことがなかった。","Hugo n'avait jamais vu la mer.",["a","vue"],"ne ～ jamais で助動詞をはさむ。avoir のとき vu は主語に一致しない。");
 
 /* ---------- 時制の使い分け ---------- */
@@ -187,9 +187,9 @@ C("tps","【ゆいの話】Une voiture ___ une dame pendant qu'elle traversait l
 C("tps","Quand Hugo est rentré, Léa ___ déjà mangé.（大過去の助動詞）","avait",["avait","a","était"],"帰ってきた時点より前に済んでいた → 大過去（avait mangé）。",{ja:"ユゴーが帰ってきたとき、レアはもう食べ終えていた。"});
 C("tps","Quand elle ___ au Japon l'année dernière, elle ne parlait pas japonais.（arriver）","est arrivée",["est arrivée","arrivait","était arrivée"],"「着いた」という出来事 → 複合過去。話せなかった（状態）は半過去。",{ja:"去年日本に着いたとき、彼女は日本語を話せなかった。"});
 C("tps","Hier, Madame Martin ___ répéter deux fois, parce que nous n'avions pas compris.（devoir）","a dû",["a dû","devait","avait dû"],"昨日のひとつの出来事 → 複合過去。わかっていなかった（n'avions pas compris）はそれより前 → 大過去。",{ja:"昨日、私たちがわかっていなかったので、マルタン先生は2回くり返さなければならなかった。"});
-B("tps","彼が着いたとき、レアは眠っていた。","Léa dormait quand il est arrivé.",["a dormi","arrivait"],"背景（dormait）は半過去、出来事（est arrivé）は複合過去。");
-B("tps","今朝、私が家を出たとき、雨が降っていた。","Quand je suis sorti de chez moi ce matin, il pleuvait.",["sortais","a plu"],"出来事 → 複合過去（je suis sorti）、背景 → 半過去（il pleuvait）。");
-B("tps","彼が駅に着いたとき、電車はもう出てしまっていた。","Quand il est arrivé à la gare, le train était déjà parti.",["avait","partait"],"着いた時点より前に出発していた → 大過去。");
+B("tps","彼が着いたとき、レアは眠っていた。","Léa dormait quand il est arrivé.",["a dormi","arrivait"],"背景（dormait）は半過去、出来事（est arrivé）は複合過去。",{a:["Léa dormait quand il est arrivé.", "Quand il est arrivé, Léa dormait."]});
+B("tps","今朝、私が家を出たとき、雨が降っていた。","Quand je suis sorti de chez moi ce matin, il pleuvait.",["sortais","a plu"],"出来事 → 複合過去（je suis sorti）、背景 → 半過去（il pleuvait）。",{ch:["de chez moi", "ce matin"],a:["Quand je suis sorti de chez moi ce matin, il pleuvait.", "Il pleuvait quand je suis sorti de chez moi ce matin."]});
+B("tps","彼が駅に着いたとき、電車はもう出てしまっていた。","Quand il est arrivé à la gare, le train était déjà parti.",["avait","partait"],"着いた時点より前に出発していた → 大過去。",{ch:["à la gare", "le train"],a:["Quand il est arrivé à la gare, le train était déjà parti.", "Le train était déjà parti quand il est arrivé à la gare."]});
 B("tps","彼らは毎年夏をノルマンディーで過ごしていた。","Ils passaient chaque été en Normandie.",["ont passé","passait"],"chaque été（毎夏）＝過去の習慣 → 半過去。");
 
 /* ---------- 受動態 ---------- */
@@ -246,7 +246,7 @@ B("per","私たちは子どもたちが泳ぐのを眺める。","Nous regardons
 B("per","彼は彼女がドアを閉めるのを聞いた。","Il l'a entendue fermer la porte.",["entendu","lui"],"代名詞 l'（＝彼女）が前 → entendue。");
 B("per","レアは髪を切ってもらった。","Léa s'est fait couper les cheveux.",["a","faite"],"se faire は être で複合過去を作る。fait は一致しない。");
 B("per","私は弟に車を修理してもらった。","J'ai fait réparer ma voiture par mon frère.",["fais","de"],"faire＋不定詞（réparer）＋名詞A（ma voiture）＋par＋名詞B（mon frère）。");
-B("per","ゆいは地下鉄で財布を盗まれた。","Yui s'est fait voler son portefeuille dans le métro.",["a","volé"],"se faire＋不定詞（voler）。");
+B("per","ゆいは地下鉄で財布を盗まれた。","Yui s'est fait voler son portefeuille dans le métro.",["a","volé"],"se faire＋不定詞（voler）。",{ch:["son portefeuille", "dans le métro"]});
 </script>
 </body>
 </html>

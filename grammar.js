@@ -65,6 +65,7 @@ function tiles(s,cap){
   const m=t.match(/\s*([.!?]+)$/);if(m){end=m[1];t=t.slice(0,m.index);}
   const words=[];
   t.split(/\s+/).filter(Boolean).forEach((w,i)=>{
+    w=w.replace(/,+$/,"");if(!w)return;   // 札にはコンマをつけない（語順を入れかえても並べられるように。判定でもコンマは見ない）
     if(i===0)w=lowTile(w);
     const p=w.match(PRON);
     if(p&&!/^est-ce$/i.test(w)){words.push(p[1]);words.push(p[2]);}else words.push(w);
@@ -411,9 +412,9 @@ function makeQ(it){
   if(curMode==="choice"&&it.t==="w"){const o=autoOptions(it);if(o){q.kind="c";q.options=o;q.label="選んで答える";}}
   if(curMode==="choice"&&it.t==="t"){q.kind="b";q.label="書きかえ（札を並べる）";}
   if(q.kind==="b"){
-    const m=tiles(it.a[0],it.cap);q.words=m.words;q.end=m.end;
-    q.tiles=shuffle(m.words.concat((it.extra||[]).map(lowTile)).map((w,i)=>({w,id:i})));
-    if(q.tiles.length>1&&q.tiles.map(t=>t.w).join(" ")===m.words.join(" "))q.tiles.reverse();
+    const m=tiles(it.a[0],it.cap);q.words=chunkTiles(m.words,it.ch);q.end=m.end;
+    q.tiles=shuffle(q.words.concat((it.extra||[]).map(lowTile)).map((w,i)=>({w,id:i})));
+    if(q.tiles.length>1&&q.tiles.map(t=>t.w).join(" ")===q.words.join(" "))q.tiles.reverse();
   }
   return q;
 }
@@ -527,9 +528,23 @@ function checkWrite(q){
 function drawTiles(q){
   NLTiles.draw(q,{tray:$("tray"),bank:$("bank"),ctl:document.querySelector(".build-ctl"),locked:()=>locked,onCheck:()=>checkBuild(q)});
 }
+/* 札のまとまり：問題の ch:["chez sa grand-mère", …] にある語のならびを1枚の札にする（札が多くなりすぎないように） */
+function chunkTiles(words,ch){
+  if(!ch||!ch.length)return words;
+  let out=words.slice();
+  ch.forEach(c=>{
+    const cw=tiles(c).words.map(w=>w.toLowerCase());
+    for(let i=0;i+cw.length<=out.length;i++){
+      if(cw.every((w,j)=>out[i+j].toLowerCase()===w)){out.splice(i,cw.length,out.slice(i,i+cw.length).join(" "));break;}
+    }
+  });
+  return out;
+}
+/* 並べかえの判定：正解（別解もふくむ）と、語のならびが同じなら正解。大文字・小文字とコンマは見ない */
+function buildKey(ws){return ws.join(" ").toLowerCase().replace(/\s+/g," ").trim();}
 function checkBuild(q){
-  const got=q.picked.map(t=>t.w).join(" "),want=q.words.join(" ");
-  const ok=got.toLowerCase()===want.toLowerCase();
+  const got=buildKey(q.picked.map(t=>t.w));
+  const ok=q.it.a.some(a=>buildKey(tiles(a).words)===got);
   $("tray").classList.add(ok?"ok":"no");
   grade(ok?2:0,joinTiles(q.picked.map(t=>t.w))+(q.end?(/[?!]/.test(q.end)?" ":"")+q.end:""));
 }
@@ -722,6 +737,6 @@ function init(){
   if(L.home){location.replace(L.home);return;}
   renderHome();show(homeScreen);
 }
-window.GRAMMAR={ITEMS,judge,nz,tiles,init,get questions(){return questions;},get idx(){return idx;}};
+window.GRAMMAR={ITEMS,judge,nz,tiles,init,chunkTiles,buildKey,get questions(){return questions;},get idx(){return idx;}};
 document.addEventListener("DOMContentLoaded",init);
 })();

@@ -15,8 +15,8 @@
 <link rel="stylesheet" href="grammar.css?v=15">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="tiles.js?v=2"></script>
-<script src="grammar.js?v=33"></script>
+<script src="tiles.js?v=3"></script>
+<script src="grammar.js?v=34"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -129,7 +129,7 @@ C("le","Tu crois que c'est vrai ? — Oui, je ___ crois.","le",["le","y","en"],"
 T("le","le を使って書きかえ","Je sais que Hugo est malade.",["Je le sais."],"que 以下の内容 → le。",{extra:["en","y"]});
 T("le","le を使って書きかえ","Oui, nous sommes contents.",["Oui, nous le sommes."],"属詞（contents）→ le。複数でも le。",{extra:["les","en"]});
 T("le","le を使って書きかえ","Je pense qu'elle a raison.",["Je le pense."],"que 以下の内容 → le。",{extra:["y","la"]});
-B("le","兄は教師で、私もそうだ。","Mon frère est professeur et je le suis aussi.",["la","en"],"属詞（professeur）→ le。");
+B("le","兄は教師で、私もそうだ。","Mon frère est professeur et je le suis aussi.",["la","en"],"属詞（professeur）→ le。",{ch:["Mon frère est professeur"]});
 B("le","私はそれを知らなかった。","Je ne le savais pas.",["en","y"],"内容を受ける le。ne … pas で動詞といっしょにはさむ。");
 
 /* ---------- en・y・le の使い分け ---------- */
@@ -199,7 +199,7 @@ T("fut","単純未来に","Elle va être en retard.",["Elle sera en retard."],"�
 T("fut","単純未来に","Tu vas faire tes devoirs.",["Tu feras tes devoirs."],"faire → fer-as。",{extra:["vas","fais"]});
 B("fut","私たちは来年、日本に戻ってきます。","Nous reviendrons au Japon l'année prochaine.",["revenirons","allons"],"revenir の単純未来は語幹 reviendr-。");
 B("fut","明日は雨が降るだろう。","Il pleuvra demain.",["pleuvoira","pleut"],"pleuvoir → il pleuvra。");
-B("fut","着いたら電話してね。","Tu m'appelleras quand tu arriveras.",["appeleras","arrives"],"tu の単純未来で依頼。quand のあとも単純未来。");
+B("fut","着いたら電話してね。","Tu m'appelleras quand tu arriveras.",["appeleras","arrives"],"tu の単純未来で依頼。quand のあとも単純未来。",{a:["Tu m'appelleras quand tu arriveras.", "Quand tu arriveras, tu m'appelleras."]});
 
 /* ---------- 前未来 ---------- */
 C("fa","J'___ ce rapport avant lundi.（finir・前未来）","aurai fini",["aurai fini","serai fini","avais fini"],"avoir の単純未来＋過去分詞。月曜までに終わっていること。",{ja:"月曜までにこのレポートを終えているだろう。"});
@@ -218,8 +218,8 @@ T("fa","前未来に","Je finirai ce livre.",["J'aurai fini ce livre."],"助動�
 T("fa","前未来に","Ils partiront.",["Ils seront partis."],"partir は être：seront partis。",{extra:["auront","parti"]});
 T("fa","前未来に","Nous rangerons la cuisine.",["Nous aurons rangé la cuisine."],"ranger は avoir：aurons rangé。",{extra:["serons","rangerons"]});
 B("fa","正午には、電車はもう出発しているだろう。","Le train sera déjà parti à midi.",["aura","partie"],"partir は être。déjà は助動詞と過去分詞のあいだ。");
-B("fa","レポートを書き終えたら出かけます。","Je sortirai quand j'aurai écrit mon rapport.",["serai","écrirai"],"書き終える（前未来）→ 出かける（単純未来）の順。");
-B("fa","みんなが着いたらすぐに始めよう。","Nous commencerons dès que tout le monde sera arrivé.",["aura","arrive"],"arriver は être。tout le monde は単数扱い：sera arrivé。");
+B("fa","レポートを書き終えたら出かけます。","Je sortirai quand j'aurai écrit mon rapport.",["serai","écrirai"],"書き終える（前未来）→ 出かける（単純未来）の順。",{a:["Je sortirai quand j'aurai écrit mon rapport.", "Quand j'aurai écrit mon rapport, je sortirai."]});
+B("fa","みんなが着いたらすぐに始めよう。","Nous commencerons dès que tout le monde sera arrivé.",["aura","arrive"],"arriver は être。tout le monde は単数扱い：sera arrivé。",{ch:["tout le monde"],a:["Nous commencerons dès que tout le monde sera arrivé.", "Dès que tout le monde sera arrivé, nous commencerons."]});
 </script>
 </body>
 </html>

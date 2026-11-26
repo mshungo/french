@@ -348,8 +348,8 @@ C("imp","Je ___ bien Léa.（connaître）","connaissais",["connaissais","conna�
 C("imp","Nous ___ le soir.（sortir）","sortions",["sortions","sortaions","sortons"],"nous sortons → sort-＋-ions：nous sortions。",{ja:"私たちは夜に出かけていた。"});
 C("imp","Vous ___ fatigués.（être）","étiez",["étiez","êtiez","étaiez"],"être の半過去：vous étiez。",{ja:"あなたたちは疲れていた。"});
 C("imp","Elles ___ deux enfants.（avoir）","avaient",["avaient","avait","avaiont"],"ils / elles → -aient：elles avaient。",{ja:"彼女たちには子どもが2人いた。"});
-B("imp","子どものころ、レアは毎週日曜日におばあさんの家に行っていた。","Quand elle était petite, Léa allait chez sa grand-mère chaque dimanche.",["allée","va"],"過去の習慣は半過去：allait。");
-B("imp","電話が鳴ったとき、ゆいは台所にいた。","Yui était dans la cuisine quand le téléphone a sonné.",["est","sonnait"],"そのとき続いていた状態は半過去（était）、起きた出来事は複合過去（a sonné）。");
+B("imp","子どものころ、レアは毎週日曜日におばあさんの家に行っていた。","Quand elle était petite, Léa allait chez sa grand-mère chaque dimanche.",["allée","va"],"過去の習慣は半過去：allait。",{ch:["chez sa grand-mère", "chaque dimanche"],a:["Quand elle était petite, Léa allait chez sa grand-mère chaque dimanche.", "Léa allait chez sa grand-mère chaque dimanche quand elle était petite.", "Quand elle était petite, Léa allait chaque dimanche chez sa grand-mère.", "Léa allait chaque dimanche chez sa grand-mère quand elle était petite.", "Quand elle était petite, chaque dimanche, Léa allait chez sa grand-mère.", "Chaque dimanche, quand elle était petite, Léa allait chez sa grand-mère."]});
+B("imp","電話が鳴ったとき、ゆいは台所にいた。","Yui était dans la cuisine quand le téléphone a sonné.",["est","sonnait"],"そのとき続いていた状態は半過去（était）、起きた出来事は複合過去（a sonné）。",{ch:["dans la cuisine", "le téléphone"],a:["Yui était dans la cuisine quand le téléphone a sonné.", "Quand le téléphone a sonné, Yui était dans la cuisine."]});
 
 /* ---------- Leçon 9：dormir・sentir・ouvrir・conduire（新しく追加。番号は V9-） ---------- */
 FROM("V9",0);

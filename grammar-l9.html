@@ -15,8 +15,8 @@
 <link rel="stylesheet" href="grammar.css?v=15">
 <script src="sound.js?v=1"></script>
 <script src="badge.js?v=3"></script>
-<script src="tiles.js?v=2"></script>
-<script src="grammar.js?v=33"></script>
+<script src="tiles.js?v=3"></script>
+<script src="grammar.js?v=34"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -89,8 +89,8 @@ T("rel1","関係代名詞を使って1文に","Voilà le roman. Yui lit ce roman
 T("rel1","関係代名詞を使って1文に","Je connais un restaurant. Il ouvre à midi.",["Je connais un restaurant qui ouvre à midi."],"il（主語）→ qui。",{extra:["que","où"]});
 T("rel1","関係代名詞を使って1文に","C'est le professeur. Nous aimons beaucoup ce professeur.",["C'est le professeur que nous aimons beaucoup."],"ce professeur（直接目的補語）→ que。",{extra:["qui","dont"]});
 B("rel1","これはレアが私にくれた本です。","C'est le livre que Léa m'a donné.",["qui","dont"],"Léa m'a donné の直接目的補語 → que。");
-B("rel1","駅に行くバスはここに止まる。","Le bus qui va à la gare s'arrête ici.",["que","où"],"va の主語 → qui。");
-B("rel1","窓のそばにいる男の子はユゴーの弟だ。","Le garçon qui est près de la fenêtre est le frère de Hugo.",["que","dont"],"est près de la fenêtre の主語 → qui。");
+B("rel1","駅に行くバスはここに止まる。","Le bus qui va à la gare s'arrête ici.",["que","où"],"va の主語 → qui。",{ch:["Le bus", "à la gare"]});
+B("rel1","窓のそばにいる男の子はユゴーの弟だ。","Le garçon qui est près de la fenêtre est le frère de Hugo.",["que","dont"],"est près de la fenêtre の主語 → qui。",{ch:["près de la fenêtre", "le frère de Hugo"]});
 
 /* ---------- 関係代名詞 dont・où ---------- */
 C("rel2","J'ai une amie ___ le père est médecin.","dont",["dont","que","où"],"le père de cette amie（～の）→ de を含む dont。",{ja:"お父さんが医者の友だちがいる。"});
@@ -132,9 +132,9 @@ C("mix","La lettre qu'il a ___ est très longue.（écrire）","écrite",["écri
 C("mix","Les fleurs que Hugo m'a ___ sont jolies.（offrir）","offertes",["offertes","offert","offerts"],"先行詞 les fleurs（女性複数）→ offertes。",{ja:"ユゴーがくれた花はきれいだ。"});
 C("mix","Les filles qui sont ___ hier sont mes cousines.（venir）","venues",["venues","venu","venus"],"être をとる動詞：過去分詞は先行詞 les filles（女性複数）に一致 → venues。",{ja:"昨日来た女の子たちは私のいとこだ。"});
 C("mix","Le garçon qui a ___ la porte s'appelle Paul.（ouvrir）","ouvert",["ouvert","ouverte","ouverts"],"qui は主語。avoir のとき、うしろにある直接目的補語（la porte）には一致しない → ouvert。",{ja:"ドアを開けた男の子はポールという名前だ。"});
-B("mix","京都で撮った写真を見せてあげる。","Je vais te montrer les photos que j'ai prises à Kyoto.",["pris","qui"],"先行詞 les photos（女性複数）→ prises。");
+B("mix","京都で撮った写真を見せてあげる。","Je vais te montrer les photos que j'ai prises à Kyoto.",["pris","qui"],"先行詞 les photos（女性複数）→ prises。",{ch:["Je vais te montrer", "à Kyoto"]});
 B("mix","これはユゴーが話していた映画だ。","C'est le film dont Hugo parlait.",["que","où"],"parler de → dont。");
-B("mix","私たちが泊まったホテルは海のそばにあった。","L'hôtel où nous avons dormi était près de la mer.",["que","dont"],"場所（l'hôtel）で「そこで眠った」→ où。");
+B("mix","私たちが泊まったホテルは海のそばにあった。","L'hôtel où nous avons dormi était près de la mer.",["que","dont"],"場所（l'hôtel）で「そこで眠った」→ où。",{ch:["près de la mer"]});
 
 /* ---------- 比較級 ---------- */
 C("comp","Hugo est ___ grand que Léa.（ユゴーのほうが背が高い）","plus",["plus","moins","aussi"],"優等比較：plus ～ que。",{ja:"ユゴーはレアより背が高い。"});
@@ -178,9 +178,9 @@ C("sup","C'est le jour ___ de l'année.（long の最上級）","le plus long",[
 C("sup","C'est la saison ___ de l'année.（froid の最上級）","la plus froide",["la plus froide","le plus froid","la plus froid"],"saison（女性単数）→ la plus froide。",{ja:"1年でいちばん寒い季節だ。"});
 T("sup","「日本でいちばん古い町」という文に","C'est une ville ancienne.",["C'est la ville la plus ancienne du Japon.","C'est la plus ancienne ville du Japon."],"la ville＋la plus ancienne＋du Japon。",{extra:["le","de"]});
 T("sup","「この町でいちばんおいしいレストラン」という文に","C'est un bon restaurant.",["C'est le meilleur restaurant de la ville."],"bon の最上級 le meilleur は名詞の前に置く。",{extra:["mieux","plus"]});
-T("sup","「クラスでいちばんよく勉強する」という文に（C'est Hugo qui …）","Hugo travaille bien.",["C'est Hugo qui travaille le mieux de la classe."],"bien の最上級：le mieux。",{extra:["meilleur","la"]});
-B("sup","ここは町でいちばん静かな地区だ。","C'est le quartier le plus calme de la ville.",["la","dans"],"le quartier＋le plus calme＋de ～。");
-B("sup","クラスでいちばん歌がうまいのはレアだ。","C'est Léa qui chante le mieux de la classe.",["la","meilleure"],"bien の最上級：le mieux。");
+T("sup","「クラスでいちばんよく勉強する」という文に（C'est Hugo qui …）","Hugo travaille bien.",["C'est Hugo qui travaille le mieux de la classe."],"bien の最上級：le mieux。",{extra:["meilleur","la"],ch:["la classe"]});
+B("sup","ここは町でいちばん静かな地区だ。","C'est le quartier le plus calme de la ville.",["la","dans"],"le quartier＋le plus calme＋de ～。",{ch:["la ville"]});
+B("sup","クラスでいちばん歌がうまいのはレアだ。","C'est Léa qui chante le mieux de la classe.",["la","meilleure"],"bien の最上級：le mieux。",{ch:["la classe"]});
 B("sup","これは町でいちばんおいしいパン屋だ。","C'est la meilleure boulangerie de la ville.",["mieux","plus"],"bon の最上級：la meilleure。");
 
 /* ---------- 前置詞つきの関係代名詞 ---------- */
@@ -198,8 +198,8 @@ C("prel","La gare en face ___ il y a un café est très vieille.（en face de）
 C("prel","à ＋ lequel →","auquel",["auquel","à lequel","aulequel"],"à＋lequel は縮約して auquel。",{cw:false});
 C("prel","de ＋ lesquels →","desquels",["desquels","de lesquels","duquels"],"de＋lesquels は縮約して desquels。",{cw:false});
 C("prel","à ＋ lesquelles →","auxquelles",["auxquelles","à lesquelles","auquelles"],"à＋lesquelles は縮約して auxquelles。",{cw:false});
-T("prel","関係代名詞を使って1文に","C'est un ami. Je joue au tennis avec cet ami.",["C'est un ami avec qui je joue au tennis.","C'est un ami avec lequel je joue au tennis."],"先行詞が人：avec qui。",{extra:["que","dont"]});
-T("prel","関係代名詞を使って1文に","Voilà la boîte. Je mets mes lettres dans cette boîte.",["Voilà la boîte dans laquelle je mets mes lettres."],"先行詞が物で、boîte（女性単数）→ dans laquelle。",{extra:["lequel","que"]});
+T("prel","関係代名詞を使って1文に","C'est un ami. Je joue au tennis avec cet ami.",["C'est un ami avec qui je joue au tennis.","C'est un ami avec lequel je joue au tennis."],"先行詞が人：avec qui。",{extra:["que","dont"],ch:["je joue au tennis"]});
+T("prel","関係代名詞を使って1文に","Voilà la boîte. Je mets mes lettres dans cette boîte.",["Voilà la boîte dans laquelle je mets mes lettres."],"先行詞が物で、boîte（女性単数）→ dans laquelle。",{extra:["lequel","que"],ch:["je mets mes lettres"]});
 T("prel","関係代名詞を使って1文に","C'est un sujet. Je m'intéresse à ce sujet.",["C'est un sujet auquel je m'intéresse."],"s'intéresser à ～：à＋lequel → auquel。",{extra:["à","dont"]});
 B("prel","これは私がいつもいっしょに働いている友だちです。","C'est l'ami avec qui je travaille toujours.",["que","dont"],"先行詞が人：avec qui。");
 B("prel","私が考えている問題は難しい。","La question à laquelle je pense est difficile.",["auquel","que"],"penser à ～：question（女性単数）→ à laquelle。");
@@ -218,7 +218,7 @@ C("qty","Ce quartier est ___ calme que le centre.（より静か）","plus",["pl
 C("qty","Yui est ___ sérieuse que Léa.（同じくらい）","aussi",["aussi","autant","autant de"],"形容詞の同等比較は aussi。autant de は名詞の数量。",{ja:"ゆいはレアと同じくらいまじめだ。"});
 T("qty","Léa を主語にした比較の文に","Léa a cinq robes. Yui a trois robes.",["Léa a plus de robes que Yui."],"plus de＋名詞＋que。",{extra:["plus","des"]});
 T("qty","Yui を主語にした比較の文に","Léa a cinq robes. Yui a trois robes.",["Yui a moins de robes que Léa."],"moins de＋名詞＋que。",{extra:["moins","des"]});
-B("qty","この町には車より自転車のほうが多い。","Il y a plus de vélos que de voitures dans cette ville.",["des","aussi"],"plus de ～ que de ～。");
+B("qty","この町には車より自転車のほうが多い。","Il y a plus de vélos que de voitures dans cette ville.",["des","aussi"],"plus de ～ que de ～。",{ch:["Il y a", "dans cette ville"]});
 B("qty","私は姉と同じ数の本を持っている。","J'ai autant de livres que ma sœur.",["aussi","des"],"autant de＋名詞＋que。");
 </script>
 </body>
